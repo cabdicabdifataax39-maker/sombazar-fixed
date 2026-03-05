@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 ob_start(); // Buffer tüm çıktıyı — header'dan önce whitespace önle
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
@@ -15,13 +15,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Load .env
+// Load from environment variables (Railway) or .env file
 $envFile = __DIR__ . '/../.env';
-if (!file_exists($envFile)) {
-    ob_end_clean();
-    http_response_code(500);
-    echo json_encode(['success' => false, 'error' => '.env file not found. Create a .env file in the project root.']);
-    exit();
+if (file_exists($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = trim($line);
+        if ($line === '' || $line[0] === '#') continue;
+        $pos = strpos($line, '=');
+        if ($pos === false) continue;
+        $key = trim(substr($line, 0, $pos));
+        $val = trim(substr($line, $pos + 1));
+        if (preg_match('/^[A-Z_][A-Z0-9_]*$/', $key)) putenv("$key=$val");
+    }
 }
 
 $env = [];
@@ -307,3 +312,4 @@ function decryptMessage(string $data): string {
     $dec = @openssl_decrypt($enc, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
     return $dec !== false ? $dec : $data; // çözülemezse orijinali döndür
 }
+
