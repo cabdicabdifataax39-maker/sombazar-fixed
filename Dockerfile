@@ -14,8 +14,9 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql mysqli mbstring gd zip
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Fix Apache MPM conflict
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true && \
+    a2enmod mpm_prefork rewrite
 
 # Copy project files
 COPY . /var/www/html/
@@ -33,3 +34,5 @@ RUN echo '<Directory /var/www/html>\n\
     a2enconf project
 
 EXPOSE 80
+
+CMD ["apache2-foreground"]
