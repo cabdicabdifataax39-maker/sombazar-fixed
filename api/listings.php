@@ -48,7 +48,7 @@ switch ($action) {
 
 function handleList(): void {
     $db  = getDB();
-    $sql = 'SELECT l.*, u.display_name AS seller_name, u.photo_url AS seller_photo, u.verified AS seller_verified, u.city AS seller_city, u.created_at AS seller_since
+    $sql = 'SELECT l.*, u.display_name AS seller_name, u.avatar_url AS seller_photo, u.is_verified AS seller_verified, u.city AS seller_city, u.created_at AS seller_since
             FROM listings l
             JOIN users u ON l.user_id = u.id
             WHERE l.status = "active"';
@@ -131,8 +131,8 @@ function handleList(): void {
 function handleGet(int $id): void {
     $db = getDB();
     $st = $db->prepare(
-        'SELECT l.*, u.display_name AS seller_name, u.photo_url AS seller_photo,
-                u.verified AS seller_verified, u.city AS seller_city, u.created_at AS seller_since
+        'SELECT l.*, u.display_name AS seller_name, u.avatar_url AS seller_photo,
+                u.is_verified AS seller_verified, u.city AS seller_city, u.created_at AS seller_since
          FROM listings l
          JOIN users u ON l.user_id = u.id
          WHERE l.id = ? AND l.status != "deleted"'
@@ -417,7 +417,7 @@ function handleUserListings(): void {
     $db  = getDB();
 
     $st = $db->prepare(
-        'SELECT l.*, u.display_name AS seller_name, u.photo_url AS seller_photo, u.verified AS seller_verified
+        'SELECT l.*, u.display_name AS seller_name, u.avatar_url AS seller_photo, u.is_verified AS seller_verified
          FROM listings l
          JOIN users u ON l.user_id = u.id
          WHERE l.user_id = ? AND l.status != "deleted"
@@ -459,7 +459,7 @@ function formatListing(array $r, bool $detail = false): array {
         $out['seller']      = [
             'id'          => $r['user_id'],
             'displayName' => $r['seller_name'] ?? null,
-            'photoURL'    => $r['seller_photo'] ? UPLOAD_URL . $r['seller_photo'] : null,
+            'photoURL'    => ($r['avatar_url'] ?? $r['seller_photo'] ?? null) ? UPLOAD_URL . $r['seller_photo'] : null,
             'verified'    => (bool) ($r['seller_verified'] ?? false),
             'city'        => $r['seller_city'] ?? null,
             'memberSince' => isset($r['seller_since']) ? date('Y', strtotime($r['seller_since'])) : null,

@@ -163,7 +163,7 @@ function handleLogin(): void {
     }
 
     // Check if account is banned
-    if (!empty($user['banned'])) {
+    if (!empty($user['is_banned'])) {
         jsonError('Your account has been suspended. Contact support.', 403);
     }
 
@@ -470,9 +470,9 @@ function formatUser(array $u): array {
         'city'        => $u['city'],
         'bio'         => $u['bio'],
         'photoURL'    => $u['photo_url'] ? UPLOAD_URL . $u['photo_url'] : null,
-        'verified'    => (bool) $u['verified'],
+        'verified'    => (bool) ($u['is_verified'] ?? $u['verified'] ?? false),
         'isAdmin'     => (bool) ($u['is_admin'] ?? false),
-        'banned'      => (bool) ($u['banned'] ?? false),
+        'banned'      => (bool) ($u['is_banned'] ?? false),
         'rating'      => (float) $u['rating'],
         'reviewCount' => (int) $u['review_count'],
         'memberSince' => date('Y', strtotime($u['created_at'])),

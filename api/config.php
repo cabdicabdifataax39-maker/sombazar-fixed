@@ -15,39 +15,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// ── Environment Variables ────────────────────────────────────────────
-// Önce Railway/sunucu getenv() — sonra .env dosyası (local geliştirme)
-$env = [];
-$envKeys = ['DB_HOST','DB_PORT','DB_NAME','DB_USER','DB_PASS','SITE_URL','UPLOAD_URL',
-            'JWT_SECRET','MSG_KEY','SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_PASS',
-            'SMTP_FROM','SMTP_FROM_NAME','GOOGLE_MAPS_KEY'];
-
-// 1. Railway / hosting environment variables (en yüksek öncelik)
-foreach ($envKeys as $key) {
-    $val = getenv($key);
-    if ($val !== false && $val !== '') {
-        $env[$key] = $val;
-    }
+// Load .env
+$envFile = __DIR__ . '/../.env';
+if (!file_exists($envFile)) {
+    ob_end_clean();
+    http_response_code(500);
+    echo json_encode(['success' => false, 'error' => '.env file not found. Create a .env file in the project root.']);
+    exit();
 }
 
-// 2. .env dosyasından eksikleri tamamla (local XAMPP için)
-$envFile = __DIR__ . '/../.env';
-if (file_exists($envFile)) {
-    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-        $line = preg_replace('/^\xEF\xBB\xBF/', '', $line);
-        $line = trim($line);
-        if ($line === '' || $line[0] === '#') continue;
-        $pos = strpos($line, '=');
-        if ($pos === false) continue;
-        $key = trim(substr($line, 0, $pos));
-        $val = trim(substr($line, $pos + 1));
-        $val = trim($val, "\r");
-        if (($commentPos = strpos($val, ' #')) !== false) {
-            $val = trim(substr($val, 0, $commentPos));
-        }
-        if (preg_match('/^[A-Z_][A-Z0-9_]*$/', $key) && !isset($env[$key])) {
-            $env[$key] = $val;
-        }
+$env = [];
+foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+    // Strip UTF-8 BOM if present on first line
+    $line = preg_replace('/^\xEF\xBB\xBF/', '', $line);
+    $line = trim($line);
+    if ($line === '' || $line[0] === '#') continue;
+    $pos = strpos($line, '=');
+    if ($pos === false) continue;
+    $key = trim(substr($line, 0, $pos));
+    $val = trim(substr($line, $pos + 1));
+    $val = trim($val, "
+"); // Strip Windows line endings
+    // Strip inline comments
+    if (($commentPos = strpos($val, ' #')) !== false) {
+        $val = trim(substr($val, 0, $commentPos));
+    }
+    // Only allow valid key names (letters, numbers, underscore)
+    if (preg_match('/^[A-Z_][A-Z0-9_]*$/', $key)) {
+        $env[$key] = $val;
     }
 }
 
@@ -119,9 +114,6 @@ function checkRateLimit(string $key, int $maxRequests = 60, int $windowSeconds =
         ?? $_SERVER['REMOTE_ADDR']
         ?? 'unknown';
     $ip  = explode(',', $ip)[0]; // İlk IP'yi al
-
-    // Localhost geliştirme ortamında rate limit devre dışı
-    if (in_array($ip, ['127.0.0.1', '::1', 'localhost'])) return;
 
     $dir  = sys_get_temp_dir() . '/sombazar_rl/';
     if (!is_dir($dir)) { @mkdir($dir, 0700, true); }
@@ -241,7 +233,7 @@ function requireAuth(bool $skipBanCheck = false): int {
         try {
             $st = $db->prepare('SELECT banned, ban_reason, token_invalidated_at FROM users WHERE id = ?');
             $st->execute([$uid]);
-        } catch(\Throwable $e) {
+        } catch (Exception $e) {
             $st = $db->prepare('SELECT 0 as banned, NULL as ban_reason, NULL as token_invalidated_at FROM users WHERE id = ?');
             $st->execute([$uid]);
         }

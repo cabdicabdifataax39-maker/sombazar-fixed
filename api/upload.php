@@ -12,6 +12,8 @@ register_shutdown_function(function() {
 });
 
 require_once __DIR__ . '/config.php';
+applyEndpointRateLimit('upload');
+
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonError('Method not allowed', 405);
 

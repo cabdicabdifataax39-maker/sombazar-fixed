@@ -86,14 +86,14 @@ function handleStats(): void {
     $db = getDB();
     $stats = [
         'total_users'        => (int)$db->query('SELECT COUNT(*) FROM users WHERE is_admin=0')->fetchColumn(),
-        'verified_users'     => (int)$db->query('SELECT COUNT(*) FROM users WHERE verified=1')->fetchColumn(),
+        'verified_users'     => (int)$db->query('SELECT COUNT(*) FROM users WHERE is_verified=1')->fetchColumn(),
         'pending_verif'      => (int)$db->query("SELECT COUNT(*) FROM users WHERE verification_status='pending'")->fetchColumn(),
         'total_listings'     => (int)$db->query("SELECT COUNT(*) FROM listings WHERE status != 'deleted'")->fetchColumn(),
         'active_listings'    => (int)$db->query("SELECT COUNT(*) FROM listings WHERE status='active'")->fetchColumn(),
         'pending_listings'   => (int)$db->query("SELECT COUNT(*) FROM listings WHERE status='pending'")->fetchColumn(),
-        'total_messages'     => (int)$db->query('SELECT COUNT(*) FROM messages WHERE deleted_at IS NULL')->fetchColumn(),
+        'total_messages'     => (int)$db->query('SELECT COUNT(*) FROM messages')->fetchColumn(),
         'total_conversations'=> (int)$db->query('SELECT COUNT(*) FROM conversations')->fetchColumn(),
-        'banned_users'       => (int)$db->query('SELECT COUNT(*) FROM users WHERE banned=1')->fetchColumn(),
+        'banned_users'       => (int)$db->query('SELECT COUNT(*) FROM users WHERE is_banned=1')->fetchColumn(),
         'blacklisted'        => (int)$db->query('SELECT COUNT(*) FROM blacklist')->fetchColumn(),
         'new_users_today'    => (int)$db->query("SELECT COUNT(*) FROM users WHERE DATE(created_at)=CURDATE()")->fetchColumn(),
         'new_listings_today' => (int)$db->query("SELECT COUNT(*) FROM listings WHERE DATE(created_at)=CURDATE()")->fetchColumn(),
@@ -188,9 +188,9 @@ function handleBanUser(): void {
 
     // Invalidate existing tokens on ban
     if ($ban) {
-        $db->prepare('UPDATE users SET banned=1, ban_reason=?, token_invalidated_at=NOW() WHERE id=?')->execute([$reason, $userId]);
+        $db->prepare('UPDATE users SET is_banned=1, ban_reason=?, token_invalidated_at=NOW() WHERE id=?')->execute([$reason, $userId]);
     } else {
-        $db->prepare('UPDATE users SET banned=0, ban_reason=NULL, token_invalidated_at=NULL WHERE id=?')->execute([$userId]);
+        $db->prepare('UPDATE users SET is_banned=0, ban_reason=NULL, token_invalidated_at=NULL WHERE id=?')->execute([$userId]);
     }
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     logAction($uid, $ban?'ban':'unban', 'user', $userId, "$reason | IP: $ip");
@@ -208,7 +208,7 @@ function handleVerifyUser(): void {
     if (!$userId || !in_array($action, ['approve','reject'])) jsonError('Invalid parameters');
 
     if ($action === 'approve') {
-        $db->prepare('UPDATE users SET verified=1, verification_status="approved", verification_note=?, badge_level=? WHERE id=?')
+        $db->prepare('UPDATE users SET is_verified=1, verification_status="approved", verification_note=?, badge_level=? WHERE id=?')
            ->execute([$note, $badge, $userId]);
     } else {
         $db->prepare('UPDATE users SET verified=0, verification_status="rejected", verification_note=? WHERE id=?')
@@ -398,7 +398,7 @@ function handleAddBlacklist(): void {
     $db->prepare('INSERT INTO blacklist (phone, national_id, reason, added_by) VALUES (?,?,?,?)')
        ->execute([$phone, $natId, $reason, $uid]);
     // Also ban matching users
-    if ($phone) $db->prepare("UPDATE users SET banned=1, ban_reason=? WHERE phone=?")->execute(["Blacklisted: $reason", $phone]);
+    if ($phone) $db->prepare("UPDATE users SET is_banned=1, ban_reason=? WHERE phone=?")->execute(["Blacklisted: $reason", $phone]);
     logAction($uid, 'add_blacklist', 'user', 0, "phone:$phone nat_id:$natId reason:$reason");
     jsonSuccess(['message' => 'Added to blacklist']);
 }
@@ -433,8 +433,8 @@ function formatAdminUser(array $u): array {
         'verificationStatus' => $u['verification_status'] ?? 'none',
         'verificationNote'   => $u['verification_note'] ?? '',
         'badgeLevel'         => $u['badge_level'] ?? 'basic',
-        'verified'           => (bool)$u['verified'],
-        'banned'             => (bool)($u['banned'] ?? false),
+        'verified'           => (bool)$u['is_verified'],
+        'banned'             => (bool)($u['is_banned'] ?? false),
         'banReason'          => $u['ban_reason'] ?? '',
         'blacklisted'        => (bool)($u['blacklisted'] ?? false),
         'isAdmin'            => (bool)($u['is_admin'] ?? false),

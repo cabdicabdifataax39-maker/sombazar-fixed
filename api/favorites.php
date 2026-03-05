@@ -21,8 +21,8 @@ function handleList(): void {
     $db  = getDB();
 
     $st = $db->prepare(
-        'SELECT l.*, u.display_name AS seller_name, u.photo_url AS seller_photo,
-                u.verified AS seller_verified, f.created_at AS favorited_at
+        'SELECT l.*, u.display_name AS seller_name, u.avatar_url AS seller_photo,
+                u.is_verified AS seller_verified, f.created_at AS favorited_at
          FROM favorites f
          JOIN listings l ON f.listing_id = l.id
          JOIN users u ON l.user_id = u.id

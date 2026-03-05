@@ -132,7 +132,7 @@ function handleMessages(): void {
 
     // Get messages
     $st = $db->prepare(
-        'SELECT m.*, u.display_name AS sender_name, u.photo_url AS sender_photo
+        'SELECT m.*, u.display_name AS sender_name, u.avatar_url AS sender_photo
          FROM messages m
          JOIN users u ON m.sender_id = u.id
          WHERE m.conversation_id = ? AND m.deleted_at IS NULL
