@@ -90,7 +90,7 @@ function handleRegister(): void {
     }
 
     $hash = password_hash($pass, PASSWORD_DEFAULT);
-    $st   = $db->prepare('INSERT INTO users (display_name, email, password) VALUES (?,?,?)');
+    $st   = $db->prepare('INSERT INTO users (display_name, email, password_hash) VALUES (?,?,?)');
     $st->execute([$name, $email, $hash]);
     $uid   = (int) $db->lastInsertId();
     $token = createToken($uid);
@@ -132,7 +132,7 @@ function handleLogin(): void {
     $st->execute([$email]);
     $user = $st->fetch();
 
-    if (!$user || !password_verify($pass, $user['password'])) {
+    if (!$user || !password_verify($pass, $user['password_hash'])) {
         try { $db->prepare("INSERT INTO login_attempts (ip, email, success) VALUES (?,?,0)")->execute([$ip, $email]); } catch(\Throwable $e) {}
         jsonError('Incorrect email or password', 401);
     }
@@ -232,16 +232,16 @@ function handleChangePassword(): void {
     if ($new !== $confirm) jsonError('New passwords do not match');
 
     $db = getDB();
-    $st = $db->prepare('SELECT password FROM users WHERE id = ?');
+    $st = $db->prepare('SELECT password_hash FROM users WHERE id = ?');
     $st->execute([$uid]);
     $user = $st->fetch();
 
-    if (!password_verify($current, $user['password'])) {
+    if (!password_verify($current, $user['password_hash'])) {
         jsonError('Current password is incorrect', 401);
     }
 
     $hash = password_hash($new, PASSWORD_DEFAULT);
-    $db->prepare('UPDATE users SET password = ? WHERE id = ?')->execute([$hash, $uid]);
+    $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?')->execute([$hash, $uid]);
 
     jsonSuccess(['message' => 'Password changed successfully']);
 }
@@ -314,7 +314,7 @@ function handleResetPassword(): void {
     if (!$row) jsonError('Invalid or expired reset link. Please request a new one.');
 
     $hash = password_hash($new, PASSWORD_DEFAULT);
-    $db->prepare('UPDATE users SET password = ? WHERE id = ?')->execute([$hash, $row['user_id']]);
+    $db->prepare('UPDATE users SET password_hash = ? WHERE id = ?')->execute([$hash, $row['user_id']]);
     $db->prepare('DELETE FROM password_reset_tokens WHERE token = ?')->execute([$token]);
 
     jsonSuccess(['message' => 'Password reset successfully. You can now sign in.']);
@@ -337,7 +337,7 @@ function handleDeleteAccount(): void {
     $st->execute([$uid]);
     $user = $st->fetch();
 
-    if (!$user || !password_verify($pass, $user['password'])) {
+    if (!$user || !password_verify($pass, $user['password_hash'])) {
         jsonError('Incorrect password', 401);
     }
 
@@ -391,7 +391,7 @@ function handleRecoverAccount(): void {
     $st->execute([$email]);
     $user = $st->fetch();
 
-    if (!$user || !password_verify($pass, $user['password'])) {
+    if (!$user || !password_verify($pass, $user['password_hash'])) {
         jsonError('Incorrect email or password', 401);
     }
 
