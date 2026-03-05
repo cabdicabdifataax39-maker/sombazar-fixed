@@ -113,7 +113,7 @@ function handleGetSeller(): void {
     $db = getDB();
     try {
         $st = $db->prepare(
-            "SELECT r.*, u.display_name AS reviewer_name, u.avatar AS reviewer_avatar,
+            "SELECT r.*, u.display_name AS reviewer_name, u.avatar_url AS reviewer_avatar,
                     l.title AS listing_title
              FROM reviews r
              JOIN users u ON r.reviewer_id = u.id
@@ -147,7 +147,7 @@ function handleGetListing(): void {
     $db = getDB();
     try {
         $st = $db->prepare(
-            "SELECT r.*, u.display_name AS reviewer_name, u.avatar AS reviewer_avatar
+            "SELECT r.*, u.display_name AS reviewer_name, u.avatar_url AS reviewer_avatar
              FROM reviews r
              JOIN users u ON r.reviewer_id = u.id
              WHERE r.listing_id = ?
