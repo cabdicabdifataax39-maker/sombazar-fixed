@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seller Profile — SomBazar</title>
+  <meta name="description" content="View seller profile on SomBazar" id="metaDesc">
+  <meta property="og:title"       content="Seller Profile — SomBazar" id="ogTitle">
+  <meta property="og:description" content="View listings and reviews" id="ogDesc">
+  <meta property="og:image"       content="" id="ogImage">
+  <meta property="og:type"        content="profile">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    body { overflow-x: hidden; background: #f8fafc; }
+
+    .user-hero {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      padding: 40px 20px 80px;
+      text-align: center;
+      position: relative;
+    }
+    .user-avatar {
+      width: 96px; height: 96px; border-radius: 50%;
+      border: 4px solid white;
+      background: rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: 900; color: white;
+      margin: 0 auto 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    }
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-name {
+      font-size: 22px; font-weight: 800; color: white; margin-bottom: 4px;
+    }
+    .user-meta { font-size: 13px; color: rgba(255,255,255,.8); margin-bottom: 12px; }
+    .user-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .user-badge {
+      background: rgba(255,255,255,.2); color: white;
+      padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    }
+    .user-stats {
+      display: flex; justify-content: center; gap: 0;
+      background: white; border-radius: 16px;
+      max-width: 400px; margin: -40px auto 0;
+      box-shadow: 0 4px 24px rgba(0,0,0,.1);
+      position: relative; z-index: 2;
+      overflow: hidden;
+    }
+    .user-stat {
+      flex: 1; padding: 16px 8px; text-align: center;
+      border-right: 1px solid #f1f5f9;
+    }
+    .user-stat:last-child { border-right: none; }
+    .user-stat .num { font-size: 20px; font-weight: 900; color: #f97316; }
+    .user-stat .lbl { font-size: 11px; color: #94a3b8; font-weight: 600; margin-top: 2px; }
+
+    .profile-content { max-width: 700px; margin: 0 auto; padding: 20px 16px 80px; }
+
+    .action-bar {
+      display: flex; gap: 10px; margin: 20px 0;
+    }
+
+    .section-card {
+      background: white; border-radius: 16px;
+      border: 1px solid #e2e8f0; margin-bottom: 16px; overflow: hidden;
+    }
+    .section-header {
+      padding: 14px 16px; border-bottom: 1px solid #f1f5f9;
+      font-weight: 800; font-size: 15px; color: #1e293b;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .listings-mini-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+      padding: 14px;
+    }
+    @media (min-width: 480px) {
+      .listings-mini-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .mini-card {
+      border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0;
+      text-decoration: none; color: inherit; display: block;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .mini-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+    .mini-card-img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      background: #f1f5f9; display: flex; align-items: center;
+      justify-content: center; font-size: 28px; color: #cbd5e1;
+    }
+    .mini-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .mini-card-body { padding: 8px; }
+    .mini-card-title {
+      font-size: 12px; font-weight: 700; color: #1e293b;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .mini-card-price { font-size: 12px; font-weight: 800; color: #f97316; margin-top: 2px; }
+
+    .review-item {
+      display: flex; gap: 12px; padding: 14px 16px;
+      border-bottom: 1px solid #f8fafc;
+    }
+    .review-item:last-child { border-bottom: none; }
+    .review-avatar {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: #f97316; color: white; display: flex;
+      align-items: center; justify-content: center; font-weight: 800;
+      overflow: hidden;
+    }
+    .review-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .profile-content { animation: slideUp .3s ease; }
+  </style>
+<script type="application/ld+json" id="userSchema">{}</script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="nav-container" style="overflow:visible;flex-wrap:nowrap">
+  <a href="index.html" class="logo">SomBazar</a>
+  <div class="header-actions">
+    <div id="header-user" style="display:none;align-items:center;gap:8px">
+      <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
+      </a>
+      <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px"></a>
+    </div>
+    <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
+    <a href="post.html" class="btn-post-ad">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+      Post Ad
+    </a>
+  </div>
+</nav>
+
+<!-- HERO SKELETON -->
+<div id="heroSkeleton">
+  <div style="background:linear-gradient(135deg,#f97316,#ea580c);padding:40px 20px 80px;text-align:center">
+    <div style="width:96px;height:96px;border-radius:50%;margin:0 auto 12px" class="skeleton"></div>
+    <div style="width:160px;height:22px;border-radius:8px;margin:0 auto 8px" class="skeleton"></div>
+    <div style="width:120px;height:14px;border-radius:6px;margin:0 auto" class="skeleton"></div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div id="userHero" style="display:none">
+  <div class="user-hero">
+    <div class="user-avatar" id="heroAvatar"></div>
+    <div class="user-name" id="heroName">Loading…</div>
+    <div class="user-meta" id="heroMeta"></div>
+    <div class="user-badges" id="heroBadges"></div>
+  </div>
+  <div class="user-stats">
+    <div class="user-stat">
+      <div class="num" id="statListings">0</div>
+      <div class="lbl">Listings</div>
+    </div>
+    <div class="user-stat">
+      <div class="num" id="statRating">—</div>
+      <div class="lbl">Rating</div>
+    </div>
+    <div class="user-stat">
+      <div class="num" id="statReviews">0</div>
+      <div class="lbl">Reviews</div>
+    </div>
+    <div class="user-stat">
+      <div class="num" id="statMember">—</div>
+      <div class="lbl">Member</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="profile-content">
+
+  <!-- Action Buttons -->
+  <div class="action-bar" id="actionBar" style="display:none">
+    <button onclick="sendMessage()" class="btn btn-primary" style="flex:2;display:flex;align-items:center;justify-content:center;gap:6px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Send Message
+    </button>
+    <button onclick="shareProfile()" class="btn btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Share
+    </button>
+  </div>
+
+  <!-- Listings -->
+  <div class="section-card">
+    <div class="section-header">
+      <span> Active Listings</span>
+      <span id="listingsCount" style="font-size:12px;font-weight:600;color:#94a3b8"></span>
+    </div>
+    <div id="listingsGrid" class="listings-mini-grid">
+      <!-- skeletons -->
+      <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="width:100%;aspect-ratio:4/3" class="skeleton"></div>
+        <div style="padding:8px"><div style="height:14px;border-radius:4px;margin-bottom:6px" class="skeleton"></div><div style="height:12px;width:60%;border-radius:4px" class="skeleton"></div></div>
+      </div>
+      <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="width:100%;aspect-ratio:4/3" class="skeleton"></div>
+        <div style="padding:8px"><div style="height:14px;border-radius:4px;margin-bottom:6px" class="skeleton"></div><div style="height:12px;width:60%;border-radius:4px" class="skeleton"></div></div>
+      </div>
+      <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="width:100%;aspect-ratio:4/3" class="skeleton"></div>
+        <div style="padding:8px"><div style="height:14px;border-radius:4px;margin-bottom:6px" class="skeleton"></div><div style="height:12px;width:60%;border-radius:4px" class="skeleton"></div></div>
+      </div>
+    </div>
+    <div id="noListings" style="display:none;text-align:center;padding:30px;color:#94a3b8;font-size:13px">No active listings yet</div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="section-card">
+    <div class="section-header">
+      <span>⭐ Reviews</span>
+      <span id="reviewsCount" style="font-size:12px;font-weight:600;color:#94a3b8"></span>
+    </div>
+    <div id="reviewsContainer">
+      <div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Loading reviews…</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Mobile nav -->
+<nav class="mobile-bottom-nav">
+  <ul>
+    <li><a href="index.html" class="mob-nav-btn"><span class="mob-icon">🏠</span><span>Home</span></a></li>
+    <li><a href="listings.html" class="mob-nav-btn"><span class="mob-icon"></span><span>Search</span></a></li>
+    <li><a href="post.html" class="mob-nav-btn"><span class="mob-icon">+</span><span>Post</span></a></li>
+    <li><a href="messages.html" class="mob-nav-btn"><span class="mob-icon"></span><span>Messages</span></a></li>
+    <li><a href="profile.html" class="mob-nav-btn"><span class="mob-icon"></span><span>Profile</span></a></li>
+  </ul>
+</nav>
+
+<script>
+// Fallback Auth stub
+window.Auth = window.Auth || {
+  getToken:    () => localStorage.getItem('sb_token') || '',
+  getUser:     () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  isLoggedIn:  () => !!localStorage.getItem('sb_token'),
+  setSession:  () => {},
+  clearSession:() => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+};
+</script>
+<script src="assets/app.js"></script>
+<script>
+const params   = new URLSearchParams(location.search);
+const userId   = parseInt(params.get('id') || '0');
+let   sellerData = null;
+
+if (!userId) {
+  document.body.innerHTML = '<div style="text-align:center;padding:60px;font-size:15px;color:#64748b">User not found. <a href="index.html">Go Home</a></div>';
+}
+
+async function loadProfile() {
+  try {
+    // Kullanıcı bilgilerini listings API üzerinden al
+    const r = await fetch(`api/listings.php?action=list&user_id=${userId}&pageSize=50`);
+    const d = await r.json();
+    const listings = d.success ? (d.data || []) : [];
+
+    // İlk listing'den seller bilgisi al
+    if (listings.length > 0) {
+      const l = listings[0];
+      sellerData = {
+        id:          userId,
+        name:        l.sellerName      || l.seller_name  || 'Seller',
+        avatar:      l.sellerPhoto     || l.seller_photo || null,
+        city:        l.sellerCity      || l.city         || 'Somaliland',
+        verified:    l.sellerVerified  || l.seller_verified || false,
+        memberSince: l.sellerMemberSince || null,
+      };
+    } else {
+      // Listings yok - kullanıcıyı doğrudan çek (auth/me yetersiz, ama user_id ile deneyebiliriz)
+      sellerData = { id: userId, name: 'Seller', avatar: null, city: 'Somaliland', verified: false };
+    }
+
+    renderHero(sellerData, listings.length);
+    renderListings(listings);
+    loadReviews();
+
+    // SEO
+    document.title = `${sellerData.name} — SomBazar`;
+    document.getElementById('ogTitle')?.setAttribute('content', `${sellerData.name} — SomBazar`);
+    document.getElementById('metaDesc')?.setAttribute('content', `View ${sellerData.name}'s listings and reviews on SomBazar`);
+    if (sellerData.avatar) document.getElementById('ogImage')?.setAttribute('content', sellerData.avatar);
+
+  } catch(e) {
+    document.getElementById('heroSkeleton').innerHTML =
+      '<div style="text-align:center;padding:40px;color:#ef4444">Could not load profile</div>';
+  }
+}
+
+function renderHero(s, listingCount) {
+  document.getElementById('heroSkeleton').style.display = 'none';
+  document.getElementById('userHero').style.display = '';
+  document.getElementById('actionBar').style.display = 'flex';
+
+  // Avatar
+  const avatarEl = document.getElementById('heroAvatar');
+  if (s.avatar) {
+    avatarEl.innerHTML = `<img loading="lazy" src="${s.avatar}" alt="${s.name}">`;
+  } else {
+    avatarEl.textContent = (s.name || 'S')[0].toUpperCase();
+  }
+
+  document.getElementById('heroName').textContent = s.name;
+
+  const metaParts = [];
+  if (s.city) metaParts.push(' ' + s.city);
+  if (s.memberSince) metaParts.push('Member since ' + s.memberSince);
+  document.getElementById('heroMeta').textContent = metaParts.join(' · ');
+
+  // Badges
+  const badges = [];
+  if (s.verified) badges.push('✓ Verified');
+  document.getElementById('heroBadges').innerHTML = badges.map(b =>
+    `<span class="user-badge">${b}</span>`
+  ).join('');
+
+  document.getElementById('statListings').textContent = listingCount;
+  // Person schema
+  const _uSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": s.name,
+    "image": s.avatar || '',
+    "address": { "@type": "PostalAddress", "addressLocality": s.city || 'Somaliland' }
+  };
+  const _uSchemaEl = document.getElementById('userSchema');
+  if (_uSchemaEl) _uSchemaEl.textContent = JSON.stringify(_uSchema);
+
+  // Kendi profiline bakıyorsa "Send Message" gizle
+  const me = Auth.getUser();
+  if (me && parseInt(me.id) === userId) {
+    document.getElementById('actionBar').style.display = 'none';
+  }
+}
+
+function renderListings(listings) {
+  const grid = document.getElementById('listingsGrid');
+  const none = document.getElementById('noListings');
+  document.getElementById('listingsCount').textContent = listings.length ? `${listings.length} listings` : '';
+
+  if (!listings.length) {
+    grid.style.display = 'none';
+    none.style.display = '';
+    return;
+  }
+  grid.innerHTML = listings.slice(0, 12).map(l => {
+    const img  = l.images?.[0] || l.image || null;
+    const price = l.price ? `${l.currency || 'USD'} ${Number(l.price).toLocaleString()}` : 'Price negotiable';
+    return `
+      <a href="listing.html?id=${l.id}" class="mini-card">
+        <div class="mini-card-img">
+          ${img ? `<img loading="lazy" src="${img}" alt="${l.title}">` : ''}
+        </div>
+        <div class="mini-card-body">
+          <div class="mini-card-title">${l.title || 'Listing'}</div>
+          <div class="mini-card-price">${price}</div>
+        </div>
+      </a>`;
+  }).join('');
+}
+
+async function loadReviews() {
+  const container = document.getElementById('reviewsContainer');
+  try {
+    const r = await fetch(`api/reviews.php?action=get_seller&seller_id=${userId}`);
+    const d = await r.json();
+    if (!d.success) throw new Error('failed');
+    const { reviews, avg_rating, total } = d.data;
+
+    document.getElementById('statRating').textContent  = avg_rating || '—';
+    document.getElementById('statReviews').textContent = total || 0;
+    document.getElementById('reviewsCount').textContent = total ? `${total} reviews` : '';
+
+    if (!total) {
+      container.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">No reviews yet</div>';
+      return;
+    }
+
+    // Özet bar
+    const starsHtml = (rating, size=14) => [1,2,3,4,5].map(i =>
+      `<span style="color:${i<=Math.round(rating)?'#f59e0b':'#e2e8f0'};font-size:${size}px">★</span>`
+    ).join('');
+
+    const summaryHTML = `
+      <div style="display:flex;align-items:center;gap:16px;padding:14px 16px;background:#fffbeb;border-bottom:1px solid #fef3c7">
+        <div style="text-align:center">
+          <div style="font-size:32px;font-weight:900;color:#f59e0b;line-height:1">${avg_rating}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">${total} review${total!==1?'s':''}</div>
+        </div>
+        <div>
+          ${starsHtml(avg_rating, 18)}
+          <div style="font-size:12px;color:#64748b;margin-top:4px">
+            ${avg_rating >= 4.5 ? ' Excellent Seller' : avg_rating >= 3.5 ? '👍 Good Seller' : ' Average'}
+          </div>
+        </div>
+      </div>`;
+
+    const reviewsHTML = reviews.map(rev => {
+      const date    = new Date(rev.createdAt).toLocaleDateString('en', {year:'numeric',month:'short',day:'numeric'});
+      const avatarEl = rev.reviewerAvatar
+        ? `<img loading="lazy" src="${rev.reviewerAvatar}" style="width:100%;height:100%;object-fit:cover">`
+        : `<span style="font-size:15px;font-weight:800">${(rev.reviewerName||'?')[0].toUpperCase()}</span>`;
+      return `
+        <div class="review-item">
+          <div class="review-avatar">${avatarEl}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+              <div>
+                <div style="font-weight:700;font-size:13px;color:#1e293b">${rev.reviewerName || 'Anonymous'}</div>
+                <div style="margin-top:2px">${starsHtml(rev.rating)}</div>
+              </div>
+              <div style="font-size:11px;color:#94a3b8;white-space:nowrap">${date}</div>
+            </div>
+            ${rev.comment ? `<p style="font-size:13px;color:#475569;margin:6px 0 0;line-height:1.5">${rev.comment}</p>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    container.innerHTML = summaryHTML + reviewsHTML;
+  } catch(e) {
+    container.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:13px;text-align:center">Could not load reviews</div>';
+  }
+}
+
+async function sendMessage() {
+  if (!Auth.isLoggedIn()) {
+    window.location.href = `auth.html?redirect=${encodeURIComponent(location.href)}`;
+    return;
+  }
+  const me = Auth.getUser();
+  if (me && parseInt(me.id) === userId) {
+    showToast('Cannot message yourself', 'error');
+    return;
+  }
+  try {
+    // Varsa ilk listing ile konuşma başlat
+    const r = await fetch('api/messages.php?action=get_or_create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ otherUserId: userId, listingId: null })
+    });
+    const d = await r.json();
+    if (d.success) {
+      window.location.href = `messages.html?conv=${d.data.conversationId}`;
+    } else {
+      window.location.href = 'messages.html';
+    }
+  } catch(e) {
+    window.location.href = 'messages.html';
+  }
+}
+
+function shareProfile() {
+  const url  = location.href;
+  const name = sellerData?.name || 'Seller';
+  if (navigator.share) {
+    navigator.share({ title: `${name} — SomBazar`, url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => showToast('Link copied!', 'success'));
+  }
+}
+
+// Init
+if (userId) {
+  loadProfile();
+  // Navbar
+  document.addEventListener('DOMContentLoaded', () => {
+    const u = Auth.getUser();
+    if (u) {
+      document.getElementById('header-signin').style.display = 'none';
+      const hu = document.getElementById('header-user');
+      hu.style.display = 'flex';
+      const av = hu.querySelector('.header-avatar');
+      if (av) av.textContent = (u.displayName || u.display_name || 'U')[0].toUpperCase();
+    }
+    if (typeof Notif !== 'undefined' && Auth.isLoggedIn()) Notif.init();
+  });
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

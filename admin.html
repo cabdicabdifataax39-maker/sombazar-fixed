@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="csrf-token" content="" id="csrfMeta">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Admin Panel — SomBazar</title>
+  
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
+    .admin-layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+    @media(max-width:768px){.admin-layout{grid-template-columns:1fr}.sidebar{display:none}}
+    /* Sidebar */
+    .sidebar{background:#1e293b;color:white;padding:0;display:flex;flex-direction:column}
+    .sidebar-logo{padding:20px;font-size:18px;font-weight:800;color:white;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:8px}
+    .sidebar-logo span{background:#f97316;padding:3px 8px;border-radius:6px;font-size:12px}
+    .sidebar-nav{padding:16px 0;flex:1}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;transition:all .15s;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);border-left:3px solid transparent}
+    .nav-item:hover{background:rgba(255,255,255,.05);color:white}
+    .nav-item.active{background:rgba(249,115,22,.15);color:#f97316;border-left-color:#f97316}
+    .nav-item .nav-icon{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.nav-item .nav-icon svg{width:16px;height:16px}
+    .nav-badge{margin-left:auto;background:#ef4444;color:white;font-size:10px;font-weight:800;padding:2px 6px;border-radius:10px}
+    .sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,.1);font-size:12px;color:rgba(255,255,255,.4)}
+    /* Main */
+    .main{display:flex;flex-direction:column;overflow:hidden}
+    .topbar{background:white;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0;flex-shrink:0}
+    .topbar-title{font-size:18px;font-weight:800;color:#1e293b}
+    .topbar-user{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#64748b}
+    .topbar-back{font-size:13px;color:#f97316;text-decoration:none;font-weight:700}
+    .content{padding:24px;overflow-y:auto;flex:1}
+    /* Stats cards */
+    .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-bottom:24px}
+    .stat-card{background:white;border-radius:14px;padding:18px;border:1px solid #e2e8f0}
+    .stat-card .num{font-size:28px;font-weight:800;color:#1e293b;line-height:1}
+    .stat-card .lbl{font-size:11px;font-weight:600;color:#64748b;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+    .stat-card .trend{font-size:11px;font-weight:700;margin-top:6px}
+    .stat-card .trend.up{color:#10b981}
+    .stat-card .trend.warn{color:#f59e0b}
+    .stat-card .trend.danger{color:#ef4444}
+    /* Tables */
+    .card{background:white;border-radius:14px;border:1px solid #e2e8f0;overflow:hidden;margin-bottom:20px}
+    .card-header{padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .card-title{font-size:14px;font-weight:800;color:#1e293b}
+    table{width:100%;border-collapse:collapse}
+    th{padding:10px 16px;text-align:left;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #e2e8f0;background:#f8fafc}
+    td{padding:12px 16px;font-size:13px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:#fafbfc}
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    .badge-verified{background:#dcfce7;color:#166534}
+    .badge-pending{background:#fef9c3;color:#854d0e}
+    .badge-rejected{background:#fee2e2;color:#991b1b}
+    .badge-banned{background:#fee2e2;color:#991b1b}
+    .badge-basic{background:#f1f5f9;color:#475569}
+    .badge-premium{background:#fef3c7;color:#92400e}
+    .badge-active{background:#dcfce7;color:#166534}
+    .badge-sold{background:#dbeafe;color:#1e40af}
+    .badge-deleted{background:#f1f5f9;color:#475569}
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer;border:none;transition:all .15s}
+    .btn-primary{background:#f97316;color:white}
+    .btn-primary:hover{background:#ea6a0a}
+    .btn-success{background:#10b981;color:white}
+    .btn-success:hover{background:#059669}
+    .btn-danger{background:#ef4444;color:white}
+    .btn-danger:hover{background:#dc2626}
+    .btn-warning{background:#f59e0b;color:white}
+    .btn-warning:hover{background:#d97706}
+    .btn-ghost{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+    .btn-ghost:hover{background:#e2e8f0}
+    .btn-sm{padding:4px 10px;font-size:11px}
+    /* Forms */
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .form-group{margin-bottom:12px}
+    .form-label{display:block;font-size:12px;font-weight:700;color:#475569;margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+    .form-input{width:100%;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-family:'DM Sans';font-size:13px;outline:none;transition:border .15s}
+    .form-input:focus{border-color:#f97316}
+    select.form-input{cursor:pointer}
+    /* Search bar */
+    .search-bar{display:flex;align-items:center;gap:8px}
+    .search-bar input{border:1.5px solid #e2e8f0;border-radius:8px;padding:7px 12px;font-family:'DM Sans';font-size:13px;outline:none;min-width:200px}
+    .search-bar input:focus{border-color:#f97316}
+    /* Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+    .modal-overlay.open{display:flex}
+    .modal{background:white;border-radius:16px;padding:24px;width:100%;max-width:480px;max-height:80vh;overflow-y:auto}
+    .modal-title{font-size:16px;font-weight:800;margin-bottom:16px;color:#1e293b}
+    /* Avatar */
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:#f97316;color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;overflow:hidden}
+    /* Pagination */
+    .pagination{display:flex;gap:6px;margin-top:16px;justify-content:center}
+    .pagination button{width:32px;height:32px;border-radius:8px;border:1px solid #e2e8f0;background:white;cursor:pointer;font-family:'DM Sans';font-size:12px;font-weight:700}
+    .pagination button.active{background:#f97316;color:white;border-color:#f97316}
+    /* Verification docs */
+    .doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+    .doc-thumb{border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;cursor:pointer}
+    .doc-thumb img{width:100%;height:80px;object-fit:cover;display:block}
+    .doc-thumb .doc-label{font-size:10px;font-weight:700;padding:4px 8px;color:#475569;background:#f8fafc;text-transform:uppercase}
+    /* Chart */
+    .mini-chart{display:flex;align-items:flex-end;gap:4px;height:50px;margin-top:8px}
+    .mini-bar{flex:1;background:#f97316;border-radius:3px 3px 0 0;min-height:4px;position:relative;cursor:default}
+    .mini-bar:hover::after{content:attr(data-val);position:absolute;top:-22px;left:50%;transform:translateX(-50%);background:#1e293b;color:white;font-size:10px;font-weight:700;padding:2px 5px;border-radius:4px;white-space:nowrap}
+  </style>
+  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
+  <script>
+    (function(){
+      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
+      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, {
+        page_title: document.title,
+        page_location: window.location.href,
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+    })();
+  </script>
+  <script>
+    // Dark mode FOUC prevention — must run before DOM
+    (function(){
+      var t=localStorage.getItem('sb_theme')||
+        (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
+<style>
+.skip-link{position:fixed!important;top:-100px!important;left:16px;background:#0f172a;color:#fff;padding:10px 20px;border-radius:0 0 10px 10px;font-size:14px;font-weight:700;z-index:99999;text-decoration:none;transition:top .2s ease;white-space:nowrap}
+.skip-link:focus{top:0!important;outline:3px solid #f97316;outline-offset:2px}
+</style>
+</head>
+
+<script>
+// Tab switching — inline early so onclick works immediately
+var ALL_TABS = ['dashboard','verifications','users','listings','payments','blacklist','log','offers','coupons','affiliates','settings'];
+function showTab(tab) {
+  window.__pendingTab = tab;
+  // Gizle/göster
+  ALL_TABS.forEach(function(t) {
+    var el = document.getElementById('tab-' + t);
+    if (el) el.style.display = 'none';
+  });
+  var active = document.getElementById('tab-' + tab);
+  if (active) active.style.display = '';
+  // Nav güncelle
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.classList.remove('active');
+    var oc = item.getAttribute('onclick') || '';
+    if (oc.indexOf("'" + tab + "'") !== -1) item.classList.add('active');
+  });
+  // İçeriği yükle (loadTabContent daha sonra tanımlanır)
+  if (typeof loadTabContent === 'function') loadTabContent(tab);
+  else window.addEventListener('load', function() { if (typeof loadTabContent === 'function') loadTabContent(tab); });
+}
+</script>
+
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+<div class="admin-layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      SomBazar <span>ADMIN</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="showTab('dashboard')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showTab('verifications')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span> Verifications
+        <span class="nav-badge" id="pendingBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" onclick="showTab('users')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span> Users
+      </div>
+      <div class="nav-item" onclick="showTab('listings')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></span> Listings
+      </div>
+      <div class="nav-item" onclick="showTab('payments')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></span> Payments
+        <span class="nav-badge" id="paymentBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" onclick="showTab('blacklist')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></span> Blacklist
+      </div>
+      <div class="nav-item" onclick="showTab('log')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span> Activity Log
+      </div>
+      <div class="nav-item" onclick="showTab('offers')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span> Offers
+        <span class="nav-badge" id="offerBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" onclick="showTab('coupons')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span> Coupons
+        <span class="nav-badge" id="couponBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" onclick="showTab('settings')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span> Settings
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      Logged in as Admin<br>
+      <a href="index.html" style="color:#f97316;text-decoration:none;font-weight:700;font-size:13px">← Back to Site</a>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="tabTitle">Dashboard</div>
+      <div class="topbar-user">
+        <span id="adminName"></span>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ─────────────────────────────────────── -->
+      <div id="tab-dashboard">
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-card">
+            <div class="num" id="statUsers">…</div>
+            <div class="lbl">Total Users</div>
+            <div class="trend up" id="statUsersWeek">+0 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statVerified">…</div>
+            <div class="lbl">Verified Users</div>
+            <div class="trend warn" id="statPendingVerif">0 pending</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statListings">…</div>
+            <div class="lbl">Active Listings</div>
+            <div class="trend up" id="statListingsWeek">+0 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statPending">…</div>
+            <div class="lbl">Pending Listings</div>
+            <div class="trend warn" id="statPendingTxt">Awaiting review</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statMessages">…</div>
+            <div class="lbl">Total Messages</div>
+            <div class="trend up" id="statConversations">0 conversations</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statPendingPay">…</div>
+            <div class="lbl">Pending Payments</div>
+            <div class="trend warn" id="statPendingPayTxt">Needs review</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statRevenue">…</div>
+            <div class="lbl">Total Revenue</div>
+            <div class="trend up" id="statRevenueTxt">Approved payments</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statNewToday">…</div>
+            <div class="lbl">New Today</div>
+            <div class="trend up" id="statNewTodayTxt">0 listings</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statOffers">…</div>
+            <div class="lbl">Total Offers</div>
+            <div class="trend up" id="statOffersTxt">0 accepted</div>
+          </div>
+          <div class="stat-card">
+            <div class="num" id="statActiveOffers">…</div>
+            <div class="lbl">Active Offers</div>
+            <div class="trend up" id="statActiveOffersTxt">All clear</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-header"><div class="card-title"> Signups (7 days)</div></div>
+            <div style="padding:16px"><div class="mini-chart" id="signupsChart"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"> Listings by Category</div></div>
+            <div style="padding:16px" id="catsChart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VERIFICATIONS ──────────────────────────────────── -->
+      <div id="tab-verifications" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Pending Verifications</div>
+            <button class="btn btn-ghost btn-sm" onclick="loadVerifications()">Refresh</button>
+          </div>
+          <div id="verificationsBody" style="padding:16px">Loading…</div>
+        </div>
+      </div>
+
+      <!-- ── USERS ──────────────────────────────────────────── -->
+      <div id="tab-users" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"> Users</div>
+            <div class="search-bar">
+              <input type="search" id="userSearch" placeholder="Search name, email, phone…" onkeyup="debounce(loadUsers,400)()">
+              <select class="form-input" id="userFilter" onchange="loadUsers()" style="min-width:130px">
+                <option value="">All Users</option>
+                <option value="pending">Pending Verif</option>
+                <option value="verified">Verified</option>
+                <option value="unverified">Unverified</option>
+                <option value="banned">Banned</option>
+              </select>
+            </div>
+          </div>
+          <div id="usersTableWrap">
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+              <thead><tr><th>User</th><th>Phone</th><th>Status</th><th>Badge</th><th>Listings</th><th>Joined</th><th>Actions</th></tr></thead>
+              <tbody id="usersBody"><tr><td colspan="7" style="text-align:center;padding:30px;color:#94a3b8">Loading…</td></tr></tbody>
+            </table></div>
+          </div>
+          <div class="pagination" id="userPagination"></div>
+        </div>
+      </div>
+
+      <!-- ── LISTINGS ───────────────────────────────────────── -->
+      <div id="tab-listings" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"> Listings</div>
+            <div class="search-bar">
+              <input type="search" id="listingSearch" placeholder="Search title, seller…" onkeyup="debounce(loadListingsAdmin,400)()">
+              <select class="form-input" id="listingFilter" onchange="loadListingsAdmin()" style="min-width:120px">
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="rejected">Rejected</option>
+                <option value="sold">Sold</option>
+              </select>
+            </div>
+          </div>
+          <!-- Bulk action toolbar -->
+          <div id="bulkBar" style="display:none;padding:10px 16px;background:#f0f9ff;border-bottom:1px solid #bae6fd;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span id="bulkCount" style="font-size:13px;font-weight:700;color:#0369a1">0 selected</span>
+            <button class="btn btn-success btn-sm" onclick="bulkAction('approve')">Approve All</button>
+            <button class="btn btn-danger btn-sm" onclick="bulkAction('delete')">Delete All</button>
+            <button class="btn btn-sm" style="background:#f1f5f9" onclick="clearBulkSelect()">Clear</button>
+          </div>
+          <div id="listingsTableWrap">
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+              <thead><tr>
+                <th style="width:32px"><input type="checkbox" id="selectAllListings" onchange="toggleSelectAllListings(this)"></th>
+                <th>Listing</th><th>Seller</th><th>Price</th><th>Status</th><th>Views</th><th>Date</th><th>Actions</th>
+              </tr></thead>
+              <tbody id="listingsBody"><tr><td colspan="8" style="text-align:center;padding:30px;color:#94a3b8">Loading…</td></tr></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BLACKLIST ───────────────────────────────────────── -->
+      <div id="tab-blacklist" style="display:none">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><div class="card-title">Add to Blacklist</div></div>
+          <div style="padding:16px">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input class="form-input" id="blPhone" placeholder="+252 61...">
+              </div>
+              <div class="form-group">
+                <label class="form-label">National ID</label>
+                <input class="form-input" id="blNatId" placeholder="ID number">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Reason</label>
+              <input class="form-input" id="blReason" placeholder="e.g. Fraud, fake listings, scam">
+            </div>
+            <button class="btn btn-danger" onclick="addToBlacklist()">Add to Blacklist</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Blacklisted Entries</div></div>
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+            <thead><tr><th>Phone</th><th>National ID</th><th>Reason</th><th>Added By</th><th>Date</th></tr></thead>
+            <tbody id="blacklistBody"><tr><td colspan="5" style="text-align:center;padding:30px;color:#94a3b8">Loading…</td></tr></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- ── PAYMENTS ───────────────────────────────────────── -->
+      <div id="tab-payments" style="display:none">
+        <div class="card">
+          <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+            <div class="card-title"> Payment Requests</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="paymentFilter" onchange="loadPayments()" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 10px;font-family:'DM Sans';font-size:12px">
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+                <option value="all">All</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="loadPayments()">Refresh</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+            <thead><tr><th>User</th><th>Plan</th><th>Amount</th><th>Method</th><th>Reference</th><th>Screenshot</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="paymentsBody"><tr><td colspan="8" style="text-align:center;padding:30px;color:#94a3b8">Loading…</td></tr></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- ── LOG ────────────────────────────────────────────── -->
+      <div id="tab-log" style="display:none">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Activity Log</div></div>
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+            <thead><tr><th>Admin</th><th>Action</th><th>Target</th><th>Note</th><th>Time</th></tr></thead>
+            <tbody id="logBody"><tr><td colspan="5" style="text-align:center;padding:30px;color:#94a3b8">Loading…</td></tr></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Offers Tab -->
+      <div id="tab-offers" style="display:none">
+        <div class="card">
+          <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+            <div class="card-title"> Offer Activity</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="offerStatusFilter" onchange="loadAdminOffers()" style="border:1px solid #e2e8f0;border-radius:8px;padding:5px 10px;font-family:'DM Sans';font-size:12px">
+                <option value="all">All Offers</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+                <option value="countered">Countered</option>
+                <option value="cancelled">Cancelled</option>
+                <option value="expired">Expired</option>
+              </select>
+              <button class="btn btn-ghost btn-sm" onclick="loadAdminOffers()">Refresh</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+            <thead><tr><th>Listing</th><th>Buyer</th><th>Seller</th><th>Amount</th><th>Round</th><th>Status</th><th>Expires/Date</th></tr></thead>
+            <tbody id="offersBody"><tr><td colspan="7" style="text-align:center;padding:30px;color:#94a3b8">Loading…</td></tr></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="tab-settings" style="display:none">
+        <div class="card">
+          <div class="card-header"><div class="card-title">System Settings</div></div>
+          <div style="padding:20px;display:grid;gap:20px;max-width:600px">
+
+            <div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:12px;color:#1e293b">Export Data</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-ghost btn-sm" onclick="exportCSV('users')">⬇ Export Users CSV</button>
+                <button class="btn btn-ghost btn-sm" onclick="exportCSV('listings')">⬇ Export Listings CSV</button>
+                <button class="btn btn-ghost btn-sm" onclick="exportCSV('offers')">⬇ Export Offers CSV</button>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:12px;color:#1e293b">️ Database</div>
+              <div id="dbStats" style="background:#f8fafc;border-radius:10px;padding:14px;font-size:13px;color:#64748b">Loading…</div>
+            </div>
+
+            <div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:12px;color:#1e293b"> Maintenance</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button class="btn btn-ghost btn-sm" onclick="cleanExpired()"> Clear Expired Offers</button>
+                <button class="btn btn-ghost btn-sm" onclick="cleanExpired('sessions')"> Clear Old Sessions</button>
+              </div>
+              <div id="maintenanceMsg" style="margin-top:8px;font-size:12px;color:#10b981"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- User Detail Modal -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal" style="max-width:600px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="modal-title" id="userModalTitle">User Details</div>
+      <button onclick="closeModal('userModal')" style="background:none;border:none;cursor:pointer;font-size:20px;color:#94a3b8">×</button>
+    </div>
+    <div id="userModalBody">Loading…</div>
+  </div>
+</div>
+
+<!-- Ban Modal -->
+<div class="modal-overlay" id="banModal">
+  <div class="modal">
+    <div class="modal-title" id="banModalTitle">Ban User</div>
+    <input type="hidden" id="banUserId">
+    <div class="form-group">
+      <label class="form-label">Reason for ban</label>
+      <input class="form-input" id="banReason" placeholder="e.g. Fraud, fake account, spam...">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal('banModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmBan()">Confirm Ban</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Listing Modal -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal">
+    <div class="modal-title">Reject Listing</div>
+    <input type="hidden" id="rejectListingId">
+    <div class="form-group">
+      <label class="form-label">Reason (shown to seller)</label>
+      <input class="form-input" id="rejectNote" placeholder="e.g. Wrong category, inappropriate content...">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal('rejectModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmReject()">Reject Listing</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Fallback: app.js yüklenemezse Auth crash'i önle
+window.Auth = window.Auth || {
+  getToken: () => localStorage.getItem('sb_token') || '',
+  getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  isLoggedIn: () => !!localStorage.getItem('sb_token'),
+  isAdmin:  () => { try { const u = JSON.parse(localStorage.getItem('sb_user')); return u && !!u.isAdmin; } catch(e) { return false; } },
+  setSession: () => {},
+  clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+};
+window.API = window.API || {};
+</script>
+  <script src="assets/app.min.js"></script>
+<script>
+// ── Kupon Yönetimi ─────────────────────────────────────────
+function toggleCouponForm() {
+  const f = document.getElementById('couponForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+
+async function loadCoupons() {
+  const list = document.getElementById('couponList');
+  try {
+    const r = await fetch('api/admin.php?action=get_coupons', { headers: adminHeaders() });
+    const d = await r.json();
+    if (!d.success || !d.data.coupons.length) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8">No coupons yet.</div>';
+      return;
+    }
+    list.innerHTML = '<table style="width:100%;border-collapse:collapse">' +
+      '<thead><tr style="background:#f8fafc;font-size:12px;color:#64748b">' +
+      '<th style="padding:10px 14px;text-align:left">Code</th><th style="padding:10px;text-align:left">Type</th><th style="padding:10px;text-align:left">Value</th><th style="padding:10px;text-align:left">Uses</th><th style="padding:10px;text-align:left">Expires</th><th style="padding:10px;text-align:left">Status</th><th style="padding:10px;text-align:left">Actions</th>' +
+      '</tr></thead><tbody>' +
+      d.data.coupons.map(cp => `
+        <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
+          <td style="padding:12px 14px;font-family:monospace;font-weight:700">${escHTML(cp.code)}</td>
+          <td style="padding:12px 10px;text-transform:capitalize">${cp.type}</td>
+          <td style="padding:12px 10px">${cp.type === 'percent' ? cp.value + '%' : '$' + cp.value}</td>
+          <td style="padding:12px 10px">${cp.uses_count}${cp.max_uses > 0 ? '/' + cp.max_uses : ''}</td>
+          <td style="padding:12px 10px;color:#94a3b8">${cp.expires_at ? new Date(cp.expires_at).toLocaleDateString() : '∞'}</td>
+          <td style="padding:12px 10px"><span style="background:${cp.is_active ? '#f0fdf4' : '#f1f5f9'};color:${cp.is_active ? '#16a34a' : '#94a3b8'};padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700">${cp.is_active ? 'Active' : 'Inactive'}</span></td>
+          <td style="padding:12px 10px;display:flex;gap:6px">
+            <button onclick="toggleCoupon(${cp.id})" style="background:#f1f5f9;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">${cp.is_active ? 'Disable' : 'Enable'}</button>
+            <button onclick="deleteCoupon(${cp.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Delete</button>
+          </td>
+        </tr>`).join('') +
+      '</tbody></table>';
+  } catch(e) { list.innerHTML = `<div style="color:#ef4444">${e.message}</div>`; }
+}
+
+async function createCoupon() {
+  const code  = document.getElementById('newCouponCode').value.trim().toUpperCase();
+  const type  = document.getElementById('newCouponType').value;
+  const value = parseFloat(document.getElementById('newCouponValue').value);
+  const uses  = parseInt(document.getElementById('newCouponUses').value) || 0;
+  const exp   = document.getElementById('newCouponExpiry').value;
+  if (!code || !value) return showAdminToast('Code and value required', 'error');
+  try {
+    const r = await fetch('api/admin.php?action=create_coupon', {
+      method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, type, value, max_uses: uses, expires_at: exp || null })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+    showAdminToast('Coupon ' + code + ' created!', 'success');
+    document.getElementById('couponForm').style.display = 'none';
+    loadCoupons();
+  } catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+async function toggleCoupon(id) {
+  const r = await fetch('api/admin.php?action=toggle_coupon&id=' + id, { headers: adminHeaders() });
+  const d = await r.json();
+  if (d.success) loadCoupons();
+}
+
+async function deleteCoupon(id) {
+  if (!confirm('Delete this coupon?')) return;
+  const r = await fetch('api/admin.php?action=delete_coupon&id=' + id, { headers: adminHeaders() });
+  const d = await r.json();
+  if (d.success) { showAdminToast('Deleted', 'success'); loadCoupons(); }
+}
+
+// ── Affiliate Yönetimi ─────────────────────────────────────
+async function loadAffiliates() {
+  const list = document.getElementById('affiliateList');
+  try {
+    const r = await fetch('api/admin.php?action=get_affiliates', { headers: adminHeaders() });
+    const d = await r.json();
+    if (!d.success || !d.data.affiliates.length) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8">No affiliates yet.</div>';
+      return;
+    }
+    list.innerHTML = '<table style="width:100%;border-collapse:collapse">' +
+      '<thead><tr style="background:#f8fafc;font-size:12px;color:#64748b">' +
+      '<th style="padding:10px 14px;text-align:left">User</th><th style="padding:10px;text-align:left">Ref Code</th><th style="padding:10px;text-align:left">Referrals</th><th style="padding:10px;text-align:left">Earned</th><th style="padding:10px;text-align:left">Pending</th><th style="padding:10px;text-align:left">Actions</th>' +
+      '</tr></thead><tbody>' +
+      d.data.affiliates.map(a => `
+        <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
+          <td style="padding:12px 14px"><b>${escHTML(a.display_name)}</b><br><span style="color:#94a3b8;font-size:11px">${escHTML(a.email)}</span></td>
+          <td style="padding:12px 10px;font-family:monospace;font-weight:700;color:#f97316">${escHTML(a.ref_code)}</td>
+          <td style="padding:12px 10px">${a.total_referrals}</td>
+          <td style="padding:12px 10px">$${parseFloat(a.total_earned).toFixed(2)}</td>
+          <td style="padding:12px 10px;color:${a.pending_payout > 0 ? '#f97316' : '#94a3b8'}">$${parseFloat(a.pending_payout).toFixed(2)}</td>
+          <td style="padding:12px 10px">
+            ${a.pending_payout > 0 ? `<button onclick="markAffiliatePaid(${a.id},${a.pending_payout})" style="background:#f0fdf4;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Mark Paid</button>` : '—'}
+          </td>
+        </tr>`).join('') +
+      '</tbody></table>';
+  } catch(e) { list.innerHTML = `<div style="color:#ef4444">${e.message}</div>`; }
+}
+
+async function markAffiliatePaid(id, amount) {
+  if (!confirm(`Mark $${amount} as paid to this affiliate?`)) return;
+  const r = await fetch('api/admin.php?action=affiliate_payout', {
+    method:'POST', headers:{...adminHeaders(),'Content-Type':'application/json'},
+    body: JSON.stringify({ affiliate_id: id, amount })
+  });
+  const d = await r.json();
+  if (d.success) { showAdminToast('Payout recorded', 'success'); loadAffiliates(); }
+  else { showAdminToast(d.error || 'Failed', 'error'); }
+}
+
+</script>
+<script>
+// Check admin auth
+if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=admin.html'; }
+else if (!Auth.isAdmin()) {
+  // Not an admin - show error and redirect
+  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:DM Sans,sans-serif;flex-direction:column;gap:16px"><div style="font-size:24px;color:#ef4444">&#x26D4;</div><h2 style="color:#1e293b">Admin Access Required</h2><p style="color:#64748b">You do not have permission to access this page.</p><a href="index.html" style="background:#f97316;color:white;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:700">← Go Back</a></div>';
+  throw new Error('Not admin');
+}
+
+let currentTab = 'dashboard';
+let userPage   = 1;
+
+// ═══════════════════════════════════════════════════════════
+//  Tab Navigasyon
+// ═══════════════════════════════════════════════════════════
+
+function loadTabContent(tab) {
+  switch(tab) {
+    case 'dashboard':     loadDashboard();    break;
+    case 'verifications': loadVerifications();break;
+    case 'users':         loadUsers();        break;
+    case 'listings':      loadListings();     break;
+    case 'payments':      loadPayments();     break;
+    case 'blacklist':     loadBlacklist();    break;
+    case 'log':           loadLog();          break;
+    case 'offers':        loadOffers();       break;
+    case 'coupons':       loadCoupons();      break;
+    case 'affiliates':    loadAffiliates();   break;
+    case 'settings':      loadSettings();     break;
+  }
+}
+
+
+
+// Set admin name
+const u = Auth.getUser();
+if (u) document.getElementById('adminName').textContent = u.displayName || 'Admin';
+
+const API_ADMIN = 'api/admin.php';
+
+let _csrfToken = null;
+async function getCsrfToken() {
+  if (_csrfToken) return _csrfToken;
+  try {
+    const r = await fetch(`${API_ADMIN}?action=csrf_token`, {
+      headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('sb_token') || '') }
+    });
+    const d = await r.json();
+    if (d.success) { _csrfToken = d.data.csrf_token; return _csrfToken; }
+  } catch(e) {}
+  return '';
+}
+
+async function adminFetch(action, body = null) {
+  const token = localStorage.getItem('sb_token') || (typeof Auth !== 'undefined' && Auth.getToken ? Auth.getToken() : '') || '';
+  if (!token) {
+    window.location.href = 'auth.html?redirect=admin.html';
+    throw new Error('Not logged in');
+  }
+  const headers = { 'Content-Type':'application/json', 'Authorization':'Bearer ' + token };
+  // POST isteklerine CSRF token ekle
+  if (body) {
+    const csrf = await getCsrfToken();
+    if (csrf) headers['X-CSRF-Token'] = csrf;
+  }
+  const opts = { headers };
+  if (body) { opts.method = 'POST'; opts.body = JSON.stringify(body); }
+  const r = await fetch(`${API_ADMIN}?action=${action}`, opts);
+  const txt = await r.text();
+  let d;
+  try { d = JSON.parse(txt); } catch(e) { throw new Error('Server error'); }
+  // CSRF token expire olduysa yenile ve tekrar dene
+  if (!d.success && d.error && d.error.includes('CSRF')) {
+    _csrfToken = null;
+    const csrf2 = await getCsrfToken();
+    headers['X-CSRF-Token'] = csrf2;
+    const r2 = await fetch(`${API_ADMIN}?action=${action}`, {...opts, headers});
+    const d2 = await r2.json();
+    if (!d2.success) throw new Error(d2.error || 'Failed');
+    return d2.data;
+  }
+  if (!d.success) throw new Error(d.error || 'Failed');
+  return d.data;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  Tab İçerik Yükleme Fonksiyonları
+// ═══════════════════════════════════════════════════════════
+function adminHeaders() {
+  return { 'Authorization': 'Bearer ' + Auth.getToken(), 'Content-Type': 'application/json' };
+}
+
+function escHTML(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showAdminToast(msg, type='success') {
+  if (window.showToast) { showToast(msg, type); return; }
+  const colors = { success:'#16a34a', error:'#dc2626', info:'#0ea5e9' };
+  const t = document.createElement('div');
+  t.style.cssText = `position:fixed;bottom:24px;right:24px;background:${colors[type]||colors.success};color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:99999;font-family:DM Sans`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+async function loadDashboard() {
+  const content = document.getElementById('tab-dashboard');
+  if (!content) return;
+  try {
+    const d = await adminFetch('stats');
+    const s = d.stats || d || {};
+    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val ?? 0; };
+    set('statUsers',        s.total_users ?? 0);
+    set('statVerified',     s.verified_users ?? 0);
+    set('statListings',     s.active_listings ?? 0);
+    set('statPending',      s.pending_listings ?? 0);
+    set('statMessages',     s.total_messages ?? 0);
+    set('statRevenue',      '$' + (s.total_revenue ?? 0));
+    set('statPendingPay',   s.pending_payments ?? 0);
+    set('statNewToday',     s.new_users_today ?? 0);
+    set('statOffers',       s.total_offers ?? 0);
+    set('statActiveOffers', s.pending_offers ?? 0);
+    // Trend/subtitle değerleri
+    set('statUsersWeek',    '+' + (s.new_users_week ?? 0) + ' this week');
+    set('statPendingVerif', (s.pending_verif ?? 0) + ' pending');
+    set('statListingsWeek', '+' + (s.new_listings_week ?? 0) + ' this week');
+    set('statPendingTxt',   (s.pending_listings ?? 0) > 0 ? 'Awaiting review' : 'All clear');
+    set('statConversations',(s.total_conversations ?? 0) + ' conversations');
+    set('statPendingPayTxt',(s.pending_payments ?? 0) > 0 ? 'Needs review' : 'All clear');
+    set('statRevenueTxt',   'Approved payments');
+    set('statNewTodayTxt',  (s.new_listings_today ?? 0) + ' listings');
+    set('statOffersTxt',    (s.accepted_offers ?? 0) + ' accepted');
+    set('statActiveOffersTxt',(s.pending_offers ?? 0) > 0 ? 'Pending response' : 'All clear');
+    // Charts
+    renderSignupsChart(s.signups_chart || []);
+    renderCatsChart(s.categories || []);
+  } catch(e) { console.warn('Dashboard stats error:', e.message); }
+}
+
+
+function renderSignupsChart(data) {
+  const el = document.getElementById('signupsChart');
+  if (!el) return;
+  if (!data || !data.length) {
+    el.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:13px;padding:20px">No signups in last 7 days</div>';
+    return;
+  }
+  const max = Math.max(...data.map(d => d.count), 1);
+  el.innerHTML = `<div style="display:flex;align-items:flex-end;gap:6px;height:80px;padding-top:8px">
+    ${data.map(d => {
+      const h = Math.round((d.count / max) * 72);
+      const label = new Date(d.day).toLocaleDateString('en', {weekday:'short'});
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+        <div style="font-size:10px;font-weight:700;color:#0f172a">${d.count}</div>
+        <div style="width:100%;height:${h}px;background:#f97316;border-radius:4px 4px 0 0;min-height:4px"></div>
+        <div style="font-size:10px;color:#94a3b8">${label}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderCatsChart(data) {
+  const el = document.getElementById('catsChart');
+  if (!el) return;
+  if (!data || !data.length) {
+    el.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:13px;padding:20px">No active listings</div>';
+    return;
+  }
+  const total = data.reduce((s, d) => s + d.count, 0);
+  const colors = ['#f97316','#3b82f6','#10b981','#8b5cf6','#f59e0b','#ef4444','#06b6d4','#ec4899'];
+  el.innerHTML = data.slice(0, 8).map((d, i) => {
+    const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="width:10px;height:10px;border-radius:50%;background:${colors[i % colors.length]};flex-shrink:0"></div>
+      <div style="flex:1;font-size:12px;font-weight:600;color:#1e293b;text-transform:capitalize">${d.category}</div>
+      <div style="width:80px;height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${colors[i % colors.length]};border-radius:3px"></div>
+      </div>
+      <div style="font-size:11px;font-weight:700;color:#64748b;width:28px;text-align:right">${d.count}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadVerifications() {
+  const list = document.getElementById('verificationsBody');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8">Loading…</div>';
+  try {
+    const d = await adminFetch('verifications');
+    const items = Array.isArray(d) ? d : (d.verifications || []);
+    if (!items.length) { list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8">No pending verifications.</div>'; return; }
+    list.innerHTML = items.map(v => `
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div>
+          <div style="font-weight:700;font-size:14px">${escHTML(v.displayName||v.display_name)}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px">${escHTML(v.email)} · ID #${v.id}</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px">Submitted: ${new Date(v.createdAt||v.created_at||Date.now()).toLocaleDateString()}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="verifyUser(${v.id},'approved')" style="background:#dcfce7;color:#16a34a;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">✓ Approve</button>
+          <button onclick="verifyUser(${v.id},'rejected')" style="background:#fef2f2;color:#dc2626;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer">✗ Reject</button>
+        </div>
+      </div>`).join('');
+  } catch(e) { list.innerHTML = `<div style="color:#ef4444;padding:16px">${e.message}</div>`; }
+}
+
+async function verifyUser(id, status) {
+  // PHP expects 'action': 'approve'|'reject' (not 'status': 'approved'|'rejected')
+  const action = status === 'approved' ? 'approve' : 'reject';
+  try {
+    await adminFetch('verify_user', { user_id: id, action });
+    showAdminToast(action === 'approve' ? 'User approved ✓' : 'User rejected', action === 'approve' ? 'success' : 'error');
+    loadVerifications();
+  } catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+async function loadUsers() {
+  const tbody = document.getElementById('usersBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
+  try {
+    const search = document.getElementById('userSearch')?.value || '';
+    const filter = document.getElementById('userFilter')?.value || '';
+    const d = await adminFetch(`users&q=${encodeURIComponent(search)}&status=${filter}&page=${userPage}`);
+    const users = d.users || [];
+    if (!users.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8">No users found.</td></tr>'; return; }
+    tbody.innerHTML = users.map(u => `
+      <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
+        <td style="padding:12px 16px"><b>${escHTML(u.display_name||u.displayName)}</b><br><span style="color:#94a3b8;font-size:11px">#${u.id}</span></td>
+        <td style="padding:12px 10px">${escHTML(u.email)}</td>
+        <td style="padding:12px 10px">${escHTML(u.phone||'—')}</td>
+        <td style="padding:12px 10px">
+          <span style="display:inline-flex;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${u.verified?'#dcfce7':'#fef9c3'};color:${u.verified?'#166534':'#854d0e'}">
+            ${u.verified?'✓ Verified':'Pending'}
+          </span>
+        </td>
+        <td style="padding:12px 10px;text-transform:capitalize">${escHTML(u.plan||'free')}</td>
+        <td style="padding:12px 10px">
+          <button onclick="${u.banned ? `unbanUser(${u.id})` : `openBanModal(${u.id})`}" style="background:${u.banned?'#dcfce7':'#fef2f2'};color:${u.banned?'#16a34a':'#dc2626'};border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">
+            ${u.banned?'Unban':'Ban'}
+          </button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
+}
+
+function openBanModal(id) {
+  document.getElementById('banUserId').value = id;
+  document.getElementById('banReason').value = '';
+  document.getElementById('banModalTitle').textContent = 'Ban User #' + id;
+  document.getElementById('banModal').classList.add('open');
+}
+
+async function unbanUser(id) {
+  if (!confirm('Unban this user?')) return;
+  try {
+    await adminFetch('ban_user', { user_id: id, ban: false, reason: '' });
+    showAdminToast('User unbanned', 'success');
+    loadUsers();
+  } catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+async function confirmBan() {
+  const id     = parseInt(document.getElementById('banUserId').value);
+  const reason = document.getElementById('banReason').value.trim();
+  if (!reason) { alert('Please enter a ban reason.'); return; }
+  try {
+    await adminFetch('ban_user', { user_id: id, ban: true, reason });
+    closeModal('banModal');
+    showAdminToast('User banned', 'success');
+    loadUsers();
+  } catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
+}
+
+async function loadListings() {
+  const tbody = document.getElementById('listingsBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
+  try {
+    const filter = document.getElementById('listingFilter')?.value || '';
+    const d = await adminFetch(`listings&status=${filter}`);
+    const items = d.listings || [];
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">No listings.</td></tr>'; return; }
+    tbody.innerHTML = items.map(l => `
+      <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
+        <td style="padding:12px 16px"><a href="listing.html?id=${l.id}" target="_blank" style="font-weight:700;color:#f97316;text-decoration:none">${escHTML(l.title)}</a><br><span style="color:#94a3b8;font-size:11px">#${l.id} · ${escHTML(l.category)}</span></td>
+        <td style="padding:12px 10px">${escHTML(l.seller||'—')}</td>
+        <td style="padding:12px 10px;font-weight:700">$${l.price}</td>
+        <td style="padding:12px 10px"><span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${l.status==='active'?'#dcfce7':'#fef9c3'};color:${l.status==='active'?'#166534':'#854d0e'}">${l.status}</span></td>
+        <td style="padding:12px 10px">
+          <button onclick="approveListing(${l.id})" style="background:#dcfce7;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px">Approve</button>
+          <button onclick="deleteListing(${l.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Delete</button>
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="5" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
+}
+
+async function approveListing(id) {
+  try { await adminFetch('approve_listing', { listing_id: id }); showAdminToast('Listing approved'); loadListings(); }
+  catch(e) { showAdminToast(e.message, 'error'); }
+}
+async function deleteListing(id) {
+  if (!confirm('Delete this listing permanently?')) return;
+  try { await adminFetch('delete_listing', { listing_id: id }); showAdminToast('Listing deleted'); loadListings(); }
+  catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+async function loadPayments() {
+  const tbody = document.getElementById('paymentsBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
+  try {
+    const d = await adminFetch('payments');
+    const items = d.payments || [];
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">No payments.</td></tr>'; return; }
+    tbody.innerHTML = items.map(p => `
+      <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
+        <td style="padding:12px 16px">${escHTML(p.userName||'—')}<br><span style="color:#94a3b8;font-size:11px">${escHTML(p.userEmail||'')}</span></td>
+        <td style="padding:12px 10px;text-transform:capitalize;font-weight:700">${escHTML(p.plan)}</td>
+        <td style="padding:12px 10px;font-weight:700">$${p.amount}</td>
+        <td style="padding:12px 10px"><span style="font-family:monospace;font-size:12px">${escHTML(p.referenceCode)}</span></td>
+        <td style="padding:12px 10px">
+          ${p.status==='pending'?`
+          <button onclick="approvePayment(${p.id})" style="background:#dcfce7;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px">Approve</button>
+          <button onclick="rejectPayment(${p.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Reject</button>`
+          : `<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${p.status==='approved'?'#dcfce7':'#fef2f2'};color:${p.status==='approved'?'#166534':'#dc2626'}">${p.status}</span>`}
+        </td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="5" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
+}
+
+async function approvePayment(id) {
+  try { await adminFetch('approve_payment', { payment_id: id }); showAdminToast('Payment approved ✓', 'success'); loadPayments(); }
+  catch(e) { showAdminToast(e.message, 'error'); }
+}
+async function rejectPayment(id) {
+  if (!confirm('Reject this payment?')) return;
+  try { await adminFetch('reject_payment', { payment_id: id }); showAdminToast('Payment rejected'); loadPayments(); }
+  catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+async function loadBlacklist() {
+  const list = document.getElementById('blacklistBody');
+  if (!list) return;
+  list.innerHTML = '<tr><td colspan="5" style="padding:20px;color:#94a3b8;text-align:center">Loading…</td></tr>';
+  try {
+    const d = await adminFetch('blacklist');
+    const items = Array.isArray(d) ? d : (d.blacklist || []);
+    if (!items.length) { list.innerHTML = '<tr><td colspan="5" style="padding:20px;color:#94a3b8;text-align:center">Blacklist is empty.</td></tr>'; return; }
+    list.innerHTML = items.map(b => `<tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
+        <td style="padding:10px 16px">${escHTML(b.phone||'—')}</td>
+        <td style="padding:10px">${escHTML(b.national_id||'—')}</td>
+        <td style="padding:10px;color:#64748b">${escHTML(b.reason||'—')}</td>
+        <td style="padding:10px;color:#94a3b8;font-size:11px">${escHTML(b.added_by_name||'Admin')}</td>
+        <td style="padding:10px"><button onclick="removeBlacklist(${b.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Remove</button></td>
+      </tr>`).join('');
+  } catch(e) { list.innerHTML = `<tr><td colspan="5" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
+}
+
+async function removeBlacklist(id) {
+  try { await adminFetch('remove_blacklist', { id }); showAdminToast('Removed from blacklist'); loadBlacklist(); }
+  catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+async function addToBlacklist() {
+  const phone  = document.getElementById('blPhone')?.value.trim();
+  const natId  = document.getElementById('blNatId')?.value.trim();
+  const reason = document.getElementById('blReason')?.value.trim();
+  if (!phone && !natId) return showAdminToast('Enter phone or national ID', 'error');
+  if (!reason) return showAdminToast('Reason is required', 'error');
+  try { await adminFetch('add_blacklist', { phone, national_id: natId, reason }); showAdminToast('Added to blacklist'); loadBlacklist(); }
+  catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+async function loadLog() {
+  const list = document.getElementById('logBody');
+  if (!list) return;
+  list.innerHTML = '<div style="padding:20px;color:#94a3b8;text-align:center">Loading…</div>';
+  try {
+    const d = await adminFetch('log');
+    const items = Array.isArray(d) ? d : (d.log || []);
+    if (!items.length) { list.innerHTML = '<div style="padding:20px;color:#94a3b8;text-align:center">No log entries.</div>'; return; }
+    list.innerHTML = items.map(l => `
+      <div style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:12px;display:flex;gap:16px">
+        <span style="color:#94a3b8;flex-shrink:0">${new Date(l.created_at).toLocaleString()}</span>
+        <span style="font-weight:600;text-transform:uppercase;font-size:10px;padding:2px 7px;border-radius:4px;background:#f1f5f9;flex-shrink:0">${escHTML(l.action)}</span>
+        <span style="color:#475569">${escHTML(l.note||'')}</span>
+      </div>`).join('');
+  } catch(e) { list.innerHTML = `<div style="color:#ef4444;padding:16px">${e.message}</div>`; }
+}
+
+async function loadOffers() {
+  const tbody = document.getElementById('offersBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
+  try {
+    const d = await adminFetch('all_offers');
+    const items = d.offers || [];
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">No offers.</td></tr>'; return; }
+    tbody.innerHTML = items.map(o => `
+      <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
+        <td style="padding:12px 16px">#${o.id}</td>
+        <td style="padding:12px 10px">${escHTML(o.buyerName||'—')}</td>
+        <td style="padding:12px 10px"><a href="listing.html?id=${o.listingId}" target="_blank" style="color:#f97316">${escHTML(o.listingTitle||'Listing #'+o.listingId)}</a></td>
+        <td style="padding:12px 10px;font-weight:700">$${o.amount}</td>
+        <td style="padding:12px 10px"><span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#f1f5f9;color:#475569">${o.status}</span></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="5" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
+}
+
+async function loadSettings() {
+  const content = document.getElementById('tab-settings');
+  if (!content) return;
+  // Load DB stats
+  try {
+    const d = await adminFetch('stats');
+    const s = d.stats || d || {};
+    const dbEl = document.getElementById('dbStats');
+    if (dbEl) {
+      dbEl.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><b>${s.total_users ?? '—'}</b> users</div>
+          <div><b>${s.total_listings ?? '—'}</b> listings</div>
+          <div><b>${s.total_messages ?? '—'}</b> messages</div>
+          <div><b>${s.total_revenue !== undefined ? '$'+s.total_revenue : '—'}</b> revenue</div>
+        </div>`;
+    }
+  } catch(e) {
+    const dbEl = document.getElementById('dbStats');
+    if (dbEl) dbEl.textContent = 'Could not load stats.';
+  }
+}
+
+// ── Sayfa başlangıçta dashboard'u yükle ─────────────────────
+
+// ── Admin Yardımcı Fonksiyonlar (auto-generated) ──────────
+
+function logout() {
+  if (window.Auth) Auth.clearSession();
+  else { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+  window.location.href = 'auth.html';
+}
+
+function exportCSV(type) {
+  const token = (window.Auth ? Auth.getToken() : localStorage.getItem('sb_token')) || '';
+  window.open('api/admin.php?action=export_csv&type=' + encodeURIComponent(type) + '&token=' + token, '_blank');
+}
+
+async function cleanExpired() {
+  if (!confirm('Clean expired data?')) return;
+  try { await adminFetch('clean'); showAdminToast('Cleanup complete', 'success'); loadOffers(); }
+  catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+var _bulkSelected = new Set();
+function clearBulkSelect() {
+  _bulkSelected.clear();
+  document.querySelectorAll('.bulk-cb:checked').forEach(function(cb) { cb.checked = false; });
+  var bar = document.getElementById('bulkBar');
+  if (bar) bar.style.display = 'none';
+}
+
+async function bulkAction(action) {
+  var ids = Array.from(_bulkSelected);
+  if (!ids.length) { showAdminToast('Nothing selected', 'info'); return; }
+  if (!confirm(action + ' ' + ids.length + ' listings?')) return;
+  try {
+    for (var i = 0; i < ids.length; i++) {
+      if (action === 'approve') await adminFetch('approve_listing', { listing_id: ids[i] });
+      else if (action === 'delete') await adminFetch('delete_listing', { listing_id: ids[i] });
+    }
+    clearBulkSelect(); loadListings();
+    showAdminToast(ids.length + ' listings ' + action + 'd', 'success');
+  } catch(e) { showAdminToast(e.message, 'error'); }
+}
+
+function confirmReject() {
+  var id = window._rejectListingId;
+  var reason = (document.getElementById('rejectReason') || {}).value || '';
+  if (!id) return;
+  adminFetch('reject_listing', { listing_id: id, reason: reason })
+    .then(function() { showAdminToast('Listing rejected', 'success'); loadListings(); hideModal('rejectModal'); })
+    .catch(function(e) { showAdminToast(e.message, 'error'); });
+}
+
+function loadAdminOffers() { if (typeof loadOffers === 'function') loadOffers(); }
+
+function hideModal(id) {
+  var el = document.getElementById(id);
+  if (el) el.style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  showTab('dashboard');
+});
+
+</script>
+    <!-- Kupon Yönetimi -->
+    <div id="tab-coupons" class="tab-pane" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2 style="font-size:18px;font-weight:800">Coupon Codes</h2>
+        <button onclick="toggleCouponForm()" style="background:#f97316;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">+ New Coupon</button>
+      </div>
+
+      <!-- Yeni kupon formu -->
+      <div id="couponForm" style="display:none;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:20px">
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">Create Coupon</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Code *</label>
+            <input id="newCouponCode" placeholder="SAVE20" maxlength="30" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px;text-transform:uppercase">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Type</label>
+            <select id="newCouponType" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px">
+              <option value="percent">Percent (%)</option>
+              <option value="fixed">Fixed ($)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Value *</label>
+            <input id="newCouponValue" type="number" placeholder="20" min="1" max="100" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Max Uses (0=unlimited)</label>
+            <input id="newCouponUses" type="number" value="0" min="0" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Expires At</label>
+            <input id="newCouponExpiry" type="date" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px">
+          </div>
+        </div>
+        <button onclick="createCoupon()" style="background:#0f172a;color:#fff;border:none;border-radius:10px;padding:9px 24px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">Create Coupon</button>
+      </div>
+
+      <!-- Kupon listesi -->
+      <div id="couponList"><div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div></div>
+    </div>
+
+    <!-- Affiliate Yönetimi -->
+    <div id="tab-affiliates" class="tab-pane" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2 style="font-size:18px;font-weight:800">Affiliates</h2>
+      </div>
+      <div id="affiliateList"><div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div></div>
+    </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!-- HEADER SNIPPET - paste inside pages -->
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+
+    <form class="header-search" id="headerSearchForm">
+      <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…">
+      <button type="submit" class="header-search-btn" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </form>
+
+    <div class="header-actions">
+      <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
+      <div id="header-user" style="display:none;align-items:center;gap:8px">
+        <a href="messages.html" class="icon-btn" aria-label="Messages">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </a>
+        <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px;width:32px;height:32px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f97316;color:white;flex-shrink:0;padding:0"></a>
+      </div>
+      <a href="post.html" class="btn-post-ad">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Post Ad
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav">
+  <ul>
+    <li><a href="index.html" class="mob-nav-btn"><span class="mob-icon">🏠</span><span>Home</span></a></li>
+    <li><a href="listings.html" class="mob-nav-btn"><span class="mob-icon">🔍</span><span>Listings</span></a></li>
+    <li><a href="post.html" class="mob-nav-btn"><span class="mob-icon">➕</span><span>Post</span></a></li>
+    <li><a href="messages.html" class="mob-nav-btn"><span class="mob-icon">💬</span><span>Messages</span></a></li>
+    <li><a href="profile.html" class="mob-nav-btn"><span class="mob-icon">👤</span><span>Profile</span></a></li>
+  </ul>
+</nav>

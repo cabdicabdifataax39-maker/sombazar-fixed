@@ -1,0 +1,24 @@
+# Block ALL script execution in uploads directory
+# This prevents malicious file upload attacks
+
+# Deny PHP execution
+<FilesMatch "\.(php|php3|php4|php5|php7|phtml|phar|pl|py|cgi|sh)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Apache 2.4+
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(php|php3|php4|php5|php7|phtml|phar|pl|py|cgi|sh)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+# Also block via handler
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
+
+# Force all files as static
+Options -ExecCGI
+AddHandler default-handler .php .php3 .php4 .php5 .php7 .phtml

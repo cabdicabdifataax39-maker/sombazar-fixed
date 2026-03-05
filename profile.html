@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="csrf-token" content="" id="csrfMeta">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+    <!-- Apple PWA Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SomBazar">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Profile — SomBazar</title>
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
+  <script>
+    (function(){
+      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
+      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, {
+        page_title: document.title,
+        page_location: window.location.href,
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+    })();
+  </script>
+  <script>
+    // Dark mode FOUC prevention — must run before DOM
+    (function(){
+      var t=localStorage.getItem('sb_theme')||
+        (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+    <div class="header-actions">
+      <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
+      <div id="header-user" style="display:none;align-items:center;gap:8px">
+        <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
+        </a>
+        <a href="profile.html?tab=offers" class="icon-btn" aria-label="Offers" style="position:relative" id="offerNavBtn" title="My Offers">
+          
+          <span id="offerNavBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#f97316;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
+        </a>
+        <!-- Notification Bell -->
+        <div style="position:relative" id="notifBellWrap">
+          <button id="notifBell" onclick="toggleNotifDropdown()" class="icon-btn" aria-label="Notifications" style="position:relative;background:none;border:none;cursor:pointer;padding:6px;border-radius:50%;display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px"></span>
+          </button>
+          <!-- Dropdown -->
+          <div id="notifDropdown" class="notif-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:320px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;overflow:hidden;max-height:480px;overflow-y:auto">
+            <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-weight:800;font-size:14px;color:#1e293b"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</span>
+              <button onclick="Notif.requestPushPermission()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;font-family:DM Sans" title="Enable push notifications">Enable push</button>
+            </div>
+            <div id="notifDropdown"></div>
+          </div>
+        </div>
+        <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px;color:var(--primary-color)"></a>
+      </div>
+      <a href="admin.html" id="admin-btn" style="display:none;background:#1e293b;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;align-items:center;gap:5px">Admin</a>
+      <button id="langBtn" onclick="toggleLang()" style="background:var(--light-gray);border:1px solid var(--border-color);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:DM Sans;font-size:12px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:5px;transition:all .2s" title="Switch Language">
+          <span style="font-size:14px">&#x1F1F8;&#x1F1F4;</span> Somali
+        </button>
+      <button class="dark-mode-btn" onclick="toggleDarkMode()" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="post.html" class="btn-post-ad">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Post Ad
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- NOT LOGGED IN -->
+<div id="notLoggedIn" style="display:none;padding:80px 24px;text-align:center">
+  <div style="font-size:52px;margin-bottom:16px"></div>
+  <div style="font-size:18px;font-weight:700;margin-bottom:8px;color:var(--dark)">Sign in to view your profile</div>
+  <a href="auth.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">Sign In / Register</a>
+</div>
+
+<div class="profile-layout" id="profileContent">
+
+  <!-- LEFT COLUMN -->
+  <div>
+    <div class="profile-card">
+      <div class="profile-avatar-wrap">
+        <div class="profile-avatar" id="profileAvatarWrap">
+          <span id="profileAvatarText" style="font-size:36px"></span>
+        </div>
+        <button class="profile-edit-avatar" onclick="document.getElementById('avatarInput').click()" aria-label="Change avatar"></button>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(event)">
+      </div>
+      <div class="profile-name" id="profileName">Your Name</div>
+      <div class="profile-meta" id="profileMeta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Hargeisa</div>
+      <div id="verifyBadgeWrap" style="margin-top:8px"></div>
+      <div class="profile-stats-row">
+        <div class="profile-stat-chip"><div class="num" id="statListings">0</div><div class="lbl">Listings</div></div>
+        <div class="profile-stat-chip"><div class="num" id="statReviews">0</div><div class="lbl">Reviews</div></div>
+        <div class="profile-stat-chip"><div class="num" id="statRating">—</div><div class="lbl">Rating</div></div>
+      </div>
+      <button class="btn btn-sm btn-full" onclick="switchTab('settings')"
+        style="background:rgba(255,255,255,.15);color:white;margin-top:16px;border:1px solid rgba(255,255,255,.3)">
+        ️ Edit Profile
+      </button>
+      <a href="verify.html" id="verifyBtn" class="btn btn-sm btn-full"
+        style="background:rgba(255,255,255,.15);color:white;margin-top:8px;border:1px solid rgba(255,255,255,.3);text-decoration:none;display:flex;justify-content:center">
+         Get Verified
+      </a>
+      <!-- Profil tamamlanma -->
+      <div id="profileCompletion" style="display:none;margin-top:12px;background:rgba(0,0,0,.15);border-radius:10px;padding:10px 14px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:11px;color:rgba(255,255,255,.8);font-weight:600">Profile Complete</span>
+          <span style="font-size:12px;font-weight:800;color:white" id="completionPct">0%</span>
+        </div>
+        <div style="background:rgba(255,255,255,.2);border-radius:4px;height:6px;overflow:hidden">
+          <div id="completionBar" style="height:6px;border-radius:4px;transition:width .4s ease;width:0%"></div>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:5px">
+          <a href="#" onclick="switchTab('settings');return false;" style="color:rgba(255,255,255,.8);text-decoration:underline">Complete your profile →</a>
+        </div>
+      </div>
+      <div id="planBadgeWrap" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div>
+    <!-- Tabs -->
+    <div class="auth-tabs" style="margin-bottom:20px">
+      <button class="auth-tab active" id="tabListings" onclick="switchTab('listings')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> My Listings</button>
+      <button class="auth-tab" id="tabFavorites" onclick="switchTab('favorites')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Favorites</button>
+      <button class="auth-tab" id="tabSettings" onclick="switchTab('settings')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> Settings</button>
+      <button class="auth-tab" id="tabPayments" onclick="switchTab('payments')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payments</button>
+      <button class="auth-tab" id="tabOffers" onclick="switchTab('offers')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> Offers</button>
+      <button class="auth-tab" id="tabReviews" onclick="switchTab('reviews')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Reviews</button>
+      <button class="auth-tab" id="tabNotifications" onclick="switchTab('notifications')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</button>
+    </div>
+
+    <!-- ── My Listings Tab ── -->
+    <div id="tabContentListings">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-size:14px;font-weight:700;color:var(--dark)">Your Active Listings</span>
+        <a href="post.html" class="btn btn-primary btn-sm">+ Post New Ad</a>
+      </div>
+      <div id="myListingsGrid" class="listings-grid" style="padding:0"></div>
+      <div id="myListingsEmpty" class="section-block" style="display:none">
+        <div class="empty-state">
+          <div class="empty-state-icon"></div>
+          <div class="empty-state-title">No listings yet</div>
+          <p class="empty-state-desc">Post your first ad and start selling today!</p>
+          <a href="post.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">+ Post Free Ad</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Offers Tab ── -->
+    <!-- Reviews Tab -->
+    <div id="tabContentReviews" style="display:none">
+      <div id="pendingReviewsReminder" style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px 16px;margin-bottom:16px">
+        <div style="font-weight:700;font-size:13px;color:#c2410c;margin-bottom:8px"> You have pending reviews!</div>
+        <div id="pendingReviewsList"></div>
+      </div>
+      <div id="myRatingSummary" style="display:none;background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="text-align:center">
+            <div style="font-size:40px;font-weight:900;color:#f59e0b;line-height:1" id="myAvgRating">—</div>
+            <div style="font-size:11px;color:#64748b;margin-top:2px" id="myTotalReviews">0 reviews</div>
+          </div>
+          <div id="myStarsDisplay" style="font-size:22px"></div>
+        </div>
+      </div>
+      <div id="myReviewsList">
+        <div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">Loading reviews…</div>
+      </div>
+    </div>
+
+    <!-- Notifications Tab -->
+    <div id="tabContentNotifications" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-weight:700;font-size:15px;color:#1e293b"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</div>
+        <button onclick="markAllNotifRead()" style="background:none;border:none;color:#f97316;font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans">Mark all read</button>
+      </div>
+      <div id="notifHistoryList">
+        <div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">Loading…</div>
+      </div>
+    </div>
+
+    <div id="tabContentOffers" style="display:none">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button id="offersSentBtn"     onclick="switchOffersTab('sent')"     style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #f97316;background:#fff7ed;color:#f97316;font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer"> Sent</button>
+        <button id="offersReceivedBtn" onclick="switchOffersTab('received')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;color:#64748b;font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer"> Received</button>
+      </div>
+      <div id="offersListWrap"></div>
+    </div>
+
+    <!-- ── Payments Tab ── -->
+    <div id="tabContentPayments" style="display:none">
+      <div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <span style="font-size:14px;font-weight:700;color:var(--dark)">Payment History</span>
+          <a href="packages.html" class="btn btn-primary btn-sm">↑ Upgrade Plan</a>
+        </div>
+        <div id="planStatusCard" style="background:linear-gradient(135deg,#1e293b,#0f172a);color:white;border-radius:14px;padding:20px;margin-bottom:16px">
+          <div style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Current Plan</div>
+          <div id="planStatusText" style="font-size:22px;font-weight:800">Loading…</div>
+        </div>
+        <div id="paymentHistoryList"></div>
+      </div>
+    </div>
+
+    <!-- ── Favorites Tab ── -->
+    <div id="tabContentFavorites" style="display:none">
+      <div id="favoritesGrid" class="listings-grid" style="padding:0"></div>
+      <div id="favoritesEmpty" style="display:none">
+        <div class="empty-state">
+          <div class="empty-state-icon"></div>
+          <div class="empty-state-title">No favorites yet</div>
+          <p class="empty-state-desc">Tap the heart on any listing to save it here.</p>
+          <a href="listings.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">Browse Listings</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Settings Tab ── -->
+    <div id="tabContentSettings" style="display:none">
+      <div id="settingsSaved" style="display:none;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#065f46"></div>
+      <div id="settingsError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#b91c1c"></div>
+
+      <!-- Personal info -->
+      <div class="profile-section">
+        <div class="profile-section-header"> Personal Information</div>
+        <div class="profile-section-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input class="form-input" type="text" id="editName" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <select class="form-select" id="editCity">
+                <option>Hargeisa</option><option>Berbera</option><option>Burco</option>
+                <option>Borama</option><option>Gabiley</option><option>Ceerigaavo</option><option>Laascaanood</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input class="form-input" type="tel" id="editPhone" placeholder="+252 63 XXXXXXX">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bio</label>
+            <textarea class="form-textarea" id="editBio" rows="3" placeholder="Tell buyers about yourself…" maxlength="300"></textarea>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px" id="bioCount">0/300</div>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Email Address</label>
+            <input class="form-input" type="email" id="editEmail" disabled style="opacity:.6">
+            <div style="font-size:11px;color:var(--gray);margin-top:4px">Email cannot be changed here.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="profile-section">
+        <div class="profile-section-header"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</div>
+        <div class="profile-section-body">
+          <div class="setting-row">
+            <div><div class="setting-label">Email Notifications</div><div class="setting-meta">Receive messages via email</div></div>
+            <label class="toggle"><input type="checkbox" id="notifEmail"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Push Notifications</div><div class="setting-meta">Browser / app notifications</div></div>
+            <label class="toggle"><input type="checkbox" id="notifPush"><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">SMS Alerts</div><div class="setting-meta">Text message alerts</div></div>
+            <label class="toggle"><input type="checkbox" id="notifSms"><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:16px">
+        <button type="button" class="btn btn-ghost" onclick="switchTab('listings')">Cancel</button>
+        <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveProfile()"> Save Changes</button>
+      </div>
+
+      <!-- Change Password -->
+      <div class="profile-section">
+        <div class="profile-section-header"> Change Password</div>
+        <div class="profile-section-body">
+          <div id="passChangeError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:#b91c1c"></div>
+          <div id="passChangeSuccess" style="display:none;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:#065f46"></div>
+          <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <div style="position:relative">
+              <input class="form-input" type="password" id="currentPass" placeholder="Your current password" style="padding-right:44px">
+              <button type="button" onclick="togglePassField('currentPass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray)">️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <div style="position:relative">
+              <input class="form-input" type="password" id="newPass" placeholder="Min. 6 characters" style="padding-right:44px">
+              <button type="button" onclick="togglePassField('newPass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray)">️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <div style="position:relative">
+              <input class="form-input" type="password" id="confirmNewPass" placeholder="Repeat new password" style="padding-right:44px">
+              <button type="button" onclick="togglePassField('confirmNewPass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray)">️</button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="changePassword()">Update Password</button>
+        </div>
+      </div>
+
+      <!-- Danger zone -->
+      <div class="profile-section">
+        <div class="profile-section-header" style="color:#ef4444">️ Account</div>
+        <div class="profile-section-body">
+          <div class="setting-row">
+            <div><div class="setting-label">Sign Out</div><div class="setting-meta">Log out of your SomBazar account</div></div>
+            <button type="button" class="btn btn-ghost btn-sm" onclick="Auth.logout()">Sign Out</button>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label" style="color:#ef4444">Delete Account</div><div class="setting-meta">Permanently delete your account and all data</div></div>
+            <button type="button" class="btn btn-danger btn-sm" onclick="showDeleteModal()">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav">
+  <ul>
+    <li><a href="index.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a></li>
+    <li><a href="listings.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Listings</span></a></li>
+    <li><a href="post.html" class="mob-nav-btn"><span class="mob-icon">+</span><span>Post</span></a></li>
+    <li><a href="messages.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></a></li>
+    <li><a href="profile.html" class="mob-nav-btn active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></a></li>
+  </ul>
+</nav>
+
+<!-- Delete Account Modal -->
+<div id="deleteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:20px;padding:28px;width:100%;max-width:400px">
+    <div style="font-size:36px;text-align:center;margin-bottom:12px">️</div>
+    <div style="font-size:18px;font-weight:800;color:#ef4444;text-align:center;margin-bottom:8px">Delete Account?</div>
+    <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px;line-height:1.6">This will permanently delete your account, all listings, messages and data. <strong>This cannot be undone.</strong></p>
+    <div class="form-group">
+      <label class="form-label">Enter your password to confirm</label>
+      <input class="form-input" type="password" id="deletePassInput" placeholder="Your password">
+    </div>
+    <div id="deleteError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:#b91c1c"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline" onclick="hideDeleteModal()" style="flex:1">Cancel</button>
+      <button class="btn btn-danger" onclick="deleteAccount()" style="flex:1" id="deleteConfirmBtn">Delete Forever</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Fallback: app.js yüklenemezse Auth crash'i önle
+window.Auth = window.Auth || {
+  getToken: () => localStorage.getItem('sb_token') || '',
+  getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  isLoggedIn: () => !!localStorage.getItem('sb_token'),
+  setSession: () => {},
+  clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+};
+window.API = window.API || {};
+</script>
+  <script src="assets/app.min.js"></script>
+<script>
+if (!Auth.isLoggedIn()) {
+  document.getElementById('notLoggedIn').style.display = '';
+  document.getElementById('profileContent').style.display = 'none';
+} else {
+  loadProfile();
+  loadMyListings();
+}
+
+let profileData = null;
+
+async function loadProfile() {
+  try {
+    profileData = await API.me();
+    const user = profileData;
+
+    // Header avatar
+    const avatarWrap = document.getElementById('profileAvatarWrap');
+    if (user.photoURL) {
+      avatarWrap.innerHTML = `<img loading="lazy" src="${user.photoURL}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+    } else {
+      document.getElementById('profileAvatarText').textContent = (user.displayName || 'U')[0].toUpperCase();
+    }
+
+    document.getElementById('profileName').textContent = user.displayName || 'Your Name';
+    document.getElementById('profileMeta').textContent = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${user.city || 'Hargeisa'}`;
+    // Load verification badge
+    loadVerifyStatus();
+    loadPlanStatus();
+  loadDeletionStatus();
+    document.getElementById('statReviews').textContent = user.reviewCount || 0;
+    document.getElementById('statRating').textContent = user.rating ? user.rating.toFixed(1) : '—';
+    // API'den güncel puanı yükle
+    loadMyRating(user.id);
+    // Pending review reminder
+    loadPendingReviews();
+
+    // Fill form
+    document.getElementById('editName').value  = user.displayName || '';
+    document.getElementById('editCity').value  = user.city || 'Hargeisa';
+    document.getElementById('editPhone').value = user.phone || '';
+    document.getElementById('editBio').value   = user.bio || '';
+    document.getElementById('editEmail').value = user.email || '';
+    document.getElementById('bioCount').textContent = `${(user.bio || '').length}/300`;
+    if (user.notifications) {
+      document.getElementById('notifEmail').checked = !!user.notifications.email;
+      document.getElementById('notifPush').checked  = !!user.notifications.push;
+      document.getElementById('notifSms').checked   = !!user.notifications.sms;
+    }
+
+    Auth.setSession(Auth.getToken(), user);
+    // Profil tamamlanma %
+    const _fields = [user.displayName, user.phone, user.city, user.bio, user.avatar];
+    const _filled = _fields.filter(Boolean).length;
+    const _pct    = Math.round(_fields.length > 0 ? (_filled / _fields.length) * 100 : 0);
+    const _compEl = document.getElementById('profileCompletion');
+    if (_compEl) {
+      _compEl.style.display = _pct < 100 ? '' : 'none';
+      document.getElementById('completionPct').textContent = _pct + '%';
+      document.getElementById('completionBar').style.width = _pct + '%';
+      document.getElementById('completionBar').style.background = _pct >= 80 ? '#10b981' : _pct >= 50 ? '#f59e0b' : '#ef4444';
+    }
+  } catch(e) {}
+  // URL'den tab parametresi - profil yüklendikten sonra aç (sonsuz döngü yok)
+  const _urlTab = new URLSearchParams(window.location.search).get('tab');
+  if (_urlTab && ['listings','favorites','settings','payments','offers','reviews','notifications'].includes(_urlTab)) {
+    switchTab(_urlTab);
+  }
+}
+
+async function loadMyListings() {
+  try {
+    const listings = await API.myListings();
+    document.getElementById('statListings').textContent = listings.length;
+    if (listings.length === 0) {
+      document.getElementById('myListingsEmpty').style.display = '';
+    } else {
+      document.getElementById('myListingsGrid').innerHTML = listings.map(l => {
+        const isSold = l.status === 'sold' || l.status === 'rented';
+        const soldOverlay = isSold ? `<div style="position:absolute;top:10px;left:10px;background:#f97316;color:white;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;text-transform:uppercase">${l.status}</div>` : '';
+        return `<div style="position:relative">
+          ${listingCardHTML(l)}
+          ${soldOverlay}
+          <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.82);padding:8px 10px;display:flex;gap:5px;border-radius:0 0 14px 14px;flex-wrap:wrap">
+            <a href="listing.html?id=${l.id}" class="btn btn-sm" style="flex:1;background:white;color:var(--dark);font-size:11px;min-width:50px">View</a>
+            <a href="edit.html?id=${l.id}" class="btn btn-sm" style="flex:1;background:#f97316;color:white;font-size:11px;min-width:50px">Edit</a>
+            <button class="btn btn-sm" onclick="toggleSoldListing(${l.id},'${l.status}')" style="flex:1;background:${isSold ? '#22c55e' : '#fef9c3'};color:${isSold ? 'white' : '#854d0e'};font-size:11px;border:none;min-width:60px">${isSold ? 'Activate' : 'Mark Sold'}</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteListing(${l.id})" style="flex:1;font-size:11px;min-width:50px">Delete</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  } catch(e) {}
+}
+
+async function boostListing(id) {
+  const pkg = await fetch('api/payment.php?action=my_plan', {
+    headers: { Authorization: 'Bearer ' + Auth.getToken() }
+  }).then(r => r.json()).then(d => d.data).catch(() => null);
+
+  const credits = pkg?.boostCredits ?? 0;
+  if (credits <= 0) {
+    showToast('No boost credits. Upgrade your plan to get boost credits!', 'error');
+    setTimeout(() => window.location.href = 'packages.html', 1500);
+    return;
+  }
+  if (!confirm(`Use 1 boost credit to feature this listing for 7 days? (${credits} credit(s) remaining)`)) return;
+
+  try {
+    const r = await fetch('api/listings.php?action=boost', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ listing_id: id })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    showToast('Listing boosted for 7 days!', 'success');
+    loadMyListings();
+  } catch(e) { showToast(e.message, 'error'); }
+}
+
+async function deleteListing(id) {
+  if (!confirm('Delete this listing?')) return;
+  try {
+    await API.deleteListing(id);
+    showToast('Listing deleted', 'success');
+    loadMyListings();
+  } catch(e) {
+    showToast('Failed to delete', 'error');
+  }
+}
+
+async function toggleSoldListing(id, currentStatus) {
+  try {
+    const isSold = currentStatus === 'sold' || currentStatus === 'rented';
+    if (isSold) {
+      await API.markActive(id);
+      showToast('Listing activated!', 'success');
+    } else {
+      await API.markSold(id);
+      showToast('Marked as sold!', 'success');
+    }
+    loadMyListings();
+  } catch(e) {
+    showToast('Failed to update status', 'error');
+  }
+}
+
+function switchTab(tab) {
+  ['listings','favorites','settings','payments','offers','reviews','notifications'].forEach(t => {
+    const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (btn) btn.classList.toggle('active', t === tab);
+    const content = document.getElementById('tabContent' + t.charAt(0).toUpperCase() + t.slice(1));
+    if (content) content.style.display = t === tab ? 'block' : 'none';
+  });
+  if (tab === 'favorites' && !window._favsLoaded) { loadFavorites(); window._favsLoaded = true; }
+  if (tab === 'payments') loadPaymentHistory();
+  if (tab === 'offers') { switchOffersTab(window._currentOffersTab || 'sent'); }
+  if (tab === 'reviews') { loadMyReviews(); }
+  if (tab === 'notifications') { loadNotifHistory(); }
+}
+
+document.getElementById('editBio').addEventListener('input', function() {
+  document.getElementById('bioCount').textContent = `${this.value.length}/300`;
+});
+
+async function loadPlanStatus() {
+  try {
+    const r = await fetch('api/payment.php?action=my_plan', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success) return;
+    const { plan, expiresAt, activeListings, listingLimit } = d.data;
+    const wrap = document.getElementById('planBadgeWrap');
+    if (!wrap) return;
+
+    const planColors = { free:'rgba(255,255,255,.2)', standard:'rgba(249,115,22,.4)', pro:'rgba(139,92,246,.4)', agency:'rgba(14,165,233,.4)' };
+    const planEmoji  = { free:'●', standard:'●', pro:'●', agency:'●' };
+    const bg = planColors[plan] || planColors.free;
+    const emoji = '';
+    const expText = expiresAt ? ` · expires ${new Date(expiresAt).toLocaleDateString()}` : '';
+    const limitText = listingLimit >= 999 ? '∞' : listingLimit;
+
+    wrap.innerHTML = `
+      <div style="background:${bg};border-radius:10px;padding:8px 12px;text-align:center">
+        <div style="font-size:12px;font-weight:700;color:white;text-transform:capitalize">${plan} Plan${expText}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">${activeListings} / ${limitText} listings used</div>
+        ${plan === 'free' ? '<a href="packages.html" style="display:inline-block;margin-top:6px;background:#f97316;color:white;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none">↑ Upgrade</a>' : ''}
+      </div>`;
+  } catch(e) { /* ignore */ }
+}
+
+async function loadPaymentHistory() {
+  const list = document.getElementById('paymentHistoryList');
+  const planEl = document.getElementById('planStatusText');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:#64748b;font-size:13px">Loading…</div>';
+  try {
+    // Plan status
+    const pr = await fetch('api/payment.php?action=my_plan', { headers: { Authorization: 'Bearer ' + Auth.getToken() }});
+    const pd = await pr.json();
+    let currentPlan = 'free';
+    if (pd.success && planEl) {
+      const { plan, expiresAt, activeListings, listingLimit } = pd.data;
+      currentPlan = plan;
+      const emoji = '';
+      planEl.innerHTML = `${emoji} ${plan.charAt(0).toUpperCase()+plan.slice(1)} Plan` +
+        (expiresAt ? `<div style="font-size:12px;color:rgba(255,255,255,.6);font-weight:500;margin-top:2px">Expires ${new Date(expiresAt).toLocaleDateString()}</div>` : '') +
+        `<div style="font-size:12px;color:rgba(255,255,255,.6);font-weight:500;margin-top:2px">${activeListings} / ${listingLimit >= 999 ? '∞' : listingLimit} listings</div>`;
+
+      // Plan iptal butonu — sadece ücretli planlarda göster
+      const cancelWrap = document.getElementById('cancelPlanWrap');
+      if (cancelWrap && plan !== 'free') {
+        cancelWrap.innerHTML = `<button onclick="confirmCancelPlan()" style="background:none;border:1px solid #e2e8f0;color:#64748b;border-radius:8px;padding:6px 14px;font-family:'DM Sans';font-size:12px;cursor:pointer;margin-top:8px">Cancel Plan</button>`;
+      }
+    }
+
+    // Payment history
+    const r = await fetch('api/payment.php?action=history', { headers: { Authorization: 'Bearer ' + Auth.getToken() }});
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+    if (!d.data.payments || d.data.payments.length === 0) {
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">No payment history yet.<br><a href="packages.html" style="color:#f97316;font-weight:700">View plans \u2192</a></div>';
+      return;
+    }
+    list.innerHTML = d.data.payments.map(p => {
+      const statusColor = p.status==='approved' ? '#10b981' : p.status==='rejected' ? '#ef4444' : '#f59e0b';
+      const statusBg    = p.status==='approved' ? '#f0fdf4' : p.status==='rejected' ? '#fef2f2' : '#fffbeb';
+      const methodEmoji = p.method === 'zaad' ? '' : '';
+      const receiptBtn  = p.status === 'approved'
+        ? `<a href="api/payment.php?action=receipt_html&payment_id=${p.id}&token=${Auth.getToken()}" target="_blank" style="display:block;margin-top:6px;background:#f1f5f9;color:#0f172a;text-decoration:none;text-align:center;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700">🧾 Receipt</a>`
+        : '';
+      return `<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:700;font-size:14px;text-transform:capitalize">${p.plan} Plan</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px">${methodEmoji} ${p.method} · Ref: <b>${p.reference_code}</b></div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px">${new Date(p.created_at).toLocaleString()}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:20px;font-weight:800;color:#f97316">$${p.amount}</div>
+          <div style="background:${statusBg};color:${statusColor};padding:2px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-top:4px;text-transform:capitalize">${p.status}</div>
+          ${receiptBtn}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    console.error('Payment history error:', e);
+    list.innerHTML = `<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">
+      <div style="font-size:24px;margin-bottom:8px">⚠️</div>
+      Unable to load payment history.<br>
+      <button onclick="loadPaymentHistory()" style="margin-top:12px;background:#f97316;color:white;border:none;border-radius:8px;padding:7px 18px;cursor:pointer;font-family:'DM Sans';font-weight:700;font-size:12px">Try Again</button>
+    </div>`;
+  }
+}
+
+async function confirmCancelPlan() {
+  if (!confirm('Are you sure you want to cancel your plan? You will be moved to the Free plan immediately.')) return;
+  try {
+    const r = await fetch('api/payment.php?action=cancel_plan', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+    showToast('Plan cancelled. You are now on the Free plan.', 'success');
+    setTimeout(() => loadPaymentHistory(), 800);
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+}
+
+// ── OFFERS ────────────────────────────────────────────────────
+let currentOffersTab = 'sent';
+
+function switchOffersTab(type) {
+  currentOffersTab = type;
+  window._currentOffersTab = type;
+  const sentBtn = document.getElementById('offersSentBtn');
+  const recBtn  = document.getElementById('offersReceivedBtn');
+  if (sentBtn) {
+    sentBtn.style.background  = type === 'sent' ? '#fff7ed' : 'white';
+    sentBtn.style.borderColor = type === 'sent' ? '#f97316' : '#e2e8f0';
+    sentBtn.style.color       = type === 'sent' ? '#f97316' : '#64748b';
+    recBtn.style.background   = type === 'received' ? '#fff7ed' : 'white';
+    recBtn.style.borderColor  = type === 'received' ? '#f97316' : '#e2e8f0';
+    recBtn.style.color        = type === 'received' ? '#f97316' : '#64748b';
+  }
+  loadOffers(type);
+}
+
+// ── Reviews ──────────────────────────────────────────────────
+async function loadMyRating(userId) {
+  try {
+    const r = await fetch(`api/reviews.php?action=get_seller&seller_id=${userId}`);
+    const d = await r.json();
+    if (!d.success || !d.data.total) return;
+    const avg   = d.data.avg_rating;
+    const total = d.data.total;
+    document.getElementById('statReviews').textContent = total;
+    document.getElementById('statRating').textContent  = avg;
+    // Summary card
+    const summary = document.getElementById('myRatingSummary');
+    if (summary) {
+      summary.style.display = '';
+      document.getElementById('myAvgRating').textContent    = avg;
+      document.getElementById('myTotalReviews').textContent = total + ' review' + (total !== 1 ? 's' : '');
+      const stars = [1,2,3,4,5].map(i =>
+        `<span style="color:${i<=Math.round(avg)?'#f59e0b':'#d1d5db'};font-size:24px">★</span>`
+      ).join('');
+      document.getElementById('myStarsDisplay').innerHTML = stars;
+    }
+  } catch(e) {}
+}
+
+async function loadNotifHistory() {
+  const list = document.getElementById('notifHistoryList');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">Loading…</div>';
+  try {
+    const r = await fetch('api/notifications.php?action=list&limit=50', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+    const notifs = d.data.notifications || [];
+    if (!notifs.length) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> No notifications yet</div>';
+      return;
+    }
+    list.innerHTML = notifs.map(n => `
+      <a href="${n.link || '#'}" onclick="markOneNotifRead(${n.id})" style="display:flex;gap:12px;padding:12px;background:${n.isRead?'white':'#f8faff'};border:1px solid ${n.isRead?'#e2e8f0':'#dbeafe'};border-radius:12px;margin-bottom:8px;text-decoration:none;color:inherit;transition:background .15s">
+        <div style="font-size:24px;flex-shrink:0;width:40px;text-align:center;margin-top:2px">${n.icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:${n.isRead?'500':'700'};color:#1e293b">${n.title}</div>
+          ${n.body ? `<div style="font-size:12px;color:#64748b;margin-top:3px;line-height:1.4">${n.body}</div>` : ''}
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px">${n.timeAgo}</div>
+        </div>
+        ${!n.isRead ? '<div style="width:9px;height:9px;background:#f97316;border-radius:50%;flex-shrink:0;margin-top:6px"></div>' : ''}
+      </a>`).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px">${e.message}</div>`;
+  }
+}
+
+async function markOneNotifRead(id) {
+  try {
+    await fetch('api/notifications.php?action=mark_read', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ notification_id: id })
+    });
+    if (typeof Notif !== 'undefined') Notif.refresh();
+  } catch(e) {}
+}
+
+async function markAllNotifRead() {
+  try {
+    await fetch('api/notifications.php?action=mark_all_read', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    loadNotifHistory();
+    if (typeof Notif !== 'undefined') Notif.refresh();
+  } catch(e) {}
+}
+
+async function loadMyReviews() {
+  const list = document.getElementById('myReviewsList');
+  if (!list) return;
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">Loading…</div>';
+  const user = Auth.getUser();
+  if (!user) return;
+  try {
+    const r = await fetch(`api/reviews.php?action=get_seller&seller_id=${user.id}`);
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+    const reviews = d.data.reviews || [];
+    if (!reviews.length) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">No reviews yet.<br>Complete a sale to receive your first review!</div>';
+      return;
+    }
+    list.innerHTML = reviews.map(r => {
+      const stars = [1,2,3,4,5].map(i =>
+        `<span style="color:${i<=r.rating?'#f59e0b':'#e2e8f0'};font-size:15px">★</span>`
+      ).join('');
+      const date = new Date(r.createdAt).toLocaleDateString('en', {year:'numeric',month:'short',day:'numeric'});
+      const avatar = r.reviewerAvatar
+        ? `<img loading="lazy" src="${r.reviewerAvatar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0">`
+        : `<div style="width:38px;height:38px;border-radius:50%;background:#f97316;color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0">${(r.reviewerName||'?')[0].toUpperCase()}</div>`;
+      return `<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:12px">
+        ${avatar}
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+            <div>
+              <div style="font-weight:700;font-size:13px;color:#1e293b">${r.reviewerName}</div>
+              <div style="margin-top:2px">${stars}</div>
+            </div>
+            <div style="font-size:11px;color:#94a3b8;white-space:nowrap">${date}</div>
+          </div>
+          ${r.comment ? `<p style="font-size:13px;color:#475569;margin:6px 0 0;line-height:1.5">${r.comment}</p>` : ''}
+          ${r.listingTitle ? `<a href="listing.html?id=${r.listingId}" style="font-size:11px;color:#f97316;margin-top:4px;display:block;text-decoration:none"> ${r.listingTitle}</a>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px">${e.message}</div>`;
+  }
+}
+
+async function loadPendingReviews() {
+  if (!Auth.isLoggedIn()) return;
+  try {
+    const r = await fetch('api/reviews.php?action=pending', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success || !d.data.pending?.length) return;
+    const pending = d.data.pending;
+    const reminder = document.getElementById('pendingReviewsReminder');
+    const list     = document.getElementById('pendingReviewsList');
+    if (!reminder || !list) return;
+    reminder.style.display = '';
+    list.innerHTML = pending.map(p => {
+      const img = p.listingImage
+        ? `<img loading="lazy" src="${p.listingImage}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;flex-shrink:0">`
+        : `<div style="width:40px;height:40px;background:#fed7aa;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"></div>`;
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        ${img}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.listingTitle}</div>
+          <div style="font-size:11px;color:#64748b">${p.sellerName} · ${p.daysSince}d ago</div>
+        </div>
+        <a href="listing.html?id=${p.listingId}#reviews" style="background:#f97316;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">Rate</a>
+      </div>`;
+    }).join('');
+    // Reviews tab'ında da göster
+    const tabReminder = document.getElementById('pendingReviewsReminder');
+    if (tabReminder) tabReminder.style.display = '';
+  } catch(e) {}
+}
+
+async function loadOffers(type) {
+  const wrap = document.getElementById('offersListWrap');
+  if (!wrap) return;
+  wrap.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">Loading…</div>';
+
+  try {
+    const r = await fetch(`api/offers.php?action=my_offers&type=${type}`, {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    if (!r.ok) throw new Error(`Server error: ${r.status}. Make sure offers.php is uploaded to the api/ folder.`);
+    const text = await r.text();
+    let d;
+    try { d = JSON.parse(text); } catch(je) {
+      throw new Error('offers.php bulunamadı. Lütfen api/offers.php dosyasını sunucunuza yükleyin.');
+    }
+    if (!d.success) throw new Error(d.error || 'Unknown error');
+
+    const offers = d.data.offers || [];
+    if (offers.length === 0) {
+      wrap.innerHTML = `<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">
+        ${type === 'sent' ? 'No offers sent yet.<br><a href="listings.html" style="color:#f97316;font-weight:700">Browse listings →</a>' : 'No offers received yet.'}
+      </div>`;
+      return;
+    }
+
+    const STATUS_CONFIG = {
+      pending:   { bg:'#fef9c3', color:'#854d0e', label:'⏳ Pending' },
+      accepted:  { bg:'#dcfce7', color:'#166534', label:'✓ Accepted' },
+      rejected:  { bg:'#fee2e2', color:'#991b1b', label:'× Rejected' },
+      countered: { bg:'#fff7ed', color:'#c2410c', label:'↩ Countered' },
+      cancelled: { bg:'#f1f5f9', color:'#64748b', label:'Cancelled' },
+      expired:   { bg:'#f1f5f9', color:'#64748b', label:'Expired' },
+    };
+
+    wrap.innerHTML = offers.map(o => {
+      const sc = STATUS_CONFIG[o.status] || STATUS_CONFIG.pending;
+      const imgHTML = o.listingImage
+        ? `<img loading="lazy" src="${o.listingImage}" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0">`
+        : `<div style="width:56px;height:56px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">️</div>`;
+
+      const otherParty = type === 'sent'
+        ? `Seller: <b>${o.sellerName||'—'}</b>`
+        : `Buyer: <b>${o.buyerName||'—'}</b>`;
+
+      const counterHTML = o.counterAmount
+        ? `<div style="font-size:12px;color:#f97316;margin-top:3px">↩ Counter: ${o.currency} ${Number(o.counterAmount).toLocaleString()}</div>`
+        : '';
+
+      const actionHTML = (o.status === 'countered' && type === 'sent')
+        ? `<a href="listing.html?id=${o.listingId}" style="font-size:12px;background:#f97316;color:white;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700">Respond</a>`
+        : (o.status === 'pending' && type === 'received')
+        ? `<a href="listing.html?id=${o.listingId}" style="font-size:12px;background:#f97316;color:white;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700">Review</a>`
+        : '';
+
+      return `<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center">
+        <a href="listing.html?id=${o.listingId}">${imgHTML}</a>
+        <div style="flex:1;min-width:0">
+          <a href="listing.html?id=${o.listingId}" style="font-size:13px;font-weight:700;color:#1e293b;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block">${o.listingTitle||'Listing'}</a>
+          <div style="font-size:14px;font-weight:800;color:#f97316;margin-top:2px">${o.currency} ${Number(o.amount).toLocaleString()}</div>
+          ${counterHTML}
+          <div style="font-size:11px;color:#94a3b8;margin-top:3px">${otherParty} · Round ${o.round}/5 · ${o.expiresIn||new Date(o.createdAt).toLocaleDateString()}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+          <span style="background:${sc.bg};color:${sc.color};font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap">${sc.label}</span>
+          ${actionHTML}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    wrap.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px">
+      <b>Hata:</b> ${e.message}<br>
+      <small style="color:#94a3b8">api/offers.php sunucuya yüklü mü kontrol edin.</small>
+    </div>`;
+  }
+}
+
+async function saveProfile() {
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite"></span>';
+  document.getElementById('settingsSaved').style.display = 'none';
+  document.getElementById('settingsError').style.display = 'none';
+
+  try {
+    const data = {
+      displayName: document.getElementById('editName').value.trim(),
+      city:        document.getElementById('editCity').value,
+      phone:       document.getElementById('editPhone').value.trim(),
+      bio:         document.getElementById('editBio').value.trim(),
+      notifications: {
+        email: document.getElementById('notifEmail').checked,
+        push:  document.getElementById('notifPush').checked,
+        sms:   document.getElementById('notifSms').checked,
+      },
+    };
+    const updated = await API.updateProfile(data);
+    Auth.setSession(Auth.getToken(), updated);
+    document.getElementById('settingsSaved').textContent = 'Profile updated successfully! ✓';
+    document.getElementById('settingsSaved').style.display = '';
+    document.getElementById('profileName').textContent = updated.displayName;
+    document.getElementById('profileMeta').textContent = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${updated.city || 'Hargeisa'}`;
+    setTimeout(() => document.getElementById('settingsSaved').style.display = 'none', 3000);
+  } catch(e) {
+    document.getElementById('settingsError').textContent = e.message || 'Failed to save. Please try again.';
+    document.getElementById('settingsError').style.display = '';
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = ' Save Changes';
+  }
+}
+
+async function uploadAvatar(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const fd = new FormData();
+    fd.append('avatar', file);
+    const result = await API.uploadAvatar(fd);
+    const avatarWrap = document.getElementById('profileAvatarWrap');
+    avatarWrap.innerHTML = `<img loading="lazy" src="${result.photoURL}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+    showToast('Avatar updated!', 'success');
+    // Update user in localStorage
+    const user = Auth.getUser();
+    if (user) { user.photoURL = result.photoURL; Auth.setSession(Auth.getToken(), user); }
+  } catch(e) {
+    showToast('Failed to upload avatar', 'error');
+  }
+}
+
+// ── Load Favorites ─────────────────────────────────────────────
+async function loadFavorites() {
+  try {
+    const favs = await API.getFavorites();
+    if (!favs.length) {
+      document.getElementById('favoritesEmpty').style.display = '';
+    } else {
+      document.getElementById('favoritesGrid').innerHTML = favs.map(l => `
+        <div style="position:relative">
+          ${listingCardHTML(l)}
+          <button onclick="removeFav(${l.id}, this)" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center" title="Remove from favorites">️</button>
+        </div>`).join('');
+    }
+  } catch(e) {
+    document.getElementById('favoritesEmpty').style.display = '';
+  }
+}
+
+async function removeFav(listingId, btn) {
+  try {
+    await API.removeFavorite(listingId);
+    btn.closest('div').remove();
+    showToast('Removed from favorites');
+    const grid = document.getElementById('favoritesGrid');
+    if (!grid.children.length) document.getElementById('favoritesEmpty').style.display = '';
+  } catch(e) { showToast('Failed to remove', 'error'); }
+}
+
+// ── Change Password ────────────────────────────────────────────
+function togglePassField(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '●' : '○';
+}
+
+async function changePassword() {
+  const current = document.getElementById('currentPass').value;
+  const newP    = document.getElementById('newPass').value;
+  const confirm = document.getElementById('confirmNewPass').value;
+  const errEl   = document.getElementById('passChangeError');
+  const succEl  = document.getElementById('passChangeSuccess');
+  errEl.style.display = succEl.style.display = 'none';
+
+  if (!current || !newP || !confirm) { errEl.textContent = '️ All fields are required'; errEl.style.display = ''; return; }
+  if (newP.length < 6) { errEl.textContent = '️ New password must be at least 6 characters'; errEl.style.display = ''; return; }
+  if (newP !== confirm) { errEl.textContent = '️ New passwords do not match'; errEl.style.display = ''; return; }
+
+  try {
+    await API.changePassword(current, newP, confirm);
+    succEl.textContent = '✓ Password updated successfully!';
+    succEl.style.display = '';
+    document.getElementById('currentPass').value = '';
+    document.getElementById('newPass').value = '';
+    document.getElementById('confirmNewPass').value = '';
+    setTimeout(() => succEl.style.display = 'none', 4000);
+  } catch(e) {
+    errEl.textContent = '️ ' + (e.message || 'Failed to update password');
+    errEl.style.display = '';
+  }
+}
+
+// ── Delete Account ─────────────────────────────────────────────
+function showDeleteModal() {
+  document.getElementById('deleteModal').style.display = 'flex';
+  document.getElementById('deletePassInput').value = '';
+  document.getElementById('deleteError').style.display = 'none';
+}
+function hideDeleteModal() {
+  document.getElementById('deleteModal').style.display = 'none';
+}
+
+async function cancelDeletion() {
+  if (!Auth.isLoggedIn()) { window.location.href = 'auth.html'; return; }
+  if (!confirm('Are you sure you want to cancel the deletion and recover your account?')) return;
+  try {
+    const r = await fetch('api/auth.php?action=recover_account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ from_profile: true })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+    showToast('✓ Account recovered! Your listings are restored.', 'success');
+    const banner = document.getElementById('pendingDeletionBanner');
+    if (banner) banner.style.display = 'none';
+  } catch(e) {
+    showToast(e.message, 'error');
+  }
+}
+
+async function loadDeletionStatus() {
+  if (!Auth.isLoggedIn()) return;
+  try {
+    const r = await fetch('api/auth.php?action=check_deletion', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success || !d.data.scheduled) return;
+    const banner = document.getElementById('pendingDeletionBanner');
+    const countdown = document.getElementById('deletionCountdown');
+    if (banner) banner.style.display = '';
+    if (countdown) countdown.textContent = `Your account will be permanently deleted in ${d.data.days_left} days. Tap below to recover it.`;
+  } catch(e) {}
+}
+
+async function deleteAccount() {
+  const pass = document.getElementById('deletePassInput')?.value || '';
+  const errEl = document.getElementById('deleteError');
+  if (!pass) { if (errEl) { errEl.textContent = 'Password required'; errEl.style.display = ''; } return; }
+
+  try {
+    const r = await fetch('api/auth.php?action=delete_account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ password: pass })
+    });
+    const txt = await r.text();
+    let d; try { d = JSON.parse(txt); } catch(e) { throw new Error('Server error'); }
+    if (!d.success) throw new Error(d.error || 'Failed');
+
+    // Soft delete başarılı
+    const daysLeft = 30;
+    document.getElementById('deleteModal').style.display = 'none';
+    showToast('Account scheduled for deletion. You have 30 days to recover it.', 'success');
+
+    // Banner göster
+    const banner = document.getElementById('pendingDeletionBanner');
+    const countdown = document.getElementById('deletionCountdown');
+    if (banner) banner.style.display = '';
+    if (countdown) countdown.textContent = `Your account will be permanently deleted in ${daysLeft} days. Tap "Cancel Deletion" to recover it.`;
+
+    // Çıkış yap ama local storage'ı temizle
+    Auth.clearSession();
+    setTimeout(() => window.location.href = 'auth.html', 2000);
+  } catch(e) {
+    if (errEl) { errEl.textContent = e.message; errEl.style.display = ''; }
+  }
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ── Verification Badge ──────────────────────────────────────────────────
+async function loadVerifyStatus() {
+  const wrap = document.getElementById('verifyBadgeWrap');
+  if (!wrap) return;
+  try {
+    const d = await apiFetch('api/verify.php?action=status');
+    const status = d.status || 'none';
+    const badge  = d.badge  || 'basic';
+
+    const map = {
+      none:     { bg:'#f1f5f9', color:'#64748b', icon:'', label:'Not Verified' },
+      pending:  { bg:'#fef9c3', color:'#854d0e', icon:'⏳', label:'Verification Pending' },
+      approved: { bg:'#dcfce7', color:'#166534', icon:'✓', label:'Verified' },
+      rejected: { bg:'#fee2e2', color:'#991b1b', icon:'✕', label:'Verification Rejected' },
+    };
+    const cfg = map[status] || map.none;
+
+    wrap.innerHTML = `
+      <span style="display:inline-flex;align-items:center;gap:5px;background:${cfg.bg};color:${cfg.color};
+        border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;cursor:${status !== 'approved' ? 'pointer' : 'default'}"
+        onclick="${status !== 'approved' ? "window.location.href='verify.html'" : ''}">
+        ${cfg.icon} ${cfg.label}
+      </span>`;
+
+    // Profil başlığındaki rozet
+    const nameEl = document.getElementById('profileName');
+    if (nameEl && status === 'approved') {
+      if (!nameEl.querySelector('.verified-tick')) {
+        nameEl.insertAdjacentHTML('beforeend', '<span class="verified-tick" style="color:#16a34a;font-size:18px;margin-left:6px" title="Verified">✓</span>');
+      }
+    }
+
+    // Get Verified butonunu gizle/güncelle
+    const btn = document.getElementById('verifyBtn');
+    if (btn) {
+      btn.style.display = 'flex'; // önce göster
+      if (status === 'approved') {
+        btn.style.display = 'none';
+      } else if (status === 'pending') {
+        btn.textContent = '⏳ Verification Pending';
+        btn.style.background = '#fef9c3';
+        btn.style.color = '#854d0e';
+        btn.style.border = '1px solid #fde68a';
+        btn.removeAttribute('href');
+        btn.style.cursor = 'default';
+      } else if (status === 'rejected') {
+        btn.textContent = '✕ Rejected — Resubmit';
+        btn.style.background = '#fee2e2';
+        btn.style.color = '#991b1b';
+      }
+    }
+  } catch(e) {
+    // Giriş yapılmamışsa badge gösterme
+  }
+}
+</script>
+</body>
+</html>

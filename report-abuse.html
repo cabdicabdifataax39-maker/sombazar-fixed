@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <title>Report Abuse — SomBazar</title>
+  <meta name="description" content="Report a fraudulent listing, scam, or policy violation on SomBazar — Somaliland's online marketplace.">
+  <link rel="stylesheet" href="assets/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body{background:#f8fafc;font-family:'DM Sans',sans-serif}
+    .legal-wrap{max-width:860px;margin:0 auto;padding:40px 24px 100px}
+    .legal-hero{background:linear-gradient(135deg,#0c1445,#1a0a3c);border-radius:24px;padding:48px 40px;margin-bottom:40px;color:white;position:relative;overflow:hidden}
+    .legal-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(249,115,22,.25),transparent 70%);pointer-events:none}
+    .legal-hero::after{content:'';position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(139,92,246,.2),transparent 70%);pointer-events:none}
+    .legal-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);color:#fb923c;padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:16px}
+    .legal-hero h1{font-family:'Syne',sans-serif;font-size:38px;font-weight:900;margin:0 0 10px;letter-spacing:-0.5px}
+    .legal-hero p{color:rgba(255,255,255,.6);font-size:14px;margin:0}
+    .somali-box{background:linear-gradient(135deg,#fff7ed,#fffbf5);border:1px solid #fed7aa;border-radius:14px;padding:16px 20px;margin-bottom:32px;font-size:14px;color:#92400e;display:flex;align-items:flex-start;gap:12px;line-height:1.7}
+    .sb-icon{width:34px;height:34px;background:#f97316;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:white;flex-shrink:0;margin-top:1px}
+    .toc-box{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:24px 28px;margin-bottom:28px}
+    .toc-box h3{font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin:0 0 14px}
+    .toc-box ol{margin:0;padding-left:18px;columns:2;column-gap:24px}
+    .toc-box li{font-size:13px;margin-bottom:7px}
+    .toc-box a{color:#f97316;text-decoration:none;font-weight:500}
+    .toc-box a:hover{text-decoration:underline}
+    .card{background:white;border:1px solid #e2e8f0;border-radius:20px;padding:36px;margin-bottom:20px}
+    .section{margin-bottom:32px;padding-bottom:32px;border-bottom:1px solid #f1f5f9}
+    .section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .section h2{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#0f172a;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+    .num{width:27px;height:27px;background:#f97316;color:white;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;flex-shrink:0}
+    .section p{color:#4b5563;line-height:1.85;font-size:14px;margin:0 0 10px}
+    .section ul{color:#4b5563;font-size:14px;line-height:1.85;padding-left:22px;margin:8px 0 0}
+    .section ul li{margin-bottom:5px}
+    .section p:last-child{margin-bottom:0}
+    .note-green{background:#f0fdf4;border-left:3px solid #22c55e;border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;font-size:13px;color:#166534;line-height:1.7}
+    .note-red{background:#fef2f2;border-left:3px solid #ef4444;border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;font-size:13px;color:#b91c1c;line-height:1.7}
+    .note-blue{background:#eff6ff;border-left:3px solid #3b82f6;border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;font-size:13px;color:#1e40af;line-height:1.7}
+    .data-table{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0}
+    .data-table th{background:#f8fafc;padding:10px 14px;text-align:left;font-weight:700;color:#374151;border-bottom:1px solid #e2e8f0;font-size:12px}
+    .data-table td{padding:10px 14px;color:#4b5563;border-bottom:1px solid #f1f5f9;vertical-align:top}
+    .data-table tr:last-child td{border-bottom:none}
+    .related{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .rel-link{display:flex;align-items:center;gap:8px;background:white;border:1px solid #e2e8f0;border-radius:12px;padding:12px 18px;text-decoration:none;color:#374151;font-size:13px;font-weight:600;transition:all .2s}
+    .rel-link:hover{border-color:#f97316;color:#f97316;transform:translateY(-2px);box-shadow:0 4px 12px rgba(249,115,22,.1)}
+    .footer{text-align:center;padding:28px;color:#94a3b8;font-size:13px;margin-top:8px}
+    .footer a{color:#f97316;text-decoration:none}
+    .report-form input,.report-form textarea,.report-form select{width:100%;padding:11px 16px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;box-sizing:border-box;margin-bottom:14px}
+    .report-form input:focus,.report-form textarea:focus,.report-form select:focus{border-color:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+    .report-form label{font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:5px}
+    .report-form textarea{min-height:110px;resize:vertical}
+    .report-btn{background:#f97316;color:white;border:none;padding:13px 32px;border-radius:50px;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;width:100%}
+    .report-btn:hover{background:#ea6c0a;transform:translateY(-1px);box-shadow:0 6px 20px rgba(249,115,22,.3)}
+</style>
+</head>
+<body>
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+    <div class="header-actions"><a href="index.html" class="btn btn-ghost btn-sm">&#8592; Home</a></div>
+  </nav>
+</header>
+<div class="legal-wrap">
+  <div class="legal-hero">
+    <div class="legal-tag">Safety</div>
+    <h1>Report Abuse</h1>
+    <p>Help us keep SomBazar safe for everyone in Somaliland &nbsp;&#183;&nbsp; Reports are reviewed within 24 hours</p>
+  </div>
+
+  <div class="somali-box">
+    <div class="sb-icon">SO</div>
+    <div><strong>Af-Soomaali:</strong> Warbixin Xad-gudub — Haddaad aragtid wax aan saxnayn ama khaa&#39;in ah goobta, fadlan noo sheeg. Waxaan dib u eegi doonaa 24 saacadood gudahood. Warbixinahaaga waxay ahaanayaan sir.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="section" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
+      <h2><span class="num" style="background:#ef4444">!</span>What Can You Report?</h2>
+      <table class="data-table">
+        <tr><th>Violation Type</th><th>Examples</th><th>Priority</th></tr>
+        <tr><td><strong>Fraud &amp; Scam</strong></td><td>Fake listings, requesting advance payment, impersonation</td><td style="color:#ef4444;font-weight:700">High</td></tr>
+        <tr><td><strong>Prohibited Items</strong></td><td>Weapons, drugs, stolen goods, counterfeit products</td><td style="color:#ef4444;font-weight:700">High</td></tr>
+        <tr><td><strong>Harassment</strong></td><td>Threatening messages, personal attacks, stalking</td><td style="color:#ef4444;font-weight:700">High</td></tr>
+        <tr><td><strong>Fake Photos</strong></td><td>Stock images used instead of real product photos</td><td style="color:#f97316;font-weight:700">Medium</td></tr>
+        <tr><td><strong>Wrong Category</strong></td><td>Listing placed in wrong category deliberately</td><td style="color:#64748b;font-weight:700">Low</td></tr>
+        <tr><td><strong>Spam</strong></td><td>Duplicate listings, irrelevant content, mass messaging</td><td style="color:#64748b;font-weight:700">Low</td></tr>
+        <tr><td><strong>Other Violation</strong></td><td>Anything else that violates our Terms of Service</td><td style="color:#64748b;font-weight:700">Low</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section" style="border-bottom:1px solid #f1f5f9;margin-bottom:28px;padding-bottom:28px">
+      <h2><span class="num" style="background:#ef4444">!</span>Submit a Report</h2>
+      <p style="margin-bottom:20px">Fill out the form below. All reports are confidential. We do not reveal the identity of reporters to the reported party.</p>
+      <div class="report-form" id="reportForm">
+        <label>Type of violation *</label>
+        <select id="reportType">
+          <option value="">Select violation type...</option>
+          <option value="fraud">Fraud / Scam</option>
+          <option value="prohibited">Prohibited Item</option>
+          <option value="harassment">Harassment / Threats</option>
+          <option value="fake_photos">Fake Photos</option>
+          <option value="spam">Spam / Duplicate</option>
+          <option value="wrong_category">Wrong Category</option>
+          <option value="other">Other Violation</option>
+        </select>
+
+        <label>Listing URL or User Profile (if applicable)</label>
+        <input type="text" id="reportUrl" placeholder="e.g. http://sombazar.com/listing.html?id=123">
+
+        <label>Description of the problem *</label>
+        <textarea id="reportDesc" placeholder="Describe exactly what happened. The more detail you provide, the faster we can act. Please include what was promised vs. what happened, any suspicious communication, etc."></textarea>
+
+        <label>Your email address (optional, for follow-up)</label>
+        <input type="email" id="reportEmail" placeholder="your@email.com">
+
+        <div id="reportMsg" style="display:none;padding:12px 16px;border-radius:10px;font-size:14px;margin-bottom:14px"></div>
+
+        <button class="report-btn" onclick="submitReport()">Submit Report</button>
+      </div>
+
+      <div id="reportSuccess" style="display:none;text-align:center;padding:32px 0">
+        <div style="width:56px;height:56px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3 style="font-family:Syne,sans-serif;font-size:20px;margin:0 0 8px">Report Submitted</h3>
+        <p style="color:#64748b;font-size:14px">Thank you for helping keep SomBazar safe. We will review your report within 24 hours. If you provided your email, we&#39;ll send you an update.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">2</span>What Happens After You Report</h2>
+      <ul>
+        <li><strong>Within 2 hours:</strong> High-priority reports (fraud, weapons, harassment) are reviewed</li>
+        <li><strong>Within 24 hours:</strong> All other reports are reviewed by our moderation team</li>
+        <li><strong>Action taken:</strong> Listing removed, user warned, or account banned depending on severity</li>
+        <li><strong>Repeat offenders:</strong> Accounts with multiple violations are permanently banned</li>
+        <li><strong>Serious crimes:</strong> Cases involving weapons, drugs, or human trafficking are reported to Somaliland Police</li>
+      </ul>
+      <div class="note-green">All reports are treated confidentially. We will never reveal your identity to the reported party.</div>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">3</span>Emergency Contact</h2>
+      <p>For urgent safety concerns — threats, violence, or criminal activity — do not wait for our review. Contact us directly:</p>
+      <ul>
+        <li><strong>Email:</strong> abuse@sombazar.com</li>
+        <li><strong>WhatsApp:</strong> +252 63 XXX XXXX (urgent reports only)</li>
+        <li><strong>Somaliland Police:</strong> 999</li>
+      </ul>
+      <div class="note-red">If you or someone else is in immediate danger, contact Somaliland Police (999) immediately. Do not wait for our response.</div>
+    </div>
+
+    <div class="section" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
+      <h2><span class="num">4</span>False Reports</h2>
+      <p>Submitting false or malicious reports against other users is a violation of our Terms of Service and may result in your own account being suspended. Please only report genuine violations.</p>
+    </div>
+  </div>
+<div class="related">
+    <a href="terms.html" class="rel-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Terms of Service</a>
+    <a href="privacy.html" class="rel-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Privacy Policy</a>
+    <a href="cookie.html" class="rel-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>Cookie Policy</a>
+    <a href="report-abuse.html" class="rel-link"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Report Abuse</a>
+  </div>
+  <div class="footer">
+    <p>&#169; 2026 SomBazar &#183; Hargeisa, Somaliland<br>
+    <a href="terms.html">Terms</a> &#183; <a href="privacy.html">Privacy</a> &#183; <a href="cookie.html">Cookies</a> &#183; <a href="report-abuse.html">Report Abuse</a></p>
+  </div>
+<script>
+function submitReport() {
+  const type = document.getElementById('reportType').value;
+  const desc = document.getElementById('reportDesc').value.trim();
+  const msg  = document.getElementById('reportMsg');
+
+  if (!type) {
+    msg.style.display = 'block';
+    msg.style.background = '#fef2f2';
+    msg.style.color = '#b91c1c';
+    msg.textContent = 'Please select a violation type.';
+    return;
+  }
+  if (desc.length < 20) {
+    msg.style.display = 'block';
+    msg.style.background = '#fef2f2';
+    msg.style.color = '#b91c1c';
+    msg.textContent = 'Please provide more detail (at least 20 characters).';
+    return;
+  }
+
+  // In production this would POST to an API endpoint
+  document.getElementById('reportForm').style.display = 'none';
+  document.getElementById('reportSuccess').style.display = 'block';
+}
+</script>
+<script src="assets/app.js"></script></body></html>

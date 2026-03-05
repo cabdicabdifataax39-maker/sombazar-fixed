@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Account — SomBazar</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .verify-wrap{max-width:600px;margin:40px auto;padding:0 20px}
+    .step-indicator{display:flex;align-items:center;margin-bottom:32px}
+    .step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;transition:all .3s}
+    .step-dot.done{background:var(--primary-color);color:white}
+    .step-dot.active{background:var(--primary-color);color:white;box-shadow:0 0 0 4px rgba(255,107,0,.2)}
+    .step-dot.pending{background:#e5e7eb;color:#94a3b8}
+    .step-line{flex:1;height:2px;background:#e5e7eb;margin:0 6px}
+    .step-line.done{background:var(--primary-color)}
+    .doc-upload-slot{border:2px dashed var(--border-color);border-radius:14px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:var(--light-gray);position:relative}
+    .doc-upload-slot:hover{border-color:var(--primary-color);background:rgba(255,107,0,.04)}
+    .doc-upload-slot.uploaded{border-color:#10b981;background:#f0fdf4;border-style:solid}
+    .doc-preview{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:8px;display:none}
+    .badge-card{border:2px solid var(--border-color);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;text-align:center}
+    .badge-card:hover{border-color:var(--primary-color)}
+    .badge-card.selected{border-color:var(--primary-color);background:rgba(255,107,0,.05)}
+    .badge-icon{font-size:32px;margin-bottom:8px}
+    .badge-name{font-size:13px;font-weight:800;color:var(--dark)}
+    .badge-desc{font-size:11px;color:var(--gray);margin-top:4px;line-height:1.4}
+  </style>
+</head>
+<body>
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+    <a href="profile.html" class="btn btn-ghost btn-sm">← Back</a>
+  </nav>
+</header>
+
+<div class="verify-wrap">
+  <h1 style="font-size:22px;font-weight:800;margin-bottom:6px">Verify Your Account</h1>
+  <p style="font-size:13px;color:var(--gray);margin-bottom:24px">Get a verified badge and build trust with buyers. Verification takes up to 24 hours.</p>
+
+  <!-- Step indicator -->
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot1">1</div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-dot pending" id="dot2">2</div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-dot pending" id="dot3">3</div>
+  </div>
+
+  <!-- Step 1: Seller Type -->
+  <div id="step1">
+    <div class="section-block">
+      <div style="font-size:15px;font-weight:800;margin-bottom:16px">Step 1: What type of seller are you?</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+        <div class="badge-card selected" data-type="individual" onclick="selectType(this)">
+          <div class="badge-icon">👤</div>
+          <div class="badge-name">Individual</div>
+          <div class="badge-desc">Private seller • Personal ID required</div>
+        </div>
+        <div class="badge-card" data-type="agency" onclick="selectType(this)">
+          <div class="badge-icon">🏢</div>
+          <div class="badge-name">Agency</div>
+          <div class="badge-desc">Real estate / car dealer • Trade license required</div>
+        </div>
+        <div class="badge-card" data-type="company" onclick="selectType(this)">
+          <div class="badge-icon">🏭</div>
+          <div class="badge-name">Company</div>
+          <div class="badge-desc">Registered business • Full documents required</div>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:20px">
+        <label class="form-label">Phone Number (EVC/Zaad)</label>
+        <input class="form-input" type="tel" id="verifyPhone" placeholder="+252 61 XXX XXXX">
+      </div>
+      <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="goStep(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Upload documents -->
+  <div id="step2" style="display:none">
+    <div class="section-block">
+      <div style="font-size:15px;font-weight:800;margin-bottom:4px">Step 2: Upload Documents</div>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:16px">Upload clear, well-lit photos. All information must be readable.</p>
+
+      <div id="docsIndividual">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--dark)">Required for Individual:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="doc-upload-slot" id="slot-national_id_front" onclick="triggerUpload('national_id_front')">
+            <img class="doc-preview" id="prev-national_id_front" alt="">
+            <div style="font-size:28px;margin-bottom:8px">🪪</div>
+            <div style="font-size:13px;font-weight:700">National ID — Front</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px">Tap to upload</div>
+          </div>
+          <div class="doc-upload-slot" id="slot-national_id_back" onclick="triggerUpload('national_id_back')">
+            <img class="doc-preview" id="prev-national_id_back" alt="">
+            <div style="font-size:28px;margin-bottom:8px">🪪</div>
+            <div style="font-size:13px;font-weight:700">National ID — Back</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px">Tap to upload</div>
+          </div>
+        </div>
+        <div class="doc-upload-slot" id="slot-selfie" onclick="triggerUpload('selfie')">
+          <img class="doc-preview" id="prev-selfie" alt="">
+          <div style="font-size:28px;margin-bottom:8px">🤳</div>
+          <div style="font-size:13px;font-weight:700">Selfie holding your ID</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:4px">Your face + ID card must both be clearly visible</div>
+        </div>
+      </div>
+
+      <div id="docsCompany" style="display:none">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--dark)">Required for Agency/Company:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+          <div class="doc-upload-slot" id="slot-trade_license" onclick="triggerUpload('trade_license')">
+            <img class="doc-preview" id="prev-trade_license" alt="">
+            <div style="font-size:28px;margin-bottom:8px">📄</div>
+            <div style="font-size:13px;font-weight:700">Trade License</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px">Government issued business license</div>
+          </div>
+          <div class="doc-upload-slot" id="slot-authority_id" onclick="triggerUpload('authority_id')">
+            <img class="doc-preview" id="prev-authority_id" alt="">
+            <div style="font-size:28px;margin-bottom:8px">👤</div>
+            <div style="font-size:13px;font-weight:700">Authorized Person ID</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:4px">ID of the company representative</div>
+          </div>
+        </div>
+        <div class="doc-upload-slot" id="slot-office_photo" onclick="triggerUpload('office_photo')">
+          <img class="doc-preview" id="prev-office_photo" alt="">
+          <div style="font-size:28px;margin-bottom:8px">🏢</div>
+          <div style="font-size:13px;font-weight:700">Office/Shop Photo</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:4px">Photo of your physical location</div>
+        </div>
+      </div>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="file-national_id_front" accept="image/*" style="display:none" onchange="handleDocUpload(this,'national_id_front')">
+      <input type="file" id="file-national_id_back"  accept="image/*" style="display:none" onchange="handleDocUpload(this,'national_id_back')">
+      <input type="file" id="file-selfie"            accept="image/*" style="display:none" onchange="handleDocUpload(this,'selfie')">
+      <input type="file" id="file-trade_license"     accept="image/*" style="display:none" onchange="handleDocUpload(this,'trade_license')">
+      <input type="file" id="file-authority_id"      accept="image/*" style="display:none" onchange="handleDocUpload(this,'authority_id')">
+      <input type="file" id="file-office_photo"      accept="image/*" style="display:none" onchange="handleDocUpload(this,'office_photo')">
+
+      <div id="uploadError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;margin-top:12px;font-size:13px;color:#b91c1c"></div>
+      <div style="display:flex;gap:10px;margin-top:20px">
+        <button class="btn btn-ghost" onclick="goStep(1)">← Back</button>
+        <button class="btn btn-primary" style="flex:1" id="submitVerify" onclick="submitVerification()">Submit for Review</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Submitted -->
+  <div id="step3" style="display:none">
+    <div class="section-block" style="text-align:center;padding:40px 20px">
+      <div style="font-size:64px;margin-bottom:16px">⏳</div>
+      <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:8px">Documents Submitted!</div>
+      <p style="font-size:14px;color:var(--gray);max-width:360px;margin:0 auto 24px;line-height:1.6">
+        Our team will review your documents within <strong>24 hours</strong>. You will receive a notification once verified.
+      </p>
+      <div style="background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:16px;margin-bottom:20px;text-align:left;max-width:360px;margin-left:auto;margin-right:auto">
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px;color:#065f46">What happens next?</div>
+        <div style="font-size:12px;color:#065f46;line-height:1.8">
+          1. Moderator reviews your documents<br>
+          2. You get notified via WhatsApp/email<br>
+          3. Verified badge appears on your profile
+        </div>
+      </div>
+      <a href="profile.html" class="btn btn-primary">Go to Profile</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// Fallback: app.js yüklenemezse Auth crash'i önle
+window.Auth = window.Auth || {
+  getToken: () => localStorage.getItem('sb_token') || '',
+  getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  isLoggedIn: () => !!localStorage.getItem('sb_token'),
+  setSession: () => {},
+  clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+};
+window.API = window.API || {};
+</script>
+  <script src="assets/app.js"></script>
+<script>
+if (!Auth.isLoggedIn()) window.location.href = 'auth.html?redirect=verify.html';
+
+let sellerType = 'individual';
+let step = 1;
+let uploadedDocs = {}; // { doc_type: url }
+
+function selectType(el) {
+  document.querySelectorAll('.badge-card').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  sellerType = el.dataset.type;
+  document.getElementById('docsIndividual').style.display = sellerType === 'individual' ? '' : 'none';
+  document.getElementById('docsCompany').style.display    = sellerType !== 'individual' ? '' : 'none';
+}
+
+function goStep(s) {
+  if (s === 2) {
+    const phone = document.getElementById('verifyPhone').value.trim();
+    if (!phone) { showToast('Phone number required', 'error'); return; }
+  }
+  step = s;
+  [1,2,3].forEach(i => document.getElementById('step'+i).style.display = i===s ? '' : 'none');
+  [1,2,3].forEach(i => {
+    const dot = document.getElementById('dot'+i);
+    dot.className = 'step-dot ' + (i < s ? 'done' : i === s ? 'active' : 'pending');
+    dot.textContent = i < s ? '' : i;
+  });
+  [1,2].forEach(i => {
+    const line = document.getElementById('line'+i);
+    if (line) line.className = 'step-line ' + (i < s ? 'done' : '');
+  });
+}
+
+function triggerUpload(type) {
+  document.getElementById('file-' + type).click();
+}
+
+async function handleDocUpload(input, docType) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('File too large (max 5MB)', 'error'); return; }
+
+  const slot = document.getElementById('slot-' + docType);
+  slot.innerHTML = '<div style="font-size:24px;animation:spin .7s linear infinite">⏳</div><div style="font-size:12px;color:var(--gray);margin-top:8px">Uploading…</div>';
+
+  try {
+    const fd = new FormData();
+    fd.append('images[]', file);
+    const token = Auth.getToken();
+    const resp  = await fetch(`${API_BASE}/listings.php?action=upload_images&listing_id=0`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: fd
+    });
+    const text = await resp.text();
+    let result;
+    try { result = JSON.parse(text); }
+    catch(e) { throw new Error('Server error: ' + text.substring(0,100)); }
+    if (!result.success) throw new Error(result.error || 'Upload failed');
+    const url = result.data?.urls?.[0];
+    if (!url) throw new Error('No URL returned');
+
+    uploadedDocs[docType] = url;
+
+    slot.innerHTML = `
+      <img src="${url}" style="width:100%;height:110px;object-fit:cover;border-radius:10px;margin-bottom:6px">
+      <div style="font-size:11px;color:#10b981;font-weight:700">Uploaded</div>`;
+    slot.classList.add('uploaded');
+  } catch(e) {
+    slot.innerHTML = `<div style="font-size:12px;color:#ef4444">${e.message}</div>`;
+    showToast('Upload failed: ' + e.message, 'error');
+  }
+}
+
+async function submitVerification() {
+  const required = sellerType === 'individual'
+    ? ['national_id_front','national_id_back','selfie']
+    : ['trade_license','authority_id','office_photo'];
+
+  const missing = required.filter(d => !uploadedDocs[d]);
+  if (missing.length) {
+    document.getElementById('uploadError').textContent = 'Please upload all required documents: ' + missing.map(d => d.replace(/_/g,' ')).join(', ');
+    document.getElementById('uploadError').style.display = '';
+    return;
+  }
+
+  const btn = document.getElementById('submitVerify');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  try {
+    // Save docs to API
+    await fetch('api/verify.php?action=submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+      body: JSON.stringify({ seller_type: sellerType, docs: uploadedDocs, phone: document.getElementById('verifyPhone').value.trim() }),
+    }).then(r => r.json()).then(d => { if (!d.success) throw new Error(d.error); });
+    goStep(3);
+  } catch(e) {
+    showToast('Submission failed: ' + e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = 'Submit for Review';
+  }
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

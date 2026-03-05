@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="csrf-token" content="" id="csrfMeta">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+    <!-- Apple PWA Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SomBazar">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SomBazar — Somaliland's Largest Marketplace</title>
+    <link rel="preload" href="assets/style.min.css" as="style">
+  <link rel="preload" href="assets/app.min.js" as="script">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,700;0,9..40,800;1,9..40,400&family=Syne:wght@700;800&display=swap" as="style" crossorigin>
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "SomBazar",
+  "description": "Buy and sell in Somaliland — cars, houses, electronics and more",
+  "url": "https://YOURDOMAIN.COM",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://YOURDOMAIN.COM/listings.html?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+  <link rel="prefetch" href="listings.html">
+  <link rel="prefetch" href="assets/app.js">
+  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
+  <script>
+    (function(){
+      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
+      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, {
+        page_title: document.title,
+        page_location: window.location.href,
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+    })();
+  </script>
+  <script>
+    // Dark mode FOUC prevention — must run before DOM
+    (function(){
+      var t=localStorage.getItem('sb_theme')||
+        (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
+  <style id="critical-css">
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#f8fafc;color:#0f172a}
+    .header{background:#fff;border-bottom:1px solid #e2e8f0;height:60px;display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:100;gap:16px}
+    .hero{background:linear-gradient(135deg,#0c1445 0%,#1a2a6c 100%);color:#fff;padding:48px 20px 40px;text-align:center}
+  </style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+<!-- HEADER -->
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+    <form class="header-search" id="headerSearchForm">
+      <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…">
+      <button type="submit" class="header-search-btn" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+    </form>
+    <div class="header-actions">
+      <button id="langBtn" onclick="toggleLang()" style="background:var(--light-gray);border:1px solid var(--border-color);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:DM Sans;font-size:12px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:5px;transition:all .2s" title="Switch Language">
+          <span style="font-size:14px">&#x1F1F8;&#x1F1F4;</span> Somali
+        </button>
+      <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
+      <div id="header-user" style="display:none;align-items:center;gap:8px">
+        <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
+        </a>
+        <a href="profile.html?tab=offers" class="icon-btn" aria-label="Offers" style="position:relative" id="offerNavBtn" title="My Offers">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <span id="offerNavBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#f97316;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
+        </a>
+        <!-- Notification Bell -->
+        <div style="position:relative" id="notifBellWrap">
+          <button id="notifBell" onclick="toggleNotifDropdown()" class="icon-btn" aria-label="Notifications" style="position:relative;background:none;border:none;cursor:pointer;padding:6px;border-radius:50%;display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px"></span>
+          </button>
+          <!-- Dropdown -->
+          <div id="notifDropdown" class="notif-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:320px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;overflow:hidden;max-height:480px;overflow-y:auto">
+            <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-weight:800;font-size:14px;color:#1e293b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</span>
+              <button onclick="Notif.requestPushPermission()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;font-family:DM Sans" title="Enable push notifications">Enable push</button>
+            </div>
+            <div id="notifList"></div>
+          </div>
+        </div>
+        <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px"></a>
+      </div>
+      <a href="admin.html" id="admin-btn" style="display:none;background:#1e293b;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;align-items:center;gap:5px">Admin</a>
+      <button class="dark-mode-btn" onclick="toggleDarkMode()" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="post.html" class="btn-post-ad">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Post Ad
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- CATEGORY PILLS -->
+<div class="category-pills-section">
+  <div class="category-pills-wrap" id="categoryPills">
+    <button class="category-pill active" data-cat="all"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> All</button>
+    <button class="category-pill" data-cat="car"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h1l3-4h10l3 4h1a2 2 0 012 2v6a2 2 0 01-2 2h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/></svg> Cars</button>
+    <button class="category-pill" data-cat="house"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Houses</button>
+    <button class="category-pill" data-cat="land"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M3 14l4-4 4 4 4-4 4 4"/><path d="M3 22h18"/></svg> Land</button>
+    <button class="category-pill" data-cat="electronics"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Electronics</button>
+    <button class="category-pill" data-cat="furniture"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 9V7a2 2 0 00-2-2H6a2 2 0 00-2 2v2"/><path d="M4 9a2 2 0 000 4h16a2 2 0 000-4"/><line x1="8" y1="13" x2="8" y2="21"/><line x1="16" y1="13" x2="16" y2="21"/></svg> Furniture</button>
+    <button class="category-pill" data-cat="jobs"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="12"/><path d="M12 12h.01"/></svg> Jobs</button>
+    <button class="category-pill" data-cat="services"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg> Services</button>
+    <button class="category-pill" data-cat="hotel"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V8a2 2 0 012-2h14a2 2 0 012 2v14"/><path d="M3 22h18"/><path d="M9 22V12h6v10"/><path d="M9 8V6"/><path d="M15 8V6"/></svg> Hotels</button>
+  </div>
+</div>
+
+<main id="main-content" class="page-layout">
+  <div class="main-col">
+
+    <!-- HERO -->
+    <div class="hero-banner animate-slide-up">
+      <div class="hero-dot" style="width:8px;height:8px;background:#f97316;top:20%;left:8%;animation-delay:0s;opacity:0.7"></div>
+      <div class="hero-dot" style="width:5px;height:5px;background:#fb923c;top:60%;left:12%;animation-delay:1.2s;opacity:0.5"></div>
+      <div class="hero-dot" style="width:10px;height:10px;background:rgba(139,92,246,0.6);top:30%;right:15%;animation-delay:0.6s"></div>
+      <div class="hero-dot" style="width:6px;height:6px;background:#f97316;bottom:25%;right:8%;animation-delay:1.8s;opacity:0.6"></div>
+      <h1 class="hero-title">
+        Somaliland's Largest<br>
+        <span style="color:var(--primary-color)">Online Marketplace</span>
+      </h1>
+      <p class="hero-subtitle">Buy, sell &amp; rent — Cars, Houses, Land and more</p>
+      <form class="hero-search-bar" id="heroSearchForm">
+        <input class="hero-search-input" id="heroSearchInput" placeholder="What are you looking for?">
+        <button type="submit" class="hero-search-submit">Search</button>
+      </form>
+      <div class="stats-row">
+        <div class="stat-chip"><span class="stat-chip-num">12K+</span> Listings</div>
+        <div class="stat-chip"><span class="stat-chip-num">8K+</span> Sellers</div>
+        <div class="stat-chip"><span class="stat-chip-num" id="statCities">7</span> Cities</div>
+      </div>
+    </div>
+
+    <!-- BROWSE BY CITY -->
+    <div class="section-block">
+      <div class="section-header">
+        <span class="section-title">Browse by City</span>
+      </div>
+      <div style="display:flex;gap:10px;padding:14px 20px;flex-wrap:wrap">
+        <a href="listings.html?city=Hargeisa" class="filter-chip">Hargeisa</a>
+        <a href="listings.html?city=Berbera" class="filter-chip">Berbera</a>
+        <a href="listings.html?city=Burco" class="filter-chip">Burco</a>
+        <a href="listings.html?city=Borama" class="filter-chip">Borama</a>
+        <a href="listings.html?city=Gabiley" class="filter-chip">Gabiley</a>
+        <a href="listings.html?city=Ceerigaavo" class="filter-chip">Ceerigaavo</a>
+        <a href="listings.html?city=Laascaanood" class="filter-chip">Laascaanood</a>
+      </div>
+    </div>
+
+    <!-- FEATURED LISTINGS -->
+    <div class="section-block" id="featuredSection" style="display:none">
+      <div class="section-header">
+        <span class="section-title">Featured Listings <span class="premium-live-badge">LIVE</span></span>
+        <a href="listings.html?featured=1" class="see-all-link">See all</a>
+      </div>
+      <div class="listings-grid" id="featuredGrid"></div>
+    </div>
+
+    <!-- ALL / CATEGORY LISTINGS -->
+    <div class="section-block">
+      <div class="section-header">
+        <span class="section-title" id="catSectionTitle">Recent Listings</span>
+        <a href="listings.html" class="see-all-link" id="catSeeAll">See all</a>
+      </div>
+      <div class="listings-grid" id="listingsGrid">
+        <div style="grid-column:1/-1;padding:20px" id="loadingCards"></div>
+      </div>
+      <div id="emptyState" class="empty-state" style="display:none">
+        <div class="empty-state-icon"></div>
+        <div class="empty-state-title">No listings yet</div>
+        <p class="empty-state-desc">Be the first to post in this category!</p>
+        <a href="post.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">Post an Ad</a>
+      </div>
+    </div>
+
+  </div><!-- .main-col -->
+
+  <!-- SIDEBAR -->
+  <aside class="side-col">
+
+    <!-- Post Ad CTA -->
+    <div class="sidebar-box" style="background:linear-gradient(135deg,var(--primary-color),var(--secondary-color));padding:20px;text-align:center;color:white;border:none;margin-bottom:0">
+            <div style="font-size:16px;font-weight:800;margin-bottom:6px" id="sb-sell-title">Sell Something?</div>
+      <p style="font-size:13px;opacity:.9;margin-bottom:14px;line-height:1.5" id="sb-sell-desc">Post your ad for free and reach thousands of buyers.</p>
+      <a href="post.html" class="btn btn-sm" style="background:white;color:var(--primary-color)" id="sb-sell-btn">+ Post Free Ad</a>
+    </div>
+
+    <!-- Featured Sellers -->
+    <div class="sidebar-box">
+      <div class="sidebar-box-header" id="sb-sellers-title">Top Sellers</div>
+      <div id="topSellersBox" style="padding:4px 0"></div>
+    </div>
+
+    <!-- Quick Tips -->
+    <div class="sidebar-box" style="background:#fffbeb;border:1px solid #fde68a">
+      <div class="sidebar-box-header" style="color:#92400e" id="sb-tips-title">Safety Tips</div>
+      <ul style="font-size:12px;color:#78350f;line-height:2;padding-left:18px;margin:0" id="sb-tips-list">
+        <li id="tip1">Meet in a safe, public place</li>
+        <li id="tip2">Never pay before seeing the item</li>
+        <li id="tip3">Verify seller identity</li>
+        <li id="tip4">Be wary of very low prices</li>
+      </ul>
+    </div>
+
+  </aside>
+
+</main>
+
+<!-- MOBILE NAV -->
+<nav class="mobile-bottom-nav">
+  <ul>
+    <li><a href="index.html" class="mob-nav-btn active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a></li>
+    <li><a href="listings.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Listings</span></a></li>
+    <li><a href="post.html" class="mob-nav-btn"><span class="mob-icon">+</span><span>Post</span></a></li>
+    <li><a href="messages.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></a></li>
+    <li><a href="profile.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></a></li>
+  </ul>
+</nav>
+
+<script>
+// Fallback: app.js yüklenemezse Auth crash'i önle
+window.Auth = window.Auth || {
+  getToken: () => localStorage.getItem('sb_token') || '',
+  getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  isLoggedIn: () => !!localStorage.getItem('sb_token'),
+  setSession: () => {},
+  clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+};
+window.API = window.API || {};
+</script>
+  <script src="assets/app.min.js"></script>
+<script>
+const CATS = [
+  { id:'all', label:'All', emoji:'' },
+  { id:'car', label:'Cars', emoji:'' },
+  { id:'house', label:'Houses', emoji:'' },
+  { id:'land', label:'Land', emoji:'' },
+  { id:'electronics', label:'Electronics', emoji:'' },
+  { id:'furniture', label:'Furniture', emoji:'' },
+  { id:'jobs', label:'Jobs', emoji:'' },
+  { id:'services', label:'Services', emoji:'' },
+  { id:'hotel', label:'Hotels', emoji:'' },
+];
+
+let activeCat = 'all';
+
+// Sidebar categories removed — now using top sellers instead
+
+function setCategory(cat) {
+  activeCat = cat;
+  document.querySelectorAll('.category-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === cat));
+  document.querySelectorAll('[data-sidebar]').forEach(b => {
+    b.style.background   = b.dataset.sidebar === cat ? 'rgba(255,107,0,.08)' : 'transparent';
+    b.style.color        = b.dataset.sidebar === cat ? 'var(--primary-color)' : 'var(--dark)';
+    b.style.borderLeft   = b.dataset.sidebar === cat ? '3px solid var(--primary-color)' : '3px solid transparent';
+  });
+  const info = CATS.find(c => c.id === cat);
+  document.getElementById('catSectionTitle').textContent = cat === 'all' ? 'Recent Listings' : `${info.label}`;
+  document.getElementById('catSeeAll').href = cat === 'all' ? 'listings.html' : `listings.html?category=${cat}`;
+  loadListings(true);
+}
+
+document.getElementById('categoryPills').addEventListener('click', e => {
+  if (e.target.matches('.category-pill')) setCategory(e.target.dataset.cat);
+});
+
+// Search
+document.getElementById('heroSearchForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const q = document.getElementById('heroSearchInput').value.trim();
+  if (q) window.location.href = `listings.html?q=${encodeURIComponent(q)}`;
+});
+document.getElementById('headerSearchForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const q = document.getElementById('headerSearchInput').value.trim();
+  if (q) window.location.href = `listings.html?q=${encodeURIComponent(q)}`;
+});
+
+// Load featured
+async function loadFeatured() {
+  try {
+    const listings = await API.getListings({ featured: 1, pageSize: 6 });
+    if (listings.length) {
+      document.getElementById('featuredSection').style.display = '';
+      document.getElementById('featuredGrid').innerHTML = listings.map(listingCardHTML).join('');
+    }
+  } catch (e) {}
+}
+
+// Load main listings
+let listingPage = 1;
+let listingLoading = false;
+let listingDone = false;
+const PAGE_SIZE = 12;
+
+async function loadListings(reset = false) {
+  if (listingLoading) return;
+  if (!reset && listingDone) return;
+
+  if (reset) {
+    listingPage = 1;
+    listingDone = false;
+    document.getElementById('listingsGrid').innerHTML = `<div style="grid-column:1/-1">${skeletonCards(8)}</div>`;
+    document.getElementById('emptyState').style.display = 'none';
+  }
+
+  listingLoading = true;
+  try {
+    const params = { pageSize: PAGE_SIZE, page: listingPage };
+    if (activeCat !== 'all') params.category = activeCat;
+    const listings = await API.getListings(params);
+
+    const grid = document.getElementById('listingsGrid');
+    if (listingPage === 1) grid.innerHTML = '';
+
+    if (listings.length === 0 && listingPage === 1) {
+      document.getElementById('emptyState').style.display = '';
+    } else {
+      grid.insertAdjacentHTML('beforeend', listings.map(listingCardHTML).join(''));
+      if (listings.length < PAGE_SIZE) {
+        listingDone = true;
+        if (listingPage > 1) {
+          grid.insertAdjacentHTML('beforeend', `<div style="grid-column:1/-1;text-align:center;padding:20px;font-size:13px;color:var(--gray)">✓ All listings loaded</div>`);
+        }
+      } else {
+        listingPage++;
+      }
+    }
+  } catch (e) {
+    document.getElementById('listingsGrid').innerHTML =
+      `<div style="padding:20px;color:var(--gray);font-size:13px">Could not load listings. Make sure the server is running.</div>`;
+  }
+  listingLoading = false;
+}
+
+// Infinite scroll
+window.addEventListener('scroll', () => {
+  if (listingDone || listingLoading) return;
+  const footer = document.querySelector('footer');
+  const threshold = footer ? footer.offsetTop - window.innerHeight - 200 : document.body.offsetHeight - window.innerHeight - 200;
+  if (window.scrollY >= threshold) loadListings();
+});
+
+loadFeatured();
+loadListings();
+</script>
+<!-- FOOTER -->
+<footer style="background:var(--dark);color:white;margin-top:60px;padding:48px 0 24px">
+  <div style="max-width:1200px;margin:0 auto;padding:0 20px">
+
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px">
+
+      <!-- Brand -->
+      <div>
+        <div style="font-size:22px;font-weight:900;color:var(--primary-color);font-family:'Playfair Display',serif;margin-bottom:12px">SomBazar</div>
+        <p style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:16px" id="footer-desc">Somaliland's largest online marketplace. Buy, sell and rent cars, houses, land and more.</p>
+        <div style="display:flex;gap:10px">
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .2s" onmouseover="this.style.background='var(--primary-color)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">f</a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:16px;transition:background .2s" onmouseover="this.style.background='var(--primary-color)'" onmouseout="this.style.background='rgba(255,255,255,.1)'"">t</a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:14px;transition:background .2s" onmouseover="this.style.background='#25D366'" onmouseout="this.style.background='rgba(255,255,255,.1)'">W</a>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div>
+        <div style="font-size:13px;font-weight:800;color:white;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px" id="footer-cats-title">Categories</div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+          <li><a href="listings.html?category=car" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h1l3-4h10l3 4h1a2 2 0 012 2v6a2 2 0 01-2 2h-2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/></svg> Cars</a></li>
+          <li><a href="listings.html?category=house" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Houses</a></li>
+          <li><a href="listings.html?category=land" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M3 14l4-4 4 4 4-4 4 4"/><path d="M3 22h18"/></svg> Land</a></li>
+          <li><a href="listings.html?category=electronics" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Electronics</a></li>
+          <li><a href="listings.html?category=hotel" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V8a2 2 0 012-2h14a2 2 0 012 2v14"/><path d="M3 22h18"/><path d="M9 22V12h6v10"/><path d="M9 8V6"/><path d="M15 8V6"/></svg> Hotels</a></li>
+        </ul>
+      </div>
+
+      <!-- Company -->
+      <div>
+        <div style="font-size:13px;font-weight:800;color:white;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px" id="footer-company-title">Company</div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+          <li><a href="faq.html" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'" id="footer-about">About Us</a></li>
+          <li><a href="contact.html" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'" href="contact.html" id="footer-contact">Contact</a></li>
+          <li><a href="contact.html" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'" id="footer-careers">Careers</a></li>
+          <li><a href="contact.html" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'" id="footer-advertise">Advertise</a></li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <div style="font-size:13px;font-weight:800;color:white;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px" id="footer-legal-title">Legal</div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px">
+          <li><a href="terms.html" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'" href="terms.html" id="footer-terms">Terms of Service</a></li>
+          <li><a href="privacy.html" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'" href="privacy.html" id="footer-privacy">Privacy Policy</a></li>
+          <li><a href="cookie.html" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'" id="footer-cookies">Cookie Policy</a></li>
+          <li><a href="contact.html" style="font-size:13px;color:rgba(255,255,255,.6);text-decoration:none" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,.6)'" id="footer-report">Report Abuse</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+      <span style="font-size:12px;color:rgba(255,255,255,.4)" id="footer-copy">© 2026 SomBazar. All rights reserved.</span>
+      <div style="display:flex;gap:16px">
+        <span style="font-size:12px;color:rgba(255,255,255,.4)">🇸🇴 Somaliland</span>
+        <span style="font-size:12px;color:rgba(255,255,255,.4)">Made with ❤️</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

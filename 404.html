@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found — SomBazar</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@800;900&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'DM Sans',sans-serif;background:#f8fafc;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;overflow:hidden}
+    .bg{position:fixed;inset:0;background:linear-gradient(135deg,#0c1445 0%,#1a0a3c 50%,#0f172a 100%);z-index:-1}
+    .orb1{position:fixed;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(249,115,22,.3) 0%,transparent 70%);pointer-events:none}
+    .orb2{position:fixed;bottom:-100px;left:-100px;width:350px;height:350px;background:radial-gradient(circle,rgba(139,92,246,.2) 0%,transparent 70%);pointer-events:none}
+    .card{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:28px;padding:56px 48px;max-width:520px;width:100%;animation:fadeUp .6s ease both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    .num{font-family:'Syne',sans-serif;font-size:120px;font-weight:900;line-height:1;background:linear-gradient(135deg,#f97316,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;letter-spacing:-4px}
+    h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:white;margin-bottom:12px}
+    p{font-size:15px;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:36px}
+    .links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn-home{background:#f97316;color:white;padding:13px 28px;border-radius:50px;text-decoration:none;font-weight:700;font-size:14px;transition:all .2s;box-shadow:0 4px 16px rgba(249,115,22,.4)}
+    .btn-home:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(249,115,22,.5)}
+    .btn-back{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);padding:13px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:14px;border:1px solid rgba(255,255,255,.15);transition:all .2s}
+    .btn-back:hover{background:rgba(255,255,255,.15)}
+    .search-row{margin-top:28px}
+    .search-input{width:100%;padding:12px 20px;border-radius:50px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:white;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:all .2s}
+    .search-input::placeholder{color:rgba(255,255,255,.4)}
+    .search-input:focus{border-color:rgba(249,115,22,.6);background:rgba(255,255,255,.12)}
+    .logo{font-family:'Syne',sans-serif;font-size:22px;font-weight:900;color:#f97316;text-decoration:none;display:inline-block;margin-bottom:32px}
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="orb1"></div>
+  <div class="orb2"></div>
+  <div class="card">
+    <a href="index.html" class="logo">SomBazar</a>
+    <div class="num">404</div>
+    <h1>Page Not Found</h1>
+    <p>The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+    <div class="links">
+      <a href="index.html" class="btn-home">← Go Home</a>
+      <a href="listings.html" class="btn-back">Browse Listings</a>
+    </div>
+    <div class="search-row">
+      <form onsubmit="event.preventDefault();window.location.href='listings.html?q='+encodeURIComponent(this.q.value)">
+        <input class="search-input" name="q" placeholder="Search for something else…" autocomplete="off">
+      </form>
+    </div>
+  </div>
+</body>
+</html>

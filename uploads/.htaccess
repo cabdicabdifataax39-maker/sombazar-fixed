@@ -1,0 +1,10 @@
+# SomBazar — uploads klasörü güvenliği
+Options -Indexes -ExecCGI
+<FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|cgi|sh|rb)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+<FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>

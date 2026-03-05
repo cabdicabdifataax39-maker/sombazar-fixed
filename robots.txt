@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /listings.html
+Allow: /listing.html
+Allow: /user.html
+Allow: /auth.html
+
+# API ve admin dizinlerini engelle
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /profile.html
+Disallow: /messages.html
+Disallow: /post.html
+Disallow: /payment.html
+Disallow: /packages.html
+Disallow: /verify.html
+Disallow: /reset-password.html
+Disallow: /*.php$
+Disallow: /.env
+Disallow: /assets/
+
+# Sitemap
+Sitemap: https://YOURDOMAIN.COM/sitemap.xml
+Sitemap: https://YOURDOMAIN.COM/sitemap.php

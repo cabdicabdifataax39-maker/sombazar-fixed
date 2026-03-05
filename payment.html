@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Payment — SomBazar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Poppins,sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh}
+
+    .topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .topbar-logo{font-weight:800;font-size:20px;color:#1e293b;text-decoration:none}
+    .topbar-logo span{background:#f97316;color:#fff;padding:1px 7px;border-radius:6px;font-size:13px;margin-right:4px}
+    .topbar-back{color:#f97316;text-decoration:none;font-weight:600;font-size:13px}
+
+    .page{max-width:560px;margin:40px auto;padding:0 20px 60px}
+
+    /* STEPS */
+    .steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:36px}
+    .step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative}
+    .step:not(:last-child)::after{content:'';position:absolute;top:16px;left:60%;width:80%;height:2px;background:#e2e8f0;z-index:0}
+    .step.done::after{background:#f97316}
+    .step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;z-index:1;position:relative;border:2px solid #e2e8f0;background:#fff;color:#94a3b8}
+    .step.done .step-dot{background:#f97316;border-color:#f97316;color:#fff}
+    .step.active .step-dot{background:#fff;border-color:#f97316;color:#f97316;box-shadow:0 0 0 4px rgba(249,115,22,.15)}
+    .step-label{font-size:10px;color:#94a3b8;font-weight:600;text-align:center}
+    .step.done .step-label,.step.active .step-label{color:#f97316}
+
+    /* CARDS */
+    .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:28px;margin-bottom:20px}
+    .card-title{font-size:16px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+
+    /* PLAN SUMMARY */
+    .plan-summary{display:flex;align-items:center;justify-content:space-between;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:16px 20px;margin-bottom:20px}
+    .plan-summary .plan-name{font-weight:700;font-size:16px}
+    .plan-summary .plan-price{font-size:28px;font-weight:800;color:#f97316}
+    .plan-summary .plan-period{font-size:12px;color:#64748b}
+
+    /* METHOD SELECT */
+    .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+    .method-card{border:2px solid #e2e8f0;border-radius:12px;padding:16px;cursor:pointer;text-align:center;transition:all .2s}
+    .method-card:hover{border-color:#f97316}
+    .method-card.selected{border-color:#f97316;background:#fff7ed}
+    .method-card .method-logo{font-size:28px;margin-bottom:6px}
+    .method-card .method-name{font-weight:700;font-size:14px}
+    .method-card .method-sub{font-size:11px;color:#64748b;margin-top:2px}
+    .zaad-selected{border-color:#16a34a !important;background:#f0fdf4 !important}
+    .edahab-selected{border-color:#2563eb !important;background:#eff6ff !important}
+
+    /* SEND TO BOX */
+    .send-to{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:20px}
+    .send-to-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .send-to-num{font-size:28px;font-weight:800;color:#1e293b;letter-spacing:2px;margin-bottom:2px}
+    .send-to-name{font-size:13px;color:#64748b}
+    .copy-btn{margin-top:10px;background:#f97316;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-family:Poppins;font-size:12px;font-weight:700;cursor:pointer}
+    .copy-btn:active{background:#ea6c0a}
+
+    /* FORM */
+    .form-group{margin-bottom:18px}
+    .form-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;display:block}
+    .form-label .req{color:#ef4444}
+    .form-input{width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:Poppins;font-size:14px;color:#1e293b;outline:none;transition:border .2s}
+    .form-input:focus{border-color:#f97316}
+    .form-hint{font-size:11px;color:#94a3b8;margin-top:4px}
+    .form-error{font-size:12px;color:#ef4444;margin-top:4px;display:none}
+
+    /* UPLOAD */
+    .upload-area{border:2px dashed #e2e8f0;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+    .upload-area:hover{border-color:#f97316;background:#fff7ed}
+    .upload-area.has-file{border-color:#10b981;background:#f0fdf4}
+    .upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .upload-icon{font-size:32px;margin-bottom:8px}
+    .upload-text{font-size:13px;font-weight:600;color:#374151}
+    .upload-sub{font-size:11px;color:#94a3b8;margin-top:4px}
+    .upload-preview{width:100%;max-height:160px;object-fit:contain;border-radius:8px;margin-top:8px;display:none}
+
+    /* SUBMIT */
+    .btn-submit{width:100%;padding:14px;background:#f97316;color:#fff;border:none;border-radius:12px;font-family:Poppins;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .btn-submit:hover{background:#ea6c0a}
+    .btn-submit:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed}
+
+    /* SUCCESS */
+    .success-card{text-align:center;padding:40px 28px}
+    .success-icon{font-size:64px;margin-bottom:16px;animation:pop .4s ease}
+    @keyframes pop{0%{transform:scale(.5)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
+    .success-title{font-size:22px;font-weight:800;margin-bottom:8px}
+    .success-sub{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:24px}
+    .success-ref{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;font-size:13px;margin-bottom:24px}
+    .success-ref b{display:block;font-size:18px;color:#f97316;margin-top:4px}
+    .btn-home{display:inline-block;padding:11px 28px;background:#f97316;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none}
+    .btn-outline{display:inline-block;padding:11px 28px;border:2px solid #e2e8f0;color:#374151;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;margin-right:10px}
+  </style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="topbar-logo"><span>SB</span>SomBazar</a>
+  <a href="packages.html" class="topbar-back">← Change Plan</a>
+</nav>
+
+<div class="page">
+
+  <!-- STEPS -->
+  <div class="steps">
+    <div class="step done" id="step1-dot">
+      <div class="step-dot">1</div>
+      <div class="step-label">Select Plan</div>
+    </div>
+    <div class="step active" id="step2-dot">
+      <div class="step-dot">2</div>
+      <div class="step-label">Pay & Submit</div>
+    </div>
+    <div class="step" id="step3-dot">
+      <div class="step-dot">3</div>
+      <div class="step-label">Confirmation</div>
+    </div>
+  </div>
+
+  <!-- STEP 2: PAYMENT FORM -->
+  <div id="paymentForm">
+
+    <!-- Plan summary -->
+    <div class="plan-summary">
+      <div>
+        <div class="plan-name" id="planName">—</div>
+        <div class="plan-period">30 days · Billed manually</div>
+      </div>
+      <div>
+        <div class="plan-price" id="planPrice">$—</div>
+      </div>
+    </div>
+
+    <!-- Method select -->
+    <div class="card">
+      <div class="card-title"> Select Payment Method</div>
+      <div class="method-grid">
+        <div class="method-card" id="zaadCard" onclick="selectMethod('zaad')">
+          <div class="method-logo"></div>
+          <div class="method-name" style="color:#16a34a">Zaad</div>
+          <div class="method-sub">Telesom</div>
+        </div>
+        <div class="method-card" id="edahabCard" onclick="selectMethod('edahab')">
+          <div class="method-logo"></div>
+          <div class="method-name" style="color:#2563eb">eDahab</div>
+          <div class="method-sub">Dahabshiil</div>
+        </div>
+      </div>
+
+      <!-- Send to number -->
+      <div class="send-to" id="sendToBox" style="display:none">
+        <div class="send-to-label">Send <span id="sendAmount">$—</span> to this number</div>
+        <div class="send-to-num" id="sendNumber">—</div>
+        <div class="send-to-name" id="sendName">—</div>
+        <button class="copy-btn" onclick="copyNumber()"> Copy Number</button>
+      </div>
+    </div>
+
+    <!-- Reference code + screenshot -->
+    <div class="card">
+      <div class="card-title"> Confirm Your Payment</div>
+
+      <div class="form-group">
+        <label class="form-label">Reference Code <span class="req">*</span></label>
+        <input class="form-input" id="refCode" placeholder="e.g. TXN123456789" maxlength="60">
+        <div class="form-hint">The transaction ID / reference number from your Zaad or eDahab confirmation message</div>
+        <div class="form-error" id="refError">Please enter a valid reference code</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Screenshot (optional but recommended)</label>
+        <div class="upload-area" id="uploadArea">
+          <input type="file" accept="image/*" id="screenshotInput" onchange="handleScreenshot(this)">
+          <div id="uploadContent">
+            <div class="upload-icon"></div>
+            <div class="upload-text">Take screenshot of payment confirmation</div>
+            <div class="upload-sub">Tap to select · JPG/PNG · Max 5MB</div>
+          </div>
+          <img id="uploadPreview" class="upload-preview">
+        </div>
+        <div class="form-hint">Speeds up verification — admin sees the payment proof immediately</div>
+      </div>
+
+      <div class="form-error" style="display:block;margin-bottom:12px;font-size:13px" id="submitError"></div>
+
+      <button class="btn-submit" id="submitBtn" onclick="submitPayment()" disabled>
+        <span id="submitBtnText">Select a payment method first</span>
+      </button>
+    </div>
+
+  </div><!-- /paymentForm -->
+
+  <!-- STEP 3: SUCCESS -->
+  <div id="successView" style="display:none">
+    <div class="card success-card">
+      <div class="success-icon">⏳</div>
+      <div class="success-title">Payment Submitted!</div>
+      <div class="success-sub">
+        Our team will verify your payment within <strong>2 hours</strong>.<br>
+        You'll see your plan update automatically in your profile.
+      </div>
+      <div class="success-ref">
+        Your reference code:
+        <b id="confirmedRef">—</b>
+      </div>
+      <div>
+        <a href="profile.html" class="btn-outline">Go to Profile</a>
+        <a href="index.html" class="btn-home">Back to Home</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// Fallback: app.js yüklenemezse Auth crash'i önle
+window.Auth = window.Auth || {
+  getToken: () => localStorage.getItem('sb_token') || '',
+  getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  isLoggedIn: () => !!localStorage.getItem('sb_token'),
+  setSession: () => {},
+  clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+};
+window.API = window.API || {};
+</script>
+  <script src="assets/app.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const plan  = params.get('plan')  || 'standard';
+const price = params.get('price') || '8';
+
+let selectedMethod = null;
+let screenshotUrl  = null;
+let paymentNumbers = {};
+
+const PLAN_LABELS = { standard:'Standard Plan', pro:'Pro Plan', agency:'Agency Plan' };
+
+async function init() {
+  if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=payment.html?plan='+plan+'&price='+price; return; }
+
+  document.getElementById('planName').textContent  = PLAN_LABELS[plan] || plan;
+  document.getElementById('planPrice').textContent = '$' + price;
+  document.getElementById('sendAmount').textContent = '$' + price;
+
+  try {
+    const r = await fetch('api/payment.php?action=plans');
+    const d = await r.json();
+    if (d.success) paymentNumbers = d.data.numbers;
+  } catch(e) {}
+}
+
+function selectMethod(method) {
+  selectedMethod = method;
+
+  document.getElementById('zaadCard').className  = 'method-card' + (method==='zaad'  ? ' zaad-selected'   : '');
+  document.getElementById('edahabCard').className = 'method-card' + (method==='edahab'? ' edahab-selected' : '');
+
+  const info = paymentNumbers[method] || {};
+  document.getElementById('sendNumber').textContent = info.number || 'Contact support';
+  document.getElementById('sendName').textContent   = info.name   || '';
+  document.getElementById('sendToBox').style.display = 'block';
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = false;
+  document.getElementById('submitBtnText').textContent = `Submit Payment — $${price}`;
+}
+
+function copyNumber() {
+  const num = document.getElementById('sendNumber').textContent;
+  navigator.clipboard?.writeText(num).then(() => showToast('Number copied!', 'success')).catch(() => {});
+}
+
+async function handleScreenshot(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('File too large (max 5MB)', 'error'); return; }
+
+  const area = document.getElementById('uploadArea');
+  area.querySelector('#uploadContent').innerHTML = '<div style="font-size:24px">⏳</div><div style="font-size:12px;color:#64748b">Uploading…</div>';
+
+  try {
+    const fd = new FormData();
+    fd.append('images[]', file);
+    const r = await fetch('api/listings.php?action=upload_images&listing_id=', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + Auth.getToken() },
+      body: fd,
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+    screenshotUrl = d.data.urls?.[0];
+
+    const preview = document.getElementById('uploadPreview');
+    preview.src = screenshotUrl;
+    preview.style.display = 'block';
+    area.querySelector('#uploadContent').style.display = 'none';
+    area.classList.add('has-file');
+  } catch(e) {
+    area.querySelector('#uploadContent').innerHTML = `<div style="font-size:12px;color:#ef4444">Upload failed: ${e.message}</div>`;
+  }
+}
+
+async function submitPayment() {
+  const ref = document.getElementById('refCode').value.trim();
+  const errEl = document.getElementById('submitError');
+  const refErr = document.getElementById('refError');
+
+  errEl.textContent = '';
+  refErr.style.display = 'none';
+
+  if (!selectedMethod) { errEl.textContent = 'Please select a payment method.'; return; }
+  if (ref.length < 4)  { refErr.style.display = 'block'; return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  document.getElementById('submitBtnText').textContent = 'Submitting…';
+
+  try {
+    const r = await fetch('api/payment.php?action=initiate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({
+        plan, method: selectedMethod,
+        reference_code: ref,
+        screenshot_url: screenshotUrl,
+      })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+
+    // Show success
+    document.getElementById('paymentForm').style.display = 'none';
+    document.getElementById('successView').style.display = 'block';
+    document.getElementById('confirmedRef').textContent = ref;
+
+    // Update steps
+    document.getElementById('step2-dot').className = 'step done';
+    document.getElementById('step3-dot').className = 'step active';
+
+  } catch(e) {
+    errEl.textContent = e.message;
+    btn.disabled = false;
+    document.getElementById('submitBtnText').textContent = `Submit Payment — $${price}`;
+  }
+}
+
+init();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

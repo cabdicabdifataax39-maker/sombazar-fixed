@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="csrf-token" content="" id="csrfMeta">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SomBazar">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Edit Listing — SomBazar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.min.css">
+  <script>(function(){var t=localStorage.getItem("sb_theme")||(window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",t);})();</script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --or:#f97316;--or-dk:#ea580c;--or-lt:#fff7ed;--or-bd:#fed7aa;
+      --dark:#0f172a;--slate:#1e293b;--g600:#475569;--g400:#94a3b8;
+      --g200:#e2e8f0;--g100:#f1f5f9;--g50:#f8fafc;--white:#ffffff;
+      --green:#16a34a;--red:#dc2626;
+      --r:8px;--rl:16px;--rxl:20px;
+      --sh:0 4px 16px rgba(0,0,0,.08);--sh-lg:0 8px 32px rgba(0,0,0,.12);
+      --t:.18s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="dark"]{
+      --dark:#f1f5f9;--slate:#e2e8f0;--g600:#94a3b8;--g400:#64748b;
+      --g200:#334155;--g100:#1e293b;--g50:#0f172a;--white:#1e293b;
+      --sh:0 4px 16px rgba(0,0,0,.3);--sh-lg:0 8px 32px rgba(0,0,0,.4);
+    }
+    body{font-family:"DM Sans",sans-serif;background:var(--g50);color:var(--dark);min-height:100vh;-webkit-font-smoothing:antialiased}
+    .skip-link{position:absolute;top:-48px;left:16px;background:var(--or);color:#fff;padding:8px 16px;border-radius:var(--r);font-size:13px;font-weight:700;text-decoration:none;transition:top .15s;z-index:9999}
+    .skip-link:focus{top:8px}
+
+    /* TOPBAR */
+    .topbar{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--g200);height:56px;display:flex;align-items:center;padding:0 24px;gap:12px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .logo{font-family:"Syne",sans-serif;font-weight:800;font-size:20px;color:var(--dark);text-decoration:none;display:flex;align-items:center;gap:4px;flex-shrink:0}
+    .logo span{background:var(--or);color:#fff;padding:1px 7px;border-radius:6px;font-size:12px;margin-right:2px}
+    .breadcrumb{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--g400);flex:1;overflow:hidden}
+    .breadcrumb a{color:var(--g400);text-decoration:none;white-space:nowrap}
+    .breadcrumb a:hover{color:var(--or)}
+    .breadcrumb .sep{color:var(--g200)}
+    .breadcrumb .cur{color:var(--dark);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .topbar-right{display:flex;gap:8px;align-items:center;margin-left:auto;flex-shrink:0}
+    .icon-btn{background:none;border:1px solid var(--g200);border-radius:var(--r);padding:6px 10px;cursor:pointer;color:var(--g400);display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;font-family:"DM Sans";transition:all var(--t);text-decoration:none}
+    .icon-btn:hover{border-color:var(--or);color:var(--or);background:var(--or-lt)}
+
+    /* LAYOUT */
+    .layout{max-width:1060px;margin:0 auto;padding:28px 20px 100px}
+    .page-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+    .page-title{font-family:"Syne",sans-serif;font-size:26px;font-weight:800;color:var(--dark);line-height:1.1}
+    .page-sub{font-size:13px;color:var(--g400);margin-top:4px}
+    .page-hd-btns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+    @media(max-width:860px){.grid{grid-template-columns:1fr}}
+    @media(max-width:640px){.topbar{padding:0 14px}.layout{padding:16px 12px 90px}.page-title{font-size:22px}}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 18px;border-radius:var(--r);font-family:"DM Sans";font-size:13px;font-weight:700;border:none;cursor:pointer;text-decoration:none;transition:all var(--t);white-space:nowrap;line-height:1}
+    .btn-p{background:var(--or);color:#fff}
+    .btn-p:hover{background:var(--or-dk);transform:translateY(-1px);box-shadow:0 4px 12px rgba(249,115,22,.35)}
+    .btn-p:active{transform:translateY(0)}
+    .btn-p:disabled{background:var(--g200);color:var(--g400);transform:none;box-shadow:none;cursor:not-allowed}
+    .btn-g{background:var(--g100);color:var(--g600);border:1px solid var(--g200)}
+    .btn-g:hover{background:var(--g200)}
+    .btn-sold{background:#fef9c3;color:#854d0e;border:1px solid #fde047}
+    .btn-sold:hover{background:#fef08a}
+    .btn-del{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+    .btn-del:hover{background:#fee2e2}
+    .btn-full{width:100%}
+    .btn-lg{padding:14px 22px;font-size:15px;border-radius:12px}
+    .sbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+    .sb-active{background:#dcfce7;color:#15803d}
+    .sb-sold{background:#dbeafe;color:#1d4ed8}
+
+    /* CARDS */
+    .card{background:var(--white);border:1px solid var(--g200);border-radius:var(--rl);padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.05);transition:box-shadow var(--t)}
+    .card:hover{box-shadow:var(--sh)}
+    .card+.card{margin-top:16px}
+    .card-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--g100)}
+    .card-ico{width:32px;height:32px;background:var(--or-lt);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--or);flex-shrink:0}
+    .card-title{font-size:14px;font-weight:800;color:var(--dark);letter-spacing:-.2px}
+    .card-sub{font-size:12px;color:var(--g400);margin-top:1px}
+
+    /* FORM */
+    .fg{margin-bottom:16px}
+    .fg:last-child{margin-bottom:0}
+    .fl{display:block;font-size:11px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .fl .req{color:var(--or);margin-left:2px}
+    .fi,.fs,.ft{width:100%;background:var(--g50);border:1.5px solid var(--g200);border-radius:var(--r);padding:10px 14px;font-family:"DM Sans";font-size:14px;color:var(--dark);transition:border-color var(--t),box-shadow var(--t),background var(--t);outline:none;-webkit-appearance:none}
+    .fi:hover,.fs:hover,.ft:hover{border-color:var(--g400);background:var(--white)}
+    .fi:focus,.fs:focus,.ft:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(249,115,22,.12);background:var(--white)}
+    .ft{resize:vertical;min-height:120px;line-height:1.6}
+    .fs{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;cursor:pointer}
+    .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:480px){.fr{grid-template-columns:1fr}}
+    .pfx{position:relative}
+    .pfx-sym{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--g400);pointer-events:none;z-index:1}
+    .pfx .fi{padding-left:28px}
+    .cc{font-size:11px;color:var(--g400);text-align:right;margin-top:4px}
+    .cc.warn{color:#f59e0b}
+    .cc.over{color:var(--red)}
+    .trow{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--g50);border:1.5px solid var(--g200);border-radius:var(--r);cursor:pointer;transition:all var(--t)}
+    .trow:hover{border-color:var(--or);background:var(--or-lt)}
+    .trow.on{border-color:var(--or);background:var(--or-lt)}
+    .trow-lbl{font-size:14px;font-weight:600;color:var(--dark)}
+    .trow-desc{font-size:12px;color:var(--g400);margin-top:1px}
+    .tswitch{width:40px;height:22px;border-radius:11px;background:var(--g200);position:relative;transition:background var(--t);flex-shrink:0}
+    .tswitch::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform var(--t);box-shadow:0 1px 4px rgba(0,0,0,.2)}
+    .trow.on .tswitch{background:var(--or)}
+    .trow.on .tswitch::after{transform:translateX(18px)}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:700;border:2px solid var(--g200);background:var(--white);color:var(--g600);cursor:pointer;transition:all var(--t)}
+    .chip:hover{border-color:var(--or);color:var(--or)}
+    .chip.on{background:var(--or);border-color:var(--or);color:#fff;box-shadow:0 2px 8px rgba(249,115,22,.3)}
+
+    /* PHOTOS */
+    .photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:10px;margin-top:4px}
+    .pt{position:relative;aspect-ratio:1;border-radius:var(--r);overflow:hidden;border:2px solid var(--g200);background:var(--g100);transition:border-color var(--t)}
+    .pt:hover{border-color:var(--or)}
+    .pt img{width:100%;height:100%;object-fit:cover;display:block}
+    .pt .pdel{position:absolute;top:5px;right:5px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--t);font-size:14px;font-weight:800;line-height:1}
+    .pt:hover .pdel{opacity:1}
+    .pt .pmain{position:absolute;bottom:5px;left:5px;background:var(--or);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.4px}
+    .padd{aspect-ratio:1;border:2px dashed var(--g200);border-radius:var(--r);background:var(--g50);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--g400);font-size:12px;font-weight:600;transition:all var(--t)}
+    .padd:hover{border-color:var(--or);color:var(--or);background:var(--or-lt)}
+    .plbar{display:flex;justify-content:space-between;margin-top:10px;padding:8px 12px;background:var(--g50);border-radius:var(--r);font-size:12px}
+    .plbar-n{font-weight:700;color:var(--dark)}
+    .plbar-m{color:var(--g400)}
+    .plprog{height:3px;background:var(--g200);border-radius:2px;margin-top:6px;overflow:hidden}
+    .plbar-fill{height:100%;background:var(--or);border-radius:2px;transition:width .4s ease}
+
+    /* STATUS OPTIONS */
+    .sopt-list{display:flex;flex-direction:column;gap:8px}
+    .sopt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r);border:1.5px solid var(--g200);cursor:pointer;transition:all var(--t);background:var(--g50)}
+    .sopt:hover{border-color:var(--g400);background:var(--white)}
+    .sopt.sel{border-color:var(--or);background:var(--or-lt)}
+    .sopt-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--g200);flex-shrink:0;transition:all var(--t)}
+    .sopt.sel .sopt-dot{background:var(--or);border-color:var(--or)}
+    .sopt-name{font-size:13px;font-weight:700;color:var(--dark)}
+    .sopt-desc{font-size:11px;color:var(--g400);margin-top:2px}
+    .sopt-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+
+    /* SAVE CARD */
+    .sc{position:sticky;top:68px}
+    .save-card{background:var(--white);border:1px solid var(--g200);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh)}
+    .sc-top{padding:20px 20px 0}
+    .sc-bot{padding:0 20px 20px}
+    .sc-div{height:1px;background:var(--g100);margin:16px 0}
+    .lmeta{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+    .lmeta-row{display:flex;align-items:center;justify-content:space-between;font-size:12px}
+    .lmeta-lbl{color:var(--g400);font-weight:500}
+    .lmeta-val{font-weight:700;color:var(--dark)}
+    .asis{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--g400);padding:6px 10px;border-radius:var(--r);background:var(--g50)}
+    .as-dot{width:6px;height:6px;border-radius:50%;background:var(--g200);transition:background .3s;flex-shrink:0}
+    .as-dot.saving{background:#f59e0b;animation:pulse .8s infinite}
+    .as-dot.saved{background:var(--green)}
+
+    /* SAVE BTN */
+    .sbwrap{position:relative}
+    .sbt{transition:opacity var(--t)}
+    .sbspin{position:absolute;inset:0;display:none;align-items:center;justify-content:center}
+    .btn-p.loading .sbt{opacity:0}
+    .btn-p.loading .sbspin{display:flex}
+
+    /* ALERTS */
+    .alert{display:none;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:var(--r);font-size:13px;font-weight:600;margin-bottom:20px;animation:slideDown .2s ease}
+    .ae{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
+    .as2{background:#f0fdf4;color:var(--green);border:1px solid #a7f3d0}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+    /* DANGER ZONE */
+    .dzone{border:1px solid #fecaca;border-radius:12px;padding:16px;background:#fff5f5;margin-top:16px}
+    [data-theme="dark"] .dzone{background:#2d0808}
+    .dzone-title{font-size:12px;font-weight:800;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+
+    /* MODALS */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center}
+    .modal-bg.open{display:flex}
+    .modal{background:var(--white);border-radius:var(--rxl);padding:32px;max-width:400px;width:90%;text-align:center;box-shadow:var(--sh-lg);animation:mIn .25s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes mIn{from{opacity:0;transform:scale(.92) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .m-ico{font-size:44px;margin-bottom:12px}
+    .m-title{font-family:"Syne",sans-serif;font-size:20px;font-weight:800;color:var(--dark);margin-bottom:8px}
+    .m-text{font-size:13px;color:var(--g600);line-height:1.6;margin-bottom:24px}
+    .m-btns{display:flex;gap:10px;justify-content:center}
+
+    /* STATES */
+    .ls-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px}
+    .ls-spin{width:44px;height:44px;border:3px solid var(--g200);border-top-color:var(--or);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:16px}
+    .ls-txt{font-size:14px;color:var(--g400);font-weight:500}
+    .empty-card{text-align:center;padding:60px 24px;background:var(--white);border:1px solid var(--g200);border-radius:var(--rl)}
+    .e-ico{font-size:48px;margin-bottom:16px}
+    .e-title{font-size:18px;font-weight:800;color:var(--dark);margin-bottom:8px}
+    .e-text{font-size:14px;color:var(--g400);margin-bottom:20px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+    /* TOAST (fallback if app.min.js not loaded) */
+    @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+<a href="#mc" class="skip-link">Skip to main content</a>
+
+<header class="topbar">
+  <a href="index.html" class="logo" aria-label="SomBazar home"><span>SB</span>SomBazar</a>
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="profile.html">My Listings</a>
+    <span class="sep">›</span>
+    <span class="cur">Edit Listing</span>
+  </nav>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="toggleDarkMode()" aria-label="Toggle dark mode">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <a id="viewBtn" href="#" class="icon-btn" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Preview
+    </a>
+  </div>
+</header>
+
+<main id="mc" class="layout">
+  <div id="notLoggedIn" style="display:none">
+    <div class="empty-card"><div class="e-ico">🔐</div><div class="e-title">Sign in required</div><div class="e-text">You need to be signed in to edit listings.</div><a href="auth.html" class="btn btn-p">Sign In</a></div>
+  </div>
+
+  <div id="loadingState" class="ls-screen">
+    <div class="ls-spin" role="status" aria-label="Loading"></div>
+    <div class="ls-txt">Loading listing…</div>
+  </div>
+
+  <div id="formContent" style="display:none">
+    <!-- Page header -->
+    <div class="page-hd">
+      <div>
+        <h1 class="page-title">Edit Listing</h1>
+        <p class="page-sub" id="listingIdLabel">Loading…</p>
+      </div>
+      <div class="page-hd-btns">
+        <span id="soldBadge" class="sbadge sb-sold" style="display:none">● Sold</span>
+        <button id="markSoldBtn" class="btn btn-sold" onclick="toggleSold()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Mark as Sold
+        </button>
+      </div>
+    </div>
+
+    <div id="formError" class="alert ae" role="alert">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="errTxt"></span>
+    </div>
+    <div id="formSuccess" class="alert as2" role="alert">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      <span id="okTxt">Changes saved!</span>
+    </div>
+
+    <div class="grid">
+      <!-- LEFT -->
+      <div>
+        <!-- Basic Info -->
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div><div class="card-title">Basic Information</div><div class="card-sub">Title, description &amp; price</div></div>
+          </div>
+
+          <div class="fg">
+            <label class="fl" for="titleInput">Title <span class="req">*</span></label>
+            <input class="fi" type="text" id="titleInput" placeholder="What are you selling? Be specific." maxlength="100" oninput="cc(this,'tc',100)">
+            <div class="cc" id="tc">0 / 100</div>
+          </div>
+          <div class="fg">
+            <label class="fl" for="descInput">Description <span class="req">*</span></label>
+            <textarea class="ft" id="descInput" rows="5" placeholder="Describe condition, age, features, reason for selling…" maxlength="2000" oninput="cc(this,'dc',2000)"></textarea>
+            <div class="cc" id="dc">0 / 2000</div>
+          </div>
+          <div class="fr">
+            <div class="fg">
+              <label class="fl" for="priceInput">Price <span class="req">*</span></label>
+              <div class="pfx">
+                <span class="pfx-sym" id="csym">$</span>
+                <input class="fi" type="number" id="priceInput" placeholder="0.00" min="0" step="0.01">
+              </div>
+            </div>
+            <div class="fg">
+              <label class="fl" for="currencySelect">Currency</label>
+              <select class="fs" id="currencySelect" onchange="document.getElementById('csym').textContent=this.value==='USD'?'$':'S'">
+                <option value="USD">USD ($)</option>
+                <option value="SLSH">SLSH (S)</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg" style="margin:0">
+            <div class="trow" id="negRow" onclick="toggleNeg()">
+              <div><div class="trow-lbl">Price is negotiable</div><div class="trow-desc">Buyers can make offers on this listing</div></div>
+              <div class="tswitch" id="negSwitch"></div>
+            </div>
+            <input type="hidden" id="negHidden" value="0">
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><div class="card-title">Details</div><div class="card-sub">Category, condition &amp; location</div></div>
+          </div>
+          <div class="fr">
+            <div class="fg">
+              <label class="fl" for="categorySelect">Category</label>
+              <select class="fs" id="categorySelect">
+                <option value="car">🚗 Cars</option>
+                <option value="house">🏠 Houses</option>
+                <option value="land">🌍 Land</option>
+                <option value="electronics">📱 Electronics</option>
+                <option value="furniture">🛋 Furniture</option>
+                <option value="jobs">💼 Jobs</option>
+                <option value="services">🔧 Services</option>
+                <option value="hotel">🏨 Hotels</option>
+                <option value="animals">🐄 Animals</option>
+                <option value="fashion">👗 Fashion</option>
+                <option value="food">🍽 Food</option>
+                <option value="other">📦 Other</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl" for="conditionSelect">Condition</label>
+              <select class="fs" id="conditionSelect">
+                <option value="New">✨ New</option>
+                <option value="Like New">👌 Like New</option>
+                <option value="Good">✅ Good</option>
+                <option value="Used">🔄 Used</option>
+              </select>
+            </div>
+          </div>
+          <div class="fr">
+            <div class="fg">
+              <label class="fl" for="citySelect">City</label>
+              <select class="fs" id="citySelect">
+                <option>Hargeisa</option><option>Berbera</option><option>Burco</option>
+                <option>Borama</option><option>Gabiley</option><option>Ceerigaavo</option><option>Laascaanood</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl" for="phoneInput">Phone</label>
+              <input class="fi" type="tel" id="phoneInput" placeholder="+252 63…" maxlength="20">
+            </div>
+          </div>
+          <div class="fg" style="margin:0">
+            <label class="fl">Listing Type</label>
+            <div class="chips">
+              <button class="chip on" data-type="sell" onclick="setType('sell',this)">For Sale</button>
+              <button class="chip" data-type="rent" onclick="setType('rent',this)">For Rent</button>
+              <button class="chip" data-type="wanted" onclick="setType('wanted',this)">Wanted</button>
+              <button class="chip" data-type="free" onclick="setType('free',this)">Free</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div>
+        <div class="sc">
+          <div class="save-card">
+            <div class="sc-top">
+              <div class="lmeta">
+                <div class="lmeta-row"><span class="lmeta-lbl">Listing ID</span><span class="lmeta-val" id="metaId">—</span></div>
+                <div class="lmeta-row"><span class="lmeta-lbl">Created</span><span class="lmeta-val" id="metaCreated">—</span></div>
+                <div class="lmeta-row"><span class="lmeta-lbl">Views</span><span class="lmeta-val"><span style="display:flex;align-items:center;gap:4px;font-size:12px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span id="viewsCnt">0</span></span></span></div>
+              </div>
+              <div class="sc-div"></div>
+              <div style="margin-bottom:16px">
+                <div class="fl" style="margin-bottom:10px">Visibility Status</div>
+                <div class="sopt-list">
+                  <div class="sopt sel" data-status="active" onclick="setSt('active',this)">
+                    <div class="sopt-dot"></div>
+                    <div style="flex:1"><div class="sopt-name">Active</div><div class="sopt-desc">Visible in search</div></div>
+                    <span class="sopt-badge sb-active">Live</span>
+                  </div>
+                  <div class="sopt" data-status="sold" onclick="setSt('sold',this)">
+                    <div class="sopt-dot"></div>
+                    <div style="flex:1"><div class="sopt-name">Sold</div><div class="sopt-desc">Hidden from search</div></div>
+                    <span class="sopt-badge sb-sold">Sold</span>
+                  </div>
+                  <div class="sopt" data-status="rented" onclick="setSt('rented',this)">
+                    <div class="sopt-dot"></div>
+                    <div style="flex:1"><div class="sopt-name">Rented</div><div class="sopt-desc">Hidden from search</div></div>
+                    <span class="sopt-badge" style="background:var(--g100);color:var(--g400)">Rented</span>
+                  </div>
+                </div>
+              </div>
+              <div class="sc-div"></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+                <div class="asis"><div class="as-dot" id="asDot"></div><span id="asTxt">Unsaved changes</span></div>
+                <span style="font-size:11px;color:var(--g400)">Auto-draft</span>
+              </div>
+            </div>
+            <div class="sc-bot">
+              <div class="sbwrap">
+                <button class="btn btn-p btn-full btn-lg" id="saveBtn" onclick="saveChanges()">
+                  <span class="sbt" style="display:flex;align-items:center;gap:8px">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save Changes
+                  </span>
+                  <span class="sbspin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg></span>
+                </button>
+              </div>
+              <a href="profile.html" class="btn btn-g btn-full" style="margin-top:8px">Cancel</a>
+              <div style="font-size:11px;color:var(--g400);text-align:center;margin-top:12px;line-height:1.5">Favorited buyers will be notified of price changes.</div>
+            </div>
+          </div>
+
+          <!-- Photos -->
+          <div class="card">
+            <div class="card-hd">
+              <div class="card-ico"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+              <div><div class="card-title">Photos</div><div class="card-sub">Hover to remove · First = cover</div></div>
+            </div>
+            <div class="photo-grid" id="photoStrip"></div>
+            <div class="plbar"><div><span class="plbar-n" id="pCount">0</span><span class="plbar-m" id="pMax"> / 5 photos</span></div><span style="font-size:11px;color:var(--g400)">Upgrade for more</span></div>
+            <div class="plprog"><div class="plbar-fill" id="pFill" style="width:0%"></div></div>
+            <input type="file" id="newPhotoInput" accept="image/jpeg,image/png,image/webp" capture="environment" multiple style="display:none" onchange="handleNewPhotos(this)">
+          </div>
+
+          <!-- Danger zone -->
+          <div class="dzone">
+            <div class="dzone-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Danger Zone
+            </div>
+            <button class="btn btn-del btn-full" onclick="showDelModal()" style="font-size:13px;padding:10px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+              Permanently Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Delete Modal -->
+<div id="delModal" class="modal-bg" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="m-ico">🗑️</div>
+    <h3 class="m-title">Delete Listing?</h3>
+    <p class="m-text">This action is permanent. The listing and all associated offers and favorites will be removed.</p>
+    <div class="m-btns">
+      <button class="btn btn-g" onclick="hideDelModal()">Keep It</button>
+      <button class="btn" style="background:var(--red);color:#fff" onclick="doDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Sold Modal -->
+<div id="soldModal" class="modal-bg" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="m-ico" id="sIco">✅</div>
+    <h3 class="m-title" id="sTitle">Mark as Sold?</h3>
+    <p class="m-text" id="sTxt">This will hide the listing from public search.</p>
+    <div class="m-btns">
+      <button class="btn btn-g" onclick="hideSoldModal()">Cancel</button>
+      <button class="btn btn-p" onclick="doToggleSold()" id="sConfirm">Mark as Sold</button>
+    </div>
+  </div>
+</div>
+
+<script>
+window.Auth=window.Auth||{getToken:()=>localStorage.getItem("sb_token")||"",getUser:()=>{try{return JSON.parse(localStorage.getItem("sb_user"))}catch(e){return null}},isLoggedIn:()=>!!localStorage.getItem("sb_token"),clearSession:()=>{localStorage.removeItem("sb_token");localStorage.removeItem("sb_user")}};
+window.API=window.API||{};
+</script>
+<script src="assets/app.min.js"></script>
+<script>
+const listingId=new URLSearchParams(location.search).get("id");
+let currentListing=null,currentImages=[],newFiles=[],listingType="sell",selectedStatus="active",photoLimit=5,_aTimer=null,_isSold=false;
+
+if(!Auth.isLoggedIn()){document.getElementById("notLoggedIn").style.display="";document.getElementById("loadingState").style.display="none";}
+else if(!listingId)window.location.href="profile.html";
+else loadListing();
+
+async function loadListing(){
+  try{
+    const l=await API.getListing(listingId);
+    const me=Auth.getUser();
+    if(l.userId&&me&&String(l.userId)!==String(me.id)){showErr("You can only edit your own listings.");document.getElementById("loadingState").style.display="none";document.getElementById("formContent").style.display="";document.getElementById("saveBtn").disabled=true;return;}
+    currentListing=l;currentImages=l.images||[];
+    populateForm(l);
+    document.getElementById("loadingState").style.display="none";
+    document.getElementById("formContent").style.display="";
+    try{const pr=await fetch("api/payment.php?action=my_plan",{headers:{Authorization:"Bearer "+Auth.getToken()}});const pd=await pr.json();if(pd.success){photoLimit=pd.data.photoLimit||5;document.getElementById("pMax").textContent=" / "+photoLimit+" photos";}}catch{}
+    renderPhotos();setupAS();
+  }catch(e){
+    document.getElementById("loadingState").style.display="none";
+    document.getElementById("formContent").style.display="";
+    document.getElementById("formContent").innerHTML=`<div class="empty-card"><div class="e-ico">😕</div><div class="e-title">Listing not found</div><div class="e-text">${e.message}</div><a href="profile.html" class="btn btn-p">Back to Profile</a></div>`;
+  }
+}
+
+function populateForm(l){
+  const ti=document.getElementById("titleInput"),di=document.getElementById("descInput");
+  ti.value=l.title||"";di.value=l.description||"";
+  cc(ti,"tc",100);cc(di,"dc",2000);
+  document.getElementById("priceInput").value=l.price||"";
+  document.getElementById("currencySelect").value=l.currency||"USD";
+  document.getElementById("csym").textContent=l.currency==="SLSH"?"S":"$";
+  document.getElementById("citySelect").value=l.city||"Hargeisa";
+  document.getElementById("phoneInput").value=l.phone||"";
+  document.getElementById("categorySelect").value=l.category||"other";
+  const cond=document.getElementById("conditionSelect");if(l.condition)cond.value=l.condition;
+  if(l.negotiable){document.getElementById("negRow").classList.add("on");document.getElementById("negHidden").value="1";}
+  const t=l.listing_type||l.listingType||"sell";listingType=t;
+  document.querySelectorAll(".chip").forEach(b=>b.classList.toggle("on",b.dataset.type===t));
+  const st=l.status||"active";selectedStatus=st;_isSold=st==="sold";
+  document.querySelectorAll(".sopt").forEach(o=>o.classList.toggle("sel",o.dataset.status===st));
+  if(_isSold){document.getElementById("soldBadge").style.display="";document.getElementById("markSoldBtn").innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Relist';}
+  document.getElementById("listingIdLabel").textContent="ID #"+l.id+" · "+(l.category||"").toUpperCase();
+  document.getElementById("metaId").textContent="#"+l.id;
+  document.getElementById("viewsCnt").textContent=l.views||0;
+  if(l.createdAt||l.created_at){document.getElementById("metaCreated").textContent=new Date(l.createdAt||l.created_at).toLocaleDateString();}
+  const vb=document.getElementById("viewBtn");vb.href="listing.html?id="+l.id;vb.style.display="";
+}
+
+function renderPhotos(){
+  const s=document.getElementById("photoStrip");let h="";
+  currentImages.forEach((img,i)=>{h+=`<div class="pt"><img src="${esc(img)}" alt="Photo ${i+1}" loading="lazy">${i===0?'<span class="pmain">Cover</span>':""}<button class="pdel" onclick="rmPhoto(${i})" aria-label="Remove">×</button></div>`;});
+  newFiles.forEach((f,i)=>{const u=URL.createObjectURL(f);h+=`<div class="pt"><img src="${u}" alt="New ${i+1}"><button class="pdel" onclick="rmNew(${i})">×</button></div>`;});
+  const tot=currentImages.length+newFiles.length;
+  if(tot<photoLimit)h+=`<div class="padd" onclick="document.getElementById('newPhotoInput').click()" role="button" tabindex="0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add Photo</div>`;
+  s.innerHTML=h;
+  document.getElementById("pCount").textContent=tot;
+  const p=Math.min(100,tot/photoLimit*100);
+  const fill=document.getElementById("pFill");fill.style.width=p+"%";fill.style.background=p>=100?"#ef4444":"#f97316";
+}
+function rmPhoto(i){currentImages.splice(i,1);renderPhotos();}
+function rmNew(i){newFiles.splice(i,1);renderPhotos();}
+async function handleNewPhotos(input){
+  const files=Array.from(input.files);const tot=currentImages.length+newFiles.length;const can=photoLimit-tot;
+  if(can<=0){toast("Photo limit reached","error");return;}
+  const add=files.slice(0,can);if(files.length>can)toast("Only "+can+" more photo(s) allowed","info");
+  for(const f of add){if(f.size>5*1024*1024){toast("File too large (max 5MB)","error");continue;}newFiles.push(f);}
+  renderPhotos();input.value="";
+}
+
+function toggleNeg(){const r=document.getElementById("negRow"),h=document.getElementById("negHidden");const on=r.classList.toggle("on");h.value=on?"1":"0";trigAS();}
+function setType(t,b){listingType=t;document.querySelectorAll(".chip").forEach(x=>x.classList.remove("on"));b.classList.add("on");trigAS();}
+function setSt(s,el){selectedStatus=s;document.querySelectorAll(".sopt").forEach(o=>o.classList.remove("sel"));el.classList.add("sel");}
+function cc(inp,id,max){const e=document.getElementById(id),n=inp.value.length;e.textContent=n+" / "+max;e.className="cc"+(n>max*.9?(n>=max?" over":" warn"):"");}
+
+function setupAS(){["titleInput","descInput","priceInput","citySelect","categorySelect","conditionSelect","phoneInput"].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener("input",trigAS);});}
+function trigAS(){if(_aTimer)clearTimeout(_aTimer);const d=document.getElementById("asDot"),t=document.getElementById("asTxt");d.className="as-dot saving";t.textContent="Saving draft…";_aTimer=setTimeout(()=>{try{localStorage.setItem("sb_ed_"+listingId,JSON.stringify({title:document.getElementById("titleInput").value,description:document.getElementById("descInput").value,savedAt:Date.now()}));}catch{}d.className="as-dot saved";t.textContent="Draft saved";setTimeout(()=>{d.className="as-dot";t.textContent="Auto-draft";},3000);},1200);}
+
+function toggleSold(){const m=document.getElementById("soldModal");document.getElementById("sIco").textContent=_isSold?"🔄":"✅";document.getElementById("sTitle").textContent=_isSold?"Relist this item?":"Mark as Sold?";document.getElementById("sTxt").textContent=_isSold?"Makes the listing active and visible again.":"Hides from search results and marks as sold.";document.getElementById("sConfirm").textContent=_isSold?"Yes, Relist":"Mark as Sold";m.classList.add("open");}
+function hideSoldModal(){document.getElementById("soldModal").classList.remove("open");}
+async function doToggleSold(){hideSoldModal();const ns=_isSold?"active":"sold";try{if(_isSold)await fetch("api/listings.php?action=mark_active&id="+listingId,{method:"POST",headers:{Authorization:"Bearer "+Auth.getToken()}});else await API.markSold(listingId);_isSold=!_isSold;document.getElementById("soldBadge").style.display=_isSold?"":"none";document.getElementById("markSoldBtn").innerHTML=_isSold?'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Relist':'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Mark as Sold';setSt(ns,document.querySelector('.sopt[data-status="'+ns+'"]'));toast(_isSold?"✅ Marked as sold":"🔄 Relisted!","success");}catch(e){toast(e.message,"error");}}
+
+async function saveChanges(){
+  const btn=document.getElementById("saveBtn"),title=document.getElementById("titleInput").value.trim(),desc=document.getElementById("descInput").value.trim(),price=parseFloat(document.getElementById("priceInput").value);
+  hideAlerts();
+  if(!title)return showErr("Title is required.");
+  if(!desc)return showErr("Description is required.");
+  if(isNaN(price)||price<0)return showErr("Enter a valid price.");
+  btn.classList.add("loading");btn.disabled=true;
+  try{
+    const uploadedUrls=[];
+    for(const file of newFiles){try{const fd=new FormData();fd.append("images[]",file);const ur=await fetch("api/listings.php?action=upload_images&listing_id="+listingId,{method:"POST",headers:{Authorization:"Bearer "+Auth.getToken()},body:fd});const ud=await ur.json();if(ud.success&&ud.data?.urls?.[0])uploadedUrls.push(ud.data.urls[0]);}catch{}}
+    const allImages=[...currentImages,...uploadedUrls];
+    await API.updateListing(listingId,{title,description:desc,price,currency:document.getElementById("currencySelect").value,negotiable:document.getElementById("negHidden").value==="1",category:document.getElementById("categorySelect").value,condition:document.getElementById("conditionSelect").value,city:document.getElementById("citySelect").value,phone:document.getElementById("phoneInput").value.trim(),listing_type:listingType,status:selectedStatus,images:allImages});
+    newFiles=[];try{localStorage.removeItem("sb_ed_"+listingId);}catch{}
+    document.getElementById("asDot").className="as-dot";document.getElementById("asTxt").textContent="All saved ✓";
+    showOk("Changes saved successfully!");toast("✅ Listing updated!","success");
+    currentImages=allImages;renderPhotos();
+  }catch(e){showErr(e.message||"Failed to save. Try again.");}
+  finally{btn.classList.remove("loading");btn.disabled=false;}
+}
+
+function showDelModal(){document.getElementById("delModal").classList.add("open");}
+function hideDelModal(){document.getElementById("delModal").classList.remove("open");}
+async function doDelete(){hideDelModal();try{await API.deleteListing(listingId);toast("Listing deleted","success");setTimeout(()=>window.location.href="profile.html",700);}catch(e){toast(e.message,"error");}}
+
+["delModal","soldModal"].forEach(id=>{document.getElementById(id).addEventListener("click",function(e){if(e.target===this)this.classList.remove("open");});});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){hideDelModal();hideSoldModal();}});
+
+function showErr(m){const e=document.getElementById("formError");document.getElementById("errTxt").textContent=m;e.style.display="flex";e.scrollIntoView({behavior:"smooth",block:"nearest"});}
+function showOk(m){const e=document.getElementById("formSuccess");document.getElementById("okTxt").textContent=m;e.style.display="flex";setTimeout(()=>e.style.display="none",4000);}
+function hideAlerts(){document.getElementById("formError").style.display="none";document.getElementById("formSuccess").style.display="none";}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function toast(msg,type){const t=document.createElement("div");const bg=type==="success"?"#16a34a":type==="error"?"#dc2626":"#0f172a";t.style.cssText=`position:fixed;bottom:24px;right:24px;z-index:99999;background:${bg};color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:toastIn .25s ease;max-width:320px;font-family:"DM Sans"`;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity="0";t.style.transform="translateY(8px)";t.style.transition="all .3s";setTimeout(()=>t.remove(),300);},3000);}
+window.showToast=window.showToast||toast;
+</script>
+</body>
+</html>

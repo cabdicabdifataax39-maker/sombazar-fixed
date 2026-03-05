@@ -1,0 +1,29 @@
+# Environment & secrets
+.env
+.env.local
+.env.production
+
+# Uploads (user content)
+uploads/listings/*
+uploads/avatars/*
+!uploads/listings/.gitkeep
+!uploads/avatars/.gitkeep
+
+# Rate limit / CSRF temp files (auto-created)
+# These live in sys_get_temp_dir(), not in project dir
+
+# Logs
+*.log
+error_log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# PHP cache
+*.cache

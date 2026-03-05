@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — SomBazar</title>
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--gray);font-size:12px;font-weight:600}
+    .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border-color)}
+    .google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;background:white;font-family:'DM Sans';font-size:14px;font-weight:600;color:var(--dark);cursor:pointer;transition:all .2s}
+    .google-btn:hover{background:#f8f9fa;border-color:#aaa;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    .strength-bar{height:4px;border-radius:2px;margin-top:6px;transition:all .3s;background:#e5e7eb}
+    .strength-bar-fill{height:100%;border-radius:2px;transition:all .3s;width:0}
+    .strength-label{font-size:11px;margin-top:4px;font-weight:600}
+    .input-wrap{position:relative}
+    .input-wrap .eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--gray);padding:0}
+    .check-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);margin-top:4px;transition:color .2s}
+    .check-item.pass{color:#10b981}
+    .check-item.pass::before{content:'✓';font-size:11px}
+    .check-item:not(.pass)::before{content:'○';font-size:11px}
+  </style>
+  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
+  <script>
+    (function(){
+      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
+      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, {
+        page_title: document.title,
+        page_location: window.location.href,
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+    })();
+  </script>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+<div class="auth-wrapper">
+  <div class="auth-card animate-slide-up">
+
+    <div class="auth-header">
+      <a href="index.html" class="auth-logo" style="text-decoration:none">SomBazar</a>
+      <p class="auth-tagline">Somaliland's Largest Marketplace</p>
+    </div>
+
+    <div class="auth-body">
+      <!-- Tabs -->
+      <div class="auth-tabs" id="authTabs">
+        <button class="auth-tab active" data-tab="login">Sign In</button>
+        <button class="auth-tab" data-tab="register">Register</button>
+      </div>
+
+      <!-- Reset header -->
+      <div id="resetHeader" style="display:none;margin-bottom:20px">
+        <button onclick="setMode('login')" style="background:none;border:none;cursor:pointer;color:var(--primary-color);font-weight:700;font-size:14px;font-family:DM Sans;display:flex;align-items:center;gap:6px">
+          ← Back to Sign In
+        </button>
+        <h2 style="font-size:18px;font-weight:800;margin-top:12px;color:var(--dark)">Reset Password</h2>
+        <p style="font-size:13px;color:var(--gray);margin-top:4px">Enter your email and we'll send reset instructions.</p>
+      </div>
+
+      <!-- Messages -->
+      <div id="msgError" role="alert" aria-live="assertive" aria-atomic="true" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#b91c1c"></div>
+      <div id="msgSuccess" role="status" aria-live="polite" aria-atomic="true" style="display:none;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#065f46"></div>
+
+      <!-- Google button (hidden in reset mode) -->
+      <div id="googleSection">
+        <button class="google-btn" onclick="googleSignIn()">
+          <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.6-7.7 19.6-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12 24 12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.5 35.5 26.9 36 24 36c-5.3 0-9.6-2.9-11.3-7.1l-6.6 4.9C9.7 39.8 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.4 4.2-4.5 5.4l6.2 5.2C40.9 35.6 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+          Continue with Google
+        </button>
+        <div class="auth-divider">or</div>
+      </div>
+
+      <!-- Form -->
+      <form id="authForm" onsubmit="handleSubmit(event)" novalidate aria-label="Sign in or create account">
+
+        <!-- Name (register only) -->
+        <div class="form-group" id="nameGroup" style="display:none">
+          <label class="form-label" for="nameInput">Full Name <span style="color:#ef4444">*</span></label>
+          <input class="form-input" type="text" id="nameInput" placeholder="Ahmed Mohamed" data-i18n="auth-name" autocomplete="name" maxlength="60">
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="emailInput">Email Address <span style="color:#ef4444">*</span></label>
+          <input class="form-input" type="email" id="emailInput" placeholder="you@example.com" data-i18n="auth-email" autocomplete="email" required>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group" id="passGroup">
+          <label class="form-label" for="passInput">Password <span style="color:#ef4444">*</span></label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="passInput" placeholder="Min. 6 characters" data-i18n="auth-password" style="padding-right:44px" autocomplete="current-password">
+            <button type="button" class="eye-btn" onclick="togglePass('passInput', this)">️</button>
+          </div>
+          <!-- Strength meter (register only) -->
+          <div id="strengthMeter" style="display:none;margin-top:6px">
+            <div class="strength-bar"><div class="strength-bar-fill" id="strengthFill"></div></div>
+            <div class="strength-label" id="strengthLabel"></div>
+            <div style="margin-top:6px">
+              <div class="check-item" id="chkLen">At least 6 characters</div>
+              <div class="check-item" id="chkNum">Contains a number</div>
+              <div class="check-item" id="chkUpper">Contains uppercase letter</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirm password (register only) -->
+        <div class="form-group" id="confirmGroup" style="display:none">
+          <label class="form-label" for="confirmInput">Confirm Password <span style="color:#ef4444">*</span></label>
+          <div class="input-wrap">
+            <input class="form-input" type="password" id="confirmInput" placeholder="Repeat password" data-i18n="auth-confirm-pass" style="padding-right:44px" autocomplete="new-password">
+            <button type="button" class="eye-btn" onclick="togglePass('confirmInput', this)">️</button>
+          </div>
+          <div id="matchMsg" style="font-size:12px;margin-top:4px"></div>
+        </div>
+
+        <!-- Forgot password link -->
+        <div id="forgotLink" style="text-align:right;margin-top:-4px;margin-bottom:16px">
+          <button type="button" onclick="setMode('reset')" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:13px;font-family:DM Sans;text-decoration:underline">
+            Forgot password?
+          </button>
+        </div>
+
+        <!-- Terms (register) -->
+        <div id="termsGroup" style="display:none;margin-bottom:16px">
+          <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:var(--gray);line-height:1.5">
+            <input type="checkbox" id="termsCheck" style="margin-top:2px;accent-color:var(--primary-color)">
+            I agree to the <a href="#" style="color:var(--primary-color)">Terms of Service</a> and <a href="#" style="color:var(--primary-color)">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">Sign In</button>
+      </form>
+
+      <p style="text-align:center;font-size:12px;color:var(--gray);margin-top:16px">
+        <span id="switchText">Don't have an account?</span>
+        <button id="switchBtn" onclick="toggleTab()" style="background:none;border:none;cursor:pointer;color:var(--primary-color);font-weight:700;font-size:12px;font-family:DM Sans;margin-left:4px">Register</button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Fallback: app.js yüklenemezse Auth crash'i önle
+window.Auth = window.Auth || {
+  getToken: () => localStorage.getItem('sb_token') || '',
+  getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  isLoggedIn: () => !!localStorage.getItem('sb_token'),
+  setSession: () => {},
+  clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+};
+window.API = window.API || {};
+</script>
+  <script src="assets/app.min.js"></script>
+<script>
+if (Auth.isLoggedIn()) window.location.href = 'index.html';
+
+let mode = 'login'; // login | register | reset
+
+// Check URL param
+if (new URLSearchParams(location.search).get('tab') === 'register') setMode('register');
+
+function setMode(m) {
+  mode = m;
+  const isReset    = m === 'reset';
+  const isRegister = m === 'register';
+  const isLogin    = m === 'login';
+
+  document.getElementById('authTabs').style.display    = isReset ? 'none' : '';
+  document.getElementById('resetHeader').style.display = isReset ? '' : 'none';
+  document.getElementById('googleSection').style.display = isReset ? 'none' : '';
+  document.getElementById('nameGroup').style.display    = isRegister ? '' : 'none';
+  document.getElementById('confirmGroup').style.display = isRegister ? '' : 'none';
+  document.getElementById('termsGroup').style.display   = isRegister ? '' : 'none';
+  document.getElementById('passGroup').style.display    = isReset ? 'none' : '';
+  document.getElementById('forgotLink').style.display   = isLogin ? '' : 'none';
+  document.getElementById('strengthMeter').style.display = isRegister ? '' : 'none';
+  document.getElementById('switchText').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
+  document.getElementById('switchBtn').textContent  = isLogin ? 'Register' : 'Sign In';
+
+  document.querySelectorAll('.auth-tab').forEach(t =>
+    t.classList.toggle('active', t.dataset.tab === m));
+
+  document.getElementById('submitBtn').textContent =
+    isReset ? 'Send Reset Email' : isLogin ? 'Sign In' : 'Create Account';
+
+  clearMessages();
+  document.getElementById('emailInput').value = '';
+}
+
+function toggleTab() { setMode(mode === 'login' ? 'register' : 'login'); }
+
+document.getElementById('authTabs').addEventListener('click', e => {
+  if (e.target.matches('.auth-tab')) setMode(e.target.dataset.tab);
+});
+
+// Password strength
+document.getElementById('passInput').addEventListener('input', function() {
+  if (mode !== 'register') return;
+  const v = this.value;
+  const len   = v.length >= 6;
+  const num   = /\d/.test(v);
+  const upper = /[A-Z]/.test(v);
+
+  setCheck('chkLen',   len);
+  setCheck('chkNum',   num);
+  setCheck('chkUpper', upper);
+
+  const score = [len, num, upper].filter(Boolean).length;
+  const fill  = document.getElementById('strengthFill');
+  const label = document.getElementById('strengthLabel');
+  const colors = ['#ef4444','#f59e0b','#10b981'];
+  const labels = ['Weak','Fair','Strong'];
+  fill.style.width = (score / 3 * 100) + '%';
+  fill.style.background = colors[score - 1] || '#e5e7eb';
+  label.textContent = v ? labels[score - 1] || '' : '';
+  label.style.color = colors[score - 1] || 'var(--gray)';
+});
+
+// Confirm match
+document.getElementById('confirmInput').addEventListener('input', function() {
+  const pass  = document.getElementById('passInput').value;
+  const msg   = document.getElementById('matchMsg');
+  if (!this.value) { msg.textContent = ''; return; }
+  if (this.value === pass) { msg.textContent = '✓ Passwords match'; msg.style.color = '#10b981'; }
+  else { msg.textContent = 'Passwords do not match'; msg.style.color = '#ef4444'; }
+});
+
+function setCheck(id, pass) {
+  document.getElementById(id).classList.toggle('pass', pass);
+}
+
+function togglePass(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '●' : '○';
+}
+
+function clearMessages() {
+  document.getElementById('msgError').style.display   = 'none';
+  document.getElementById('msgSuccess').style.display = 'none';
+}
+function showError(msg)   { const el = document.getElementById('msgError');   el.textContent = msg; el.style.display = ''; }
+function showSuccess(msg) { const el = document.getElementById('msgSuccess'); el.textContent = '✓ ' + msg; el.style.display = ''; }
+
+function setLoading(on) {
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = on;
+  btn.innerHTML = on
+    ? '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle"></span>'
+    : (mode === 'reset' ? 'Send Reset Email' : mode === 'login' ? 'Sign In' : 'Create Account');
+}
+
+async function handleSubmit(e) {
+  e.preventDefault();
+  clearMessages();
+  const email = document.getElementById('emailInput').value.trim();
+
+  if (mode === 'reset') {
+    if (!email) { showError('Enter your email address'); return; }
+    setLoading(true);
+    try {
+      const res = await API.forgotPassword(email);
+      showSuccess(res.message || 'Reset instructions sent!');
+      // Dev mode: show token
+      if (res.dev_url) {
+        showSuccess(`Reset link (DEV MODE): ${res.dev_url}`);
+      }
+    } catch(err) { showError(err.message || 'Failed to send reset email'); }
+    finally { setLoading(false); }
+    return;
+  }
+
+  const pass = document.getElementById('passInput').value;
+  if (!email || !pass) { showError('Email and password are required'); return; }
+
+  setLoading(true);
+  try {
+    if (mode === 'register') {
+      const name    = document.getElementById('nameInput').value.trim();
+      const confirm = document.getElementById('confirmInput').value;
+      const terms   = document.getElementById('termsCheck').checked;
+      if (!name)         { showError('Full name is required');          setLoading(false); return; }
+      if (pass.length < 6){ showError('Password must be at least 6 characters'); setLoading(false); return; }
+      if (pass !== confirm){ showError('Passwords do not match');       setLoading(false); return; }
+      if (!terms)        { showError('Please accept the Terms of Service'); setLoading(false); return; }
+      const result = await API.register(name, email, pass);
+      Auth.setSession(result.token, result.user);
+      showSuccess('Account created! Redirecting…');
+    } else {
+      const result = await API.login(email, pass);
+      Auth.setSession(result.token, result.user);
+      showSuccess('Welcome back! Redirecting…');
+    }
+    const redirect = new URLSearchParams(location.search).get('redirect') || 'index.html';
+    setTimeout(() => window.location.href = redirect, 800);
+  } catch(err) {
+    // Silinmek üzere hesap kontrolü
+    if (err.account_status === 'pending_deletion' || (err.message && err.message.includes('scheduled for deletion'))) {
+      const daysLeft = err.days_left || '?';
+      showRecoveryBanner(daysLeft, email, pass);
+    } else {
+      showError(err.message || 'Something went wrong. Please try again.');
+    }
+    setLoading(false);
+  }
+}
+
+function showRecoveryBanner(daysLeft, email, pass) {
+  const msgError = document.getElementById('msgError');
+  if (msgError) {
+    msgError.innerHTML = `
+      <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:14px;text-align:left">
+        <div style="font-weight:700;color:#92400e;margin-bottom:6px">!️ Account Scheduled for Deletion</div>
+        <div style="font-size:13px;color:#78350f;margin-bottom:10px">
+          Your account will be permanently deleted in <b>${daysLeft} day(s)</b>. Would you like to recover it?
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="recoverAccount('${email.replace("'","\'")}','${pass.replace("'","\'")}');return false"
+            style="flex:1;background:#f97316;color:white;border:none;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:13px;font-family:'DM Sans'">
+            Recover Account
+          </button>
+          <button onclick="document.getElementById('msgError').innerHTML=''"
+            style="background:none;border:1px solid #d97706;border-radius:8px;padding:8px 12px;color:#92400e;cursor:pointer;font-size:13px;font-family:'DM Sans'">
+            Cancel
+          </button>
+        </div>
+      </div>`;
+    msgError.style.display = '';
+  }
+}
+
+async function recoverAccount(email, pass) {
+  try {
+    const r = await fetch('api/auth.php?action=recover_account', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const txt = await r.text();
+    let d; try { d = JSON.parse(txt); } catch(e) { throw new Error('Server error'); }
+    if (!d.success) throw new Error(d.error || 'Recovery failed');
+    Auth.setSession(d.token, d.user);
+    showSuccess('✓ Account recovered! Welcome back!');
+    setTimeout(() => window.location.href = 'index.html', 1200);
+  } catch(e) {
+    showError(e.message);
+  }
+}
+
+// Google Sign In (simulated - requires real OAuth in production)
+async function googleSignIn() {
+  showError('Google Sign In requires OAuth setup. Use email/password for now.');
+  // In production:
+  // 1. window.open(googleOAuthUrl, '_blank')
+  // 2. Listen for postMessage with token
+  // 3. Auth.setSession(token, user)
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

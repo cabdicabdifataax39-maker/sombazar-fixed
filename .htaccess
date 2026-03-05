@@ -1,0 +1,137 @@
+
+# ── HSTS + Security Headers ──────────────────────────────────
+<IfModule mod_headers.c>
+  # HSTS — HTTPS zorunlu (1 yıl)
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# ── API Versioning & Routing ─────────────────────────────────
+# /v1/listings → /api/listings.php gibi clean URL'ler
+<IfModule mod_rewrite.c>
+  RewriteCond %{REQUEST_URI} ^/v1/([a-z_]+)(/.*)?$ [NC]
+  RewriteRule ^v1/([a-z_]+)(.*)$ api/$1.php$2 [L,QSA]
+</IfModule>
+
+# API docs — sadece admin IP veya ?token= ile
+<Files "docs.php">
+  <RequireAny>
+    Require ip 127.0.0.1
+    Require ip ::1
+  </RequireAny>
+</Files>
+
+# Cron ve migrate endpoint'lerini web'den koru
+<Files "cron.php">
+  <RequireAny>
+    Require ip 127.0.0.1
+    Require ip ::1
+  </RequireAny>
+</Files>
+<Files "migrate.php">
+  <RequireAny>
+    Require ip 127.0.0.1
+    Require ip ::1
+  </RequireAny>
+</Files>
+
+# ══════════════════════════════════════════════════════════════
+#  SomBazar — Apache Performance & Security Config
+# ══════════════════════════════════════════════════════════════
+
+Options -Indexes
+ServerSignature Off
+
+# ── GZIP Compression ─────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE application/x-javascript image/svg+xml
+  AddOutputFilterByType DEFLATE font/woff font/woff2 font/ttf
+</IfModule>
+
+# ── Browser Cache Headers ────────────────────────────────────
+<IfModule mod_expires.c>
+  ExpiresActive On
+  # HTML — short cache
+  ExpiresByType text/html                     "access plus 5 minutes"
+  # CSS + JS — 1 month (hash-versioned)
+  ExpiresByType text/css                      "access plus 1 month"
+  ExpiresByType application/javascript        "access plus 1 month"
+  # Images — 6 months
+  ExpiresByType image/jpeg                    "access plus 6 months"
+  ExpiresByType image/png                     "access plus 6 months"
+  ExpiresByType image/webp                    "access plus 6 months"
+  ExpiresByType image/gif                     "access plus 6 months"
+  ExpiresByType image/svg+xml                 "access plus 6 months"
+  ExpiresByType image/x-icon                  "access plus 1 year"
+  # Fonts
+  ExpiresByType font/woff2                    "access plus 1 year"
+  ExpiresByType font/woff                     "access plus 1 year"
+  # JSON API — no cache
+  ExpiresByType application/json              "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  # Preload kritik assets — ilk yüklemeyi hızlandırır
+  <FilesMatch "^index\.html$">
+    Header add Link "</assets/style.min.css>; rel=preload; as=style"
+    Header add Link "</assets/app.min.js>; rel=preload; as=script"
+  </FilesMatch>
+
+  # Cache-Control header
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=2592000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(jpg|jpeg|png|webp|gif|svg|ico)$">
+    Header set Cache-Control "public, max-age=15552000"
+  </FilesMatch>
+  <FilesMatch "\.(woff|woff2|ttf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.php$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+  </FilesMatch>
+
+  # Security headers
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.openstreetmap.org https://tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org; frame-src https://www.openstreetmap.org; frame-ancestors 'none';"
+
+  # CORS for API
+  <FilesMatch "\.php$">
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Authorization, Content-Type, X-Requested-With"
+  </FilesMatch>
+</IfModule>
+
+# ── Keep-Alive ────────────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header set Connection keep-alive
+</IfModule>
+
+# ── ETags ─────────────────────────────────────────────────────
+FileETag MTime Size
+
+# ── Protect sensitive files ───────────────────────────────────
+<FilesMatch "^\.env|composer\.(json|lock)|package\.json|\.git">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# ── Redirect 404 to custom error page ────────────────────────
+# Update these paths to match your server root (e.g. / if site is at domain root)
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+ErrorDocument 403 /404.html
+
+# ── Authorization Header Passthrough (Apache CGI/FastCGI) ─────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1

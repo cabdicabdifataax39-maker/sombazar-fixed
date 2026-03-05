@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listings — SomBazar</title>
+    <link rel="preload" href="assets/style.min.css" as="style">
+  <link rel="preload" href="assets/app.min.js" as="script">
+<link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Listings — SomBazar",
+  "description": "Browse all listings on SomBazar — Somaliland's marketplace"
+}
+</script>
+<script type="application/ld+json" id="listingsBreadcrumb">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://sombazar.com/index.html"},{"@type":"ListItem","position":2,"name":"Listings","item":"https://sombazar.com/listings.html"}]}</script>
+  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
+  <script>
+    (function(){
+      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
+      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, {
+        page_title: document.title,
+        page_location: window.location.href,
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+    })();
+  </script>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+    <form class="header-search" id="headerSearchForm">
+      <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…">
+      <button type="submit" class="header-search-btn" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+    </form>
+    <div class="header-actions">
+      <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
+      <div id="header-user" style="display:none;align-items:center;gap:8px">
+        <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
+        </a>
+        <a href="profile.html?tab=offers" class="icon-btn" aria-label="Offers" style="position:relative" id="offerNavBtn" title="My Offers">
+          
+          <span id="offerNavBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#f97316;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
+        </a>
+        <!-- Notification Bell -->
+        <div style="position:relative" id="notifBellWrap">
+          <button id="notifBell" onclick="toggleNotifDropdown()" class="icon-btn" aria-label="Notifications" style="position:relative;background:none;border:none;cursor:pointer;padding:6px;border-radius:50%;display:flex;align-items:center;justify-content:center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px"></span>
+          </button>
+          <!-- Dropdown -->
+          <div id="notifDropdown" class="notif-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:320px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;overflow:hidden;max-height:480px;overflow-y:auto">
+            <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-weight:800;font-size:14px;color:#1e293b"> Notifications</span>
+              <button onclick="Notif.requestPushPermission()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;font-family:DM Sans" title="Enable push notifications">Enable push</button>
+            </div>
+            <div id="notifList"></div>
+          </div>
+        </div>
+        <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px"></a>
+      </div>
+      <a href="admin.html" id="admin-btn" style="display:none;background:#1e293b;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;align-items:center;gap:5px">Admin</a>
+      <button id="langBtn" onclick="toggleLang()" style="background:var(--light-gray);border:1px solid var(--border-color);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:DM Sans;font-size:12px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:5px;transition:all .2s" title="Switch Language">
+          <span style="font-size:14px">&#x1F1F8;&#x1F1F4;</span> Somali
+        </button>
+      <a href="post.html" class="btn-post-ad">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Post Ad
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- CATEGORY PILLS -->
+<div class="category-pills-section">
+  <div class="category-pills-wrap" id="categoryPills">
+    <button class="category-pill" data-cat="all"> All</button>
+    <button class="category-pill" data-cat="car">Cars</button>
+    <button class="category-pill" data-cat="house">Houses</button>
+    <button class="category-pill" data-cat="land">Land</button>
+    <button class="category-pill" data-cat="electronics">Electronics</button>
+    <button class="category-pill" data-cat="furniture"> Furniture</button>
+    <button class="category-pill" data-cat="jobs"> Jobs</button>
+    <button class="category-pill" data-cat="services"> Services</button>
+    <button class="category-pill" data-cat="hotel">Hotels</button>
+  </div>
+</div>
+
+<div class="listings-3col-layout" id="main-content">
+
+  <!-- ═══ SOL SIDEBAR: FİLTRELER ═══════════════════════════════════ -->
+  <aside class="listings-left-sidebar" aria-label="Search filters" role="search">
+
+    <!-- Arama -->
+    <div class="sb-widget">
+      <div class="sb-widget-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </div>
+      <div class="sb-widget-body">
+        <input class="form-input" type="search" id="searchInput" placeholder="Keywords…" style="font-size:13px">
+      </div>
+    </div>
+
+    <!-- Kategori -->
+    <div class="sb-widget">
+      <div class="sb-widget-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Category
+      </div>
+      <div class="sb-widget-body" style="padding:8px 0">
+        <button class="sb-cat-item active" data-cat="all" onclick="setSbCat(this,'all')">
+          <span class="sb-cat-dot" style="background:#f97316"></span> All Categories
+        </button>
+        <button class="sb-cat-item" data-cat="car" onclick="setSbCat(this,'car')">
+          <span class="sb-cat-dot" style="background:#3b82f6"></span> Cars
+        </button>
+        <button class="sb-cat-item" data-cat="house" onclick="setSbCat(this,'house')">
+          <span class="sb-cat-dot" style="background:#22c55e"></span> Houses
+        </button>
+        <button class="sb-cat-item" data-cat="land" onclick="setSbCat(this,'land')">
+          <span class="sb-cat-dot" style="background:#84cc16"></span> Land
+        </button>
+        <button class="sb-cat-item" data-cat="electronics" onclick="setSbCat(this,'electronics')">
+          <span class="sb-cat-dot" style="background:#a855f7"></span> Electronics
+        </button>
+        <button class="sb-cat-item" data-cat="furniture" onclick="setSbCat(this,'furniture')">
+          <span class="sb-cat-dot" style="background:#f59e0b"></span> Furniture
+        </button>
+        <button class="sb-cat-item" data-cat="jobs" onclick="setSbCat(this,'jobs')">
+          <span class="sb-cat-dot" style="background:#06b6d4"></span> Jobs
+        </button>
+        <button class="sb-cat-item" data-cat="services" onclick="setSbCat(this,'services')">
+          <span class="sb-cat-dot" style="background:#ef4444"></span> Services
+        </button>
+        <button class="sb-cat-item" data-cat="hotel" onclick="setSbCat(this,'hotel')">
+          <span class="sb-cat-dot" style="background:#f97316"></span> Hotels
+        </button>
+      </div>
+    </div>
+
+    <!-- Şehir -->
+    <div class="sb-widget">
+      <div class="sb-widget-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        City
+      </div>
+      <div class="sb-widget-body" style="padding:8px 0">
+        <button class="sb-city-item active" data-city="All" onclick="setSbCity(this,'All')">All Cities</button>
+        <button class="sb-city-item" data-city="Hargeisa" onclick="setSbCity(this,'Hargeisa')">Hargeisa</button>
+        <button class="sb-city-item" data-city="Berbera" onclick="setSbCity(this,'Berbera')">Berbera</button>
+        <button class="sb-city-item" data-city="Burco" onclick="setSbCity(this,'Burco')">Burco</button>
+        <button class="sb-city-item" data-city="Borama" onclick="setSbCity(this,'Borama')">Borama</button>
+        <button class="sb-city-item" data-city="Gabiley" onclick="setSbCity(this,'Gabiley')">Gabiley</button>
+        <button class="sb-city-item" data-city="Ceerigaavo" onclick="setSbCity(this,'Ceerigaavo')">Ceerigaavo</button>
+        <button class="sb-city-item" data-city="Laascaanood" onclick="setSbCity(this,'Laascaanood')">Laascaanood</button>
+      </div>
+    </div>
+
+    <!-- Fiyat -->
+    <div class="sb-widget">
+      <div class="sb-widget-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Price Range (USD)
+      </div>
+      <div class="sb-widget-body">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <input class="form-input" type="number" id="priceMin" placeholder="Min" style="flex:1;font-size:13px">
+          <span style="color:var(--gray);font-size:13px">–</span>
+          <input class="form-input" type="number" id="priceMax" placeholder="Max" style="flex:1;font-size:13px">
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          <button class="sb-price-chip" onclick="setPrice(0,100)">Under $100</button>
+          <button class="sb-price-chip" onclick="setPrice(100,500)">$100–$500</button>
+          <button class="sb-price-chip" onclick="setPrice(500,2000)">$500–$2K</button>
+          <button class="sb-price-chip" onclick="setPrice(2000,10000)">$2K–$10K</button>
+          <button class="sb-price-chip" onclick="setPrice(10000,'')">$10K+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Durum -->
+    <div class="sb-widget">
+      <div class="sb-widget-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        Condition
+      </div>
+      <div class="sb-widget-body">
+        <select class="form-select" id="conditionSelect" style="font-size:13px">
+          <option>All</option><option>New</option><option>Like New</option><option>Good</option><option>Used</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <button class="btn btn-ghost btn-sm" id="resetFilters" style="width:100%;font-size:13px">Reset All Filters</button>
+
+  </aside>
+
+  <!-- ═══ ORTA: İLANLAR ════════════════════════════════════════════ -->
+  <main class="listings-main-col">
+
+    <!-- Toolbar -->
+    <div class="listings-toolbar">
+      <h1 style="font-size:16px;font-weight:800;color:var(--dark);margin:0" id="pageTitle">
+        All Listings <span style="font-size:12px;font-weight:600;color:var(--gray);font-family:'DM Sans',sans-serif" id="countBadge"></span>
+      </h1>
+      <select class="form-select" id="sortSelect" style="width:160px;height:36px;padding:0 10px;font-size:13px">
+        <option value="createdAt">Newest First</option>
+        <option value="price">Price: Low to High</option>
+        <option value="views">Most Viewed</option>
+      </select>
+    </div>
+
+    <!-- İlanlar -->
+    <div id="listingsGrid" class="listings-grid" style="padding:0"></div>
+    <div id="emptyState" class="empty-state section-block" style="display:none">
+      <div class="empty-state-icon"></div>
+      <div class="empty-state-title">No listings found</div>
+      <p class="empty-state-desc">Try adjusting your filters or be the first to post!</p>
+      <a href="post.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">+ Post an Ad</a>
+    </div>
+
+  </main>
+
+  <!-- ═══ SAĞ SIDEBAR: WİDGETLER ══════════════════════════════════ -->
+  <aside class="listings-right-sidebar" aria-label="Additional information">
+
+    <!-- Post Ad CTA -->
+    <div class="sb-widget sb-cta-widget">
+      <div style="text-align:center;padding:4px 0 8px">
+        <div style="width:48px;height:48px;background:rgba(249,115,22,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div style="font-weight:800;font-size:14px;color:var(--dark);margin-bottom:4px">Sell Something?</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:14px;line-height:1.5">Post your ad for free and reach thousands of buyers in Somaliland</div>
+        <a href="post.html" class="btn btn-primary" style="width:100%;justify-content:center;font-size:13px">+ Post Free Ad</a>
+      </div>
+    </div>
+
+    <!-- Şehirler haritası -->
+    <div class="sb-widget">
+      <div class="sb-widget-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Browse by City
+      </div>
+      <div class="sb-widget-body" style="padding:8px 0">
+        <div id="cityCountsWidget">
+          <div class="sb-city-count-item" onclick="setSbCity(null,'Hargeisa')">
+            <span>Hargeisa</span><span class="sb-city-count" id="cnt-Hargeisa">–</span>
+          </div>
+          <div class="sb-city-count-item" onclick="setSbCity(null,'Berbera')">
+            <span>Berbera</span><span class="sb-city-count" id="cnt-Berbera">–</span>
+          </div>
+          <div class="sb-city-count-item" onclick="setSbCity(null,'Burco')">
+            <span>Burco</span><span class="sb-city-count" id="cnt-Burco">–</span>
+          </div>
+          <div class="sb-city-count-item" onclick="setSbCity(null,'Borama')">
+            <span>Borama</span><span class="sb-city-count" id="cnt-Borama">–</span>
+          </div>
+          <div class="sb-city-count-item" onclick="setSbCity(null,'Gabiley')">
+            <span>Gabiley</span><span class="sb-city-count" id="cnt-Gabiley">–</span>
+          </div>
+          <div class="sb-city-count-item" onclick="setSbCity(null,'Ceerigaavo')">
+            <span>Ceerigaavo</span><span class="sb-city-count" id="cnt-Ceerigaavo">–</span>
+          </div>
+          <div class="sb-city-count-item" onclick="setSbCity(null,'Laascaanood')">
+            <span>Laascaanood</span><span class="sb-city-count" id="cnt-Laascaanood">–</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Güvenlik ipucu -->
+    <div class="sb-widget sb-safety-widget">
+      <div class="sb-widget-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Stay Safe
+      </div>
+      <div class="sb-widget-body" style="padding:12px 14px">
+        <div class="sb-safety-tip">Meet in a public place in Hargeisa</div>
+        <div class="sb-safety-tip">Never pay before receiving the item</div>
+        <div class="sb-safety-tip">Check seller's verification badge</div>
+        <div class="sb-safety-tip">Be suspicious of prices too low</div>
+        <a href="safety.html" style="font-size:12px;color:#f97316;font-weight:600;text-decoration:none;display:block;margin-top:8px">Read Safety Guide →</a>
+      </div>
+    </div>
+
+    <!-- Paket tanıtımı -->
+    <div class="sb-widget sb-upgrade-widget">
+      <div style="padding:14px">
+        <div style="font-size:12px;font-weight:800;color:#f97316;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Go Pro</div>
+        <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px">Boost your listings to the top</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.6">
+          Unlimited listings · 15 photos · Boost credits · Featured badge
+        </div>
+        <a href="packages.html" style="display:block;text-align:center;background:linear-gradient(135deg,#f97316,#ea580c);color:white;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none">
+          View Plans from $8/mo
+        </a>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<nav class="mobile-bottom-nav">
+  <ul>
+    <li><a href="index.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a></li>
+    <li><a href="listings.html" class="mob-nav-btn active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Listings</span></a></li>
+    <li><a href="post.html" class="mob-nav-btn"><span class="mob-icon">+</span><span>Post</span></a></li>
+    <li><a href="messages.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></a></li>
+    <li><a href="profile.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></a></li>
+  </ul>
+</nav>
+
+<nav class="mobile-bottom-nav">
+  <ul>
+    <li><a href="index.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a></li>
+    <li><a href="listings.html" class="mob-nav-btn active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Listings</span></a></li>
+    <li><a href="post.html" class="mob-nav-btn"><span class="mob-icon">+</span><span>Post</span></a></li>
+    <li><a href="messages.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></a></li>
+    <li><a href="profile.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></a></li>
+  </ul>
+</nav>
+
+<script>
+// Auth/API fallback
+window.Auth = window.Auth || {
+  getToken:    () => localStorage.getItem('sb_token') || '',
+  getUser:     () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  isLoggedIn:  () => !!localStorage.getItem('sb_token'),
+  setSession:  () => {},
+  clearSession:() => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+};
+window.API = window.API || {};
+</script>
+
+<script src="assets/app.min.js"></script>
+
+<script>
+// ── URL parametreleri ─────────────────────────────────────────────────
+const params    = new URLSearchParams(window.location.search);
+let activeCat   = params.get('category') || 'all';
+let activeCity  = params.get('city')     || 'All';
+let searchQ     = params.get('q')        || '';
+const featured  = params.get('featured') || '';
+
+const CATS = {
+  all:'All Listings', car:'Cars', house:'Houses', land:'Land',
+  electronics:'Electronics', furniture:'Furniture', jobs:'Jobs',
+  services:'Services', hotel:'Hotels', animals:'Animals',
+  fashion:'Fashion', food:'Food', other:'Other'
+};
+
+// ── Skeleton ──────────────────────────────────────────────────────────
+function skeletonCards(n) {
+  return Array(n).fill(`<div class="listing-card" style="pointer-events:none">
+    <div class="listing-card-img" style="background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.2s infinite"></div>
+    <div class="listing-card-body">
+      <div style="height:14px;border-radius:6px;background:#f1f5f9;margin-bottom:8px"></div>
+      <div style="height:18px;width:60%;border-radius:6px;background:#f1f5f9;margin-bottom:8px"></div>
+      <div style="height:12px;width:40%;border-radius:6px;background:#f1f5f9"></div>
+    </div>
+  </div>`).join('');
+}
+
+// ── Filter parametreleri ──────────────────────────────────────────────
+function getFilterParams() {
+  const p = {
+    pageSize: 18,
+    sortBy:   document.getElementById('sortSelect')?.value || 'createdAt',
+    offset:   (listPage - 1) * 18,
+  };
+  if (activeCat !== 'all') p.category = activeCat;
+  if (activeCity !== 'All') p.city = activeCity;
+  const cond = document.getElementById('conditionSelect')?.value;
+  if (cond && cond !== 'All') p.condition = cond;
+  const q = document.getElementById('searchInput')?.value.trim() || searchQ;
+  if (q) p.q = q;
+  const pMin = document.getElementById('priceMin')?.value;
+  const pMax = document.getElementById('priceMax')?.value;
+  if (pMin) p.price_min = pMin;
+  if (pMax) p.price_max = pMax;
+  if (featured) p.featured = 1;
+  return p;
+}
+
+// ── İlan yükleme ──────────────────────────────────────────────────────
+let listPage = 1, listLoading = false, listDone = false;
+
+async function loadListings(reset = false) {
+  if (listLoading) return;
+  if (!reset && listDone) return;
+  if (reset) { listPage = 1; listDone = false; }
+
+  const grid  = document.getElementById('listingsGrid');
+  const empty = document.getElementById('emptyState');
+  if (!grid) return;
+  listLoading = true;
+
+  if (listPage === 1) { grid.innerHTML = skeletonCards(12); if (empty) empty.style.display = 'none'; }
+
+  try {
+    const listings = await API.getListings(getFilterParams());
+    if (listPage === 1) grid.innerHTML = '';
+
+    if (listings.length === 0 && listPage === 1) {
+      if (empty) empty.style.display = '';
+      const cb = document.getElementById('countBadge');
+      if (cb) cb.textContent = '';
+    } else {
+      grid.insertAdjacentHTML('beforeend', listings.map(listingCardHTML).join(''));
+      if (listings.length < 18) {
+        listDone = true;
+        if (listPage > 1) grid.insertAdjacentHTML('beforeend',
+          `<div style="grid-column:1/-1;text-align:center;padding:20px;font-size:13px;color:var(--gray)">All listings shown</div>`);
+      } else {
+        listPage++;
+      }
+      updateCityCounts(listings);
+    }
+  } catch(e) {
+    if (grid) grid.innerHTML = `<div style="padding:24px;color:var(--gray);text-align:center">Could not load listings. Please try again.</div>`;
+  }
+  listLoading = false;
+}
+
+// ── Sidebar: kategori ─────────────────────────────────────────────────
+function setSbCat(btn, cat) {
+  activeCat = cat;
+  document.querySelectorAll('.sb-cat-item').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  document.querySelectorAll('.category-pill').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  const title = document.getElementById('pageTitle');
+  if (title) title.innerHTML = (CATS[cat] || 'All Listings') +
+    ' <span style="font-size:12px;font-weight:600;color:var(--gray)" id="countBadge"></span>';
+  listPage = 1; loadListings(true);
+}
+
+// ── Sidebar: şehir ────────────────────────────────────────────────────
+function setSbCity(btn, city) {
+  activeCity = city;
+  document.querySelectorAll('.sb-city-item').forEach(b => b.classList.toggle('active', b.dataset.city === city));
+  listPage = 1; loadListings(true);
+}
+
+// ── Sidebar: fiyat chip ───────────────────────────────────────────────
+function setPrice(min, max) {
+  const minEl = document.getElementById('priceMin');
+  const maxEl = document.getElementById('priceMax');
+  if (minEl) minEl.value = min || '';
+  if (maxEl) maxEl.value = max || '';
+  document.querySelectorAll('.sb-price-chip').forEach(b => b.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
+  listPage = 1; loadListings(true);
+}
+
+// ── Şehir sayaçlarını güncelle ────────────────────────────────────────
+function updateCityCounts(listings) {
+  const cities = ['Hargeisa','Berbera','Burco','Borama','Gabiley','Ceerigaavo','Laascaanood'];
+  cities.forEach(city => {
+    const el = document.getElementById('cnt-' + city);
+    if (!el) return;
+    const n = listings.filter(l => l.city === city).length;
+    el.textContent = n || '0';
+  });
+}
+
+// ── Category pills (üst bar) ──────────────────────────────────────────
+const pillsEl = document.getElementById('categoryPills');
+if (pillsEl) {
+  pillsEl.addEventListener('click', e => {
+    if (e.target.matches('.category-pill')) {
+      setSbCat(null, e.target.dataset.cat);
+    }
+  });
+}
+
+// ── Header search ─────────────────────────────────────────────────────
+const headerForm = document.getElementById('headerSearchForm');
+if (headerForm) {
+  headerForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const q = document.getElementById('headerSearchInput')?.value.trim();
+    if (q) {
+      const si = document.getElementById('searchInput');
+      if (si) si.value = q;
+      searchQ = q;
+      loadListings(true);
+    }
+  });
+}
+
+// ── Sort değişince ────────────────────────────────────────────────────
+const sortEl = document.getElementById('sortSelect');
+if (sortEl) sortEl.addEventListener('change', () => loadListings(true));
+
+// ── Condition değişince ───────────────────────────────────────────────
+const condEl = document.getElementById('conditionSelect');
+if (condEl) condEl.addEventListener('change', () => loadListings(true));
+
+// ── Search input debounce ─────────────────────────────────────────────
+const searchEl = document.getElementById('searchInput');
+if (searchEl) {
+  let _t;
+  searchEl.addEventListener('input', e => {
+    clearTimeout(_t);
+    _t = setTimeout(() => { searchQ = e.target.value.trim(); loadListings(true); }, 400);
+  });
+  // URL'den gelen arama terimini doldur
+  if (searchQ) searchEl.value = searchQ;
+}
+
+// ── Fiyat Enter tuşu ─────────────────────────────────────────────────
+['priceMin','priceMax'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') loadListings(true); });
+});
+
+// ── Reset butonu ──────────────────────────────────────────────────────
+const resetBtn = document.getElementById('resetFilters');
+if (resetBtn) {
+  resetBtn.addEventListener('click', () => {
+    activeCat  = 'all';
+    activeCity = 'All';
+    searchQ    = '';
+    ['searchInput','priceMin','priceMax'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    const condEl2 = document.getElementById('conditionSelect');
+    if (condEl2) condEl2.value = 'All';
+    document.querySelectorAll('.sb-cat-item').forEach(b => b.classList.toggle('active', b.dataset.cat === 'all'));
+    document.querySelectorAll('.sb-city-item').forEach(b => b.classList.toggle('active', b.dataset.city === 'All'));
+    document.querySelectorAll('.sb-price-chip').forEach(b => b.classList.remove('active'));
+    listPage = 1; loadListings(true);
+  });
+}
+
+// ── Infinite scroll ───────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  if (listDone || listLoading) return;
+  if (window.scrollY + window.innerHeight >= document.body.offsetHeight - 400) loadListings();
+});
+
+// ── URL parametrelerini uygula ve ilk yükleme ─────────────────────────
+if (activeCat !== 'all') {
+  document.querySelectorAll('.sb-cat-item').forEach(b => b.classList.toggle('active', b.dataset.cat === activeCat));
+  document.querySelectorAll('.category-pill').forEach(b => b.classList.toggle('active', b.dataset.cat === activeCat));
+}
+if (activeCity !== 'All') {
+  document.querySelectorAll('.sb-city-item').forEach(b => b.classList.toggle('active', b.dataset.city === activeCity));
+}
+
+loadListings();
+</script>
+</body>
+</html>
