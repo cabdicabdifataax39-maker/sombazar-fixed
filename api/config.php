@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 ob_start(); // Buffer tüm çıktıyı — header'dan önce whitespace önle
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
@@ -15,39 +15,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Load from environment variables (Railway) or .env file
+// ── Environment Variables ────────────────────────────────────────────
+// Önce Railway/sunucu getenv() — sonra .env dosyası (local geliştirme)
+$env = [];
+$envKeys = ['DB_HOST','DB_PORT','DB_NAME','DB_USER','DB_PASS','SITE_URL','UPLOAD_URL',
+            'JWT_SECRET','MSG_KEY','SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_PASS',
+            'SMTP_FROM','SMTP_FROM_NAME','GOOGLE_MAPS_KEY'];
+
+// 1. Railway / hosting environment variables (en yüksek öncelik)
+foreach ($envKeys as $key) {
+    $val = getenv($key);
+    if ($val !== false && $val !== '') {
+        $env[$key] = $val;
+    }
+}
+
+// 2. .env dosyasından eksikleri tamamla (local XAMPP için)
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {
     foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+        $line = preg_replace('/^\xEF\xBB\xBF/', '', $line);
         $line = trim($line);
         if ($line === '' || $line[0] === '#') continue;
         $pos = strpos($line, '=');
         if ($pos === false) continue;
         $key = trim(substr($line, 0, $pos));
         $val = trim(substr($line, $pos + 1));
-        if (preg_match('/^[A-Z_][A-Z0-9_]*$/', $key)) putenv("$key=$val");
-    }
-}
-
-$env = [];
-foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-    // Strip UTF-8 BOM if present on first line
-    $line = preg_replace('/^\xEF\xBB\xBF/', '', $line);
-    $line = trim($line);
-    if ($line === '' || $line[0] === '#') continue;
-    $pos = strpos($line, '=');
-    if ($pos === false) continue;
-    $key = trim(substr($line, 0, $pos));
-    $val = trim(substr($line, $pos + 1));
-    $val = trim($val, "
-"); // Strip Windows line endings
-    // Strip inline comments
-    if (($commentPos = strpos($val, ' #')) !== false) {
-        $val = trim(substr($val, 0, $commentPos));
-    }
-    // Only allow valid key names (letters, numbers, underscore)
-    if (preg_match('/^[A-Z_][A-Z0-9_]*$/', $key)) {
-        $env[$key] = $val;
+        $val = trim($val, "\r");
+        if (($commentPos = strpos($val, ' #')) !== false) {
+            $val = trim(substr($val, 0, $commentPos));
+        }
+        if (preg_match('/^[A-Z_][A-Z0-9_]*$/', $key) && !isset($env[$key])) {
+            $env[$key] = $val;
+        }
     }
 }
 
@@ -312,4 +312,3 @@ function decryptMessage(string $data): string {
     $dec = @openssl_decrypt($enc, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
     return $dec !== false ? $dec : $data; // çözülemezse orijinali döndür
 }
-
