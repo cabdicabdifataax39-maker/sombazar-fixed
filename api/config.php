@@ -20,7 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $env = [];
 $envKeys = ['DB_HOST','DB_PORT','DB_NAME','DB_USER','DB_PASS','SITE_URL','UPLOAD_URL',
             'JWT_SECRET','MSG_KEY','SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_PASS',
-            'SMTP_FROM','SMTP_FROM_NAME','GOOGLE_MAPS_KEY'];
+            'SMTP_FROM','SMTP_FROM_NAME','GOOGLE_MAPS_KEY',
+            'CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET'];
 
 // 1. Railway / hosting environment variables (en yüksek öncelik)
 foreach ($envKeys as $key) {
@@ -73,8 +74,9 @@ define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 define('UPLOAD_URL', SITE_URL . '/uploads/');
 define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
 
-// SMTP — putenv ile set et ki mailer.php getenv() ile okuyabilsin
-foreach (['SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_PASS','SMTP_FROM','SMTP_FROM_NAME'] as $_k) {
+// SMTP + Cloudinary — putenv ile set et
+foreach (['SMTP_HOST','SMTP_PORT','SMTP_USER','SMTP_PASS','SMTP_FROM','SMTP_FROM_NAME',
+          'CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET'] as $_k) {
     if (!empty($env[$_k])) putenv("$_k={$env[$_k]}");
 }
 
