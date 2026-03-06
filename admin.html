@@ -551,15 +551,26 @@ window.API = window.API || {};
   <script src="assets/app.min.js"></script>
 <script>
 // ── Kupon Yönetimi ─────────────────────────────────────────
-function toggleCouponForm() {
-  const f = document.getElementById('couponForm');
-  if (!f) return;
-  const isHidden = f.style.display === 'none' || f.style.display === '';
-  f.style.display = isHidden ? 'block' : 'none';
-  if (isHidden) {
-    setTimeout(() => f.scrollIntoView({behavior:'smooth', block:'start'}), 50);
-  }
+function toggleCouponForm() { openCouponModal(); }
+
+function openCouponModal() {
+  document.getElementById('couponModalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('newCouponCode').value = '';
+  document.getElementById('newCouponType').value = 'percent';
+  document.getElementById('newCouponValue').value = '';
+  document.getElementById('newCouponUses').value = '0';
+  document.getElementById('newCouponExpiry').value = '';
 }
+
+function closeCouponModal() {
+  document.getElementById('couponModalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeCouponModal();
+});
 
 async function loadCoupons() {
   const list = document.getElementById('couponList');
@@ -606,7 +617,7 @@ async function createCoupon() {
     const d = await r.json();
     if (!d.success) throw new Error(d.error);
     showAdminToast('Coupon ' + code + ' created!', 'success');
-    document.getElementById('couponForm').style.display = 'none';
+    closeCouponModal();
     loadCoupons();
   } catch(e) { showAdminToast(e.message, 'error'); }
 }
@@ -1175,42 +1186,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <button onclick="toggleCouponForm()" style="background:#f97316;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">+ New Coupon</button>
       </div>
 
-      <!-- Form — üstte, toggle ile açılır -->
-      <div id="couponForm" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:20px;margin-bottom:20px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-          <h3 style="font-size:15px;font-weight:700;margin:0">Create New Coupon</h3>
-          <button onclick="toggleCouponForm()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8;line-height:1">✕</button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Code *</label>
-            <input id="newCouponCode" placeholder="SAVE20" maxlength="30" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px;text-transform:uppercase;box-sizing:border-box">
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Type</label>
-            <select id="newCouponType" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px">
-              <option value="percent">Percent (%)</option>
-              <option value="fixed">Fixed ($)</option>
-            </select>
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Value *</label>
-            <input id="newCouponValue" type="number" placeholder="20" min="1" max="100" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px;box-sizing:border-box">
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Max Uses (0=unlimited)</label>
-            <input id="newCouponUses" type="number" value="0" min="0" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px;box-sizing:border-box">
-          </div>
-          <div>
-            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:4px">Expires At</label>
-            <input id="newCouponExpiry" type="date" style="width:100%;padding:9px 12px;border:1px solid #e2e8f0;border-radius:8px;font-family:'DM Sans';font-size:13px;box-sizing:border-box">
-          </div>
-          <div style="display:flex;align-items:flex-end">
-            <button onclick="createCoupon()" style="width:100%;background:#0f172a;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">Create</button>
-          </div>
-        </div>
-      </div>
-
       <!-- Kupon listesi -->
       <div id="couponList"><div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div></div>
     </div>
@@ -1223,6 +1198,44 @@ document.addEventListener('DOMContentLoaded', () => {
       <div id="affiliateList"><div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div></div>
     </div>
 </div>
+</div>
+<!-- Coupon Modal -->
+<div id="couponModalOverlay" class="modal-overlay" onclick="if(event.target===this)closeCouponModal()">
+  <div class="modal" style="max-width:500px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h3 class="modal-title" style="margin:0">🎟️ Create New Coupon</h3>
+      <button onclick="closeCouponModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1;padding:0">&times;</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div style="grid-column:1/-1">
+        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Coupon Code *</label>
+        <input id="newCouponCode" placeholder="SAVE20" maxlength="30" style="width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:9px;font-family:'DM Sans';font-size:14px;text-transform:uppercase;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Discount Type</label>
+        <select id="newCouponType" style="width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:9px;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none;background:white">
+          <option value="percent">Percent (%)</option>
+          <option value="fixed">Fixed ($)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Value *</label>
+        <input id="newCouponValue" type="number" placeholder="20" min="1" style="width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:9px;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Max Uses <span style="font-weight:400">(0 = unlimited)</span></label>
+        <input id="newCouponUses" type="number" value="0" min="0" style="width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:9px;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:5px">Expires At</label>
+        <input id="newCouponExpiry" type="date" style="width:100%;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:9px;font-family:'DM Sans';font-size:14px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#f97316'" onblur="this.style.borderColor='#e2e8f0'">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:22px">
+      <button onclick="closeCouponModal()" style="flex:1;padding:11px;border:1.5px solid #e2e8f0;border-radius:10px;background:white;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer;color:#64748b">Cancel</button>
+      <button onclick="createCoupon()" style="flex:2;padding:11px;background:#f97316;color:#fff;border:none;border-radius:10px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">Create Coupon</button>
+    </div>
+  </div>
 </div>
 </body>
 </html>
