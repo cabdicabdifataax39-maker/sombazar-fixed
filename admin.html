@@ -552,8 +552,14 @@ window.API = window.API || {};
 <script>
 // ── Kupon Yönetimi ─────────────────────────────────────────
 function toggleCouponForm() {
-  const f = document.getElementById('couponForm');
-  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  const overlay = document.getElementById('couponModal');
+  if (overlay) {
+    overlay.classList.toggle('open');
+  } else {
+    const f = document.getElementById('couponForm');
+    f.style.display = f.style.display === 'none' ? 'block' : 'none';
+    if (f.style.display === 'block') f.scrollIntoView({behavior:'smooth'});
+  }
 }
 
 async function loadCoupons() {
@@ -602,6 +608,8 @@ async function createCoupon() {
     if (!d.success) throw new Error(d.error);
     showAdminToast('Coupon ' + code + ' created!', 'success');
     document.getElementById('couponForm').style.display = 'none';
+    const overlay = document.getElementById('couponModal');
+    if (overlay) overlay.classList.remove('open');
     loadCoupons();
   } catch(e) { showAdminToast(e.message, 'error'); }
 }
@@ -1164,7 +1172,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </script>
     <!-- Kupon Yönetimi -->
-    <div id="tab-coupons" class="tab-pane" style="display:none">
+    <div id="couponModal" class="modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:520px" onclick="event.stopPropagation()">
+    <div class="modal-title">New Coupon</div>
+    <div id="couponFormInner"></div>
+  </div>
+</div>
+<div id="tab-coupons" class="tab-pane" style="display:none">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
         <h2 style="font-size:18px;font-weight:800">Coupon Codes</h2>
         <button onclick="toggleCouponForm()" style="background:#f97316;color:#fff;border:none;border-radius:10px;padding:8px 16px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">+ New Coupon</button>
