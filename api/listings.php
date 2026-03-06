@@ -284,6 +284,34 @@ function handleMarkActive(int $id): void {
     jsonSuccess(['id' => $id, 'status' => 'active']);
 }
 
+
+// ── Cloudinary Upload ────────────────────────────────────────────────────
+function uploadToCloudinary(string $tmpFile, string $folder = 'sombazar'): ?string {
+    $cloudName = getenv('CLOUDINARY_CLOUD_NAME');
+    $apiKey    = getenv('CLOUDINARY_API_KEY');
+    $apiSecret = getenv('CLOUDINARY_API_SECRET');
+    if (!$cloudName || !$apiKey || !$apiSecret) return null;
+    $timestamp = time();
+    $params    = "folder=$folder&timestamp=$timestamp";
+    $signature = sha1($params . $apiSecret);
+    $ch = curl_init("https://api.cloudinary.com/v1_1/$cloudName/image/upload");
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => [
+            'file'      => new CURLFile($tmpFile),
+            'folder'    => $folder,
+            'timestamp' => $timestamp,
+            'api_key'   => $apiKey,
+            'signature' => $signature,
+        ],
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $data = json_decode($response, true);
+    return $data['secure_url'] ?? null;
+}
+
 function handleUploadImages(): void {
     $uid    = requireAuth();
     $listId = (int) ($_GET['listing_id'] ?? 0);
@@ -361,7 +389,14 @@ function handleUploadImages(): void {
         }
 
         if ($gdOk) {
-            $urls[] = UPLOAD_URL . 'listings/' . $filename;
+            // Cloudinary'ye yükle
+            $cloudUrl = uploadToCloudinary($uploadDir . $filename, 'sombazar/listings');
+            if ($cloudUrl) {
+                @unlink($uploadDir . $filename); // local dosyayı sil
+                $urls[] = $cloudUrl;
+            } else {
+                $urls[] = UPLOAD_URL . 'listings/' . $filename;
+            }
         }
     }
 
