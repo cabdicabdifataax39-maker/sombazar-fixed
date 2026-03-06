@@ -31,7 +31,7 @@
     .topbar-title{font-size:18px;font-weight:800;color:#1e293b}
     .topbar-user{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#64748b}
     .topbar-back{font-size:13px;color:#f97316;text-decoration:none;font-weight:700}
-    .content{padding:24px;overflow-y:auto;flex:1}
+    .content{padding:24px;overflow-y:auto;flex:1;scroll-behavior:smooth}
     /* Stats cards */
     .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;margin-bottom:24px}
     .stat-card{background:white;border-radius:14px;padding:18px;border:1px solid #e2e8f0}
@@ -556,6 +556,9 @@ function toggleCouponForm() {
   if (!f) return;
   const isHidden = f.style.display === 'none' || f.style.display === '';
   f.style.display = isHidden ? 'block' : 'none';
+  if (isHidden) {
+    setTimeout(() => f.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+  }
 }
 
 async function loadCoupons() {
