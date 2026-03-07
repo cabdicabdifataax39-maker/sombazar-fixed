@@ -1028,11 +1028,18 @@ const Notif = {
     try {
       if (!('serviceWorker' in navigator)) return;
       const reg = await navigator.serviceWorker.ready;
+
+      // VAPID public key'i config'den al (env'de tanımlıysa), yoksa hardcoded fallback
+      let vapidKey = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
+      try {
+        const r = await fetch('api/notifications.php?action=vapid_key');
+        const d = await r.json();
+        if (d.success && d.publicKey) vapidKey = d.publicKey;
+      } catch(e) {}
+
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this._urlBase64ToUint8Array(
-          'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U'
-        )
+        applicationServerKey: this._urlBase64ToUint8Array(vapidKey)
       });
       await fetch('api/notifications.php?action=push_subscribe', {
         method: 'POST',

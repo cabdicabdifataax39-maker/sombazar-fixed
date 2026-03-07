@@ -177,6 +177,7 @@ function handleInitiate(): void {
     $method     = trim($data['method']          ?? '');
     $ref        = trim($data['reference_code']  ?? '');
     $screenshot = trim($data['screenshot_url']  ?? '');
+    $affiliateRef = trim($data['ref'] ?? $_GET['ref'] ?? '');  // affiliate referral kodu
 
     if (!isset(PLANS[$plan]))                    jsonError('Invalid plan');
     if (!in_array($method, ['zaad','edahab']))   jsonError('Invalid payment method');
@@ -185,6 +186,17 @@ function handleInitiate(): void {
     $db        = getDB();
     $plan_data = PLANS[$plan];
     $idem      = 'pay_' . $uid . '_' . $plan . '_' . substr(md5($ref), 0, 8);
+
+    // Affiliate ID bul
+    $affiliateId = null;
+    if ($affiliateRef) {
+        try {
+            $affSt = $db->prepare("SELECT id FROM affiliates WHERE ref_code = ? AND status = 'approved'");
+            $affSt->execute([$affiliateRef]);
+            $aff = $affSt->fetch();
+            if ($aff) $affiliateId = (int)$aff['id'];
+        } catch(\Throwable $e) {}
+    }
 
     try {
         $chk = $db->prepare('SELECT id, status FROM payments WHERE idempotency_key = ?');
@@ -199,9 +211,17 @@ function handleInitiate(): void {
         $refChk->execute([$ref]);
         if ($refChk->fetch()) jsonError('This reference code has already been used.');
 
-        $st = $db->prepare('INSERT INTO payments (user_id, plan, amount, method, reference_code, screenshot_url, idempotency_key) VALUES (?,?,?,?,?,?,?)');
-        $st->execute([$uid, $plan, $plan_data['price'], $method, $ref, $screenshot ?: null, $idem]);
+        $st = $db->prepare('INSERT INTO payments (user_id, plan, amount, method, reference_code, screenshot_url, idempotency_key, affiliate_id) VALUES (?,?,?,?,?,?,?,?)');
+        $st->execute([$uid, $plan, $plan_data['price'], $method, $ref, $screenshot ?: null, $idem, $affiliateId]);
         $paymentId = $db->lastInsertId();
+
+        // Affiliate toplam referral sayısını artır
+        if ($affiliateId) {
+            try {
+                $db->prepare("UPDATE affiliates SET total_referrals = total_referrals + 1 WHERE id = ?")
+                   ->execute([$affiliateId]);
+            } catch(\Throwable $e) {}
+        }
 
         jsonSuccess([
             'payment_id' => $paymentId,

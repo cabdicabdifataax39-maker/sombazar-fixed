@@ -73,13 +73,13 @@ function handleAdd(): void {
     // Satıcıya bildirim — kendisi favoriliyorsa gönderme
     if ((int)$listing['user_id'] !== $uid) {
         try {
-            $buyerSt = $db->prepare('SELECT display_name FROM users WHERE id=?');
+            $buyerSt = $db->prepare('SELECT display_name FROM users WHERE id = ?');
             $buyerSt->execute([$uid]);
-            $buyerName = $buyerSt->fetch()['display_name'] ?? 'Someone';
+            $buyerName = $buyerSt->fetchColumn() ?: 'Someone';
             $db->prepare("INSERT IGNORE INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
                ->execute([$listing['user_id'], 'system',
-                   "Someone saved your listing",
-                   "$buyerName added \"" . $listing['title'] . "\" to their favorites.",
+                   'Someone saved your listing',
+                   $buyerName . ' added "' . $listing['title'] . '" to their favorites.',
                    'listing.html?id=' . $lid, '']);
         } catch(\Throwable $e) {}
     }

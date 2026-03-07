@@ -155,14 +155,21 @@ function handleCreate(): void {
         if (empty($data[$f])) jsonError("Field '$f' is required");
     }
 
+    $db = getDB();
+
+    // ── Rate limit: 1 saatte max 10 yeni ilan ─────────────────────────────
+    $rlSt = $db->prepare("SELECT COUNT(*) FROM listings WHERE user_id = ? AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)");
+    $rlSt->execute([$uid]);
+    if ((int)$rlSt->fetchColumn() >= 10) {
+        jsonError('Rate limit: You can post at most 10 listings per hour. Please wait a while.', 429);
+    }
+
     $listingType  = in_array($data['listing_type'] ?? '', ['sale', 'rent']) ? $data['listing_type'] : 'sale';
     $rentalPeriod = null;
     if ($listingType === 'rent') {
         $rentalPeriod = in_array($data['rental_period'] ?? '', ['daily', 'monthly', 'yearly'])
             ? $data['rental_period'] : 'monthly';
     }
-
-    $db = getDB();
     $st = $db->prepare(
         'INSERT INTO listings (user_id, category, listing_type, rental_period, title, description,
                                price, currency, negotiable, city, condition_status, phone, images, specs, year, status)
@@ -226,16 +233,10 @@ function handleUpdate(int $id): void {
     foreach ($map as $key => $col) {
         if (array_key_exists($key, $data)) {
             $val = $data[$key];
-            // Type coercion — MySQL TINYINT sütunlar boolean/string kabul etmez
-            if (in_array($col, ['negotiable', 'featured'])) {
-                $val = ($val === true || $val === 1 || $val === '1' || $val === 'true') ? 1 : 0;
-            } elseif ($col === 'price') {
-                $val = (float) $val;
-            } elseif ($col === 'year') {
-                $val = ($val !== null && $val !== '') ? (int) $val : null;
-            } elseif (in_array($col, ['images', 'specs'])) {
-                $val = is_array($val) ? json_encode($val) : $val;
-            }
+            if (in_array($col, ['images', 'specs']))        $val = is_array($val) ? json_encode($val) : $val;
+            elseif (in_array($col, ['negotiable','featured'])) $val = ($val === true || $val === 1 || $val === '1' || $val === 'true') ? 1 : 0;
+            elseif ($col === 'price')                        $val = (float) $val;
+            elseif ($col === 'year')                         $val = ($val !== null && $val !== '') ? (int)$val : null;
             $fields[] = "$col = ?";
             $params[]  = $val;
         }
@@ -475,37 +476,38 @@ function handleUserListings(): void {
 
 function formatListing(array $r, bool $detail = false): array {
     $images = json_decode($r['images'] ?? '[]', true) ?: [];
+    $esc    = fn($v) => $v !== null ? htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : null;
 
     $out = [
-        'id'           => $r['id'],
-        'userId'       => $r['user_id'],
-        'category'     => $r['category'],
+        'id'           => (int)$r['id'],
+        'userId'       => (int)$r['user_id'],
+        'category'     => $esc($r['category']),
         'listingType'  => $r['listing_type'] ?? 'sale',
         'rentalPeriod' => $r['rental_period'] ?? null,
-        'title'        => $r['title'],
+        'title'        => $esc($r['title']),
         'price'        => (float) $r['price'],
-        'currency'     => $r['currency'],
+        'currency'     => $esc($r['currency']),
         'negotiable'   => (bool) $r['negotiable'],
-        'city'         => $r['city'],
-        'condition'    => $r['condition_status'],
-        'phone'        => $r['phone'],
+        'city'         => $esc($r['city']),
+        'condition'    => $esc($r['condition_status']),
+        'phone'        => $r['phone'],   // maskeleniyor frontend'de
         'featured'     => (bool) $r['featured'],
         'views'        => (int) $r['views'],
-        'images'       => $images,
+        'images'       => array_map('strval', $images),
         'status'       => $r['status'],
         'createdAt'    => $r['created_at'],
-        'year'         => $r['year'],
+        'year'         => $r['year'] ? (int)$r['year'] : null,
     ];
 
     if ($detail) {
-        $out['description'] = $r['description'];
+        $out['description'] = $esc($r['description']);
         $out['specs']       = json_decode($r['specs'] ?? '{}', true) ?: [];
         $out['seller']      = [
-            'id'          => $r['user_id'],
-            'displayName' => $r['seller_name'] ?? null,
+            'id'          => (int)$r['user_id'],
+            'displayName' => $esc($r['seller_name'] ?? null),
             'photoURL'    => ($r['avatar_url'] ?? $r['seller_photo'] ?? null) ? UPLOAD_URL . $r['seller_photo'] : null,
             'verified'    => (bool) ($r['seller_verified'] ?? false),
-            'city'        => $r['seller_city'] ?? null,
+            'city'        => $esc($r['seller_city'] ?? null),
             'memberSince' => isset($r['seller_since']) ? date('Y', strtotime($r['seller_since'])) : null,
         ];
     }

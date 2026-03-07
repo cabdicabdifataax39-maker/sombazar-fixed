@@ -233,13 +233,13 @@ function handleVerifyUser(): void {
     try {
         if ($action === 'approve') {
             $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
-               ->execute([$userId, 'system', "Account verified! ✅",
-                   "Your identity has been verified. You now have a verified badge.",
+               ->execute([$userId, 'system', 'Account verified! ✅',
+                   'Your identity has been verified. You now have a verified badge on your profile.',
                    'profile.html', '']);
         } else {
             $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
-               ->execute([$userId, 'system', "Verification not approved",
-                   $note ?: "Your documents were not accepted. Please resubmit.",
+               ->execute([$userId, 'system', 'Verification not approved',
+                   $note ?: 'Your documents were not accepted. Please resubmit.',
                    'verify.html', '']);
         }
     } catch(\Throwable $e) {}
@@ -314,7 +314,9 @@ function handleApproveListing(): void {
             Mailer::sendListingApproved($row['email'], $row['display_name'], $row['title'], $url);
             // In-app bildirim
             $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
-               ->execute([$row['user_id'], 'listing', "Your listing is live! 🎉", "\"" . $row['title'] . "\" has been approved and is now active.", 'listing.html?id=' . $id, '']);
+               ->execute([$row['user_id'], 'listing', 'Your listing is live! 🎉',
+                   '"' . $row['title'] . '" has been approved and is now active.',
+                   'listing.html?id=' . $id, '']);
         }
     } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 
@@ -325,7 +327,7 @@ function handleRejectListing(): void {
     global $uid, $db;
     $data = json_decode(file_get_contents('php://input'), true);
     $id   = (int)($data['listing_id'] ?? 0);
-    $note = trim($data['note'] ?? 'Does not meet our listing guidelines.');
+    $note = trim($data['note'] ?? $data['reason'] ?? 'Does not meet our listing guidelines.');
     if (!$id) jsonError('Listing ID required');
     $db->prepare("UPDATE listings SET status='rejected' WHERE id=?")->execute([$id]);
     logAction($uid, 'reject_listing', 'listing', $id, $note);
@@ -338,7 +340,9 @@ function handleRejectListing(): void {
             Mailer::sendListingRejected($row['email'], $row['display_name'], $row['title'], $note);
             // In-app bildirim
             $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
-               ->execute([$row['user_id'], 'listing', "Listing not approved", "\"" . $row['title'] . "\" was rejected: $note", 'post.html', '']);
+               ->execute([$row['user_id'], 'listing', 'Listing not approved',
+                   '"' . $row['title'] . '" was rejected: ' . $note,
+                   'post.html', '']);
         }
     } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 
@@ -709,6 +713,21 @@ function handleApprovePayment(): void {
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     logAction($uid, 'approve_payment', 'user', $pay['user_id'], "Plan: $plan, Amount: $" . $pay['amount'] . " | IP: $ip");
 
+    // Affiliate komisyon hesapla ve ekle
+    try {
+        if (!empty($pay['affiliate_id'])) {
+            $affSt = $db->prepare("SELECT id, commission_rate FROM affiliates WHERE id = ?");
+            $affSt->execute([$pay['affiliate_id']]);
+            $aff = $affSt->fetch();
+            if ($aff) {
+                $commission = round((float)$pay['amount'] * ((float)$aff['commission_rate'] / 100), 2);
+                $db->prepare("UPDATE affiliates SET total_earned = total_earned + ?, pending_payout = pending_payout + ? WHERE id = ?")
+                   ->execute([$commission, $commission, $aff['id']]);
+                logAction($uid, 'affiliate_commission', 'affiliates', $aff['id'], "Commission \$$commission for payment #$pid");
+            }
+        }
+    } catch(\Throwable $e) { error_log("admin.php affiliate commission error: " . $e->getMessage()); }
+
     // Email bildirimi
     try {
         $ust = $db->prepare('SELECT email, display_name FROM users WHERE id=?');
@@ -761,8 +780,8 @@ function handleRejectPayment(): void {
     // In-app bildirim
     try {
         $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
-           ->execute([$pay['user_id'], 'system', "Payment could not be verified",
-               $note ?: "Your payment was not approved. Please contact support.",
+           ->execute([$pay['user_id'], 'system', 'Payment could not be verified',
+               $note ?: 'Your payment was not approved. Please contact support or try again.',
                'packages.html', '']);
     } catch(\Throwable $e) {}
 

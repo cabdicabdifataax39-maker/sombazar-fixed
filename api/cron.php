@@ -97,6 +97,17 @@ log_cron('cron', 'Done.');
  */
 function task_expire_offers(): void {
     $db = getDB();
+
+    // Bildirim göndereceğimiz teklifleri önce çek
+    $toExpire = $db->prepare("
+        SELECT o.id, o.buyer_id, o.seller_id, l.title AS listing_title, l.id AS listing_id
+        FROM offers o JOIN listings l ON o.listing_id = l.id
+        WHERE o.status = 'pending'
+          AND o.created_at < DATE_SUB(NOW(), INTERVAL 48 HOUR)
+    ");
+    $toExpire->execute();
+    $expiring = $toExpire->fetchAll();
+
     $st = $db->prepare("
         UPDATE offers 
         SET status = 'expired', updated_at = NOW()
@@ -105,7 +116,19 @@ function task_expire_offers(): void {
     ");
     $st->execute();
     $count = $st->rowCount();
-    log_cron('expire_offers', "{$count} offers expired");
+
+    // Alıcıya bildirim: teklifin süresi doldu
+    foreach ($expiring as $o) {
+        try {
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$o['buyer_id'], 'offer_rejected',
+                   'Offer expired',
+                   "Your offer on \"" . $o['listing_title'] . "\" was not responded to within 48 hours.",
+                   'offers.html?listing=' . $o['listing_id'], '']);
+        } catch(\Throwable $e) {}
+    }
+
+    log_cron('expire_offers', "{$count} offers expired, " . count($expiring) . " buyers notified");
 }
 
 /**
@@ -113,6 +136,17 @@ function task_expire_offers(): void {
  */
 function task_expire_plans(): void {
     $db = getDB();
+
+    // Bildirim için önce kimi etkiliyor al
+    $toExpire = $db->prepare("
+        SELECT id, plan FROM users
+        WHERE plan != 'free'
+          AND plan_expires_at IS NOT NULL
+          AND plan_expires_at < NOW()
+    ");
+    $toExpire->execute();
+    $expiring = $toExpire->fetchAll();
+
     $st = $db->prepare("
         UPDATE users 
         SET plan = 'free', plan_expires_at = NULL
@@ -122,6 +156,17 @@ function task_expire_plans(): void {
     ");
     $st->execute();
     $count = $st->rowCount();
+
+    foreach ($expiring as $u) {
+        try {
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$u['id'], 'system',
+                   'Your plan has expired',
+                   "Your " . ucfirst($u['plan']) . " plan has ended. Upgrade to continue enjoying premium features.",
+                   'packages.html', '']);
+        } catch(\Throwable $e) {}
+    }
+
     log_cron('expire_plans', "{$count} plans downgraded to free");
 }
 
@@ -130,6 +175,16 @@ function task_expire_plans(): void {
  */
 function task_expire_listings(): void {
     $db = getDB();
+
+    // Kimin ilanı etkileniyor
+    $toExpire = $db->prepare("
+        SELECT id, user_id, title FROM listings
+        WHERE status = 'active'
+          AND created_at < DATE_SUB(NOW(), INTERVAL 30 DAY)
+    ");
+    $toExpire->execute();
+    $expiring = $toExpire->fetchAll();
+
     $st = $db->prepare("
         UPDATE listings 
         SET status = 'expired', updated_at = NOW()
@@ -138,6 +193,17 @@ function task_expire_listings(): void {
     ");
     $st->execute();
     $count = $st->rowCount();
+
+    foreach ($expiring as $l) {
+        try {
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$l['user_id'], 'listing',
+                   'Listing expired',
+                   "Your listing \"" . $l['title'] . "\" has expired after 30 days. Re-post it to make it visible again.",
+                   'post.html', '']);
+        } catch(\Throwable $e) {}
+    }
+
     log_cron('expire_listings', "{$count} listings marked expired");
 }
 
@@ -196,20 +262,43 @@ function task_sitemap_ping(): void {
 function task_send_reminders(): void {
     $db = getDB();
     try {
+        // reminder_sent_at kolonu yoksa ekle
+        try { $db->exec("ALTER TABLE users ADD COLUMN reminder_sent_at DATETIME NULL"); } catch(\Throwable $e) {}
+
         $st = $db->prepare("
-            SELECT u.email, u.display_name, u.plan, u.plan_expires_at
+            SELECT u.id, u.email, u.display_name, u.plan, u.plan_expires_at
             FROM users u
             WHERE u.plan != 'free'
               AND u.plan_expires_at BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)
-              AND u.reminder_sent_at IS NULL
+              AND (u.reminder_sent_at IS NULL OR u.reminder_sent_at < DATE_SUB(NOW(), INTERVAL 7 DAY))
         ");
         $st->execute();
         $users = $st->fetchAll();
         log_cron('send_reminders', count($users) . ' renewal reminders to send');
-        // E-posta gönderimi için mailer'ı yükle
-        // require_once __DIR__ . '/mailer.php';
-        // foreach ($users as $u) { Mailer::sendRenewalReminder(...); }
+
+        require_once __DIR__ . '/mailer.php';
+        foreach ($users as $u) {
+            $expiresFormatted = date('M j, Y', strtotime($u['plan_expires_at']));
+            // Email
+            try {
+                Mailer::send(
+                    $u['email'], $u['display_name'],
+                    'Your SomBazar plan expires in 3 days',
+                    "<h2>Hi {$u['display_name']}!</h2><p>Your <b>" . ucfirst($u['plan']) . " plan</b> expires on <b>$expiresFormatted</b>. Renew now to keep your listings active and premium features.</p><p><a href='" . (defined('SITE_URL') ? SITE_URL : '') . "/packages.html' style='background:#f97316;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold'>Renew My Plan</a></p>"
+                );
+            } catch(\Throwable $e) {}
+            // In-app bildirim
+            try {
+                $db->prepare("INSERT IGNORE INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+                   ->execute([$u['id'], 'system',
+                       'Plan expires in 3 days ⏰',
+                       "Your " . ucfirst($u['plan']) . " plan expires on $expiresFormatted. Renew to keep premium features.",
+                       'packages.html', '']);
+            } catch(\Throwable $e) {}
+            // reminder_sent_at güncelle (tekrar göndermeyi önle)
+            $db->prepare("UPDATE users SET reminder_sent_at = NOW() WHERE id = ?")->execute([$u['id']]);
+        }
     } catch(\Throwable $e) {
-        log_cron('send_reminders', 'Skipped (column may not exist): ' . $e->getMessage());
+        log_cron('send_reminders', 'Error: ' . $e->getMessage());
     }
 }
