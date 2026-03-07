@@ -717,6 +717,23 @@ async function loadNotifHistory() {
   const list = document.getElementById('notifHistoryList');
   if (!list) return;
   list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">Loading…</div>';
+
+  const svgIcon = (type) => {
+    const icons = {
+      message:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
+      offer:         `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
+      offer_accepted:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+      offer_rejected:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+      offer_counter: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>`,
+      review:        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+      listing:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>`,
+      system:        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+    };
+    return icons[type] || icons.system;
+  };
+  const iconColor = (type) => ({message:'#3b82f6',offer:'#f97316',offer_accepted:'#22c55e',offer_rejected:'#ef4444',offer_counter:'#a855f7',review:'#f59e0b',listing:'#10b981',system:'#64748b'})[type]||'#64748b';
+  const iconBg    = (type) => ({message:'#eff6ff',offer:'#fff7ed',offer_accepted:'#f0fdf4',offer_rejected:'#fef2f2',offer_counter:'#faf5ff',review:'#fffbeb',listing:'#f0fdf4',system:'#f8fafc'})[type]||'#f8fafc';
+
   try {
     const r = await fetch('api/notifications.php?action=list&limit=50', {
       headers: { Authorization: 'Bearer ' + Auth.getToken() }
@@ -725,18 +742,25 @@ async function loadNotifHistory() {
     if (!d.success) throw new Error(d.error);
     const notifs = d.data.notifications || [];
     if (!notifs.length) {
-      list.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> No notifications yet</div>';
+      list.innerHTML = `<div style="text-align:center;padding:48px 20px;color:#94a3b8">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="margin:0 auto 12px;display:block"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div style="font-size:14px;font-weight:600;color:#64748b">No notifications yet</div>
+        <div style="font-size:12px;margin-top:4px">You'll see offer updates, messages, and more here</div>
+      </div>`;
       return;
     }
     list.innerHTML = notifs.map(n => `
-      <a href="${n.link || '#'}" onclick="markOneNotifRead(${n.id})" style="display:flex;gap:12px;padding:12px;background:${n.isRead?'white':'#f8faff'};border:1px solid ${n.isRead?'#e2e8f0':'#dbeafe'};border-radius:12px;margin-bottom:8px;text-decoration:none;color:inherit;transition:background .15s">
-        <div style="font-size:24px;flex-shrink:0;width:40px;text-align:center;margin-top:2px">${n.icon}</div>
+      <a href="${n.link || '#'}" onclick="markOneNotifRead(${n.id})" style="display:flex;gap:14px;padding:14px 16px;background:${n.isRead?'white':'#f8faff'};border:1px solid ${n.isRead?'#e2e8f0':'#dbeafe'};border-radius:14px;margin-bottom:8px;text-decoration:none;color:inherit;transition:all .15s;align-items:flex-start" onmouseenter="this.style.background='#f8fafc'" onmouseleave="this.style.background='${n.isRead?'white':'#f8faff'}'">
+        <div style="width:42px;height:42px;border-radius:12px;background:${iconBg(n.type)};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${iconColor(n.type)}">${svgIcon(n.type)}</div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:${n.isRead?'500':'700'};color:#1e293b">${n.title}</div>
-          ${n.body ? `<div style="font-size:12px;color:#64748b;margin-top:3px;line-height:1.4">${n.body}</div>` : ''}
-          <div style="font-size:11px;color:#94a3b8;margin-top:4px">${n.timeAgo}</div>
+          ${n.body ? `<div style="font-size:12px;color:#64748b;margin-top:3px;line-height:1.5">${n.body}</div>` : ''}
+          <div style="font-size:11px;color:#94a3b8;margin-top:5px;display:flex;align-items:center;gap:4px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            ${n.timeAgo}
+          </div>
         </div>
-        ${!n.isRead ? '<div style="width:9px;height:9px;background:#f97316;border-radius:50%;flex-shrink:0;margin-top:6px"></div>' : ''}
+        ${!n.isRead ? '<div style="width:8px;height:8px;background:#f97316;border-radius:50%;flex-shrink:0;margin-top:8px"></div>' : ''}
       </a>`).join('');
   } catch(e) {
     list.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px">${e.message}</div>`;

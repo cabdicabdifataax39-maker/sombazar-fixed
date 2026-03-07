@@ -8,7 +8,8 @@ RUN apk add --no-cache \
     freetype-dev \
     oniguruma-dev \
     libzip-dev \
-    zip unzip
+    zip unzip \
+    dcron
 
 # PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -22,6 +23,9 @@ COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY . /var/www/html/
 RUN chown -R www-data:www-data /var/www/html
 
+# Cron job — her saat çalışır
+RUN echo "0 * * * * php /var/www/html/api/cron.php >> /var/log/sombazar_cron.log 2>&1" | crontab -
+
 EXPOSE 80
 
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+CMD ["sh", "-c", "crond && php-fpm -D && nginx -g 'daemon off;'"]

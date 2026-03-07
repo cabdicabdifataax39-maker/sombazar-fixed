@@ -228,6 +228,22 @@ function handleVerifyUser(): void {
     $waLink = $waPhone ? "https://wa.me/$waPhone?text=$waMsg" : null;
 
     logAction($uid, "verify_$action", 'verification', $userId, $note);
+
+    // In-app bildirim
+    try {
+        if ($action === 'approve') {
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$userId, 'system', "Account verified! ✅",
+                   "Your identity has been verified. You now have a verified badge.",
+                   'profile.html', '']);
+        } else {
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$userId, 'system', "Verification not approved",
+                   $note ?: "Your documents were not accepted. Please resubmit.",
+                   'verify.html', '']);
+        }
+    } catch(\Throwable $e) {}
+
     jsonSuccess([
         'message'   => "User verification $action" . 'd',
         'waLink'    => $waLink,
@@ -289,14 +305,16 @@ function handleApproveListing(): void {
     $db->prepare("UPDATE listings SET status='active' WHERE id=?")->execute([$id]);
     logAction($uid, 'approve_listing', 'listing', $id);
 
-    // Email notification
     try {
-        $lst = $db->prepare('SELECT l.title, u.email, u.display_name FROM listings l JOIN users u ON l.user_id=u.id WHERE l.id=?');
+        $lst = $db->prepare('SELECT l.title, l.user_id, u.email, u.display_name FROM listings l JOIN users u ON l.user_id=u.id WHERE l.id=?');
         $lst->execute([$id]);
         $row = $lst->fetch();
         if ($row) {
             $url = SITE_URL . '/listing.html?id=' . $id;
             Mailer::sendListingApproved($row['email'], $row['display_name'], $row['title'], $url);
+            // In-app bildirim
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$row['user_id'], 'listing', "Your listing is live! 🎉", "\"" . $row['title'] . "\" has been approved and is now active.", 'listing.html?id=' . $id, '']);
         }
     } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 
@@ -312,12 +330,16 @@ function handleRejectListing(): void {
     $db->prepare("UPDATE listings SET status='rejected' WHERE id=?")->execute([$id]);
     logAction($uid, 'reject_listing', 'listing', $id, $note);
 
-    // Email notification
     try {
-        $lst = $db->prepare('SELECT l.title, u.email, u.display_name FROM listings l JOIN users u ON l.user_id=u.id WHERE l.id=?');
+        $lst = $db->prepare('SELECT l.title, l.user_id, u.email, u.display_name FROM listings l JOIN users u ON l.user_id=u.id WHERE l.id=?');
         $lst->execute([$id]);
         $row = $lst->fetch();
-        if ($row) Mailer::sendListingRejected($row['email'], $row['display_name'], $row['title'], $note);
+        if ($row) {
+            Mailer::sendListingRejected($row['email'], $row['display_name'], $row['title'], $note);
+            // In-app bildirim
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$row['user_id'], 'listing', "Listing not approved", "\"" . $row['title'] . "\" was rejected: $note", 'post.html', '']);
+        }
     } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 
     jsonSuccess(['message' => 'Listing rejected']);
@@ -695,6 +717,14 @@ function handleApprovePayment(): void {
         if ($usr) Mailer::sendPaymentApproved($usr['email'], $usr['display_name'], $plan, date('M j, Y', strtotime($expires)));
     } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 
+    // In-app bildirim
+    try {
+        $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+           ->execute([$pay['user_id'], 'system', "Your $plan plan is now active! 🚀",
+               "Payment confirmed. Your plan is active until " . date('M j, Y', strtotime($expires)) . ".",
+               'packages.html', '']);
+    } catch(\Throwable $e) {}
+
     jsonSuccess(['message' => 'Payment approved, plan activated.', 'plan' => $plan, 'expires_at' => $expires]);
     } catch(Throwable $e) {
         http_response_code(500);
@@ -727,6 +757,15 @@ function handleRejectPayment(): void {
 
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     logAction($uid, 'reject_payment', 'user', $pay['user_id'], "Reason: $note | IP: $ip");
+
+    // In-app bildirim
+    try {
+        $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+           ->execute([$pay['user_id'], 'system', "Payment could not be verified",
+               $note ?: "Your payment was not approved. Please contact support.",
+               'packages.html', '']);
+    } catch(\Throwable $e) {}
+
     jsonSuccess(['message' => 'Payment rejected.']);
 }
 

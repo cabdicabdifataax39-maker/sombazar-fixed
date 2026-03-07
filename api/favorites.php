@@ -63,11 +63,27 @@ function handleAdd(): void {
     if (!$lid) jsonError('listingId required');
 
     $db = getDB();
-    $st = $db->prepare('SELECT id FROM listings WHERE id = ? AND status != "deleted"');
+    $st = $db->prepare('SELECT l.id, l.title, l.user_id FROM listings l WHERE l.id = ? AND l.status != "deleted"');
     $st->execute([$lid]);
-    if (!$st->fetch()) jsonError('Listing not found', 404);
+    $listing = $st->fetch();
+    if (!$listing) jsonError('Listing not found', 404);
 
     $db->prepare('INSERT IGNORE INTO favorites (user_id, listing_id) VALUES (?, ?)')->execute([$uid, $lid]);
+
+    // Satıcıya bildirim — kendisi favoriliyorsa gönderme
+    if ((int)$listing['user_id'] !== $uid) {
+        try {
+            $buyerSt = $db->prepare('SELECT display_name FROM users WHERE id=?');
+            $buyerSt->execute([$uid]);
+            $buyerName = $buyerSt->fetch()['display_name'] ?? 'Someone';
+            $db->prepare("INSERT IGNORE INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$listing['user_id'], 'system',
+                   "Someone saved your listing",
+                   "$buyerName added \"" . $listing['title'] . "\" to their favorites.",
+                   'listing.html?id=' . $lid, '']);
+        } catch(\Throwable $e) {}
+    }
+
     jsonSuccess(['added' => true, 'listingId' => $lid]);
 }
 
