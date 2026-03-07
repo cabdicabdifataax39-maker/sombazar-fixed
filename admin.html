@@ -356,10 +356,16 @@ function showTab(tab) {
             <button class="btn btn-sm" style="background:#f1f5f9" onclick="clearBulkSelect()">Clear</button>
           </div>
           <div id="listingsTableWrap">
-            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table style="min-width:820px">
               <thead><tr>
                 <th style="width:32px"><input type="checkbox" id="selectAllListings" onchange="toggleSelectAllListings(this)"></th>
-                <th>Listing</th><th>Seller</th><th>Price</th><th>Status</th><th>Views</th><th>Date</th><th>Actions</th>
+                <th style="min-width:180px">Listing</th>
+                <th style="min-width:100px">Seller</th>
+                <th style="min-width:80px">Price</th>
+                <th style="min-width:80px">Status</th>
+                <th style="width:55px;text-align:center">Views</th>
+                <th style="min-width:70px">Date</th>
+                <th style="min-width:200px">Actions</th>
               </tr></thead>
               <tbody id="listingsBody"><tr><td colspan="8" style="text-align:center;padding:30px;color:#94a3b8">Loading…</td></tr></tbody>
             </table></div>
@@ -976,24 +982,76 @@ function closeModal(id) {
 async function loadListings() {
   const tbody = document.getElementById('listingsBody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
   try {
-    const filter = document.getElementById('listingFilter')?.value || '';
-    const d = await adminFetch(`listings&status=${filter}`);
+    const filter = document.getElementById('listingFilter')?.value || 'all';
+    const search = encodeURIComponent(document.getElementById('listingSearch')?.value || '');
+    const d = await adminFetch(`listings&status=${filter}&q=${search}`);
     const items = d.listings || [];
-    if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">No listings.</td></tr>'; return; }
-    tbody.innerHTML = items.map(l => `
-      <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
-        <td style="padding:12px 16px"><a href="listing.html?id=${l.id}" target="_blank" style="font-weight:700;color:#f97316;text-decoration:none">${escHTML(l.title)}</a><br><span style="color:#94a3b8;font-size:11px">#${l.id} · ${escHTML(l.category)}</span></td>
-        <td style="padding:12px 10px">${escHTML(l.seller||'—')}</td>
-        <td style="padding:12px 10px;font-weight:700">$${l.price}</td>
-        <td style="padding:12px 10px"><span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${l.status==='active'?'#dcfce7':'#fef9c3'};color:${l.status==='active'?'#166534':'#854d0e'}">${l.status}</span></td>
-        <td style="padding:12px 10px">
-          <button onclick="approveListing(${l.id})" style="background:#dcfce7;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px">Approve</button>
-          <button onclick="deleteListing(${l.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Delete</button>
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:#94a3b8">No listings found.</td></tr>';
+      return;
+    }
+    const statusStyle = {
+      active:   'background:#dcfce7;color:#166534',
+      pending:  'background:#fef9c3;color:#854d0e',
+      sold:     'background:#dbeafe;color:#1d4ed8',
+      rented:   'background:#f3e8ff;color:#7e22ce',
+      rejected: 'background:#fef2f2;color:#dc2626',
+      deleted:  'background:#f1f5f9;color:#64748b',
+      expired:  'background:#f1f5f9;color:#94a3b8',
+    };
+    tbody.innerHTML = items.map(l => {
+      const ss = statusStyle[l.status] || 'background:#f1f5f9;color:#64748b';
+      const dt = l.createdAt ? new Date(l.createdAt).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'2-digit'}) : '—';
+      return `<tr style="border-bottom:1px solid #f1f5f9;font-size:13px" id="lrow-${l.id}">
+        <td style="padding:10px 12px 10px 16px">
+          <input type="checkbox" class="bulk-cb" value="${l.id}" onchange="onBulkCbChange(${l.id},this.checked)">
         </td>
-      </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="5" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
+        <td style="padding:10px 12px">
+          <a href="listing.html?id=${l.id}" target="_blank" style="font-weight:700;color:#f97316;text-decoration:none;display:block;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHTML(l.title)}</a>
+          <span style="color:#94a3b8;font-size:11px">#${l.id} · ${escHTML(l.category||'—')}</span>
+        </td>
+        <td style="padding:10px 12px;color:#475569;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHTML(l.seller||'—')}</td>
+        <td style="padding:10px 12px;font-weight:700;color:#1e293b;white-space:nowrap">$${Number(l.price||0).toLocaleString()}</td>
+        <td style="padding:10px 12px">
+          <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;${ss}">${l.status}</span>
+        </td>
+        <td style="padding:10px 12px;color:#64748b;text-align:center">${l.views||0}</td>
+        <td style="padding:10px 12px;color:#94a3b8;font-size:11px;white-space:nowrap">${dt}</td>
+        <td style="padding:10px 12px;white-space:nowrap;display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+          <button onclick="approveListing(${l.id})" title="Approve" style="background:#dcfce7;color:#16a34a;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✓ Approve</button>
+          <button onclick="rejectListingAdmin(${l.id})" title="Reject" style="background:#fff7ed;color:#ea580c;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✕ Reject</button>
+          <button onclick="deleteListing(${l.id})" title="Delete" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">🗑</button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="8" style="color:#ef4444;padding:16px">${e.message}</td></tr>`;
+  }
+}
+
+function onBulkCbChange(id, checked) {
+  if (checked) _bulkSelected.add(id); else _bulkSelected.delete(id);
+  const bar = document.getElementById('bulkBar');
+  const cnt = document.getElementById('bulkCount');
+  if (bar) bar.style.display = _bulkSelected.size ? 'flex' : 'none';
+  if (cnt) cnt.textContent = _bulkSelected.size + ' selected';
+}
+
+function toggleSelectAllListings(cb) {
+  document.querySelectorAll('.bulk-cb').forEach(el => {
+    el.checked = cb.checked;
+    onBulkCbChange(parseInt(el.value), cb.checked);
+  });
+}
+
+function rejectListingAdmin(id) {
+  const reason = prompt('Rejection reason (shown to seller):\n(Leave blank for default message)', '');
+  if (reason === null) return; // cancelled
+  adminFetch('reject_listing', { listing_id: id, note: reason || 'Does not meet our listing guidelines.' })
+    .then(() => { showAdminToast('Listing rejected', 'success'); loadListings(); })
+    .catch(e => showAdminToast(e.message, 'error'));
 }
 
 async function approveListing(id) {

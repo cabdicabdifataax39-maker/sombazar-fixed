@@ -226,7 +226,16 @@ function handleUpdate(int $id): void {
     foreach ($map as $key => $col) {
         if (array_key_exists($key, $data)) {
             $val = $data[$key];
-            if (in_array($col, ['images', 'specs'])) $val = json_encode($val);
+            // Type coercion — MySQL TINYINT sütunlar boolean/string kabul etmez
+            if (in_array($col, ['negotiable', 'featured'])) {
+                $val = ($val === true || $val === 1 || $val === '1' || $val === 'true') ? 1 : 0;
+            } elseif ($col === 'price') {
+                $val = (float) $val;
+            } elseif ($col === 'year') {
+                $val = ($val !== null && $val !== '') ? (int) $val : null;
+            } elseif (in_array($col, ['images', 'specs'])) {
+                $val = is_array($val) ? json_encode($val) : $val;
+            }
             $fields[] = "$col = ?";
             $params[]  = $val;
         }

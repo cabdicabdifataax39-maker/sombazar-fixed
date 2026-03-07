@@ -851,6 +851,9 @@ const Notif = {
       this._setBadge('offerBadge',    offers);
       this._setBadge('offerNavBadge', offers);  // profile navbar
       this._setBadge('notifBadge',   total);
+      // Mobil bottom nav rozetler
+      this._setBadge('msgBadgeMob',   messages);
+      this._setBadge('notifBadgeMob', total);
 
       // Yeni bildirim geldiyse in-app toast göster
       if (total > this._lastCount && this._lastCount >= 0) {
@@ -1080,7 +1083,7 @@ document.addEventListener('auth:change', (e) => {
     Notif.init();
   } else {
     Notif.stop();
-    ['msgBadge','offerBadge','notifBadge'].forEach(id => {
+    ['msgBadge','offerBadge','notifBadge','msgBadgeMob','notifBadgeMob'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
