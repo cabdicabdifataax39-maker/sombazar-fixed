@@ -110,6 +110,21 @@ function handleMake(): void {
             }
         } catch(\Throwable $e) { error_log("Email error: " . $e->getMessage()); }
 
+        // Satıcıya in-app bildirim
+        try {
+            $buyerSt = $db->prepare('SELECT display_name FROM users WHERE id=?');
+            $buyerSt->execute([$uid]);
+            $buyerName = $buyerSt->fetch()['display_name'] ?? 'Someone';
+            $lstTitleSt = $db->prepare('SELECT title FROM listings WHERE id=?');
+            $lstTitleSt->execute([$listingId]);
+            $lstTitle2 = $lstTitleSt->fetch()['title'] ?? 'your listing';
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([$sellerId, 'offer',
+                   "New offer on \"$lstTitle2\"",
+                   "$buyerName offered $currency " . number_format($amount, 2),
+                   'profile.html?tab=offers', '']);
+        } catch(\Throwable $e) {}
+
         jsonSuccess(['offer_id'=>$offerId,'round'=>1,'expires_at'=>$expires,'message'=>'Offer submitted (Round 1/5). Seller has 48 hours to respond.']);
     }
 
@@ -147,7 +162,16 @@ function handleAcceptCounter(): void {
 
     sendOfferMessage((int)$offer['seller_id'], (int)$offer['buyer_id'], (int)$offer['listing_id'],
         'Counter Accepted! The buyer accepted your counter offer of ' . $offer['currency'] . ' ' . number_format((float)$offer['counter_amount'],2) . '. Please arrange the exchange.');
-
+    try {
+        $lstSt = $db->prepare('SELECT title FROM listings WHERE id=?');
+        $lstSt->execute([$offer['listing_id']]);
+        $ltitle2 = $lstSt->fetch()['title'] ?? 'your listing';
+        $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+           ->execute([(int)$offer['seller_id'], 'offer_accepted',
+               'Counter offer accepted!',
+               "Buyer accepted your counter for \"$ltitle2\"",
+               'profile.html?tab=offers', '']);
+    } catch(\Throwable $e) {}
     jsonSuccess(['message'=>'Counter offer accepted!','status'=>'accepted']);
 }
 
@@ -185,13 +209,27 @@ function handleRespond(): void {
         $db->prepare("UPDATE offers SET status='accepted',responded_at=? WHERE id=?")->execute([$now,$oid]);
         $db->prepare("UPDATE offers SET status='rejected',responded_at=? WHERE listing_id=? AND id!=? AND status='pending'")->execute([$now,$offer['listing_id'],$oid]);
         sendOfferMessage((int)$offer['seller_id'], (int)$offer['buyer_id'], (int)$offer['listing_id'],
-            "✅ Offer Accepted! Your offer of {$offer['currency']} " . number_format((float)$offer['amount'],2) . " for \"$ltitle\" was accepted. Contact the seller to complete the deal.");
+            "Offer Accepted! Your offer of {$offer['currency']} " . number_format((float)$offer['amount'],2) . " for \"$ltitle\" was accepted. Contact the seller to complete the deal.");
+        try {
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([(int)$offer['buyer_id'], 'offer_accepted',
+                   "Offer accepted!",
+                   "Your offer for \"$ltitle\" was accepted",
+                   'profile.html?tab=offers', '']);
+        } catch(\Throwable $e) {}
         jsonSuccess(['message'=>'Offer accepted!','status'=>'accepted']);
     }
     if ($act === 'reject') {
         $db->prepare("UPDATE offers SET status='rejected',responded_at=? WHERE id=?")->execute([$now,$oid]);
         sendOfferMessage((int)$offer['seller_id'], (int)$offer['buyer_id'], (int)$offer['listing_id'],
-            "❌ Offer Rejected. Your offer of {$offer['currency']} " . number_format((float)$offer['amount'],2) . " for \"$ltitle\" was declined. You can make a new offer if you'd like.");
+            "Offer Rejected. Your offer of {$offer['currency']} " . number_format((float)$offer['amount'],2) . " for \"$ltitle\" was declined.");
+        try {
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([(int)$offer['buyer_id'], 'offer_rejected',
+                   "Offer declined",
+                   "Your offer for \"$ltitle\" was rejected",
+                   'profile.html?tab=offers', '']);
+        } catch(\Throwable $e) {}
         jsonSuccess(['message'=>'Offer rejected.','status'=>'rejected']);
     }
     if ($act === 'counter') {
@@ -204,7 +242,14 @@ function handleRespond(): void {
            ->execute([$camt, $cnote ?: null, $now, $expires, $oid]);
         $cnoteText = $cnote ? " Note: $cnote" : '';
         sendOfferMessage((int)$offer['seller_id'], (int)$offer['buyer_id'], (int)$offer['listing_id'],
-            "↩ Counter Offer for \"$ltitle\": {$offer['currency']} " . number_format($camt,2) . ".$cnoteText Tap to accept or make a new offer.");
+            "Counter Offer for \"$ltitle\": {$offer['currency']} " . number_format($camt,2) . ".$cnoteText Tap to accept or make a new offer.");
+        try {
+            $db->prepare("INSERT INTO notifications (user_id,type,title,body,link,icon) VALUES (?,?,?,?,?,?)")
+               ->execute([(int)$offer['buyer_id'], 'offer_counter',
+                   "Counter offer received",
+                   "Counter: {$offer['currency']} " . number_format($camt,2) . " for \"$ltitle\"",
+                   'profile.html?tab=offers', '']);
+        } catch(\Throwable $e) {}
         jsonSuccess(['message'=>'Counter offer sent. Buyer has 48 hours to respond.','status'=>'countered']);
     }
 }
