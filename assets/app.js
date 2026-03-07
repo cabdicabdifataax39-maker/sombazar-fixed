@@ -848,9 +848,11 @@ const Notif = {
 
       // Navbar rozetler
       this._setBadge('msgBadge',      messages);
+      this._setBadge('msgBadgeMob',   messages);
       this._setBadge('offerBadge',    offers);
       this._setBadge('offerNavBadge', offers);  // profile navbar
       this._setBadge('notifBadge',   total);
+      this._setBadge('notifBadgeMob', total);
 
       // Yeni bildirim geldiyse in-app toast göster
       if (total > this._lastCount && this._lastCount >= 0) {
