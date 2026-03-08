@@ -85,7 +85,9 @@ if (isset($_FILES['avatar'])) {
     }
 
     $db = getDB();
-    $db->prepare('UPDATE users SET avatar_url = ? WHERE id = ?')->execute([$dbPath, $uid]);
+    // Her iki kolonu da güncelle - avatar_url ve photo_url senkron kalsın
+    try { $db->exec('ALTER TABLE users ADD COLUMN avatar_url VARCHAR(500) NULL'); } catch(\Throwable $e) {}
+    $db->prepare('UPDATE users SET avatar_url = ?, photo_url = ? WHERE id = ?')->execute([$dbPath, $dbPath, $uid]);
     jsonSuccess(['photoURL' => $photoURL]);
 }
 

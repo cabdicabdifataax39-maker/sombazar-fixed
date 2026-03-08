@@ -468,7 +468,11 @@ function formatAdminUser(array $u): array {
         'isAdmin'            => (bool)($u['is_admin'] ?? false),
         'plan'               => $u['plan'] ?? 'free',
         'listingCount'       => (int)($u['listing_count'] ?? 0),
-        'photoURL'           => ($u['photo_url'] ?? null) ? UPLOAD_URL . $u['photo_url'] : null,
+        'photoURL'           => ($u['avatar_url'] ?? $u['photo_url'] ?? null)
+                            ? (str_starts_with($u['avatar_url'] ?? $u['photo_url'] ?? '', 'http')
+                               ? ($u['avatar_url'] ?? $u['photo_url'])
+                               : UPLOAD_URL . ($u['avatar_url'] ?? $u['photo_url']))
+                            : null,
         'createdAt'          => $u['created_at'],
         'lastSeen'           => $u['last_seen'] ?? null,
     ];

@@ -469,7 +469,11 @@ function formatUser(array $u): array {
         'phone'       => $u['phone'],
         'city'        => $u['city'],
         'bio'         => $u['bio'],
-        'photoURL'    => $u['photo_url'] ? UPLOAD_URL . $u['photo_url'] : null,
+        'photoURL'    => $u['avatar_url'] ?? ($u['photo_url'] ?? null)
+                            ? (str_starts_with($u['avatar_url'] ?? $u['photo_url'] ?? '', 'http')
+                               ? ($u['avatar_url'] ?? $u['photo_url'])
+                               : UPLOAD_URL . ($u['avatar_url'] ?? $u['photo_url']))
+                            : null,
         'verified'    => (bool) ($u['is_verified'] ?? $u['verified'] ?? false),
         'isAdmin'     => (bool) ($u['is_admin'] ?? false),
         'banned'      => (bool) ($u['is_banned'] ?? false),
