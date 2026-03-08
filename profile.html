@@ -629,7 +629,10 @@ async function loadPaymentHistory() {
       const statusBg    = p.status==='approved' ? '#f0fdf4' : p.status==='rejected' ? '#fef2f2' : '#fffbeb';
       const methodEmoji = p.method === 'zaad' ? '' : '';
       const receiptBtn  = p.status === 'approved'
-        ? `<a href="api/payment.php?action=receipt_html&payment_id=${p.id}&token=${Auth.getToken()}" target="_blank" style="display:block;margin-top:6px;background:#f1f5f9;color:#0f172a;text-decoration:none;text-align:center;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700">🧾 Receipt</a>`
+        ? `<div style="margin-top:6px;display:flex;gap:6px">
+             <a href="api/payment.php?action=receipt_html&payment_id=${p.id}&token=${Auth.getToken()}" target="_blank" style="flex:1;background:#f1f5f9;color:#0f172a;text-decoration:none;text-align:center;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700">🧾 View</a>
+             <button onclick="downloadReceipt(${p.id})" style="flex:1;background:#f1f5f9;color:#0f172a;border:none;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer">⬇ Save</button>
+           </div>`
         : '';
       return `<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
         <div style="flex:1;min-width:0">
@@ -651,6 +654,36 @@ async function loadPaymentHistory() {
       Unable to load payment history.<br>
       <button onclick="loadPaymentHistory()" style="margin-top:12px;background:#f97316;color:white;border:none;border-radius:8px;padding:7px 18px;cursor:pointer;font-family:'DM Sans';font-weight:700;font-size:12px">Try Again</button>
     </div>`;
+  }
+}
+
+async function downloadReceipt(paymentId) {
+  try {
+    const r = await fetch(`api/payment.php?action=receipt&payment_id=${paymentId}`, {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    const rec = d.data.receipt;
+    const text = [
+      '=== SomBazar Receipt ===',
+      `Receipt No : ${rec.receiptNo}`,
+      `Plan       : ${rec.plan}`,
+      `Amount     : $${rec.amount}`,
+      `Discount   : $${rec.discount}`,
+      `Method     : ${rec.method}`,
+      `Reference  : ${rec.reference}`,
+      `Date       : ${rec.date}`,
+      `Status     : ${rec.status}`,
+    ].join('
+');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `receipt-${rec.receiptNo}.txt`;
+    a.click();
+  } catch(e) {
+    showToast('Could not download receipt: ' + e.message, 'error');
   }
 }
 
@@ -912,11 +945,14 @@ async function loadOffers(type) {
         ? `<div style="font-size:12px;color:#f97316;margin-top:3px">↩ Counter: ${o.currency} ${Number(o.counterAmount).toLocaleString()}</div>`
         : '';
 
+      const cancelBtn = (type === 'sent' && ['pending','countered'].includes(o.status))
+        ? `<button onclick="cancelOffer(${o.id})" style="font-size:12px;background:none;border:1px solid #e2e8f0;color:#94a3b8;padding:5px 10px;border-radius:7px;cursor:pointer;font-family:DM Sans">Cancel</button>`
+        : '';
       const actionHTML = (o.status === 'countered' && type === 'sent')
-        ? `<a href="listing.html?id=${o.listingId}" style="font-size:12px;background:#f97316;color:white;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700">Respond</a>`
+        ? `<a href="listing.html?id=${o.listingId}" style="font-size:12px;background:#f97316;color:white;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700">Respond</a>${cancelBtn}`
         : (o.status === 'pending' && type === 'received')
         ? `<a href="listing.html?id=${o.listingId}" style="font-size:12px;background:#f97316;color:white;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700">Review</a>`
-        : '';
+        : cancelBtn;
 
       return `<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center">
         <a href="listing.html?id=${o.listingId}">${imgHTML}</a>
@@ -937,6 +973,23 @@ async function loadOffers(type) {
       <b>Hata:</b> ${e.message}<br>
       <small style="color:#94a3b8">api/offers.php sunucuya yüklü mü kontrol edin.</small>
     </div>`;
+  }
+}
+
+async function cancelOffer(offerId) {
+  if (!confirm('Cancel this offer?')) return;
+  try {
+    const r = await fetch('api/offers.php?action=cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ offer_id: offerId })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    showToast('Offer cancelled.', 'success');
+    switchOffersTab(window._currentOffersTab || 'sent');
+  } catch(e) {
+    showToast(e.message || 'Could not cancel offer.', 'error');
   }
 }
 

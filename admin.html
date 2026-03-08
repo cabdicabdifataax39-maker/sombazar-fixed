@@ -617,6 +617,7 @@ async function loadCoupons() {
           <td style="padding:12px 10px;color:#94a3b8">${cp.expires_at ? new Date(cp.expires_at).toLocaleDateString() : '∞'}</td>
           <td style="padding:12px 10px"><span style="background:${cp.is_active ? '#f0fdf4' : '#f1f5f9'};color:${cp.is_active ? '#16a34a' : '#94a3b8'};padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700">${cp.is_active ? 'Active' : 'Inactive'}</span></td>
           <td style="padding:12px 10px;display:flex;gap:6px">
+            <button onclick="viewCouponStats(${cp.id},'${cp.code}')" style="background:#fff7ed;color:#f97316;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Stats</button>
             <button onclick="toggleCoupon(${cp.id})" style="background:#f1f5f9;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">${cp.is_active ? 'Disable' : 'Enable'}</button>
             <button onclick="deleteCoupon(${cp.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Delete</button>
           </td>
@@ -658,6 +659,55 @@ async function deleteCoupon(id) {
   if (d.success) { showAdminToast('Deleted', 'success'); loadCoupons(); }
 }
 
+async function viewCouponStats(id, code) {
+  // Show modal
+  let modal = document.getElementById('couponStatsModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'couponStatsModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+    modal.innerHTML = `<div style="background:white;border-radius:16px;padding:24px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="font-size:16px;font-weight:800;margin:0">Coupon Stats: <span style="color:#f97316" id="statsCode"></span></h3>
+        <button onclick="document.getElementById('couponStatsModal').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#94a3b8">×</button>
+      </div>
+      <div id="statsBody"><div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div></div>
+    </div>`;
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display = 'flex';
+  }
+  document.getElementById('statsCode').textContent = code;
+  document.getElementById('statsBody').innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div>';
+  try {
+    const r = await fetch(`api/admin.php?action=get_coupon_stats&coupon_id=${id}`, { headers: adminHeaders() });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    const s = d.data;
+    document.getElementById('statsBody').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div style="background:#fff7ed;border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;font-weight:800;color:#f97316">${s.total_uses ?? 0}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:4px">Total Uses</div>
+        </div>
+        <div style="background:#f0fdf4;border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:28px;font-weight:800;color:#16a34a">$${parseFloat(s.total_discount ?? 0).toFixed(2)}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:4px">Total Savings</div>
+        </div>
+      </div>
+      ${s.recent_uses && s.recent_uses.length ? `
+      <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Recent Uses</div>
+      ${s.recent_uses.map(u => `
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f1f5f9;font-size:13px">
+          <div><b>${escHTML(u.display_name||u.email)}</b><br><span style="color:#94a3b8;font-size:11px">${new Date(u.used_at||u.created_at).toLocaleDateString()}</span></div>
+          <div style="font-weight:700;color:#f97316">-$${parseFloat(u.discount_amount??0).toFixed(2)}</div>
+        </div>`).join('')}` : '<div style="color:#94a3b8;font-size:13px;text-align:center;padding:16px">No uses yet.</div>'}
+    `;
+  } catch(e) {
+    document.getElementById('statsBody').innerHTML = `<div style="color:#ef4444;font-size:13px">${e.message}</div>`;
+  }
+}
+
 // ── Affiliate Yönetimi ─────────────────────────────────────
 async function loadAffiliates() {
   const list = document.getElementById('affiliateList');
@@ -670,21 +720,43 @@ async function loadAffiliates() {
     }
     list.innerHTML = '<table style="width:100%;border-collapse:collapse">' +
       '<thead><tr style="background:#f8fafc;font-size:12px;color:#64748b">' +
-      '<th style="padding:10px 14px;text-align:left">User</th><th style="padding:10px;text-align:left">Ref Code</th><th style="padding:10px;text-align:left">Referrals</th><th style="padding:10px;text-align:left">Earned</th><th style="padding:10px;text-align:left">Pending</th><th style="padding:10px;text-align:left">Actions</th>' +
+      '<th style="padding:10px 14px;text-align:left">User</th><th style="padding:10px;text-align:left">Ref Code</th><th style="padding:10px;text-align:left">Referrals</th><th style="padding:10px;text-align:left">Earned</th><th style="padding:10px;text-align:left">Pending</th><th style="padding:10px;text-align:left">Status</th><th style="padding:10px;text-align:left">Actions</th>' +
       '</tr></thead><tbody>' +
-      d.data.affiliates.map(a => `
+      d.data.affiliates.map(a => {
+        const isActive = a.status !== 'disabled';
+        const toggleLabel = isActive ? 'Disable' : 'Enable';
+        const toggleColor = isActive ? '#ef4444' : '#22c55e';
+        const statusBadge = isActive
+          ? '<span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">Active</span>'
+          : '<span style="background:#f1f5f9;color:#64748b;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">Disabled</span>';
+        return `
         <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
           <td style="padding:12px 14px"><b>${escHTML(a.display_name)}</b><br><span style="color:#94a3b8;font-size:11px">${escHTML(a.email)}</span></td>
           <td style="padding:12px 10px;font-family:monospace;font-weight:700;color:#f97316">${escHTML(a.ref_code)}</td>
           <td style="padding:12px 10px">${a.total_referrals}</td>
           <td style="padding:12px 10px">$${parseFloat(a.total_earned).toFixed(2)}</td>
           <td style="padding:12px 10px;color:${a.pending_payout > 0 ? '#f97316' : '#94a3b8'}">$${parseFloat(a.pending_payout).toFixed(2)}</td>
-          <td style="padding:12px 10px">
-            ${a.pending_payout > 0 ? `<button onclick="markAffiliatePaid(${a.id},${a.pending_payout})" style="background:#f0fdf4;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Mark Paid</button>` : '—'}
+          <td style="padding:12px 10px">${statusBadge}</td>
+          <td style="padding:12px 10px;display:flex;gap:6px;flex-wrap:wrap">
+            ${a.pending_payout > 0 ? `<button onclick="markAffiliatePaid(${a.id},${a.pending_payout})" style="background:#f0fdf4;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Mark Paid</button>` : ''}
+            <button onclick="toggleAffiliate(${a.id},'${isActive ? 'disable' : 'enable'}')" style="background:#f8fafc;color:${toggleColor};border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">${toggleLabel}</button>
           </td>
-        </tr>`).join('') +
+        </tr>`;
+      }).join('') +
       '</tbody></table>';
   } catch(e) { list.innerHTML = `<div style="color:#ef4444">${e.message}</div>`; }
+}
+
+async function toggleAffiliate(id, action) {
+  try {
+    const r = await fetch('api/admin.php?action=toggle_affiliate', {
+      method:'POST', headers:{...adminHeaders(),'Content-Type':'application/json'},
+      body: JSON.stringify({ affiliate_id: id, action })
+    });
+    const d = await r.json();
+    if (d.success) { showAdminToast(`Affiliate ${action}d`, 'success'); loadAffiliates(); }
+    else { showAdminToast(d.error || 'Failed', 'error'); }
+  } catch(e) { showAdminToast(e.message, 'error'); }
 }
 
 async function markAffiliatePaid(id, amount) {
@@ -937,13 +1009,81 @@ async function loadUsers() {
           </span>
         </td>
         <td style="padding:12px 10px;text-transform:capitalize">${escHTML(u.plan||'free')}</td>
-        <td style="padding:12px 10px">
+        <td style="padding:12px 10px;display:flex;gap:6px;flex-wrap:wrap">
+          <button onclick="viewUserDetail(${u.id})" style="background:#eff6ff;color:#2563eb;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">View</button>
           <button onclick="${u.banned ? `unbanUser(${u.id})` : `openBanModal(${u.id})`}" style="background:${u.banned?'#dcfce7':'#fef2f2'};color:${u.banned?'#16a34a':'#dc2626'};border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">
             ${u.banned?'Unban':'Ban'}
           </button>
         </td>
       </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
+}
+
+async function viewUserDetail(userId) {
+  let modal = document.getElementById('userDetailModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'userDetailModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+    modal.innerHTML = `<div style="background:white;border-radius:16px;padding:24px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="font-size:16px;font-weight:800;margin:0">User Detail</h3>
+        <button onclick="document.getElementById('userDetailModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8">×</button>
+      </div>
+      <div id="userDetailBody"><div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div></div>
+    </div>`;
+    document.body.appendChild(modal);
+  } else {
+    modal.style.display = 'flex';
+    document.getElementById('userDetailBody').innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div>';
+  }
+  try {
+    const r = await fetch(`api/admin.php?action=user&user_id=${userId}`, { headers: adminHeaders() });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    const u = d.data.user;
+    const stats = d.data.stats || {};
+    const avatar = u.avatar_url
+      ? `<img src="${u.avatar_url}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`
+      : `<div style="width:64px;height:64px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:28px">👤</div>`;
+    document.getElementById('userDetailBody').innerHTML = `
+      <div style="display:flex;gap:16px;align-items:center;margin-bottom:20px">
+        ${avatar}
+        <div>
+          <div style="font-size:18px;font-weight:800">${escHTML(u.display_name||'—')}</div>
+          <div style="color:#64748b;font-size:13px">${escHTML(u.email)}</div>
+          <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+            <span style="background:${u.verified?'#dcfce7':'#fef9c3'};color:${u.verified?'#16a34a':'#854d0e'};padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700">${u.verified?'✓ Verified':'Unverified'}</span>
+            <span style="background:#f1f5f9;color:#0f172a;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:capitalize">${u.plan||'Free'} Plan</span>
+            ${u.banned ? '<span style="background:#fef2f2;color:#dc2626;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700">Banned</span>' : ''}
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+        <div style="background:#f8fafc;border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#f97316">${stats.listings||0}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">Listings</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#3b82f6">${stats.offers||0}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">Offers</div>
+        </div>
+        <div style="background:#f8fafc;border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#22c55e">${stats.reviews||0}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">Reviews</div>
+        </div>
+      </div>
+      <div style="font-size:13px;color:#64748b;border-top:1px solid #f1f5f9;padding-top:14px">
+        <div style="margin-bottom:6px"><b>Phone:</b> ${escHTML(u.phone||'—')}</div>
+        <div style="margin-bottom:6px"><b>City:</b> ${escHTML(u.city||'—')}</div>
+        <div style="margin-bottom:6px"><b>Joined:</b> ${new Date(u.created_at).toLocaleDateString()}</div>
+        ${u.last_login ? `<div style="margin-bottom:6px"><b>Last Login:</b> ${new Date(u.last_login).toLocaleDateString()}</div>` : ''}
+        ${u.ban_reason ? `<div style="color:#dc2626"><b>Ban Reason:</b> ${escHTML(u.ban_reason)}</div>` : ''}
+      </div>
+    `;
+  } catch(e) {
+    document.getElementById('userDetailBody').innerHTML = `<div style="color:#ef4444;font-size:13px">${e.message}</div>`;
+  }
 }
 
 function openBanModal(id) {

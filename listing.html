@@ -1239,11 +1239,25 @@ async function respondOffer(action) {
 // ── Report ─────────────────────────────────────────────────────
 function showReportModal()  { document.getElementById('reportModal').style.display='flex'; }
 function closeReportModal() { document.getElementById('reportModal').style.display='none'; }
-function submitReport() {
+async function submitReport() {
   const reason = document.querySelector('input[name="reportReason"]:checked')?.value;
   if (!reason) { showToast('Please select a reason','error'); return; }
-  showToast('Report submitted. Thank you!','success');
-  closeReportModal();
+  const note = document.getElementById('reportNote')?.value || '';
+  if (!listing?.id) { showToast('Listing not found','error'); return; }
+  try {
+    const r = await fetch('api/listings.php?action=report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ listing_id: listing.id, reason, note })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    showToast('Report submitted. Thank you!', 'success');
+    closeReportModal();
+  } catch(e) {
+    showToast(e.message === 'You have already reported this listing' ? 'You already reported this listing.' : 'Could not submit report.', 'error');
+    closeReportModal();
+  }
 }
 
 // ── Reviews ────────────────────────────────────────────────────

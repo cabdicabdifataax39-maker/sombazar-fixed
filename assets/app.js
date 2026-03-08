@@ -11,6 +11,13 @@ const Auth = {
     document.dispatchEvent(new CustomEvent('auth:change', { detail: { user } }));
   },
   logout() {
+    const token = localStorage.getItem('sb_token');
+    if (token) {
+      fetch('api/auth.php?action=logout', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token }
+      }).catch(() => {});
+    }
     localStorage.removeItem('sb_token');
     localStorage.removeItem('sb_user');
     document.dispatchEvent(new CustomEvent('auth:change', { detail: { user: null } }));
@@ -115,6 +122,10 @@ const API = {
       body: formData,
     }).then(r => r.json()).then(j => { if (!j.success) throw new Error(j.error); return j.data; });
   },
+
+  // Offers
+  getOffer:      (offerId) => apiFetch(`${API_BASE}/offers.php?action=get&offer_id=${offerId}`),
+  cancelOffer:   (offerId) => apiFetch(`${API_BASE}/offers.php?action=cancel`, { method: 'POST', body: JSON.stringify({ offer_id: offerId }) }),
 
   // Messages
   getConversations:       () => apiFetch(`${API_BASE}/messages.php?action=conversations`),

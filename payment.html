@@ -128,7 +128,19 @@
       </div>
       <div>
         <div class="plan-price" id="planPrice">$—</div>
+        <div id="discountBadge" style="display:none;font-size:11px;color:#22c55e;font-weight:700;text-align:right"></div>
       </div>
+    </div>
+
+    <!-- Coupon -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">🎟️ Coupon Code (optional)</div>
+      <div style="display:flex;gap:8px">
+        <input class="form-input" id="couponInput" placeholder="Enter coupon code" maxlength="30" style="flex:1"
+          oninput="document.getElementById('couponMsg').textContent=''">
+        <button onclick="applyCoupon()" style="background:#f97316;color:white;border:none;border-radius:10px;padding:10px 18px;font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Apply</button>
+      </div>
+      <div id="couponMsg" style="font-size:12px;margin-top:6px"></div>
     </div>
 
     <!-- Method select -->
@@ -203,7 +215,9 @@
         Your reference code:
         <b id="confirmedRef">—</b>
       </div>
+      <div id="statusCheckWrap" style="margin:12px 0;font-size:13px;color:#64748b"></div>
       <div>
+        <button onclick="checkPaymentStatus()" style="background:#f1f5f9;color:#0f172a;border:none;border-radius:10px;padding:10px 20px;font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;width:100%">🔄 Check Status</button>
         <a href="profile.html" class="btn-outline">Go to Profile</a>
         <a href="index.html" class="btn-home">Back to Home</a>
       </div>
@@ -232,6 +246,7 @@ const price = params.get('price') || '8';
 let selectedMethod = null;
 let screenshotUrl  = null;
 let paymentNumbers = {};
+let discountedPrice = null; // kupon uygulandıktan sonra
 
 const PLAN_LABELS = { standard:'Standard Plan', pro:'Pro Plan', agency:'Agency Plan' };
 
@@ -262,7 +277,36 @@ function selectMethod(method) {
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = false;
-  document.getElementById('submitBtnText').textContent = `Submit Payment — $${price}`;
+  const finalP = discountedPrice !== null ? discountedPrice : price;
+  document.getElementById('submitBtnText').textContent = `Submit Payment — $${finalP}`;
+}
+
+async function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim();
+  const msg  = document.getElementById('couponMsg');
+  if (!code) { msg.style.color='#ef4444'; msg.textContent='Enter a coupon code.'; return; }
+  msg.style.color='#94a3b8'; msg.textContent='Checking…';
+  try {
+    const r = await fetch('api/payment.php?action=apply_coupon', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+Auth.getToken() },
+      body: JSON.stringify({ code, plan })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Invalid coupon');
+    const discount   = d.data.discount;
+    const finalPrice = d.data.finalPrice;
+    discountedPrice  = finalPrice;
+    document.getElementById('planPrice').innerHTML = `<span style="text-decoration:line-through;font-size:18px;color:#94a3b8">$${price}</span> <span style="color:#22c55e">$${finalPrice}</span>`;
+    document.getElementById('discountBadge').style.display = 'block';
+    document.getElementById('discountBadge').textContent   = `${discount}% discount applied ✓`;
+    document.getElementById('sendAmount').textContent      = '$' + finalPrice;
+    document.getElementById('submitBtnText').textContent   = `Submit Payment — $${finalPrice}`;
+    msg.style.color='#22c55e'; msg.textContent=`✓ Coupon applied! You save $${(price - finalPrice).toFixed(2)}`;
+  } catch(e) {
+    discountedPrice = null;
+    msg.style.color='#ef4444'; msg.textContent=e.message;
+  }
 }
 
 function copyNumber() {
@@ -323,6 +367,7 @@ async function submitPayment() {
         plan, method: selectedMethod,
         reference_code: ref,
         screenshot_url: screenshotUrl,
+        coupon_code: document.getElementById('couponInput').value.trim() || undefined,
       })
     });
     const d = await r.json();
@@ -341,6 +386,30 @@ async function submitPayment() {
     errEl.textContent = e.message;
     btn.disabled = false;
     document.getElementById('submitBtnText').textContent = `Submit Payment — $${price}`;
+  }
+}
+
+async function checkPaymentStatus() {
+  const wrap = document.getElementById('statusCheckWrap');
+  if (!wrap) return;
+  wrap.textContent = 'Checking…';
+  try {
+    const r = await fetch('api/payment.php?action=status', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    const s = d.data;
+    const label = s.status === 'approved' ? '✅ Approved — your plan is active!' :
+                  s.status === 'rejected' ? '❌ Rejected — please contact support.' :
+                  '⏳ Still pending — usually verified within 2 hours.';
+    wrap.innerHTML = `<span style="font-weight:700">${label}</span>`;
+    if (s.status === 'approved') {
+      document.querySelector('.success-icon').textContent = '✅';
+      document.querySelector('.success-title').textContent = 'Payment Approved!';
+    }
+  } catch(e) {
+    wrap.textContent = 'Could not check status. Try again later.';
   }
 }
 
