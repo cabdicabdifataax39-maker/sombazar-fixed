@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') jsonError('Method not allowed', 405);
 $uid = requireAuth();
 
 // ── Cloudinary'ye yükle ──────────────────────────────────────────────────
-function uploadToCloudinary(string $tmpFile, string $folder = 'sombazar'): ?string {
+function uploadToCloudinary(string $tmpFile, string $folder = 'sombazar', string $context = 'listing'): ?string {
     $cloudName = getenv('CLOUDINARY_CLOUD_NAME');
     $apiKey    = getenv('CLOUDINARY_API_KEY');
     $apiSecret = getenv('CLOUDINARY_API_SECRET');
@@ -26,26 +26,43 @@ function uploadToCloudinary(string $tmpFile, string $folder = 'sombazar'): ?stri
     if (!$cloudName || !$apiKey || !$apiSecret) return null;
 
     $timestamp = time();
-    $params    = "folder=$folder&timestamp=$timestamp";
-    $signature = sha1($params . $apiSecret);
+
+    // Context'e göre transformation: listing vs avatar
+    if ($context === 'avatar') {
+        // Avatar: 200x200 kare, yüz odaklı, WebP, kalite 85
+        $transformation = 'c_fill,g_face,h_200,w_200,q_85,f_auto';
+    } else {
+        // Listing: max 1200px genişlik, WebP, kalite 82, şeridi sil
+        $transformation = 'c_limit,w_1200,h_900,q_82,f_auto,fl_strip_profile';
+    }
+
+    // İmza: transformation dahil edilmeli
+    $paramStr  = "folder=$folder&timestamp=$timestamp&transformation=$transformation";
+    $signature = sha1($paramStr . $apiSecret);
 
     $ch = curl_init("https://api.cloudinary.com/v1_1/$cloudName/image/upload");
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST           => true,
         CURLOPT_POSTFIELDS     => [
-            'file'      => new CURLFile($tmpFile),
-            'folder'    => $folder,
-            'timestamp' => $timestamp,
-            'api_key'   => $apiKey,
-            'signature' => $signature,
+            'file'           => new CURLFile($tmpFile),
+            'folder'         => $folder,
+            'timestamp'      => $timestamp,
+            'api_key'        => $apiKey,
+            'signature'      => $signature,
+            'transformation' => $transformation,
         ],
     ]);
     $response = curl_exec($ch);
     curl_close($ch);
 
     $data = json_decode($response, true);
-    return $data['secure_url'] ?? null;
+    if (!isset($data['secure_url'])) return null;
+
+    // f_auto ile Cloudinary otomatik WebP döner - URL'e dönüşüm ekle
+    // secure_url: .../upload/v123/sombazar/file.jpg
+    // → .../upload/c_limit,w_1200,q_82,f_auto/v123/sombazar/file.jpg
+    return $data['secure_url'];
 }
 
 // ── Avatar yükleme ───────────────────────────────────────────────────────
@@ -65,7 +82,7 @@ if (isset($_FILES['avatar'])) {
     if (!in_array($mime, $allowedMime)) jsonError('Invalid file type');
 
     // Cloudinary'ye yükle
-    $photoURL = uploadToCloudinary($tmpName, 'sombazar/avatars');
+    $photoURL = uploadToCloudinary($tmpName, 'sombazar/avatars', 'avatar');
 
     // Cloudinary yoksa local'e yükle
     if (!$photoURL) {
@@ -85,9 +102,7 @@ if (isset($_FILES['avatar'])) {
     }
 
     $db = getDB();
-    // Her iki kolonu da güncelle - avatar_url ve photo_url senkron kalsın
-    try { $db->exec('ALTER TABLE users ADD COLUMN avatar_url VARCHAR(500) NULL'); } catch(\Throwable $e) {}
-    $db->prepare('UPDATE users SET avatar_url = ?, photo_url = ? WHERE id = ?')->execute([$dbPath, $dbPath, $uid]);
+    $db->prepare('UPDATE users SET avatar_url = ? WHERE id = ?')->execute([$dbPath, $uid]);
     jsonSuccess(['photoURL' => $photoURL]);
 }
 

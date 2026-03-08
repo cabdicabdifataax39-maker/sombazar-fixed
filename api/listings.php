@@ -550,3 +550,70 @@ function handleBoost(): void {
 
     jsonSuccess(['message' => 'Listing boosted for 7 days!', 'boosted_until' => $until]);
 }
+
+// ── Autocomplete Suggest (title + kategori + şehir) ─────────────────────────
+function handleSuggest($pdo) {
+    $q = trim($_GET['q'] ?? '');
+    if (strlen($q) < 2) { echo json_encode(['suggestions' => []]); exit; }
+    $like = '%' . $q . '%';
+
+    $results = [];
+
+    // 1. Listing title önerileri (en çok görüntülenen)
+    $stmt = $pdo->prepare(
+        "SELECT DISTINCT title, 'listing' as type FROM listings
+         WHERE status='active' AND title LIKE ?
+         ORDER BY views DESC LIMIT 5"
+    );
+    $stmt->execute([$like]);
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        $results[] = ['text' => $r['title'], 'type' => 'listing', 'icon' => 'tag'];
+    }
+
+    // 2. Kategori önerileri
+    $cats = ['cars','houses','land','electronics','furniture','clothing','jobs','services'];
+    $catLabels = ['cars'=>'Cars','houses'=>'Houses','land'=>'Land','electronics'=>'Electronics',
+                  'furniture'=>'Furniture','clothing'=>'Clothing','jobs'=>'Jobs','services'=>'Services'];
+    foreach ($cats as $cat) {
+        if (stripos($cat, $q) !== false || stripos($catLabels[$cat] ?? '', $q) !== false) {
+            $results[] = ['text' => $catLabels[$cat], 'type' => 'category', 'value' => $cat, 'icon' => 'grid'];
+        }
+    }
+
+    // 3. Şehir önerileri
+    $cities = ['Hargeisa','Berbera','Burco','Borama','Gabiley','Ceerigaavo','Laascaanood'];
+    foreach ($cities as $city) {
+        if (stripos($city, $q) !== false) {
+            $results[] = ['text' => $city, 'type' => 'city', 'icon' => 'map'];
+        }
+    }
+
+    // 4. Şehir + kategori kombinasyonu (örn: "Hargeisa cars")
+    $stmt2 = $pdo->prepare(
+        "SELECT DISTINCT CONCAT(city, ' - ', category) as combo, city, category
+         FROM listings WHERE status='active'
+         AND (city LIKE ? OR category LIKE ?)
+         GROUP BY city, category ORDER BY COUNT(*) DESC LIMIT 3"
+    );
+    $stmt2->execute([$like, $like]);
+    foreach ($stmt2->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        $results[] = [
+            'text'     => $r['city'] . ' › ' . ucfirst($r['category']),
+            'type'     => 'combo',
+            'city'     => $r['city'],
+            'category' => $r['category'],
+            'icon'     => 'location'
+        ];
+    }
+
+    // Max 8 sonuç, duplicate kaldır
+    $seen = []; $final = [];
+    foreach ($results as $r) {
+        $key = strtolower($r['text']);
+        if (!isset($seen[$key])) { $seen[$key] = true; $final[] = $r; }
+        if (count($final) >= 8) break;
+    }
+
+    echo json_encode(['suggestions' => $final]);
+    exit;
+}

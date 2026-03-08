@@ -605,10 +605,13 @@ if (resetBtn) {
 }
 
 // ── Infinite scroll ───────────────────────────────────────────────────
-window.addEventListener('scroll', () => {
-  if (listDone || listLoading) return;
-  if (window.scrollY + window.innerHeight >= document.body.offsetHeight - 400) loadListings();
-});
+// Infinite scroll — IntersectionObserver
+const _sentinel = document.createElement('div');
+_sentinel.style.height = '1px';
+document.body.appendChild(_sentinel);
+new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) loadListings();
+}, { rootMargin: '400px' }).observe(_sentinel);
 
 // ── URL parametrelerini uygula ve ilk yükleme ─────────────────────────
 if (activeCat !== 'all') {
@@ -669,25 +672,54 @@ function initAutocomplete(inputId, dropId) {
 
 function renderDropdown(items, drop, input) {
   if (!items.length) { drop.style.display = 'none'; return; }
-  drop.innerHTML = items.map(s => `
-    <div class="autocomplete-item" onclick="selectSuggestion('${s.replace(/'/g,"\\'")}', this)">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      ${s}
-    </div>`).join('');
+  const ICONS = {
+    listing:  '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>',
+    category: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
+    city:     '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>',
+    combo:    '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>',
+  };
+  const BADGES = {
+    category: '<span style="font-size:10px;background:#f97316;color:white;border-radius:4px;padding:1px 5px;margin-left:auto">Kategori</span>',
+    city:     '<span style="font-size:10px;background:#3b82f6;color:white;border-radius:4px;padding:1px 5px;margin-left:auto">Şehir</span>',
+    combo:    '<span style="font-size:10px;background:#8b5cf6;color:white;border-radius:4px;padding:1px 5px;margin-left:auto">Bölge</span>',
+    listing:  '',
+  };
+  drop.innerHTML = items.map(item => {
+    const s    = typeof item === 'string' ? item : item.text;
+    const type = typeof item === 'object' ? (item.type || 'listing') : 'listing';
+    const icon = ICONS[type] || ICONS.listing;
+    const badge = BADGES[type] || '';
+    const dataAttr = typeof item === 'object' ? `data-type="${type}" data-city="${item.city||''}" data-cat="${item.category||item.value||''}"` : '';
+    return `<div class="autocomplete-item" ${dataAttr} onclick="selectSuggestion('${s.replace(/'/g,"\\'")}', this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0">${icon}</svg>
+      <span style="flex:1">${s}</span>${badge}
+    </div>`;
+  }).join('');
   drop.style.display = 'block';
 }
 
 function selectSuggestion(val, el) {
-  // En yakın input'u bul
   const drop = el.closest('.autocomplete-dropdown');
   const wrap = drop?.parentElement;
   const inp  = wrap?.querySelector('input[type=search], input[type=text]');
-  if (inp) { inp.value = val; inp.dispatchEvent(new Event('change')); }
+  const type = el.dataset.type || 'listing';
+  const city = el.dataset.city || '';
+  const cat  = el.dataset.cat  || '';
   drop.style.display = 'none';
-  // listings.html'deyse filtrele
-  if (typeof applyFilters === 'function') applyFilters();
-  else if (typeof searchListings === 'function') searchListings(val);
-  else window.location.href = `listings.html?q=${encodeURIComponent(val)}`;
+
+  if (typeof applyFilters === 'function') {
+    if (inp) inp.value = type === 'category' || type === 'combo' ? '' : val;
+    if (cat) { const catSel = document.getElementById('catFilter'); if (catSel) catSel.value = cat; }
+    if (city) { const citySel = document.getElementById('cityFilter'); if (citySel) citySel.value = city; }
+    applyFilters();
+  } else {
+    const params = new URLSearchParams();
+    if (type === 'category') params.set('cat', cat || val.toLowerCase());
+    else if (type === 'city') params.set('city', val);
+    else if (type === 'combo') { if (cat) params.set('cat', cat); if (city) params.set('city', city); }
+    else params.set('q', val);
+    window.location.href = 'listings.html?' + params.toString();
+  }
 }
 
 document.addEventListener("DOMContentLoaded",()=>{ initAutocomplete("searchInput","sidebarAcDrop"); initAutocomplete("headerSearchInput","headerAcDrop"); });
