@@ -497,6 +497,7 @@ function formatListing(array $r, bool $detail = false): array {
         'status'       => $r['status'],
         'createdAt'    => $r['created_at'],
         'year'         => $r['year'] ? (int)$r['year'] : null,
+        'boostedUntil' => $r['boosted_until'] ?? null,
     ];
 
     if ($detail) {

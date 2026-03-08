@@ -485,6 +485,10 @@ async function loadMyListings() {
             <a href="listing.html?id=${l.id}" class="btn btn-sm" style="flex:1;background:white;color:var(--dark);font-size:11px;min-width:50px">View</a>
             <a href="edit.html?id=${l.id}" class="btn btn-sm" style="flex:1;background:#f97316;color:white;font-size:11px;min-width:50px">Edit</a>
             <button class="btn btn-sm" onclick="toggleSoldListing(${l.id},'${l.status}')" style="flex:1;background:${isSold ? '#22c55e' : '#fef9c3'};color:${isSold ? 'white' : '#854d0e'};font-size:11px;border:none;min-width:60px">${isSold ? 'Activate' : 'Mark Sold'}</button>
+            ${l.boostedUntil && new Date(l.boostedUntil) > new Date()
+              ? `<button class="btn btn-sm" disabled style="flex:1;background:#fef9c3;color:#854d0e;font-size:10px;border:none;min-width:60px;cursor:default">⚡ Boosted</button>`
+              : `<button class="btn btn-sm" onclick="boostListing(${l.id})" style="flex:1;background:#7c3aed;color:white;font-size:11px;border:none;min-width:60px;cursor:pointer">⚡ Boost</button>`
+            }
             <button class="btn btn-sm btn-danger" onclick="deleteListing(${l.id})" style="flex:1;font-size:11px;min-width:50px">Delete</button>
           </div>
         </div>`;

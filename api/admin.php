@@ -294,6 +294,7 @@ function handleListings(): void {
             'views'         => $r['views'],
             'reportCount'   => (int)($r['report_count'] ?? 0),
             'images'        => json_decode($r['images']??'[]', true),
+            'boostedUntil'  => $r['boosted_until'] ?? null,
         ], $st->fetchAll()),
         'total' => (int)$total->fetchColumn(),
     ]);

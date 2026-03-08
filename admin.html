@@ -1291,6 +1291,7 @@ async function loadListings() {
         <td style="padding:10px 12px;font-weight:700;color:#1e293b;white-space:nowrap">$${Number(l.price||0).toLocaleString()}</td>
         <td style="padding:10px 12px">
           <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;${ss}">${l.status}</span>
+          ${l.boostedUntil && new Date(l.boostedUntil) > new Date() ? '<span style="margin-left:4px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700;background:#f3e8ff;color:#7e22ce">⚡ Boosted</span>' : ''}
         </td>
         <td style="padding:10px 12px;color:#64748b;text-align:center">${l.views||0}</td>
         <td style="padding:10px 12px;color:#94a3b8;font-size:11px;white-space:nowrap">${dt}</td>
