@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <title>Advertise — SomBazar</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    .legal-page { max-width: 800px; margin: 40px auto; padding: 0 20px 40px; }
+    .legal-header { text-align: center; margin-bottom: 40px; }
+    .legal-header h1 { font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+    .legal-header p { color: var(--gray); }
+    .legal-somali { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px 16px; margin-bottom: 32px; font-size: 14px; color: #92400e; }
+    .legal-section { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+    .legal-section:last-child { border-bottom: none; }
+    .legal-section h3 { font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+    .legal-section p { color: #4b5563; line-height: 1.7; }
+    .legal-footer { text-align: center; color: var(--gray); font-size: 13px; margin-top: 40px; }
+    .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 20px 0; }
+    .plan-card { border: 2px solid var(--border); border-radius: 14px; padding: 20px; text-align: center; }
+    .plan-card.featured { border-color: var(--primary); background: #fff7ed; }
+    .plan-card h4 { font-size: 1rem; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+    .plan-card .price { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 12px; }
+    .plan-card .price span { font-size: 13px; font-weight: 400; color: var(--gray); }
+    .plan-card ul { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+    .plan-card ul li { font-size: 13px; color: #4b5563; padding: 4px 0; }
+    .plan-card ul li::before { content: "✓ "; color: var(--primary); font-weight: 700; }
+    .cta-btn { display: inline-block; background: var(--primary); color: white; font-weight: 700; font-size: 13px; padding: 10px 24px; border-radius: 10px; text-decoration: none; }
+    .cta-btn.outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+    .highlight-box { background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 14px; padding: 28px 24px; color: white; text-align: center; margin: 24px 0; }
+    .highlight-box h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+    .highlight-box p { opacity: 0.9; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+    <div class="header-actions">
+      <a href="index.html" class="btn btn-ghost btn-sm">← Home</a>
+    </div>
+  </nav>
+</header>
+
+<div class="legal-page">
+  <div class="legal-header">
+    <h1>📣 Advertise on SomBazar</h1>
+    <p>Reach thousands of buyers across Somaliland every day</p>
+  </div>
+  <div class="legal-somali">🇸🇴 Af-Soomaali: Xayeysiinta SomBazar — Gaarso kumanaan macmiil maalin walba oo ka mid ah Somaliland.</div>
+
+  <div class="legal-section">
+    <h3>Why Advertise With Us?</h3>
+    <p>SomBazar is Somaliland's most visited online marketplace. Our users are active buyers and sellers looking for products and services every day. Advertising on SomBazar puts your business directly in front of your target audience at the moment they're ready to buy.</p>
+  </div>
+
+  <div class="legal-section">
+    <h3>Seller Packages</h3>
+    <p>The best way to advertise on SomBazar is through a seller subscription. Get more listings, featured placement, and a verified badge that builds buyer trust.</p>
+    <div class="plan-grid">
+      <div class="plan-card">
+        <h4>Standard</h4>
+        <div class="price">$8 <span>/ month</span></div>
+        <ul>
+          <li>Up to 15 listings</li>
+          <li>Priority in search results</li>
+          <li>Basic analytics</li>
+        </ul>
+        <a href="packages.html" class="cta-btn outline">Get Started</a>
+      </div>
+      <div class="plan-card featured">
+        <h4>⭐ Pro</h4>
+        <div class="price">$20 <span>/ month</span></div>
+        <ul>
+          <li>Unlimited listings</li>
+          <li>Featured badge on profile</li>
+          <li>Boosted listing slots</li>
+          <li>Full analytics</li>
+        </ul>
+        <a href="packages.html" class="cta-btn">Get Started</a>
+      </div>
+      <div class="plan-card">
+        <h4>Agency</h4>
+        <div class="price">$50 <span>/ month</span></div>
+        <ul>
+          <li>Unlimited listings</li>
+          <li>Agency badge</li>
+          <li>Priority support</li>
+          <li>Bulk listing tools</li>
+        </ul>
+        <a href="packages.html" class="cta-btn outline">Get Started</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <h3>Custom Advertising Packages</h3>
+    <p>Looking for banner ads, sponsored listings, or a custom partnership? We offer tailored solutions for brands and large businesses.</p>
+    <a href="mailto:business@sombazar.com?subject=Custom Advertising Inquiry" style="display:inline-block;background:white;color:var(--primary);font-weight:700;font-size:13px;padding:10px 24px;border-radius:10px;text-decoration:none">Contact Our Team →</a>
+  </div>
+
+  <div class="legal-section">
+    <h3>Boost Your Listings</h3>
+    <p>Already a seller? Use the <strong>Boost</strong> feature on any of your listings to push it to the top of search results for 7 days. Available inside your profile under "My Listings".</p>
+  </div>
+
+  <div class="legal-section">
+    <h3>Affiliate Program</h3>
+    <p>Refer new sellers to SomBazar and earn a commission on their first subscription payment. Join our affiliate program through your Profile → Settings → Affiliate.</p>
+  </div>
+
+  <div class="legal-footer">
+    <p>© 2026 SomBazar. All rights reserved.</p>
+    <p style="margin-top:8px">
+      <a href="terms.html" style="color:var(--primary);margin:0 8px">Terms</a>
+      <a href="privacy.html" style="color:var(--primary);margin:0 8px">Privacy</a>
+      <a href="safety.html" style="color:var(--primary);margin:0 8px">Safety</a>
+      <a href="contact.html" style="color:var(--primary);margin:0 8px">Contact</a>
+      <a href="faq.html" style="color:var(--primary);margin:0 8px">FAQ</a>
+    </p>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
