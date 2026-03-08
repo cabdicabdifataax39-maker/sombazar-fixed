@@ -423,7 +423,7 @@ async function loadProfile() {
     }
 
     document.getElementById('profileName').textContent = user.displayName || 'Your Name';
-    document.getElementById('profileMeta').textContent = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${user.city || 'Hargeisa'}`;
+    document.getElementById('profileMeta').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${escHTML(user.city || 'Hargeisa')}`;
     // Load verification badge
     loadVerifyStatus();
     loadPlanStatus();
@@ -1016,7 +1016,7 @@ async function saveProfile() {
     document.getElementById('settingsSaved').textContent = 'Profile updated successfully! ✓';
     document.getElementById('settingsSaved').style.display = '';
     document.getElementById('profileName').textContent = updated.displayName;
-    document.getElementById('profileMeta').textContent = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${updated.city || 'Hargeisa'}`;
+    document.getElementById('profileMeta').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${escHTML(updated.city || 'Hargeisa')}`;
     setTimeout(() => document.getElementById('settingsSaved').style.display = 'none', 3000);
   } catch(e) {
     document.getElementById('settingsError').textContent = e.message || 'Failed to save. Please try again.';
