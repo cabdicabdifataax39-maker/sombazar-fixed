@@ -1117,6 +1117,7 @@ async function loadUsers() {
           </span>
         </td>
         <td style="padding:12px 10px;text-transform:capitalize">${escHTML(u.plan||'free')}</td>
+        <td style="padding:12px 10px;color:#94a3b8;font-size:11px;white-space:nowrap">${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—'}</td>
         <td style="padding:12px 10px">
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <button onclick="viewUserDetail(${u.id})" style="background:#eff6ff;color:#2563eb;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">View</button>
@@ -1339,10 +1340,18 @@ async function loadPayments() {
         </td>
         <td style="padding:12px 10px"><span style="font-family:monospace;font-size:12px">${escHTML(p.referenceCode)}</span></td>
         <td style="padding:12px 10px">
-          ${p.status==='pending'?`
-          <button onclick="approvePayment(${p.id})" style="background:#dcfce7;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;margin-right:4px">Approve</button>
-          <button onclick="rejectPayment(${p.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Reject</button>`
+          ${p.screenshotUrl
+            ? `<a href="${p.screenshotUrl}" target="_blank" style="color:#f97316;font-size:11px;font-weight:700;text-decoration:none">📷 View</a>`
+            : '<span style="color:#cbd5e1;font-size:11px">—</span>'}
+        </td>
+        <td style="padding:12px 10px;color:#94a3b8;font-size:11px;white-space:nowrap">${p.createdAt ? new Date(p.createdAt).toLocaleDateString() : '—'}</td>
+        <td style="padding:12px 10px">
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+          ${p.status==='pending' ? `
+            <button onclick="approvePayment(${p.id})" style="background:#dcfce7;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Approve</button>
+            <button onclick="rejectPayment(${p.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Reject</button>`
           : `<span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${p.status==='approved'?'#dcfce7':'#fef2f2'};color:${p.status==='approved'?'#166534':'#dc2626'}">${p.status}</span>`}
+          </div>
         </td>
       </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="5" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
