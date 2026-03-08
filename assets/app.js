@@ -878,71 +878,82 @@ function applyLang(lang) {
     // Eğer zaten reload olmadıysa sayfa state'ini koru
     if (window._deepTranslated) {
       window._deepTranslated = false;
+      window._currentTr = null;
+      if (_translationObserver) { _translationObserver.disconnect(); _translationObserver = null; }
       location.reload();
     }
+  }
+}
+
+// ── Translation engine ──────────────────────────────────────────────────────
+let _translationObserver = null;
+
+function _translateNode(node, tr) {
+  if (!node || !tr) return;
+  const tag = node.nodeType === 3 ? node.parentElement?.tagName : node.tagName;
+  if (['SCRIPT','STYLE','NOSCRIPT','CODE','PRE'].includes(tag)) return;
+
+  if (node.nodeType === 3) {
+    // Text node
+    const orig = node.textContent;
+    const trimmed = orig.trim();
+    if (!trimmed) return;
+    if (tr[trimmed]) {
+      const leading  = orig.match(/^\s*/)[0];
+      const trailing = orig.match(/\s*$/)[0];
+      node.textContent = leading + tr[trimmed] + trailing;
+    }
+  } else if (node.nodeType === 1) {
+    // Element node - placeholder ve title
+    if (node.hasAttribute('placeholder')) {
+      const ph = node.getAttribute('placeholder');
+      if (tr[ph]) node.setAttribute('placeholder', tr[ph]);
+    }
+    if (node.hasAttribute('title') && !node.hasAttribute('data-i18n')) {
+      const tt = node.getAttribute('title');
+      if (tr[tt]) node.setAttribute('title', tr[tt]);
+    }
+    // Çocukları işle
+    node.childNodes.forEach(child => _translateNode(child, tr));
   }
 }
 
 function _applyDeepTranslations(lang) {
   const tr = TRANSLATIONS[lang] || TRANSLATIONS.en;
   window._deepTranslated = true;
+  window._currentTr = tr;
 
-  // Translate text nodes (button, a, span, td, th, label, h1-h6, p, li, div doğrudan metin içerenleri)
-  const walker = document.createTreeWalker(
-    document.body,
-    NodeFilter.SHOW_TEXT,
-    {
-      acceptNode(node) {
-        // Atla: script, style, input, textarea, kod içi
-        const p = node.parentElement;
-        if (!p) return NodeFilter.FILTER_REJECT;
-        const tag = p.tagName;
-        if (['SCRIPT','STYLE','NOSCRIPT','CODE','PRE'].includes(tag)) return NodeFilter.FILTER_REJECT;
-        // Atla: data-i18n zaten handle ediliyor
-        if (p.hasAttribute('data-i18n')) return NodeFilter.FILTER_REJECT;
-        // Atla: boş veya sadece boşluk
-        if (!node.textContent.trim()) return NodeFilter.FILTER_SKIP;
-        return NodeFilter.FILTER_ACCEPT;
-      }
-    }
-  );
+  // Tüm sayfayı çevir
+  _translateNode(document.body, tr);
 
-  const nodes = [];
-  while (walker.nextNode()) nodes.push(walker.currentNode);
-
-  nodes.forEach(node => {
-    const orig = node.textContent;
-    const trimmed = orig.trim();
-    if (tr[trimmed]) {
-      // Başındaki/sonundaki boşlukları koru
-      const leading  = orig.match(/^\s*/)[0];
-      const trailing = orig.match(/\s*$/)[0];
-      node.textContent = leading + tr[trimmed] + trailing;
-    }
-    // Kısmi eşleşme: metin içinde geçen ifadeler
-    else {
-      let replaced = orig;
-      // Uzun çevirileri önce dene (kısa önce eşleşip uzunun parçasını bozmamak için)
-      const sortedKeys = Object.keys(tr).sort((a,b) => b.length - a.length);
-      for (const key of sortedKeys) {
-        if (key.length > 2 && replaced.includes(key)) {
-          replaced = replaced.split(key).join(tr[key]);
+  // MutationObserver - sonradan eklenen dynamic content'i de çevir
+  if (_translationObserver) _translationObserver.disconnect();
+  _translationObserver = new MutationObserver(mutations => {
+    mutations.forEach(m => {
+      m.addedNodes.forEach(n => {
+        if (n.nodeType === 1 || n.nodeType === 3) {
+          _translateNode(n, window._currentTr);
+        }
+      });
+      // Mevcut node'un text değişimi
+      if (m.type === 'characterData' && m.target.nodeType === 3) {
+        const orig = m.target.textContent;
+        const trimmed = orig.trim();
+        if (trimmed && window._currentTr[trimmed]) {
+          const leading  = orig.match(/^\s*/)[0];
+          const trailing = orig.match(/\s*$/)[0];
+          // Sonsuz döngüyü önle
+          if (orig !== leading + window._currentTr[trimmed] + trailing) {
+            m.target.textContent = leading + window._currentTr[trimmed] + trailing;
+          }
         }
       }
-      if (replaced !== orig) node.textContent = replaced;
-    }
+    });
   });
-
-  // Placeholder çevirisi (input/textarea)
-  document.querySelectorAll('[placeholder]').forEach(el => {
-    const ph = el.getAttribute('placeholder');
-    if (tr[ph]) el.setAttribute('placeholder', tr[ph]);
-  });
-
-  // title attribute çevirisi (tooltip metinleri)
-  document.querySelectorAll('[title]').forEach(el => {
-    const tt = el.getAttribute('title');
-    if (tr[tt]) el.setAttribute('title', tr[tt]);
+  _translationObserver.observe(document.body, {
+    childList: true,
+    subtree: true,
+    characterData: true,
   });
 }
 
