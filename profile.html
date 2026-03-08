@@ -630,8 +630,8 @@ async function loadPaymentHistory() {
       const methodEmoji = p.method === 'zaad' ? '' : '';
       const receiptBtn  = p.status === 'approved'
         ? `<div style="margin-top:6px;display:flex;gap:6px">
-             <a href="api/payment.php?action=receipt_html&payment_id=${p.id}&token=${Auth.getToken()}" target="_blank" style="flex:1;background:#f1f5f9;color:#0f172a;text-decoration:none;text-align:center;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700">🧾 View</a>
-             <button onclick="downloadReceipt(${p.id})" style="flex:1;background:#f1f5f9;color:#0f172a;border:none;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer">⬇ Save</button>
+             <a href="api/payment.php?action=receipt_html&payment_id=${p.id}&token=${Auth.getToken()}" target="_blank" style="background:#f1f5f9;color:#0f172a;text-decoration:none;text-align:center;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700;white-space:nowrap">🧾 View</a>
+             <button onclick="downloadReceipt(${p.id})" style="background:#f1f5f9;color:#0f172a;border:none;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">⬇ Save</button>
            </div>`
         : '';
       return `<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">

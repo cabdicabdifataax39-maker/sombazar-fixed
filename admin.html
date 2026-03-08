@@ -616,10 +616,12 @@ async function loadCoupons() {
           <td style="padding:12px 10px">${cp.uses_count}${cp.max_uses > 0 ? '/' + cp.max_uses : ''}</td>
           <td style="padding:12px 10px;color:#94a3b8">${cp.expires_at ? new Date(cp.expires_at).toLocaleDateString() : '∞'}</td>
           <td style="padding:12px 10px"><span style="background:${cp.is_active ? '#f0fdf4' : '#f1f5f9'};color:${cp.is_active ? '#16a34a' : '#94a3b8'};padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700">${cp.is_active ? 'Active' : 'Inactive'}</span></td>
-          <td style="padding:12px 10px;display:flex;gap:6px">
-            <button onclick="viewCouponStats(${cp.id},'${cp.code}')" style="background:#fff7ed;color:#f97316;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Stats</button>
-            <button onclick="toggleCoupon(${cp.id})" style="background:#f1f5f9;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">${cp.is_active ? 'Disable' : 'Enable'}</button>
-            <button onclick="deleteCoupon(${cp.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Delete</button>
+          <td style="padding:12px 10px">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button onclick="viewCouponStats(${cp.id},'${cp.code}')" style="background:#fff7ed;color:#f97316;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Stats</button>
+              <button onclick="toggleCoupon(${cp.id})" style="background:#f1f5f9;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">${cp.is_active ? 'Disable' : 'Enable'}</button>
+              <button onclick="deleteCoupon(${cp.id})" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Delete</button>
+            </div>
           </td>
         </tr>`).join('') +
       '</tbody></table>';
@@ -737,9 +739,11 @@ async function loadAffiliates() {
           <td style="padding:12px 10px">$${parseFloat(a.total_earned).toFixed(2)}</td>
           <td style="padding:12px 10px;color:${a.pending_payout > 0 ? '#f97316' : '#94a3b8'}">$${parseFloat(a.pending_payout).toFixed(2)}</td>
           <td style="padding:12px 10px">${statusBadge}</td>
-          <td style="padding:12px 10px;display:flex;gap:6px;flex-wrap:wrap">
-            ${a.pending_payout > 0 ? `<button onclick="markAffiliatePaid(${a.id},${a.pending_payout})" style="background:#f0fdf4;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Mark Paid</button>` : ''}
-            <button onclick="toggleAffiliate(${a.id},'${isActive ? 'disable' : 'enable'}')" style="background:#f8fafc;color:${toggleColor};border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">${toggleLabel}</button>
+          <td style="padding:12px 10px">
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${a.pending_payout > 0 ? `<button onclick="markAffiliatePaid(${a.id},${a.pending_payout})" style="background:#f0fdf4;color:#16a34a;border:none;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Mark Paid</button>` : ''}
+              <button onclick="toggleAffiliate(${a.id},'${isActive ? 'disable' : 'enable'}')" style="background:#f8fafc;color:${toggleColor};border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">${toggleLabel}</button>
+            </div>
           </td>
         </tr>`;
       }).join('') +
@@ -1009,11 +1013,13 @@ async function loadUsers() {
           </span>
         </td>
         <td style="padding:12px 10px;text-transform:capitalize">${escHTML(u.plan||'free')}</td>
-        <td style="padding:12px 10px;display:flex;gap:6px;flex-wrap:wrap">
-          <button onclick="viewUserDetail(${u.id})" style="background:#eff6ff;color:#2563eb;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">View</button>
-          <button onclick="${u.banned ? `unbanUser(${u.id})` : `openBanModal(${u.id})`}" style="background:${u.banned?'#dcfce7':'#fef2f2'};color:${u.banned?'#16a34a':'#dc2626'};border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">
-            ${u.banned?'Unban':'Ban'}
-          </button>
+        <td style="padding:12px 10px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button onclick="viewUserDetail(${u.id})" style="background:#eff6ff;color:#2563eb;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">View</button>
+            <button onclick="${u.banned ? `unbanUser(${u.id})` : `openBanModal(${u.id})`}" style="background:${u.banned?'#dcfce7':'#fef2f2'};color:${u.banned?'#16a34a':'#dc2626'};border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">
+              ${u.banned?'Unban':'Ban'}
+            </button>
+          </div>
         </td>
       </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:#ef4444;padding:16px">${e.message}</td></tr>`; }
@@ -1159,10 +1165,12 @@ async function loadListings() {
         </td>
         <td style="padding:10px 12px;color:#64748b;text-align:center">${l.views||0}</td>
         <td style="padding:10px 12px;color:#94a3b8;font-size:11px;white-space:nowrap">${dt}</td>
-        <td style="padding:10px 12px;white-space:nowrap;display:flex;gap:4px;flex-wrap:wrap;align-items:center">
-          <button onclick="approveListing(${l.id})" title="Approve" style="background:#dcfce7;color:#16a34a;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✓ Approve</button>
-          <button onclick="rejectListingAdmin(${l.id})" title="Reject" style="background:#fff7ed;color:#ea580c;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✕ Reject</button>
-          <button onclick="deleteListing(${l.id})" title="Delete" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">🗑</button>
+        <td style="padding:10px 12px;white-space:nowrap">
+          <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+            <button onclick="approveListing(${l.id})" title="Approve" style="background:#dcfce7;color:#16a34a;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✓ Approve</button>
+            <button onclick="rejectListingAdmin(${l.id})" title="Reject" style="background:#fff7ed;color:#ea580c;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">✕ Reject</button>
+            <button onclick="deleteListing(${l.id})" title="Delete" style="background:#fef2f2;color:#dc2626;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer">🗑</button>
+          </div>
         </td>
       </tr>`;
     }).join('');
