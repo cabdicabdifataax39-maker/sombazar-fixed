@@ -178,6 +178,7 @@ function handleInitiate(): void {
     $method     = trim($data['method']          ?? '');
     $ref        = trim($data['reference_code']  ?? '');
     $screenshot = trim($data['screenshot_url']  ?? '');
+    $couponCode = strtoupper(trim($data['coupon_code'] ?? ''));
     $affiliateRef = trim($data['ref'] ?? $_GET['ref'] ?? '');  // affiliate referral kodu
 
     if (!isset(PLANS[$plan]))                    jsonError('Invalid plan');
@@ -187,6 +188,30 @@ function handleInitiate(): void {
     $db        = getDB();
     $plan_data = PLANS[$plan];
     $idem      = 'pay_' . $uid . '_' . $plan . '_' . substr(md5($ref), 0, 8);
+
+    // Kupon doğrula ve indirim hesapla
+    $discountAmount = 0.0;
+    $validCouponId  = null;
+    if ($couponCode) {
+        try {
+            $cSt = $db->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1");
+            $cSt->execute([$couponCode]);
+            $coupon = $cSt->fetch();
+            if ($coupon
+                && (!$coupon['expires_at'] || strtotime($coupon['expires_at']) >= time())
+                && (!$coupon['max_uses'] || $coupon['uses_count'] < $coupon['max_uses'])
+                && (empty($coupon['min_plan']) || $coupon['min_plan'] === $plan)
+            ) {
+                $price = (float)$plan_data['price'];
+                $discountAmount = $coupon['type'] === 'percent'
+                    ? round($price * ($coupon['value'] / 100), 2)
+                    : min((float)$coupon['value'], $price);
+                $validCouponId = (int)$coupon['id'];
+            } else {
+                $couponCode = ''; // geçersizse temizle
+            }
+        } catch(\Throwable $e) { $couponCode = ''; }
+    }
 
     // Affiliate ID bul
     $affiliateId = null;
@@ -212,9 +237,18 @@ function handleInitiate(): void {
         $refChk->execute([$ref]);
         if ($refChk->fetch()) jsonError('This reference code has already been used.');
 
-        $st = $db->prepare('INSERT INTO payments (user_id, plan, amount, method, reference_code, screenshot_url, idempotency_key, affiliate_id) VALUES (?,?,?,?,?,?,?,?)');
-        $st->execute([$uid, $plan, $plan_data['price'], $method, $ref, $screenshot ?: null, $idem, $affiliateId]);
+        $finalAmount = max(0, (float)$plan_data['price'] - $discountAmount);
+        $st = $db->prepare('INSERT INTO payments (user_id, plan, amount, method, reference_code, screenshot_url, idempotency_key, affiliate_id, coupon_code, discount_amount) VALUES (?,?,?,?,?,?,?,?,?,?)');
+        $st->execute([$uid, $plan, $finalAmount, $method, $ref, $screenshot ?: null, $idem, $affiliateId, $couponCode ?: null, $discountAmount]);
         $paymentId = $db->lastInsertId();
+
+        // Kupon kullanım sayısını artır
+        if ($validCouponId) {
+            try {
+                $db->prepare("UPDATE discount_codes SET uses_count = uses_count + 1 WHERE id = ?")
+                   ->execute([$validCouponId]);
+            } catch(\Throwable $e) {}
+        }
 
         // Affiliate toplam referral sayısını artır
         if ($affiliateId) {
@@ -225,11 +259,14 @@ function handleInitiate(): void {
         }
 
         jsonSuccess([
-            'payment_id' => $paymentId,
-            'status'     => 'pending',
-            'message'    => 'Payment submitted. We will review within 2 hours.',
-            'amount'     => $plan_data['price'],
-            'plan'       => $plan_data['label'],
+            'payment_id'      => $paymentId,
+            'status'          => 'pending',
+            'message'         => 'Payment submitted. We will review within 2 hours.',
+            'amount'          => $finalAmount,
+            'original_amount' => $plan_data['price'],
+            'discount'        => $discountAmount,
+            'plan'            => $plan_data['label'],
+            'coupon_used'     => $couponCode ?: null,
         ]);
     } catch(\Throwable $e) {
         jsonError('Database error: ' . $e->getMessage());
@@ -434,7 +471,7 @@ function handleReceipt(): void {
         'plan'         => $planData['label'],
         'amount'       => (float)$p['amount'],
         'discount'     => (float)($p['discount_amount'] ?? 0),
-        'finalAmount'  => (float)$p['amount'] - (float)($p['discount_amount'] ?? 0),
+        'finalAmount'  => (float)$p['amount'], // amount zaten finalAmount olarak kaydedildi
         'method'       => strtoupper($p['method']),
         'reference'    => $p['reference_code'],
         'couponCode'   => $p['coupon_code'] ?: null,
@@ -467,8 +504,9 @@ function handleReceiptHTML(): void {
     $planData  = PLANS[$p['plan']] ?? ['label' => ucfirst($p['plan'])];
     $receiptNo = 'SB-' . str_pad($p['id'], 6, '0', STR_PAD_LEFT);
     $date      = date('d M Y', strtotime($p['reviewed_at'] ?: $p['created_at']));
-    $discount  = (float)($p['discount_amount'] ?? 0);
-    $total     = (float)$p['amount'] - $discount;
+    $discount      = (float)($p['discount_amount'] ?? 0);
+    $originalPrice = $discount > 0 ? ((float)$p['amount'] + $discount) : (float)$p['amount'];
+    $total         = (float)$p['amount']; // amount zaten finalAmount
 
     header('Content-Type: text/html; charset=UTF-8');
     echo <<<HTML
@@ -519,8 +557,8 @@ function handleReceiptHTML(): void {
     <div class="row"><span class="label">Reference Code</span><span class="value" style="font-family:monospace">{$p['reference_code']}</span></div>
 HTML;
     if ($discount > 0) {
-        echo '<div class="row"><span class="label">Original Price</span><span class="value">$' . $p['amount'] . '</span></div>';
-        echo '<div class="row"><span class="label">Discount (' . htmlspecialchars($p['coupon_code']) . ')</span><span class="value" style="color:#16a34a">-$' . $discount . '</span></div>';
+        echo '<div class="row"><span class="label">Original Price</span><span class="value">$' . number_format($originalPrice, 2) . '</span></div>';
+        echo '<div class="row"><span class="label">Discount (' . htmlspecialchars($p['coupon_code'] ?? '') . ')</span><span class="value" style="color:#16a34a">-$' . number_format($discount, 2) . '</span></div>';
     }
     echo <<<HTML2
     <div class="total">
