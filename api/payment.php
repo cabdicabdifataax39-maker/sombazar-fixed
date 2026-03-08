@@ -104,6 +104,7 @@ switch ($action) {
     case 'status':   handleStatus();   break;
     case 'history':  handleHistory();  break;
     case 'apply_coupon':  handleApplyCoupon();  break;
+    case 'public_coupons': handlePublicCoupons(); break;
     case 'cancel_plan':   handleCancelPlan();   break;
     case 'trial':         handleTrial();        break;
     case 'upgrade':       handleUpgrade();      break;
@@ -270,6 +271,32 @@ function handleHistory(): void {
 // (switch'in default'undan önce çalışmaz — yeni switch ekle)
 
 // ── Kupon Kodu Uygula ────────────────────────────────────────
+function handlePublicCoupons(): void {
+    // Giriş gerekmez - herkese açık aktif kuponları listele
+    $db = getDB();
+    $plan = trim($_GET['plan'] ?? '');
+    try {
+        $q = "SELECT code, type, value, expires_at, max_uses, uses_count,
+                     (CASE WHEN max_uses > 0 THEN CONCAT(uses_count,'/',max_uses,' used') ELSE 'Unlimited' END) as usage_info
+              FROM discount_codes
+              WHERE is_active = 1
+                AND (expires_at IS NULL OR expires_at > NOW())
+                AND (max_uses = 0 OR uses_count < max_uses)";
+        $params = [];
+        if ($plan) {
+            $q .= " AND (min_plan IS NULL OR min_plan = '' OR min_plan = ?)";
+            $params[] = $plan;
+        }
+        $q .= " ORDER BY value DESC LIMIT 10";
+        $st = $db->prepare($q);
+        $st->execute($params);
+        $coupons = $st->fetchAll();
+        jsonSuccess(['coupons' => $coupons]);
+    } catch(\Throwable $e) {
+        jsonSuccess(['coupons' => []]);
+    }
+}
+
 function handleApplyCoupon(): void {
     $uid  = requireAuth();
     $data = json_decode(file_get_contents('php://input'), true) ?? [];

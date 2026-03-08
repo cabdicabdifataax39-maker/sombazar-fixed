@@ -450,8 +450,12 @@ function handleReport(): void {
     $chk->execute([$lid, $uid]);
     if ($chk->fetch()) jsonError('You have already reported this listing');
 
-    $db->prepare('INSERT INTO reports (listing_id, reporter_id, reason) VALUES (?,?,?)')
-       ->execute([$lid, $uid, $reason]);
+    // note sütunu yoksa ekle
+    try { $db->exec("ALTER TABLE reports ADD COLUMN note TEXT NULL"); } catch(\Exception $e) {}
+    $note = trim($data['note'] ?? '');
+
+    $db->prepare('INSERT INTO reports (listing_id, reporter_id, reason, note) VALUES (?,?,?,?)')
+       ->execute([$lid, $uid, $reason, $note ?: null]);
 
     jsonSuccess(['message' => 'Report submitted. Thank you!']);
 }

@@ -70,6 +70,8 @@ switch ($action) {
     case 'clean':             handleClean();            break;
     case 'approve_payment':   handleApprovePayment();   break;
     case 'reject_payment':    handleRejectPayment();    break;
+    case 'get_reports':       handleGetReports();       break;
+    case 'resolve_report':    handleResolveReport();    break;
     default: jsonError('Unknown action', 404);
 }
 
@@ -922,18 +924,109 @@ function handleToggleAffiliate(): void {
 function handleCouponStats(): void {
     requireAdmin();
     $db = getDB();
+    $couponId = (int)($_GET['coupon_id'] ?? 0);
+
     try {
-        $total   = (int)$db->query("SELECT COUNT(*) FROM discount_codes")->fetchColumn();
-        $active  = (int)$db->query("SELECT COUNT(*) FROM discount_codes WHERE is_active = 1")->fetchColumn();
-        $used    = (int)$db->query("SELECT COALESCE(SUM(uses_count),0) FROM discount_codes")->fetchColumn();
-        $top = $db->query("SELECT code, uses_count, value, type FROM discount_codes ORDER BY uses_count DESC LIMIT 5")->fetchAll();
-        jsonSuccess([
-            'total_coupons'  => $total,
-            'active_coupons' => $active,
-            'total_uses'     => $used,
-            'top_coupons'    => $top,
-        ]);
+        if ($couponId) {
+            // Per-coupon stats
+            $st = $db->prepare("SELECT id, code, uses_count, value, type FROM discount_codes WHERE id = ?");
+            $st->execute([$couponId]);
+            $coupon = $st->fetch();
+            if (!$coupon) jsonError('Coupon not found', 404);
+
+            // Recent payments that used this coupon
+            $payments = $db->prepare(
+                "SELECT p.id, p.amount, p.created_at, u.display_name, u.email,
+                        (CASE WHEN dc.type='percent' THEN ROUND(p.amount * dc.value/100, 2) ELSE dc.value END) as discount_amount
+                 FROM payments p
+                 JOIN users u ON u.id = p.user_id
+                 JOIN discount_codes dc ON dc.id = ?
+                 WHERE p.coupon_code = dc.code AND p.status = 'approved'
+                 ORDER BY p.created_at DESC LIMIT 10"
+            );
+            $payments->execute([$couponId]);
+            $recent = $payments->fetchAll();
+
+            $totalDiscount = array_sum(array_column($recent, 'discount_amount'));
+
+            jsonSuccess([
+                'total_uses'     => (int)$coupon['uses_count'],
+                'total_discount' => round($totalDiscount, 2),
+                'recent_uses'    => $recent,
+            ]);
+        } else {
+            // Global stats
+            $total  = (int)$db->query("SELECT COUNT(*) FROM discount_codes")->fetchColumn();
+            $active = (int)$db->query("SELECT COUNT(*) FROM discount_codes WHERE is_active = 1")->fetchColumn();
+            $used   = (int)$db->query("SELECT COALESCE(SUM(uses_count),0) FROM discount_codes")->fetchColumn();
+            $top    = $db->query("SELECT code, uses_count, value, type FROM discount_codes ORDER BY uses_count DESC LIMIT 5")->fetchAll();
+            jsonSuccess([
+                'total_coupons'  => $total,
+                'active_coupons' => $active,
+                'total_uses'     => $used,
+                'top_coupons'    => $top,
+            ]);
+        }
     } catch(\Throwable $e) {
-        jsonSuccess(['total_coupons' => 0, 'active_coupons' => 0, 'total_uses' => 0, 'top_coupons' => []]);
+        jsonSuccess(['total_uses' => 0, 'total_discount' => 0, 'recent_uses' => []]);
     }
+}
+
+// ── handleGetReports ──────────────────────────────────────────
+function handleGetReports(): void {
+    requireAdmin();
+    $db = getDB();
+    try {
+        // note sütunu yoksa ekle
+        try { $db->exec("ALTER TABLE reports ADD COLUMN note TEXT NULL"); } catch(\Throwable $e) {}
+
+        $resolved = (int)($_GET['resolved'] ?? 0);
+        $st = $db->prepare(
+            "SELECT r.id, r.reason, r.note, r.resolved, r.created_at,
+                    l.id as listing_id, l.title as listing_title,
+                    reporter.id as reporter_id, reporter.display_name as reporter_name, reporter.email as reporter_email,
+                    owner.id as owner_id, owner.display_name as owner_name, owner.email as owner_email
+             FROM reports r
+             JOIN listings l ON l.id = r.listing_id
+             JOIN users reporter ON reporter.id = r.reporter_id
+             JOIN users owner    ON owner.id    = l.user_id
+             WHERE r.resolved = ?
+             ORDER BY r.created_at DESC
+             LIMIT 100"
+        );
+        $st->execute([$resolved]);
+        $reports = $st->fetchAll();
+        $total_unresolved = (int)$db->query("SELECT COUNT(*) FROM reports WHERE resolved=0")->fetchColumn();
+        jsonSuccess(['reports' => $reports, 'total_unresolved' => $total_unresolved]);
+    } catch(\Throwable $e) {
+        jsonError($e->getMessage());
+    }
+}
+
+// ── handleResolveReport ───────────────────────────────────────
+function handleResolveReport(): void {
+    requireAdmin();
+    $adminId = requireAdmin();
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $reportId = (int)($data['report_id'] ?? 0);
+    $action   = $data['action'] ?? 'resolve'; // resolve | delete_listing
+    if (!$reportId) jsonError('report_id required');
+    $db = getDB();
+
+    // Raporu çöz
+    $db->prepare("UPDATE reports SET resolved=1 WHERE id=?")->execute([$reportId]);
+
+    if ($action === 'delete_listing') {
+        // İlgili listing'i de sil
+        $r = $db->prepare("SELECT listing_id FROM reports WHERE id=?");
+        $r->execute([$reportId]);
+        $row = $r->fetch();
+        if ($row) {
+            $db->prepare("UPDATE listings SET status='deleted' WHERE id=?")->execute([$row['listing_id']]);
+            logAction($adminId, 'delete_listing_via_report', 'listing', (int)$row['listing_id'], 'Deleted via report #'.$reportId);
+        }
+    }
+
+    logAction($adminId, 'resolve_report', 'report', $reportId, 'action='.$action);
+    jsonSuccess(['message' => 'Report resolved']);
 }

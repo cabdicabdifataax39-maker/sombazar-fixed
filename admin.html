@@ -143,7 +143,7 @@
 
 <script>
 // Tab switching — inline early so onclick works immediately
-var ALL_TABS = ['dashboard','verifications','users','listings','payments','blacklist','log','offers','coupons','affiliates','settings'];
+var ALL_TABS = ['dashboard','verifications','users','listings','payments','blacklist','log','offers','coupons','affiliates','reports','settings'];
 function showTab(tab) {
   window.__pendingTab = tab;
   // Gizle/göster
@@ -206,6 +206,10 @@ function showTab(tab) {
       <div class="nav-item" onclick="showTab('coupons')">
         <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span> Coupons
         <span class="nav-badge" id="couponBadge" style="display:none"></span>
+      </div>
+      <div class="nav-item" onclick="showTab('reports')">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span> Reports
+        <span class="nav-badge" id="reportBadge" style="display:none"></span>
       </div>
       <div class="nav-item" onclick="showTab('settings')">
         <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span> Settings
@@ -504,6 +508,18 @@ function showTab(tab) {
         <div id="couponList"><div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div></div>
       </div>
 
+      <!-- Reports -->
+      <div id="tab-reports" class="tab-pane" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <h2 style="font-size:18px;font-weight:800">User Reports</h2>
+          <div style="display:flex;gap:8px">
+            <button onclick="loadReports(0)" id="reportUnresolvedBtn" style="background:#fef2f2;color:#dc2626;border:none;border-radius:8px;padding:7px 14px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">Unresolved</button>
+            <button onclick="loadReports(1)" id="reportResolvedBtn" style="background:#f1f5f9;color:#64748b;border:none;border-radius:8px;padding:7px 14px;font-family:'DM Sans';font-size:13px;font-weight:700;cursor:pointer">Resolved</button>
+          </div>
+        </div>
+        <div id="reportList"><div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div></div>
+      </div>
+
       <!-- Affiliate Yönetimi -->
       <div id="tab-affiliates" class="tab-pane" style="display:none">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
@@ -711,6 +727,93 @@ async function viewCouponStats(id, code) {
 }
 
 // ── Affiliate Yönetimi ─────────────────────────────────────
+async function loadReports(resolved) {
+  resolved = resolved || 0;
+  const list = document.getElementById('reportList');
+  if (!list) return;
+
+  // Buton stilleri
+  document.getElementById('reportUnresolvedBtn').style.background = resolved===0 ? '#fef2f2' : '#f1f5f9';
+  document.getElementById('reportUnresolvedBtn').style.color      = resolved===0 ? '#dc2626' : '#64748b';
+  document.getElementById('reportResolvedBtn').style.background   = resolved===1 ? '#f0fdf4' : '#f1f5f9';
+  document.getElementById('reportResolvedBtn').style.color        = resolved===1 ? '#16a34a' : '#64748b';
+
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8">Loading…</div>';
+  try {
+    const r = await fetch(`api/admin.php?action=get_reports&resolved=${resolved}`, { headers: adminHeaders() });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    const reports = d.data.reports || [];
+
+    // Badge güncelle
+    const badge = document.getElementById('reportBadge');
+    if (badge && d.data.total_unresolved > 0) {
+      badge.textContent = d.data.total_unresolved;
+      badge.style.display = 'inline-block';
+    } else if (badge) {
+      badge.style.display = 'none';
+    }
+
+    if (!reports.length) {
+      list.innerHTML = `<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">${resolved ? 'No resolved reports.' : '✅ No unresolved reports!'}</div>`;
+      return;
+    }
+
+    list.innerHTML = reports.map(rep => `
+      <div style="background:white;border:1px solid ${rep.resolved ? '#e2e8f0' : '#fee2e2'};border-radius:14px;padding:16px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:13px;font-weight:800;margin-bottom:6px">
+              <a href="listing.html?id=${rep.listing_id}" target="_blank" style="color:#f97316;text-decoration:none">📋 ${escHTML(rep.listing_title||'Listing #'+rep.listing_id)}</a>
+            </div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#64748b">
+              <div>
+                <span style="font-weight:700;color:#dc2626">Reporter:</span>
+                <b>${escHTML(rep.reporter_name||'—')}</b>
+                <span style="color:#94a3b8">(${escHTML(rep.reporter_email||'')})</span>
+              </div>
+              <div>
+                <span style="font-weight:700;color:#0f172a">Listing Owner:</span>
+                <b>${escHTML(rep.owner_name||'—')}</b>
+                <span style="color:#94a3b8">(${escHTML(rep.owner_email||'')})</span>
+              </div>
+            </div>
+            <div style="margin-top:8px;font-size:13px">
+              <span style="background:#fef9c3;color:#854d0e;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700">${escHTML(rep.reason||'—')}</span>
+            </div>
+            ${rep.note ? `<div style="margin-top:8px;font-size:12px;color:#64748b;background:#f8fafc;padding:8px 12px;border-radius:8px;border-left:3px solid #e2e8f0"><i>${escHTML(rep.note)}</i></div>` : ''}
+            <div style="margin-top:6px;font-size:11px;color:#94a3b8">${new Date(rep.created_at).toLocaleString()}</div>
+          </div>
+          ${!rep.resolved ? `
+          <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+            <button onclick="resolveReport(${rep.id},'resolve')" style="background:#f0fdf4;color:#16a34a;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✓ Resolve</button>
+            <button onclick="resolveReport(${rep.id},'delete_listing')" style="background:#fef2f2;color:#dc2626;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">🗑 Resolve + Delete Listing</button>
+          </div>` : `<span style="background:#f0fdf4;color:#16a34a;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:700;height:fit-content">✓ Resolved</span>`}
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = `<div style="color:#ef4444;padding:16px">${e.message}</div>`;
+  }
+}
+
+async function resolveReport(reportId, action) {
+  const label = action === 'delete_listing' ? 'Resolve and DELETE the listing?' : 'Mark this report as resolved?';
+  if (!confirm(label)) return;
+  try {
+    const r = await fetch('api/admin.php?action=resolve_report', {
+      method: 'POST',
+      headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ report_id: reportId, action })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    showAdminToast(action === 'delete_listing' ? 'Report resolved & listing deleted.' : 'Report resolved.', 'success');
+    loadReports(0);
+  } catch(e) {
+    showAdminToast(e.message, 'error');
+  }
+}
+
 async function loadAffiliates() {
   const list = document.getElementById('affiliateList');
   try {
@@ -803,6 +906,7 @@ function loadTabContent(tab) {
     case 'offers':        loadOffers();       break;
     case 'coupons':       loadCoupons();      break;
     case 'affiliates':    loadAffiliates();   break;
+    case 'reports':      loadReports(0);     break;
     case 'settings':      loadSettings();     break;
   }
 }

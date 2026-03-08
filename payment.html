@@ -135,6 +135,10 @@
     <!-- Coupon -->
     <div class="card" style="margin-bottom:16px">
       <div class="card-title">🎟️ Coupon Code (optional)</div>
+      <div id="availableCoupons" style="display:none;margin-bottom:12px">
+        <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:6px">Available coupons — click to apply</div>
+        <div id="couponChipList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
       <div style="display:flex;gap:8px">
         <input class="form-input" id="couponInput" placeholder="Enter coupon code" maxlength="30" style="flex:1"
           oninput="document.getElementById('couponMsg').textContent=''">
@@ -262,6 +266,32 @@ async function init() {
     const d = await r.json();
     if (d.success) paymentNumbers = d.data.numbers;
   } catch(e) {}
+
+  // Mevcut kuponları yükle
+  loadPublicCoupons();
+}
+
+async function loadPublicCoupons() {
+  try {
+    const r = await fetch(`api/payment.php?action=public_coupons&plan=${plan}`);
+    const d = await r.json();
+    if (!d.success || !d.data.coupons.length) return;
+    const wrap = document.getElementById('availableCoupons');
+    if (!wrap) return;
+    wrap.style.display = 'block';
+    document.getElementById('couponChipList').innerHTML = d.data.coupons.map(c => {
+      const label = c.type === 'percent' ? c.value + '% off' : '$' + c.value + ' off';
+      return `<div onclick="useCoupon('${c.code}')" style="display:inline-flex;align-items:center;gap:6px;background:#fff7ed;border:1.5px dashed #f97316;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:700;color:#f97316;white-space:nowrap" title="Click to apply">
+        🎟️ <span style="font-family:monospace">${c.code}</span>
+        <span style="background:#f97316;color:white;border-radius:4px;padding:1px 6px;font-size:11px">${label}</span>
+      </div>`;
+    }).join('');
+  } catch(e) {}
+}
+
+function useCoupon(code) {
+  document.getElementById('couponInput').value = code;
+  applyCoupon();
 }
 
 function selectMethod(method) {
