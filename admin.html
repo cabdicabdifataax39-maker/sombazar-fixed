@@ -424,7 +424,7 @@ function showTab(tab) {
             </div>
           </div>
           <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
-            <thead><tr><th>User</th><th>Plan</th><th>Amount</th><th>Method</th><th>Reference</th><th>Screenshot</th><th>Date</th><th>Actions</th></tr></thead>
+            <thead><tr><th>User</th><th>Plan</th><th>Amount</th><th>Coupon</th><th>Method</th><th>Reference</th><th>Screenshot</th><th>Date</th><th>Actions</th></tr></thead>
             <tbody id="paymentsBody"><tr><td colspan="8" style="text-align:center;padding:30px;color:#94a3b8">Loading…</td></tr></tbody>
           </table></div>
         </div>
@@ -1319,16 +1319,24 @@ async function deleteListing(id) {
 async function loadPayments() {
   const tbody = document.getElementById('paymentsBody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
   try {
     const d = await adminFetch('payments');
     const items = d.payments || [];
-    if (!items.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">No payments.</td></tr>'; return; }
+    if (!items.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#94a3b8">No payments.</td></tr>'; return; }
     tbody.innerHTML = items.map(p => `
       <tr style="border-bottom:1px solid #f1f5f9;font-size:13px">
         <td style="padding:12px 16px">${escHTML(p.userName||'—')}<br><span style="color:#94a3b8;font-size:11px">${escHTML(p.userEmail||'')}</span></td>
         <td style="padding:12px 10px;text-transform:capitalize;font-weight:700">${escHTML(p.plan)}</td>
-        <td style="padding:12px 10px;font-weight:700">$${p.amount}</td>
+        <td style="padding:12px 10px;font-weight:700">
+          $${p.amount}
+          ${p.discountAmount > 0 ? `<div style="font-size:10px;color:#16a34a;margin-top:2px">-$${parseFloat(p.discountAmount).toFixed(2)} discount</div>` : ''}
+        </td>
+        <td style="padding:12px 10px">
+          ${p.couponCode
+            ? `<span style="font-family:monospace;background:#fff7ed;color:#f97316;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">${escHTML(p.couponCode)}</span>`
+            : '<span style="color:#cbd5e1">—</span>'}
+        </td>
         <td style="padding:12px 10px"><span style="font-family:monospace;font-size:12px">${escHTML(p.referenceCode)}</span></td>
         <td style="padding:12px 10px">
           ${p.status==='pending'?`
@@ -1384,26 +1392,48 @@ async function addToBlacklist() {
 }
 
 async function loadLog() {
-  const list = document.getElementById('logBody');
-  if (!list) return;
-  list.innerHTML = '<div style="padding:20px;color:#94a3b8;text-align:center">Loading…</div>';
+  const tbody = document.getElementById('logBody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
   try {
     const d = await adminFetch('log');
     const items = Array.isArray(d) ? d : (d.log || []);
-    if (!items.length) { list.innerHTML = '<div style="padding:20px;color:#94a3b8;text-align:center">No log entries.</div>'; return; }
-    list.innerHTML = items.map(l => `
-      <div style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:12px;display:flex;gap:16px">
-        <span style="color:#94a3b8;flex-shrink:0">${new Date(l.created_at).toLocaleString()}</span>
-        <span style="font-weight:600;text-transform:uppercase;font-size:10px;padding:2px 7px;border-radius:4px;background:#f1f5f9;flex-shrink:0">${escHTML(l.action)}</span>
-        <span style="color:#475569">${escHTML(l.note||'')}</span>
-      </div>`).join('');
-  } catch(e) { list.innerHTML = `<div style="color:#ef4444;padding:16px">${e.message}</div>`; }
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">No log entries.</td></tr>';
+      return;
+    }
+    const actionColor = (a) => {
+      if (a.includes('APPROVE')) return '#dcfce7;color:#16a34a';
+      if (a.includes('REJECT') || a.includes('BAN') || a.includes('DELETE')) return '#fee2e2;color:#dc2626';
+      if (a.includes('VERIFY')) return '#eff6ff;color:#2563eb';
+      return '#f1f5f9;color:#475569';
+    };
+    tbody.innerHTML = items.map(l => {
+      const bg = actionColor((l.action||'').toUpperCase());
+      const target = l.target_type ? `${l.target_type} #${l.target_id}` : '—';
+      // note'tan IP'yi ayır
+      const noteParts = (l.note||'').split(' | IP: ');
+      const noteText = noteParts[0] || '—';
+      const ip       = noteParts[1] ? `<span style="color:#cbd5e1;font-size:10px"> (${noteParts[1]})</span>` : '';
+      return `<tr style="border-bottom:1px solid #f1f5f9;font-size:12px">
+        <td style="padding:10px 16px;color:#475569;white-space:nowrap">${escHTML(l.admin_name||'Admin')}</td>
+        <td style="padding:10px 8px;white-space:nowrap">
+          <span style="background:${bg};padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase">${escHTML(l.action||'—')}</span>
+        </td>
+        <td style="padding:10px 8px;color:#64748b;white-space:nowrap">${escHTML(target)}</td>
+        <td style="padding:10px 8px;color:#475569;max-width:300px">${escHTML(noteText)}${ip}</td>
+        <td style="padding:10px 8px;color:#94a3b8;white-space:nowrap">${new Date(l.created_at).toLocaleString()}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="5" style="color:#ef4444;padding:16px">${e.message}</td></tr>`;
+  }
 }
 
 async function loadOffers() {
   const tbody = document.getElementById('offersBody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>';
   try {
     const d = await adminFetch('all_offers');
     const items = d.offers || [];

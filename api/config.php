@@ -230,6 +230,12 @@ function getAuthUser(): ?int {
     if (preg_match('/Bearer\s+(.+)/i', $auth, $m)) {
         return verifyToken(trim($m[1]));
     }
+
+    // Fallback: receipt_html gibi yeni sekmede açılan sayfalar için ?token= query param
+    if (!empty($_GET['token'])) {
+        return verifyToken(trim($_GET['token']));
+    }
+
     return null;
 }
 

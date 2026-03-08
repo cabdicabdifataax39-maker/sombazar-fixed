@@ -515,20 +515,22 @@ function handlePayments(): void {
     $rows = $st->fetchAll();
 
     jsonSuccess(['payments' => array_map(fn($r) => [
-        'id'            => $r['id'],
-        'userId'        => $r['user_id'],
-        'userName'      => $r['display_name'],
-        'userEmail'     => $r['email'],
-        'userPhone'     => $r['phone'],
-        'plan'          => $r['plan'],
-        'amount'        => $r['amount'],
-        'method'        => $r['method'],
-        'referenceCode' => $r['reference_code'],
-        'screenshotUrl' => $r['screenshot_url'],
-        'status'        => $r['status'],
-        'adminNote'     => $r['admin_note'],
-        'createdAt'     => $r['created_at'],
-        'reviewedAt'    => $r['reviewed_at'],
+        'id'             => $r['id'],
+        'userId'         => $r['user_id'],
+        'userName'       => $r['display_name'],
+        'userEmail'      => $r['email'],
+        'userPhone'      => $r['phone'],
+        'plan'           => $r['plan'],
+        'amount'         => $r['amount'],
+        'method'         => $r['method'],
+        'referenceCode'  => $r['reference_code'],
+        'screenshotUrl'  => $r['screenshot_url'],
+        'status'         => $r['status'],
+        'adminNote'      => $r['admin_note'],
+        'createdAt'      => $r['created_at'],
+        'reviewedAt'     => $r['reviewed_at'],
+        'couponCode'     => $r['coupon_code']     ?? null,
+        'discountAmount' => $r['discount_amount'] ?? 0,
     ], $rows)]);
 }
 
