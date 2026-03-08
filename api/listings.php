@@ -450,12 +450,8 @@ function handleReport(): void {
     $chk->execute([$lid, $uid]);
     if ($chk->fetch()) jsonError('You have already reported this listing');
 
-    // note sütunu yoksa ekle
-    try { $db->exec("ALTER TABLE reports ADD COLUMN note TEXT NULL"); } catch(\Exception $e) {}
-    $note = trim($data['note'] ?? '');
-
-    $db->prepare('INSERT INTO reports (listing_id, reporter_id, reason, note) VALUES (?,?,?,?)')
-       ->execute([$lid, $uid, $reason, $note ?: null]);
+    $db->prepare('INSERT INTO reports (listing_id, reporter_id, reason) VALUES (?,?,?)')
+       ->execute([$lid, $uid, $reason]);
 
     jsonSuccess(['message' => 'Report submitted. Thank you!']);
 }
@@ -509,7 +505,7 @@ function formatListing(array $r, bool $detail = false): array {
         $out['seller']      = [
             'id'          => (int)$r['user_id'],
             'displayName' => $esc($r['seller_name'] ?? null),
-            'photoURL'    => ($r['avatar_url'] ?? $r['seller_photo'] ?? null) ? UPLOAD_URL . $r['seller_photo'] : null,
+            'photoURL'    => (function($p) { if (!$p) return null; return str_starts_with($p, 'http') ? $p : UPLOAD_URL . $p; })($r['avatar_url'] ?? $r['seller_photo'] ?? null),
             'verified'    => (bool) ($r['seller_verified'] ?? false),
             'city'        => $esc($r['seller_city'] ?? null),
             'memberSince' => isset($r['seller_since']) ? date('Y', strtotime($r['seller_since'])) : null,
