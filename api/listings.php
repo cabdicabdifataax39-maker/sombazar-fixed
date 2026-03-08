@@ -32,6 +32,7 @@ try {
 } catch(\Throwable $e) {}
 
 switch ($action) {
+    case 'suggest':      handleSuggest($pdo); break;
     case 'list':         handleList();        break;
     case 'get':          if (!$id) jsonError('ID required'); handleGet($id); break;
     case 'create':       if ($method !== 'POST') jsonError('Method not allowed', 405); handleCreate(); break;
@@ -497,7 +498,6 @@ function formatListing(array $r, bool $detail = false): array {
         'status'       => $r['status'],
         'createdAt'    => $r['created_at'],
         'year'         => $r['year'] ? (int)$r['year'] : null,
-        'boostedUntil' => $r['boosted_until'] ?? null,
     ];
 
     if ($detail) {
@@ -506,7 +506,7 @@ function formatListing(array $r, bool $detail = false): array {
         $out['seller']      = [
             'id'          => (int)$r['user_id'],
             'displayName' => $esc($r['seller_name'] ?? null),
-            'photoURL'    => (function($p) { if (!$p) return null; return str_starts_with($p, 'http') ? $p : UPLOAD_URL . $p; })($r['avatar_url'] ?? $r['seller_photo'] ?? null),
+            'photoURL'    => ($r['avatar_url'] ?? $r['seller_photo'] ?? null) ? UPLOAD_URL . $r['seller_photo'] : null,
             'verified'    => (bool) ($r['seller_verified'] ?? false),
             'city'        => $esc($r['seller_city'] ?? null),
             'memberSince' => isset($r['seller_since']) ? date('Y', strtotime($r['seller_since'])) : null,

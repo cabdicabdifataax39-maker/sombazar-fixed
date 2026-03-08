@@ -49,7 +49,10 @@ switch ($action) {
         if ($method !== 'POST') jsonError('Method not allowed', 405);
         handleResetPassword();
         break;
-    case 'logout':          handleLogout();         break;
+    case 'google':
+    handleGoogleAuth($pdo);
+    break;
+  case 'logout':          handleLogout();         break;
     case 'delete_account':
         if ($method !== 'POST' && $method !== 'DELETE') jsonError('Method not allowed', 405);
         handleDeleteAccount();
@@ -469,11 +472,7 @@ function formatUser(array $u): array {
         'phone'       => $u['phone'],
         'city'        => $u['city'],
         'bio'         => $u['bio'],
-        'photoURL'    => $u['avatar_url'] ?? ($u['photo_url'] ?? null)
-                            ? (str_starts_with($u['avatar_url'] ?? $u['photo_url'] ?? '', 'http')
-                               ? ($u['avatar_url'] ?? $u['photo_url'])
-                               : UPLOAD_URL . ($u['avatar_url'] ?? $u['photo_url']))
-                            : null,
+        'photoURL'    => $u['photo_url'] ? UPLOAD_URL . $u['photo_url'] : null,
         'verified'    => (bool) ($u['is_verified'] ?? $u['verified'] ?? false),
         'isAdmin'     => (bool) ($u['is_admin'] ?? false),
         'banned'      => (bool) ($u['is_banned'] ?? false),

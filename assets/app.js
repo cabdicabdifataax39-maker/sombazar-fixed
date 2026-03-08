@@ -570,251 +570,6 @@ const TRANSLATIONS = {
     'sys-new-message': 'Fariin cusub ayaad ka heshay',
     'sys-offer-received': 'Dalad ayaad ku heshay xayeysiiskaaga',
     'sys-welcome': 'Soo dhawoow SomBazar!',
-
-    // ── Index page static texts ──
-    'Online Marketplace': 'Suuqa Onlaynka',
-    'Buy, sell & rent — Cars, Houses, Land and more': 'Iibso, iibi & kireeyso — Gaadhi, Guri, Dhul iyo wax kale',
-    'Search': 'Raadi',
-    'Browse by City': 'Raadi Magaalo',
-    'Recent Listings': 'Xayeysiisyada Cusub',
-    'See all': 'Dhammaantood Arag',
-    'No listings yet': 'Wali xayeysiis ma jiro',
-    'Be the first to post in this category!': 'Adigu noqo kii ugu horeeyay ee qaybtan ku shida!',
-    'Post an Ad': 'Xayeysiis Shid',
-    'Top Sellers': 'Iibiyeyaasha Ugu Wanaagsan',
-    'Safety Tips': 'Talooyin Amaan',
-    'Meet in a safe, public place': 'Ku kulmid meel ammaan ah oo dadweyne',
-    'Never pay before seeing the item': 'Ha lacag bixin kahor inta aadan shayga arkin',
-    'Verify seller identity': 'Aqoonsi iibiyaha',
-    'Be wary of very low prices': 'U taxaddar qiimaha aad u hooseeysa',
-    'Sign In': 'Gal',
-    'Enable push': 'Ogeysiis fur',
-    'Sell Something?': 'Ma Waxba Iibinaysaa?',
-    'Post your ad for free and reach thousands of buyers.': 'Xayeysiiskaaga bilaash ku shid oo gaar u noqo kumanaan iibsade.',
-    '+ Post Free Ad': '+ Xayeysiis Bilaash ah',
-    // Footer
-    "Somaliland's largest online marketplace. Buy, sell and rent cars, houses, land and more.": 'Suuqga ugu weyn ee onlaynka ah ee Somaliland. Iibso, iibi oo kireeyso gaadhi, guri, dhul iyo wax kale.',
-    'Categories': 'Qaybaha',
-    'Company': 'Shirkadda',
-    'Legal': 'Sharci',
-    'About Us': 'Nagu Saabsan',
-    'Contact': 'Xiriir',
-    'Careers': 'Shaqooyin',
-    'Advertise': 'Xayeysiis',
-    'Terms of Service': 'Shuruudaha Adeegga',
-    'Privacy Policy': 'Siyaasadda Xogta',
-    'Cookie Policy': 'Siyaasadda Cookie',
-    'Report Abuse': 'Warbixin Xad-gudub',
-    'All rights reserved.': 'Dhammaan xuquuqda way xidantahay.',
-    // Categories
-    'Cars': 'Gaadhiyaasha',
-    'Houses': 'Guriyaha',
-    'Land': 'Dhulka',
-    'Electronics': 'Elektaroonigga',
-    'Furniture': 'Alaabta Guriga',
-    'Clothing': 'Dhar',
-    'Jobs': 'Shaqooyin',
-    'Services': 'Adeegyada',
-    'All': 'Dhammaan',
-
-    // ── Listing page ──
-    'Home': 'Hoyga',
-    'Listings': 'Xayeysiisyada',
-    'Click to zoom': 'Riix si aad u weyneyso',
-    'For Sale': 'Iib',
-    'For Rent': 'Kiiro',
-    'Price Negotiable': 'Qiimaha Waa La Xagaajin Karaa',
-    'views': 'daawade',
-    'Description': 'Faahfaahin',
-    'Details': 'Macluumaadka',
-    'Location': 'Goobta',
-    'Reviews': 'Faallooyin',
-    'Similar Listings': 'Xayeysiisyada La Midka ah',
-    'Contact Seller': 'La Xiriir Iibiyaha',
-    'Send Message': 'Dir Fariin',
-    'WhatsApp': 'WhatsApp',
-    'Make an Offer': 'Samee Dalbin',
-    'Report this listing': 'Warbixin Xayeysiiska',
-    'Call Seller': 'Wac Iibiyaha',
-    'Make an Offer': 'Dalbin Samee',
-    'Enter your offer below': 'Hoos ku qor dalabkaaga',
-    'Cancel': 'Jooji',
-    'Send Offer': 'Dir Dalabka',
-    'Counter': 'Jawaab',
-    'Accept': 'Aqbali',
-    'Reject': 'Diid',
-    'Send Counter Offer': 'Dir Dalad Jawaab',
-    'Awaiting buyer response': 'Iibsadaha jawaab sugaya',
-    'Awaiting buyer': 'Iibsade sugaya',
-    'Browse Listings': 'Xayeysiisyada Arag',
-    'Listing not found': 'Xayeysiis lama helin',
-    'Write Review': 'Faalloo Qor',
-    'Facebook': 'Facebook',
-    'Twitter': 'Twitter',
-    'Copy Link': 'Xiriirka Koobiyee',
-    'Member since': 'Xubin tan iyo',
-    'Verified Seller': 'Iibiye La Xaqiijiyay',
-    'ROUND': 'WAREEG',
-
-    // ── Listings page ──
-    'All Cities': 'Dhammaan Magaalooyinka',
-    'All listings shown': 'Dhammaan xayeysiisyada la muujiyay',
-    'Go Pro': 'Pro Noqo',
-    'Boost your listings to the top': 'Xayeysiisyadaada kore u gee',
-    'For Sale': 'Iib',
-    'For Rent': 'Kiiro',
-    'Newest First': 'Cusub Hore',
-    'Price: Low to High': 'Qiimaha: Hoose ilaa Sare',
-    'Price: High to Low': 'Qiimaha: Sare ilaa Hoose',
-    'Apply Filters': 'Shaandhee',
-    'No listings found': 'Xayeysiis lama helin',
-    'Search listings...': 'Xayeysiisyada raadi...',
-    'Load more': 'Wax dheeraad ah soo geli',
-    'Good': 'Wanaagsan',
-    'Used': 'La Isticmaalay',
-    'New': 'Cusub',
-    'Be suspicious of prices too low': 'U taxaddar qiimaha aad u hooseeysa',
-
-    // ── Profile page ──
-    'My Listings': 'Xayeysiisyadayda',
-    'Favorites': 'La Jecelyahay',
-    'Settings': 'Dejinta',
-    'Edit Profile': 'Xogta Wax ka Beddel',
-    'Save Changes': 'Isbedelada Kaydi',
-    'Sign Out': 'Ka Bax',
-    'Delete Account': 'Xisaabta Tirtir',
-    'Change Password': 'Furaha Beddel',
-    'Cancel Plan': 'Qorshaha Jooji',
-    'Current Plan': 'Qorshaha Hadda',
-    'Delete': 'Tirtir',
-    'Delete Forever': 'Weligiis Tirtir',
-    'City': 'Magaalo',
-    'Bio': 'Taariikh Nololeed',
-    'Phone': 'Telefoon',
-    'Confirm New Password': 'Furaha Cusub Xaqiiji',
-    'Current Password': 'Furaha Hadda',
-    'New Password': 'Furaha Cusub',
-    'Listings': 'Xayeysiisyo',
-    'Reviews': 'Faallooyin',
-    'Rating': 'Qiimayn',
-    'Not Verified': 'Lama Xaqiijin',
-    'Verified': 'La Xaqiijiyay',
-    'Get Verified': 'La Xaqiijiso',
-    'Profile Complete': 'Xogta Dhamaatay',
-    'Complete your profile': 'Xogtaada dhamee',
-    'Expires': 'Dhammaaneysa',
-    'listings used': 'xayeysiis la isticmaalay',
-    'No listings yet': 'Wali xayeysiis ma jiro',
-    'Post your first listing': 'Xayeysiiskaaga koowaad shid',
-    'No favorites yet': 'Wali la jecel ma jiro',
-    'Browse listings to find something you like': 'Xayeysiisyada raadi si aad u hesho waxaad jeceshahay',
-    'Payments': 'Lacag Bixinta',
-    'No payment history': 'Lacag bixin taariikh ma jiro',
-    'Offers': 'Dalbadaha',
-    'No offers yet': 'Wali dalad ma jiro',
-    'Download Receipt': 'Rasiidka Soo Daji',
-    'Check Status': 'Xaalada Hubi',
-    'View': 'Arag',
-    'Edit': 'Wax ka Beddel',
-    'Mark Sold': 'Iibiye Calaamadee',
-    'Activate': 'Shaqaleeyi',
-    'Boost': 'Kor u gee',
-    'Boosted': 'La Kor Geeyay',
-    'Notifications': 'Ogeysiisyada',
-    'Email notifications': 'Ogeysiisyada emailka',
-    'Push notifications': 'Ogeysiisyada tooska ah',
-    'SMS notifications': 'Ogeysiisyada SMS',
-    'Affiliate Program': 'Barnaamijka Wakiilnimada',
-    'Your referral link': 'Xiriirkaaga u-tilmaanka',
-    'Copy': 'Koobiyee',
-
-    // ── Messages page ──
-    'Messages': 'Farriimaha',
-    'No messages yet': 'Wali fariin kuma jirto',
-    'Type a message...': 'Fariin qor...',
-    'Search conversations...': 'Wada-xaajoodyo raadi...',
-    'Message deleted': 'Farriimaha la tirtiray',
-    'Today': 'Maanta',
-    'Yesterday': 'Shalay',
-    'Select a conversation': 'Wada-xaajood dooro',
-    'Choose a chat from the left': 'Bidix ka dooro sheeko',
-    'Sign in to view messages': 'Gal si aad farriimaha u aragto',
-
-    // ── Post page ──
-    'Post a Free Ad': 'Xayeysiis Bilaash ah Shid',
-    'Category': 'Qaybta',
-    'Details': 'Faahfaahinada',
-    'Price & Location': 'Qiimaha & Goobta',
-    'Photos': 'Sawirrada',
-    'Review': 'Dib u Eeg',
-    'Next': 'Xiga',
-    'Back': 'Dib',
-    'Publish Listing': 'Xayeysiiska Baahiye',
-    'Add Photo': 'Sawir Ku Dar',
-    'Choose a Category': 'Qaybta Dooro',
-    'For Sale': 'Iib',
-    'For Rent': 'Kiiro',
-    'Daily': 'Maalin kasta',
-    'Weekly': 'Toddobaad kasta',
-    'Monthly': 'Bil kasta',
-    'Yearly': 'Sanad kasta',
-    'Condition': 'Xaalad',
-    'New': 'Cusub',
-    'Used': 'La Isticmaalay',
-    'Good': 'Wanaagsan',
-    'Fair': 'Macquul ah',
-    'Contact Phone': 'Telefoonka Xiriirka',
-    'Buyers can make offers': 'Iibsadayaashu dalad samayn karaan',
-    'Discard': 'Tirtir',
-    'Description': 'Faahfaahin',
-
-    // ── Payment page ──
-    'Select Plan': 'Qorshe Dooro',
-    'Back to Home': 'Hoyga Ku Laabo',
-    'Go to Profile': 'Xogta Tag',
-    'Payment Submitted!': 'Lacag Bixinta La Diray!',
-    'Reference Code': 'Koodhka Tixraaca',
-    'Take screenshot of payment confirmation': 'Xaqiijinta lacag bixinta sawir qaad',
-    'Confirmation': 'Xaqiijin',
-    'Check Status': 'Xaalada Hubi',
-    'Our team will verify your payment within': 'Kooxdayadu lacag bixintaada waxay xaqiijin doontaa gudaha',
-    '2 hours': '2 saacadood',
-
-    // ── Packages page ──
-    'Compare Plans': 'Qorsheyaasha Barbar Dhig',
-    'Frequently Asked Questions': 'Su\u2019aalaha Badanaa La Weydiiyo',
-    'Free': 'Bilaash',
-    'Monthly Price': 'Qiimaha Billaha',
-    'You are on the Free plan': 'Adigu qorshaha Bilaashka ayaad ku jirtaa',
-    'Get started with basic listings': 'Xayeysiisyada aasaasiga ah ku bilow',
-    'Feature': 'Astaan',
-    'Cancel': 'Jooji',
-
-    // ── Verify page ──
-    'Verify Your Account': 'Xisaabkaaga Xaqiiji',
-    'Get a verified badge and build trust with buyers.': 'Calaamad la xaqiijiyay hel oo iibsadayaasha ku kalsoonaansho dhis.',
-    'Verification takes up to 24 hours.': 'Xaqiijintu waxay qaadataa ilaa 24 saacadood.',
-    'Upload Documents': 'Dukumentiyadda Soo Geli',
-    'Upload clear, well-lit photos.': 'Sawirro cad oo iftiin leh soo geli.',
-    'All information must be readable.': 'Dhammaan macluumaadku waa in la akhrin karo.',
-    'Required for Individual': 'Shakhsi ahaan loo baahan yahay',
-    'National ID — Front': 'Aqoonsiga Qaranka — Hore',
-    'National ID — Back': 'Aqoonsiga Qaranka — Dambe',
-    'Selfie holding your ID': 'Selfie adigoo haya aqoonsigaaga',
-    'Your face + ID card must both be clearly visible': 'Wejiggaaga + kaardhka aqoonsiga labadaba waa in si cad u muuqdaan',
-    'Tap to upload': 'Taabo si aad u soo geliso',
-    'Submit for Review': 'U Gudbi Dib-u-Eegista',
-    'Individual': 'Shakhsi',
-    'Agency': 'Wakaaladda',
-    'Company': 'Shirkad',
-    'Trade License': 'Ruqsadda Ganacsiga',
-    'Authorized Person ID': 'Aqoonsiga Qofka Oggolaanshaha leh',
-    'Photo of your physical location': 'Sawirka goobta jireed ee aad ku jirto',
-    'Government issued business license': 'Ruqsadda ganacsiga ee dowladda bixiso',
-    'Step 1': 'Tallaabada 1',
-    'Step 2': 'Tallaabada 2',
-    'Step 3': 'Tallaabada 3',
-    'Uploaded': 'La soo geliyay',
   }
 };
 
@@ -869,92 +624,6 @@ function applyLang(lang) {
   // Update page title direction (Somali is LTR like English, no RTL needed)
   // Store for dynamic content
   window._lang = lang;
-
-  // ── Deep text replacement: tüm sayfadaki statik metinleri çevir ──
-  if (lang !== 'en') {
-    _applyDeepTranslations(lang);
-  } else {
-    // English'e geçince reload et - en hızlı yol
-    // Eğer zaten reload olmadıysa sayfa state'ini koru
-    if (window._deepTranslated) {
-      window._deepTranslated = false;
-      window._currentTr = null;
-      if (_translationObserver) { _translationObserver.disconnect(); _translationObserver = null; }
-      location.reload();
-    }
-  }
-}
-
-// ── Translation engine ──────────────────────────────────────────────────────
-let _translationObserver = null;
-
-function _translateNode(node, tr) {
-  if (!node || !tr) return;
-  const tag = node.nodeType === 3 ? node.parentElement?.tagName : node.tagName;
-  if (['SCRIPT','STYLE','NOSCRIPT','CODE','PRE'].includes(tag)) return;
-
-  if (node.nodeType === 3) {
-    // Text node
-    const orig = node.textContent;
-    const trimmed = orig.trim();
-    if (!trimmed) return;
-    if (tr[trimmed]) {
-      const leading  = orig.match(/^\s*/)[0];
-      const trailing = orig.match(/\s*$/)[0];
-      node.textContent = leading + tr[trimmed] + trailing;
-    }
-  } else if (node.nodeType === 1) {
-    // Element node - placeholder ve title
-    if (node.hasAttribute('placeholder')) {
-      const ph = node.getAttribute('placeholder');
-      if (tr[ph]) node.setAttribute('placeholder', tr[ph]);
-    }
-    if (node.hasAttribute('title') && !node.hasAttribute('data-i18n')) {
-      const tt = node.getAttribute('title');
-      if (tr[tt]) node.setAttribute('title', tr[tt]);
-    }
-    // Çocukları işle
-    node.childNodes.forEach(child => _translateNode(child, tr));
-  }
-}
-
-function _applyDeepTranslations(lang) {
-  const tr = TRANSLATIONS[lang] || TRANSLATIONS.en;
-  window._deepTranslated = true;
-  window._currentTr = tr;
-
-  // Tüm sayfayı çevir
-  _translateNode(document.body, tr);
-
-  // MutationObserver - sonradan eklenen dynamic content'i de çevir
-  if (_translationObserver) _translationObserver.disconnect();
-  _translationObserver = new MutationObserver(mutations => {
-    mutations.forEach(m => {
-      m.addedNodes.forEach(n => {
-        if (n.nodeType === 1 || n.nodeType === 3) {
-          _translateNode(n, window._currentTr);
-        }
-      });
-      // Mevcut node'un text değişimi
-      if (m.type === 'characterData' && m.target.nodeType === 3) {
-        const orig = m.target.textContent;
-        const trimmed = orig.trim();
-        if (trimmed && window._currentTr[trimmed]) {
-          const leading  = orig.match(/^\s*/)[0];
-          const trailing = orig.match(/\s*$/)[0];
-          // Sonsuz döngüyü önle
-          if (orig !== leading + window._currentTr[trimmed] + trailing) {
-            m.target.textContent = leading + window._currentTr[trimmed] + trailing;
-          }
-        }
-      }
-    });
-  });
-  _translationObserver.observe(document.body, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-  });
 }
 
 function toggleLang() {
@@ -962,6 +631,101 @@ function toggleLang() {
 }
 
 
+
+
+// ── Search Autocomplete ───────────────────────────────────────────────────
+function initSearchAutocomplete(inputId, onSelect) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  // Dropdown container
+  const wrap = input.parentElement;
+  wrap.style.position = 'relative';
+
+  const dropdown = document.createElement('div');
+  dropdown.id = inputId + '_autocomplete';
+  dropdown.style.cssText = `
+    position:absolute;top:100%;left:0;right:0;z-index:9999;
+    background:var(--white,#fff);border:1px solid var(--border-color,#e2e8f0);
+    border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);
+    overflow:hidden;display:none;margin-top:4px;
+  `;
+  wrap.appendChild(dropdown);
+
+  let debounceTimer = null;
+  let activeIdx = -1;
+
+  input.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    const q = input.value.trim();
+    if (q.length < 2) { dropdown.style.display = 'none'; return; }
+    debounceTimer = setTimeout(() => fetchSuggestions(q), 200);
+  });
+
+  input.addEventListener('keydown', e => {
+    const items = dropdown.querySelectorAll('.ac-item');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx+1, items.length-1); highlightItem(items); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx-1, 0); highlightItem(items); }
+    else if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); items[activeIdx].click(); }
+    else if (e.key === 'Escape') { dropdown.style.display = 'none'; activeIdx = -1; }
+  });
+
+  document.addEventListener('click', e => {
+    if (!wrap.contains(e.target)) { dropdown.style.display = 'none'; activeIdx = -1; }
+  });
+
+  function highlightItem(items) {
+    items.forEach((el, i) => el.style.background = i === activeIdx ? 'var(--primary-light,#fff7ed)' : '');
+  }
+
+  async function fetchSuggestions(q) {
+    try {
+      const res = await fetch(`${window.API || 'api/listings.php'}?action=suggest&q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      renderSuggestions(data.suggestions || []);
+    } catch(e) { dropdown.style.display = 'none'; }
+  }
+
+  function renderSuggestions(suggestions) {
+    if (!suggestions.length) { dropdown.style.display = 'none'; return; }
+    dropdown.innerHTML = suggestions.map((s, i) => `
+      <div class="ac-item" data-idx="${i}" style="
+        display:flex;align-items:center;gap:10px;padding:10px 14px;
+        cursor:pointer;font-size:13px;transition:background .1s;
+        border-bottom:1px solid var(--border-color,#f1f5f9)
+      ">
+        <span style="font-size:16px">${s.isCategory ? '🏷️' : '🔍'}</span>
+        <div>
+          <div style="font-weight:600;color:var(--dark,#0f172a)">${escapeHtml(s.title)}</div>
+          ${s.city ? `<div style="font-size:11px;color:var(--gray,#64748b)">${escapeHtml(s.city)} · ${escapeHtml(s.category)}</div>` : `<div style="font-size:11px;color:var(--gray,#64748b)">${escapeHtml(s.category)}</div>`}
+        </div>
+      </div>
+    `).join('');
+
+    // Tıklama
+    dropdown.querySelectorAll('.ac-item').forEach((el, i) => {
+      el.addEventListener('mouseenter', () => { activeIdx = i; highlightItem(dropdown.querySelectorAll('.ac-item')); });
+      el.addEventListener('click', () => {
+        const s = suggestions[i];
+        input.value = s.isCategory ? s.category : s.title;
+        dropdown.style.display = 'none';
+        activeIdx = -1;
+        if (onSelect) onSelect(s);
+        else {
+          // Listings sayfasına yönlendir
+          window.location.href = `listings.html?q=${encodeURIComponent(input.value)}`;
+        }
+      });
+    });
+
+    dropdown.style.display = 'block';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
 // Apply language on page load (auto-detect on first visit)
 document.addEventListener('DOMContentLoaded', () => {

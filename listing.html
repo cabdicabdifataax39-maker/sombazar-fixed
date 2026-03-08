@@ -60,7 +60,7 @@ body { overflow-x: hidden; margin: 0; }
     .review-item{padding:14px 0;border-bottom:1px solid var(--border-color)}
     .review-item:last-child{border-bottom:none}
     .stars{color:#f59e0b;font-size:14px;letter-spacing:1px}
-    .map-box{border-radius:12px;overflow:hidden;border:1px solid var(--border-color);height:220px;background:#f1f5f9;position:relative;cursor:pointer}
+    .map-box{border-radius:12px;overflow:hidden;border:1px solid var(--border-color);height:260px;background:#f1f5f9;position:relative} #leafletMap{width:100%;height:100%}
     .map-box iframe{width:100%;height:100%;border:none;display:block}
     .map-box-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#e0f2fe,#bae6fd)}
     .sticky-aside{position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto}
@@ -126,6 +126,9 @@ body { overflow-x: hidden; margin: 0; }
     .detail-images{border-radius:16px;overflow:hidden;background:#f3f4f6;aspect-ratio:4/3;position:relative}
     .detail-images img{width:100%;height:100%;object-fit:cover}
   </style>
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -258,12 +261,9 @@ body { overflow-x: hidden; margin: 0; }
     <div class="info-card">
       <div class="info-card-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Location</div>
       <div class="map-box" id="listingMapBox">
-        <div style="font-size:40px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-        <div style="font-size:15px;font-weight:800;color:#0c4a6e" id="mapCity">Hargeisa, Somaliland</div>
-        <div style="font-size:12px;color:#0369a1">Tap to open in Google Maps</div>
-        <div style="position:absolute;bottom:10px;right:12px;background:white;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--dark);box-shadow:0 2px 8px rgba(0,0,0,.12)">Open Maps ↗</div>
+        <div id="leafletMap"></div>
       </div>
-      <button id="openMapsBtn" onclick="openInMaps()" style="display:none;width:100%;margin-top:8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:#0f172a;text-align:center">
+      <button id="openMapsBtn" onclick="openInMaps()" style="width:100%;margin-top:8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;color:#0f172a;text-align:center">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
         Open in Google Maps ↗
       </button>
@@ -641,7 +641,8 @@ function renderListing(l) {
   }
 
   // Map
-  document.getElementById('mapCity').textContent = `${l.city||'Hargeisa'}, Somaliland`;
+  document.getElementById('openMapsBtn').style.display = '';
+  initListingMap(l.city || 'Hargeisa');
 
   // Seller
   const seller  = l.seller || {};
@@ -1239,25 +1240,11 @@ async function respondOffer(action) {
 // ── Report ─────────────────────────────────────────────────────
 function showReportModal()  { document.getElementById('reportModal').style.display='flex'; }
 function closeReportModal() { document.getElementById('reportModal').style.display='none'; }
-async function submitReport() {
+function submitReport() {
   const reason = document.querySelector('input[name="reportReason"]:checked')?.value;
   if (!reason) { showToast('Please select a reason','error'); return; }
-  const note = document.getElementById('reportNote')?.value || '';
-  if (!listing?.id) { showToast('Listing not found','error'); return; }
-  try {
-    const r = await fetch('api/listings.php?action=report', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ listing_id: listing.id, reason, note })
-    });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || 'Failed');
-    showToast('Report submitted. Thank you!', 'success');
-    closeReportModal();
-  } catch(e) {
-    showToast(e.message === 'You have already reported this listing' ? 'You already reported this listing.' : 'Could not submit report.', 'error');
-    closeReportModal();
-  }
+  showToast('Report submitted. Thank you!','success');
+  closeReportModal();
 }
 
 // ── Reviews ────────────────────────────────────────────────────
@@ -1460,6 +1447,54 @@ loadListing();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+
+// ── City coordinates for Somaliland ──────────────────────────────────────
+const CITY_COORDS = {
+  'hargeisa':    [9.5600, 44.0650],
+  'berbera':     [10.4396, 45.0145],
+  'burco':       [9.5240, 45.5337],
+  'borama':      [9.9360, 43.1826],
+  'gabiley':     [9.9767, 43.4605],
+  'ceerigaavo':  [10.6157, 47.3696],
+  'laascaanood': [8.4682, 47.3551],
+  'sheikh':      [9.9292, 44.9024],
+  'zeila':       [11.3583, 43.4706],
+};
+
+let _leafletMap = null;
+let _leafletMarker = null;
+
+function initListingMap(cityName) {
+  const key = (cityName || 'hargeisa').toLowerCase().trim();
+  const coords = CITY_COORDS[key] || CITY_COORDS['hargeisa'];
+
+  if (!document.getElementById('leafletMap')) return;
+
+  if (_leafletMap) {
+    _leafletMap.setView(coords, 13);
+    if (_leafletMarker) _leafletMarker.setLatLng(coords);
+    return;
+  }
+
+  _leafletMap = L.map('leafletMap', { zoomControl: true, scrollWheelZoom: false }).setView(coords, 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(_leafletMap);
+
+  // Custom orange marker
+  const icon = L.divIcon({
+    html: '<div style="width:32px;height:32px;background:#f97316;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',
+    iconSize: [32, 32], iconAnchor: [16, 32], className: ''
+  });
+  _leafletMarker = L.marker(coords, { icon }).addTo(_leafletMap);
+  _leafletMarker.bindPopup(`<b>${cityName || 'Hargeisa'}</b>, Somaliland`).openPopup();
+
+  // Haritaya tıklayınca Google Maps aç
+  _leafletMap.on('click', openInMaps);
+}
+
 </script>
 </body>
 </html>

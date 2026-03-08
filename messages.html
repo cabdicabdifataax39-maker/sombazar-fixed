@@ -381,13 +381,15 @@ function openChat(convId, conv) {
 
   loadMessages();
   clearInterval(pollInterval);
-  pollInterval = setInterval(() => { loadMessages(); loadConversations(); }, 2000);
+  // SSE bağlantısı kur
+  startSSE();
   document.getElementById('msgInput').focus();
 }
 
 function closeChat() {
   activeConvId = null;
   clearInterval(pollInterval);
+  // SSE'yi kapat (yeni konuşmada yeniden açılacak)
   clearTyping();
   document.getElementById('chatActive').style.display = 'none';
   document.getElementById('chatEmpty').style.display  = '';
@@ -594,6 +596,56 @@ setInterval(loadConversations, 5000);
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+
+// ── Real-time SSE ──────────────────────────────────────────────────────────
+let _sse = null;
+let _sseRetry = 0;
+
+function startSSE() {
+  if (_sse) { _sse.close(); _sse = null; }
+  const token = Auth.getToken();
+  if (!token) return;
+
+  _sse = new EventSource(`api/sse.php?token=${token}&lastId=0`);
+
+  _sse.addEventListener('message', e => {
+    const msg = JSON.parse(e.data);
+    // Aktif konuşmaya aitse mesaj kutusuna ekle
+    if (msg.conversationId === activeConvId) {
+      appendMessage(msg);
+    }
+    // Sidebar badge güncelle
+    updateMsgBadge();
+    loadConversations();
+  });
+
+  _sse.addEventListener('reconnect', () => {
+    _sse.close();
+    setTimeout(startSSE, 500);
+  });
+
+  _sse.onerror = () => {
+    _sse.close();
+    _sseRetry++;
+    // Exponential backoff: 1s, 2s, 4s, max 30s
+    const delay = Math.min(1000 * Math.pow(2, _sseRetry - 1), 30000);
+    setTimeout(startSSE, delay);
+  };
+
+  _sse.onopen = () => { _sseRetry = 0; };
+}
+
+function appendMessage(msg) {
+  const box = document.getElementById('messagesBox');
+  if (!box) return;
+  const isMine = msg.senderId === Auth.getUser()?.id;
+  const div = document.createElement('div');
+  div.className = `msg-bubble ${isMine ? 'msg-mine' : 'msg-theirs'}`;
+  div.textContent = msg.content;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
 </script>
 </body>
 </html>

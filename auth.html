@@ -45,7 +45,14 @@
       });
     })();
   </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
+<div id="g_id_onload"
+     data-client_id="GOOGLE_CLIENT_ID_PLACEHOLDER"
+     data-callback="handleGoogleCredential"
+     data-auto_select="false"
+     data-cancel_on_tap_outside="true">
+</div>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
@@ -80,7 +87,9 @@
 
       <!-- Google button (hidden in reset mode) -->
       <div id="googleSection">
-        <button class="google-btn" onclick="googleSignIn()">
+        <!-- Google Identity Services rendered button -->
+        <div id="googleBtnContainer" style="width:100%;display:flex;justify-content:center;margin-bottom:4px"></div>
+        <button class="google-btn" onclick="googleSignIn()" id="googleFallbackBtn" style="display:none">
           <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.6-7.7 19.6-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12 24 12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.5 35.5 26.9 36 24 36c-5.3 0-9.6-2.9-11.3-7.1l-6.6 4.9C9.7 39.8 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.4 4.2-4.5 5.4l6.2 5.2C40.9 35.6 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
           Continue with Google
         </button>
@@ -366,13 +375,52 @@ async function recoverAccount(email, pass) {
 }
 
 // Google Sign In (simulated - requires real OAuth in production)
-async function googleSignIn() {
-  showError('Google Sign In requires OAuth setup. Use email/password for now.');
-  // In production:
-  // 1. window.open(googleOAuthUrl, '_blank')
-  // 2. Listen for postMessage with token
-  // 3. Auth.setSession(token, user)
+// Google credential callback (One Tap + button)
+async function handleGoogleCredential(response) {
+  if (!response?.credential) return;
+  try {
+    const res = await fetch('api/auth.php?action=google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: response.credential })
+    });
+    const data = await res.json();
+    if (data.token) {
+      Auth.setSession(data.token, data.user);
+      window.location.href = 'index.html';
+    } else {
+      showError(data.error || 'Google sign in failed');
+    }
+  } catch (e) {
+    showError('Network error. Please try again.');
+  }
 }
+
+async function googleSignIn() {
+  // Fallback: redirect to Google OAuth
+  const clientId = 'GOOGLE_CLIENT_ID_PLACEHOLDER';
+  const redirect  = encodeURIComponent(window.location.origin + '/auth.html?google=1');
+  window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirect}&response_type=code&scope=email%20profile`;
+}
+
+// Render Google button when GSI loads
+window.addEventListener('load', () => {
+  if (typeof google !== 'undefined' && google.accounts) {
+    google.accounts.id.initialize({
+      client_id: 'GOOGLE_CLIENT_ID_PLACEHOLDER',
+      callback: handleGoogleCredential,
+      auto_select: false,
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('googleBtnContainer'),
+      { theme: 'outline', size: 'large', width: '100%', text: 'continue_with', shape: 'rectangular' }
+    );
+  } else {
+    // GSI yüklenmediyse fallback butonu göster
+    const fb = document.getElementById('googleFallbackBtn');
+    if (fb) fb.style.display = '';
+  }
+});
 </script>
 <script>
 if ('serviceWorker' in navigator) {

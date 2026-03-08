@@ -50,7 +50,10 @@
   <nav class="nav-container">
     <a href="index.html" class="logo">SomBazar</a>
     <form class="header-search" id="headerSearchForm">
-      <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…">
+      <div class="search-wrap" style="flex:1;position:relative">
+        <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…" autocomplete="off">
+        <div class="autocomplete-dropdown" id="headerAcDrop" style="display:none"></div>
+      </div>
       <button type="submit" class="header-search-btn" aria-label="Search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </button>
@@ -122,7 +125,10 @@
         Search
       </div>
       <div class="sb-widget-body">
-        <input class="form-input" type="search" id="searchInput" placeholder="Keywords…" style="font-size:13px">
+        <div class="search-wrap" style="position:relative">
+          <input class="form-input" type="search" id="searchInput" placeholder="Keywords…" style="font-size:13px" autocomplete="off">
+          <div class="autocomplete-dropdown" id="sidebarAcDrop" style="display:none"></div>
+        </div>
       </div>
     </div>
 
@@ -237,7 +243,47 @@
     </div>
 
     <!-- İlanlar -->
-    <div id="listingsGrid" class="listings-grid" style="padding:0"></div>
+    <div id="listingsGrid" class="listings-grid" style="padding:0">
+<div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div>
+</div>
     <div id="emptyState" class="empty-state section-block" style="display:none">
       <div class="empty-state-icon"></div>
       <div class="empty-state-title">No listings found</div>
@@ -574,6 +620,77 @@ if (activeCity !== 'All') {
 }
 
 loadListings();
+
+// ── Search Autocomplete ───────────────────────────────────────────────────
+function initAutocomplete(inputId, dropId) {
+  const input = document.getElementById(inputId);
+  const drop  = document.getElementById(dropId);
+  if (!input || !drop) return;
+
+  let timer, activeIdx = -1, items = [];
+
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (q.length < 2) { drop.style.display = 'none'; return; }
+    timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`api/listings.php?action=suggest&q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        items = data.suggestions || [];
+        renderDropdown(items, drop, input);
+      } catch {}
+    }, 200);
+  });
+
+  input.addEventListener('keydown', e => {
+    const els = drop.querySelectorAll('.autocomplete-item');
+    if (e.key === 'ArrowDown') {
+      activeIdx = Math.min(activeIdx + 1, els.length - 1);
+      els.forEach((el, i) => el.classList.toggle('ac-active', i === activeIdx));
+      e.preventDefault();
+    } else if (e.key === 'ArrowUp') {
+      activeIdx = Math.max(activeIdx - 1, 0);
+      els.forEach((el, i) => el.classList.toggle('ac-active', i === activeIdx));
+      e.preventDefault();
+    } else if (e.key === 'Enter') {
+      if (activeIdx >= 0 && els[activeIdx]) {
+        els[activeIdx].click();
+      }
+    } else if (e.key === 'Escape') {
+      drop.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (!drop.contains(e.target) && e.target !== input) drop.style.display = 'none';
+  });
+}
+
+function renderDropdown(items, drop, input) {
+  if (!items.length) { drop.style.display = 'none'; return; }
+  drop.innerHTML = items.map(s => `
+    <div class="autocomplete-item" onclick="selectSuggestion('${s.replace(/'/g,"\\'")}', this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      ${s}
+    </div>`).join('');
+  drop.style.display = 'block';
+}
+
+function selectSuggestion(val, el) {
+  // En yakın input'u bul
+  const drop = el.closest('.autocomplete-dropdown');
+  const wrap = drop?.parentElement;
+  const inp  = wrap?.querySelector('input[type=search], input[type=text]');
+  if (inp) { inp.value = val; inp.dispatchEvent(new Event('change')); }
+  drop.style.display = 'none';
+  // listings.html'deyse filtrele
+  if (typeof applyFilters === 'function') applyFilters();
+  else if (typeof searchListings === 'function') searchListings(val);
+  else window.location.href = `listings.html?q=${encodeURIComponent(val)}`;
+}
+
+document.addEventListener("DOMContentLoaded",()=>{ initAutocomplete("searchInput","sidebarAcDrop"); initAutocomplete("headerSearchInput","headerAcDrop"); });
 </script>
 </body>
 </html>

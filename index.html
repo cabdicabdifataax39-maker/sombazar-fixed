@@ -69,7 +69,42 @@
     body{font-family:'DM Sans',sans-serif;background:#f8fafc;color:#0f172a}
     .header{background:#fff;border-bottom:1px solid #e2e8f0;height:60px;display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:100;gap:16px}
     .hero{background:linear-gradient(135deg,#0c1445 0%,#1a2a6c 100%);color:#fff;padding:48px 20px 40px;text-align:center}
-  </style>
+  
+/* Autocomplete dropdown */
+.search-wrap { position: relative; }
+.autocomplete-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background: var(--card-bg, #fff); border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,.12);
+  z-index: 999; overflow: hidden; max-height: 280px; overflow-y: auto;
+}
+.autocomplete-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 16px; cursor: pointer; font-size: 14px; font-weight: 500;
+  color: var(--dark, #0f172a); transition: background .15s;
+}
+.autocomplete-item:hover, .autocomplete-item.ac-active {
+  background: var(--primary-light, #fff7ed);
+}
+.autocomplete-item svg { flex-shrink: 0; color: var(--gray, #64748b); }
+
+
+/* Skeleton shimmer cards */
+.skeleton-card {
+  background: var(--card-bg, #fff);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #f0f0f0);
+}
+.skeleton-img  { height: 180px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeletonShimmer 1.4s infinite; }
+.skeleton-line { height: 14px; border-radius: 6px; margin: 10px 12px 6px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeletonShimmer 1.4s infinite; }
+.skeleton-line.short { width: 55%; }
+.skeleton-line.xshort { width: 35%; height: 12px; }
+[data-theme="dark"] .skeleton-img,
+[data-theme="dark"] .skeleton-line { background: linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%); background-size: 200% 100%; }
+@keyframes skeletonShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+</style>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -80,7 +115,10 @@
   <nav class="nav-container">
     <a href="index.html" class="logo">SomBazar</a>
     <form class="header-search" id="headerSearchForm">
-      <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…">
+      <div class="search-wrap" style="flex:1;position:relative">
+        <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…" autocomplete="off">
+        <div class="autocomplete-dropdown" id="headerAcDrop" style="display:none"></div>
+      </div>
       <button type="submit" class="header-search-btn" aria-label="Search">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       </button>
@@ -158,7 +196,10 @@
       </h1>
       <p class="hero-subtitle">Buy, sell &amp; rent — Cars, Houses, Land and more</p>
       <form class="hero-search-bar" id="heroSearchForm">
-        <input class="hero-search-input" id="heroSearchInput" placeholder="What are you looking for?">
+        <div class="search-wrap" style="flex:1;position:relative">
+          <input class="hero-search-input" id="heroSearchInput" placeholder="What are you looking for?" autocomplete="off">
+          <div class="autocomplete-dropdown" id="heroAcDrop" style="display:none"></div>
+        </div>
         <button type="submit" class="hero-search-submit">Search</button>
       </form>
       <div class="stats-row">
@@ -200,6 +241,38 @@
         <a href="listings.html" class="see-all-link" id="catSeeAll">See all</a>
       </div>
       <div class="listings-grid" id="listingsGrid">
+<div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div><div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
+    </div>
+
         <div style="grid-column:1/-1;padding:20px" id="loadingCards"></div>
       </div>
       <div id="emptyState" class="empty-state" style="display:none">
@@ -319,7 +392,7 @@ async function loadFeatured() {
     const listings = await API.getListings({ featured: 1, pageSize: 6 });
     if (listings.length) {
       document.getElementById('featuredSection').style.display = '';
-      document.getElementById('featuredGrid').innerHTML = listings.map(listingCardHTML).join('');
+      { const g=document.getElementById('featuredGrid'); g.querySelectorAll('.skeleton-card').forEach(el=>el.remove()); g.innerHTML = listings.map(listingCardHTML).join(''); }
     }
   } catch (e) {}
 }
@@ -337,9 +410,7 @@ async function loadListings(reset = false) {
   if (reset) {
     listingPage = 1;
     listingDone = false;
-    document.getElementById('listingsGrid').innerHTML = `<div style="grid-column:1/-1">${skeletonCards(8)}</div>`;
-    document.getElementById('emptyState').style.display = 'none';
-  }
+    document.getElementById('listingsGrid').innerHTML = skeletonCards(6);
 
   listingLoading = true;
   try {
@@ -448,6 +519,77 @@ loadListings();
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+
+// ── Search Autocomplete ───────────────────────────────────────────────────
+function initAutocomplete(inputId, dropId) {
+  const input = document.getElementById(inputId);
+  const drop  = document.getElementById(dropId);
+  if (!input || !drop) return;
+
+  let timer, activeIdx = -1, items = [];
+
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    const q = input.value.trim();
+    if (q.length < 2) { drop.style.display = 'none'; return; }
+    timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`api/listings.php?action=suggest&q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        items = data.suggestions || [];
+        renderDropdown(items, drop, input);
+      } catch {}
+    }, 200);
+  });
+
+  input.addEventListener('keydown', e => {
+    const els = drop.querySelectorAll('.autocomplete-item');
+    if (e.key === 'ArrowDown') {
+      activeIdx = Math.min(activeIdx + 1, els.length - 1);
+      els.forEach((el, i) => el.classList.toggle('ac-active', i === activeIdx));
+      e.preventDefault();
+    } else if (e.key === 'ArrowUp') {
+      activeIdx = Math.max(activeIdx - 1, 0);
+      els.forEach((el, i) => el.classList.toggle('ac-active', i === activeIdx));
+      e.preventDefault();
+    } else if (e.key === 'Enter') {
+      if (activeIdx >= 0 && els[activeIdx]) {
+        els[activeIdx].click();
+      }
+    } else if (e.key === 'Escape') {
+      drop.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (!drop.contains(e.target) && e.target !== input) drop.style.display = 'none';
+  });
+}
+
+function renderDropdown(items, drop, input) {
+  if (!items.length) { drop.style.display = 'none'; return; }
+  drop.innerHTML = items.map(s => `
+    <div class="autocomplete-item" onclick="selectSuggestion('${s.replace(/'/g,"\\'")}', this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      ${s}
+    </div>`).join('');
+  drop.style.display = 'block';
+}
+
+function selectSuggestion(val, el) {
+  // En yakın input'u bul
+  const drop = el.closest('.autocomplete-dropdown');
+  const wrap = drop?.parentElement;
+  const inp  = wrap?.querySelector('input[type=search], input[type=text]');
+  if (inp) { inp.value = val; inp.dispatchEvent(new Event('change')); }
+  drop.style.display = 'none';
+  // listings.html'deyse filtrele
+  if (typeof applyFilters === 'function') applyFilters();
+  else if (typeof searchListings === 'function') searchListings(val);
+  else window.location.href = `listings.html?q=${encodeURIComponent(val)}`;
+}
+
+document.addEventListener("DOMContentLoaded",()=>{ initAutocomplete("heroSearchInput","heroAcDrop"); initAutocomplete("headerSearchInput","headerAcDrop"); });
 </script>
 </body>
 </html>
