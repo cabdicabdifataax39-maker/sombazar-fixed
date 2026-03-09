@@ -507,7 +507,7 @@ function formatListing(array $r, bool $detail = false): array {
             'id'          => (int)$r['user_id'],
             'displayName' => $esc($r['seller_name'] ?? null),
             'photoURL'    => (function() use ($r) {
-                $p = $r['avatar_url'] ?? $r['seller_photo'] ?? null;
+                $p = $r['seller_photo'] ?? $r['avatar_url'] ?? null;
                 if (!$p) return null;
                 return str_starts_with($p, 'http') ? $p : UPLOAD_URL . $p;
             })(),

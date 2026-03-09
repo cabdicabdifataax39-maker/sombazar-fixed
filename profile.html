@@ -400,6 +400,7 @@ window.API = window.API || {};
   <script src="assets/app.min.js"></script>
 <script>
 var profileData = null;
+function escHTML(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
 
 if (!Auth.isLoggedIn()) {
   document.getElementById('notLoggedIn').style.display = '';
