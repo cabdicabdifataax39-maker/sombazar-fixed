@@ -274,11 +274,11 @@ async function loadProfile() {
       const l = listings[0];
       sellerData = {
         id:          userId,
-        name:        l.sellerName      || l.seller_name  || 'Seller',
-        avatar:      l.sellerPhoto     || l.seller_photo || null,
-        city:        l.sellerCity      || l.city         || 'Somaliland',
-        verified:    l.sellerVerified  || l.seller_verified || false,
-        memberSince: l.sellerMemberSince || null,
+        name:        l.seller?.displayName || l.sellerName || l.seller_name  || 'Seller',
+        avatar:      l.seller?.photoURL    || l.sellerPhoto || l.seller_photo || null,
+        city:        l.seller?.city        || l.sellerCity  || l.city         || 'Somaliland',
+        verified:    l.seller?.verified    || l.sellerVerified || l.seller_verified || false,
+        memberSince: l.seller?.memberSince || l.sellerMemberSince || null,
       };
     } else {
       // Listings yok - kullanıcıyı doğrudan çek (auth/me yetersiz, ama user_id ile deneyebiliriz)
