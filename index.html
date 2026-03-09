@@ -333,7 +333,7 @@ window.Auth = window.Auth || {
   getToken: () => localStorage.getItem('sb_token') || '',
   getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
   isLoggedIn: () => !!localStorage.getItem('sb_token'),
-  setSession: () => {},
+  setSession: (token, user) => { localStorage.setItem("sb_token", token); localStorage.setItem("sb_user", JSON.stringify(user)); },
   clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
 };
 window.API = window.API || {};
