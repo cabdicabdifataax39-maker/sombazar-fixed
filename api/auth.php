@@ -472,7 +472,11 @@ function formatUser(array $u): array {
         'phone'       => $u['phone'],
         'city'        => $u['city'],
         'bio'         => $u['bio'],
-        'photoURL'    => $u['photo_url'] ? UPLOAD_URL . $u['photo_url'] : null,
+        'photoURL'    => (function() use ($u) {
+            $p = $u['avatar_url'] ?? $u['photo_url'] ?? null;
+            if (!$p) return null;
+            return str_starts_with($p, 'http') ? $p : UPLOAD_URL . $p;
+        })(),
         'verified'    => (bool) ($u['is_verified'] ?? $u['verified'] ?? false),
         'isAdmin'     => (bool) ($u['is_admin'] ?? false),
         'banned'      => (bool) ($u['is_banned'] ?? false),
