@@ -399,6 +399,8 @@ window.API = window.API || {};
 </script>
   <script src="assets/app.min.js"></script>
 <script>
+var profileData = null;
+
 if (!Auth.isLoggedIn()) {
   document.getElementById('notLoggedIn').style.display = '';
   document.getElementById('profileContent').style.display = 'none';
@@ -406,8 +408,6 @@ if (!Auth.isLoggedIn()) {
   loadProfile();
   loadMyListings();
 }
-
-let profileData = null;
 
 async function loadProfile() {
   // Hemen localStorage'dan göster (API beklerken de foto görünsün)
