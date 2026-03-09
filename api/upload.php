@@ -102,7 +102,7 @@ if (isset($_FILES['avatar'])) {
     }
 
     $db = getDB();
-    $db->prepare('UPDATE users SET avatar_url = ? WHERE id = ?')->execute([$dbPath, $uid]);
+    $db->prepare('UPDATE users SET avatar_url = ?, photo_url = ? WHERE id = ?')->execute([$dbPath, $dbPath, $uid]);
     jsonSuccess(['photoURL' => $photoURL]);
 }
 
