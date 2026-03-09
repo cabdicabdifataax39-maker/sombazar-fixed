@@ -410,6 +410,12 @@ if (!Auth.isLoggedIn()) {
 let profileData = null;
 
 async function loadProfile() {
+  // Hemen localStorage'dan göster (API beklerken de foto görünsün)
+  const _cachedUser = Auth.getUser();
+  if (_cachedUser && _cachedUser.photoURL) {
+    const _avatarWrap = document.getElementById('profileAvatarWrap');
+    if (_avatarWrap) _avatarWrap.innerHTML = `<img loading="lazy" src="${_cachedUser.photoURL}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+  }
   try {
     profileData = await API.me();
     const user = profileData;
@@ -460,7 +466,7 @@ async function loadProfile() {
       document.getElementById('completionBar').style.width = _pct + '%';
       document.getElementById('completionBar').style.background = _pct >= 80 ? '#10b981' : _pct >= 50 ? '#f59e0b' : '#ef4444';
     }
-  } catch(e) {}
+  } catch(e) { console.error('loadProfile error:', e); }
   // URL'den tab parametresi - profil yüklendikten sonra aç (sonsuz döngü yok)
   const _urlTab = new URLSearchParams(window.location.search).get('tab');
   if (_urlTab && ['listings','favorites','settings','payments','offers','reviews','notifications'].includes(_urlTab)) {
