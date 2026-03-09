@@ -36,8 +36,8 @@ function uploadToCloudinary(string $tmpFile, string $folder = 'sombazar', string
         $transformation = 'c_limit,w_1200,h_900,q_82,f_auto,fl_strip_profile';
     }
 
-    // İmza: transformation dahil edilmeli
-    $paramStr  = "folder=$folder&timestamp=$timestamp&transformation=$transformation";
+    // İmza: sadece folder + timestamp (transformation imzaya dahil edilmez)
+    $paramStr  = "folder=$folder&timestamp=$timestamp";
     $signature = sha1($paramStr . $apiSecret);
 
     $ch = curl_init("https://api.cloudinary.com/v1_1/$cloudName/image/upload");
@@ -45,12 +45,11 @@ function uploadToCloudinary(string $tmpFile, string $folder = 'sombazar', string
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_POST           => true,
         CURLOPT_POSTFIELDS     => [
-            'file'           => new CURLFile($tmpFile),
-            'folder'         => $folder,
-            'timestamp'      => $timestamp,
-            'api_key'        => $apiKey,
-            'signature'      => $signature,
-            'transformation' => $transformation,
+            'file'      => new CURLFile($tmpFile),
+            'folder'    => $folder,
+            'timestamp' => $timestamp,
+            'api_key'   => $apiKey,
+            'signature' => $signature,
         ],
     ]);
     $response = curl_exec($ch);
