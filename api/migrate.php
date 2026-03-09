@@ -83,3 +83,14 @@ if ($action === 'migrate') {
     echo "✅ All done.\n";
     exit(0);
 }
+
+
+// ── Notifications kolonları ekle (yoksa) ──────────────────────────────
+$notifCols = [
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS notifications_email TINYINT(1) DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS notifications_push  TINYINT(1) DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN IF NOT EXISTS notifications_sms   TINYINT(1) DEFAULT 0",
+];
+foreach ($notifCols as $sql) {
+    try { $db->exec($sql); } catch (Exception $e) { /* already exists */ }
+}

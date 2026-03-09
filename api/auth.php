@@ -190,14 +190,22 @@ function handleUpdate(): void {
     $params = [];
 
     $map = [
-        'displayName'         => 'display_name',
-        'phone'               => 'phone',
-        'city'                => 'city',
-        'bio'                 => 'bio',
-        'notifications_email' => 'notifications_email',
-        'notifications_push'  => 'notifications_push',
-        'notifications_sms'   => 'notifications_sms',
+        'displayName' => 'display_name',
+        'phone'       => 'phone',
+        'city'        => 'city',
+        'bio'         => 'bio',
     ];
+
+    // notifications kolonları varsa ekle (yoksa hata vermesin)
+    try {
+        $db = getDB();
+        $testCols = $db->query("SHOW COLUMNS FROM users LIKE 'notifications_email'")->fetch();
+        if ($testCols) {
+            $map['notifications_email'] = 'notifications_email';
+            $map['notifications_push']  = 'notifications_push';
+            $map['notifications_sms']   = 'notifications_sms';
+        }
+    } catch (Exception $e) { /* kolonlar yok, skip */ }
 
     if (isset($data['notifications']) && is_array($data['notifications'])) {
         $n = $data['notifications'];

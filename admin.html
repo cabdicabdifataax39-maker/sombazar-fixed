@@ -1792,7 +1792,7 @@ async function loadPayments() {
     tbody.innerHTML = items.map(p => {
       const sc = statusClass[p.status] || 'badge-gray';
       const dt = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'}) : '—';
-      const screenshotHTML = p.receiptUrl || p.screenshot_url
+      const screenshotHTML = p.screenshotUrl || p.receiptUrl || p.screenshot_url
         ? `<a href="${escHTML(p.receiptUrl||p.screenshot_url)}" target="_blank" class="btn btn-ghost btn-xs">📎 View</a>`
         : '<span style="color:var(--text3);font-size:12px">—</span>';
       const couponHTML = p.couponCode
