@@ -411,10 +411,10 @@ async function loadListings(reset = false) {
     listingPage = 1;
     listingDone = false;
     document.getElementById('listingsGrid').innerHTML = skeletonCards(6);
-
+  }
   listingLoading = true;
   try {
-    const params = { pageSize: PAGE_SIZE, page: listingPage };
+    const params = { pageSize: PAGE_SIZE, offset: (listingPage - 1) * PAGE_SIZE };
     if (activeCat !== 'all') params.category = activeCat;
     const listings = await API.getListings(params);
 

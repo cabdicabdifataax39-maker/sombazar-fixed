@@ -506,7 +506,11 @@ function formatListing(array $r, bool $detail = false): array {
         $out['seller']      = [
             'id'          => (int)$r['user_id'],
             'displayName' => $esc($r['seller_name'] ?? null),
-            'photoURL'    => ($r['avatar_url'] ?? $r['seller_photo'] ?? null) ? UPLOAD_URL . $r['seller_photo'] : null,
+            'photoURL'    => (function() use ($r) {
+                $p = $r['avatar_url'] ?? $r['seller_photo'] ?? null;
+                if (!$p) return null;
+                return str_starts_with($p, 'http') ? $p : UPLOAD_URL . $p;
+            })(),
             'verified'    => (bool) ($r['seller_verified'] ?? false),
             'city'        => $esc($r['seller_city'] ?? null),
             'memberSince' => isset($r['seller_since']) ? date('Y', strtotime($r['seller_since'])) : null,
