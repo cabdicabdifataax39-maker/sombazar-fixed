@@ -25,16 +25,18 @@ $me  = $st->fetch();
 if (!$me || !$me['is_admin']) jsonError('Forbidden — Admins only', 403);
 
 // Auto-create missing tables/columns silently (each in own try/catch)
-// ── Schema migration: sadece kolon yoksa ekle (IF NOT EXISTS) ──────────
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS token_invalidated_at DATETIME NULL");
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin TINYINT(1) DEFAULT 0");
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS banned TINYINT(1) DEFAULT 0");
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_reason VARCHAR(500) NULL");
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS badge_level VARCHAR(20) DEFAULT 'basic'");
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_status VARCHAR(20) DEFAULT 'none'");
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_note VARCHAR(500) NULL");
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS seller_type VARCHAR(20) DEFAULT 'individual'");
-$db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS blacklisted TINYINT(1) DEFAULT 0");
+// ── Schema migration: kolon yoksa ekle (hata olursa sessiz geç) ────────
+foreach ([
+    "ALTER TABLE users ADD COLUMN token_invalidated_at DATETIME NULL",
+    "ALTER TABLE users ADD COLUMN is_admin TINYINT(1) DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN banned TINYINT(1) DEFAULT 0",
+    "ALTER TABLE users ADD COLUMN ban_reason VARCHAR(500) NULL",
+    "ALTER TABLE users ADD COLUMN badge_level VARCHAR(20) DEFAULT 'basic'",
+    "ALTER TABLE users ADD COLUMN verification_status VARCHAR(20) DEFAULT 'none'",
+    "ALTER TABLE users ADD COLUMN verification_note VARCHAR(500) NULL",
+    "ALTER TABLE users ADD COLUMN seller_type VARCHAR(20) DEFAULT 'individual'",
+    "ALTER TABLE users ADD COLUMN blacklisted TINYINT(1) DEFAULT 0",
+] as $_sql) { try { $db->exec($_sql); } catch(\Throwable $_e) { /* already exists, skip */ } }
 try { $db->exec("CREATE TABLE IF NOT EXISTS blacklist (id INT AUTO_INCREMENT PRIMARY KEY, phone VARCHAR(30), national_id VARCHAR(100), reason VARCHAR(500), added_by INT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB"); } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 try { $db->exec("CREATE TABLE IF NOT EXISTS admin_log (id INT AUTO_INCREMENT PRIMARY KEY, admin_id INT NOT NULL, action VARCHAR(100), target_type VARCHAR(30), target_id INT, note TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB"); } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 try { $db->exec("CREATE TABLE IF NOT EXISTS verification_docs (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, doc_type VARCHAR(50), file_url VARCHAR(500), uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP, superseded TINYINT(1) DEFAULT 0) ENGINE=InnoDB"); } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
@@ -669,8 +671,8 @@ function handleApprovePayment(): void {
     $db   = getDB();
 
     // Tabloları otomatik oluştur
-    $db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS plan VARCHAR(20) DEFAULT 'free'");
-    $db->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS plan_expires_at DATETIME NULL");
+    try { $db->exec("ALTER TABLE users ADD COLUMN plan VARCHAR(20) DEFAULT 'free'"); } catch(\Throwable $e) { /* skip */ }
+    try { $db->exec("ALTER TABLE users ADD COLUMN plan_expires_at DATETIME NULL"); } catch(\Throwable $e) { /* skip */ }
     try { $db->exec("CREATE TABLE IF NOT EXISTS packages (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
