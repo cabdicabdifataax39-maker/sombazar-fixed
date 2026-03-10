@@ -1792,8 +1792,9 @@ async function loadPayments() {
     tbody.innerHTML = items.map(p => {
       const sc = statusClass[p.status] || 'badge-gray';
       const dt = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'2-digit'}) : '—';
-      const screenshotHTML = p.screenshotUrl || p.receiptUrl || p.screenshot_url
-        ? `<a href="${escHTML(p.receiptUrl||p.screenshot_url)}" target="_blank" class="btn btn-ghost btn-xs">📎 View</a>`
+      const _ssUrl = p.screenshotUrl || p.receiptUrl || p.screenshot_url || null;
+      const screenshotHTML = _ssUrl
+        ? `<a href="${escHTML(_ssUrl)}" target="_blank" rel="noopener" class="btn btn-ghost btn-xs">📎 View</a>`
         : '<span style="color:var(--text3);font-size:12px">—</span>';
       const couponHTML = p.couponCode
         ? `<div style="margin-top:3px"><span style="font-size:10px;background:var(--primary-s);color:var(--primary);padding:1px 6px;border-radius:4px;font-weight:700">${escHTML(p.couponCode)} −$${p.discountAmount||0}</span></div>`
