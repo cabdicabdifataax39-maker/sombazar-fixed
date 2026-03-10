@@ -165,6 +165,33 @@ function handleCreate(): void {
         jsonError('Rate limit: You can post at most 10 listings per hour. Please wait a while.', 429);
     }
 
+    // ── Plan limiti kontrolü ───────────────────────────────────────────────
+    $planLimits = ['free' => 3, 'standard' => 10, 'pro' => 30, 'agency' => 999];
+
+    $userRow = $db->prepare('SELECT plan, plan_expires_at FROM users WHERE id = ?');
+    $userRow->execute([$uid]);
+    $uData = $userRow->fetch();
+
+    $currentPlan = 'free';
+    if ($uData && $uData['plan'] && $uData['plan'] !== 'free') {
+        // Plan süresi dolmuş mu?
+        if (!$uData['plan_expires_at'] || strtotime($uData['plan_expires_at']) > time()) {
+            $currentPlan = $uData['plan'];
+        }
+    }
+
+    $maxListings = $planLimits[$currentPlan] ?? 3;
+
+    if ($maxListings < 999) {
+        $activeSt = $db->prepare("SELECT COUNT(*) FROM listings WHERE user_id = ? AND status IN ('active','pending')");
+        $activeSt->execute([$uid]);
+        $activeCount = (int)$activeSt->fetchColumn();
+
+        if ($activeCount >= $maxListings) {
+            jsonError("Listing limit reached. Your {$currentPlan} plan allows {$maxListings} active listings. Delete an existing listing or upgrade your plan.", 403);
+        }
+    }
+
     $listingType  = in_array($data['listing_type'] ?? '', ['sale', 'rent']) ? $data['listing_type'] : 'sale';
     $rentalPeriod = null;
     if ($listingType === 'rent') {
