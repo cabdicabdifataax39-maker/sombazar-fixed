@@ -457,7 +457,7 @@ async function loadProfile() {
 
     Auth.setSession(Auth.getToken(), user);
     // Profil tamamlanma %
-    const _fields = [user.displayName, user.phone, user.city, user.bio, user.avatar];
+    const _fields = [user.displayName, user.phone, user.city, user.bio, user.photoURL];
     const _filled = _fields.filter(Boolean).length;
     const _pct    = Math.round(_fields.length > 0 ? (_filled / _fields.length) * 100 : 0);
     const _compEl = document.getElementById('profileCompletion');
