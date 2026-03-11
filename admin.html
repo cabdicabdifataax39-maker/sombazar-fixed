@@ -1331,7 +1331,7 @@
       </div>
       <button class="btn btn-ghost btn-sm" onclick="loadAdminMessages()">↻ Refresh</button>
     </div>
-    <div class="stats-row" style="margin-bottom:24px">
+    <div class="stats-row" style="margin-bottom:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
       <div class="stat-card" style="--accent:#6366f1">
         <div class="stat-num" id="msgTotalConvs">—</div>
         <div class="stat-label">Total Conversations</div>
@@ -1366,7 +1366,7 @@
         <option value="90">Last 90 days</option>
       </select>
     </div>
-    <div class="stats-row" style="margin-bottom:24px">
+    <div class="stats-row" style="margin-bottom:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
       <div class="stat-card" style="--accent:#f97316">
         <div class="stat-num" id="anaNewUsers">—</div>
         <div class="stat-label">New Users</div>
@@ -1724,6 +1724,8 @@ function adminHeaders() {
 function escHTML(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+const esc = escHTML; // alias
+
 
 function debounce(fn, delay) {
   let t;
@@ -2416,7 +2418,8 @@ async function loadReports() {
   } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-row">${e.message}</td></tr>`; }
 }
 async function resolveReport(id, status) {
-  const d = await adminFetch('resolve_report', { id, status });
+  const action = status === 'dismissed' ? 'dismiss' : 'resolve';
+  const d = await adminFetch('resolve_report', { report_id: id, action, status });
   if (d.success !== false) { showAdminToast('Report updated', 'success'); loadReports(); }
   else showAdminToast(d.error || 'Failed', 'error');
 }

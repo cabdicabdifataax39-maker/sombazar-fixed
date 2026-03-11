@@ -1037,7 +1037,12 @@ function handleResolveReport(): void {
     $db = getDB();
 
     // Raporu çöz
-    $db->prepare("UPDATE reports SET resolved=1 WHERE id=?")->execute([$reportId]);
+    $newStatus = ($action === 'dismiss' || ($data['status'] ?? '') === 'dismissed') ? 'dismissed' : 'reviewed';
+    try {
+        $db->prepare("UPDATE reports SET resolved=1, status=? WHERE id=?")->execute([$newStatus, $reportId]);
+    } catch(\Throwable $e) {
+        $db->prepare("UPDATE reports SET resolved=1 WHERE id=?")->execute([$reportId]);
+    }
 
     if ($action === 'delete_listing') {
         // İlgili listing'i de sil
@@ -1058,11 +1063,15 @@ function handleResolveReport(): void {
 function handleListReports(): void {
     requireAdmin();
     $db = getDB();
+    // status kolonu yoksa resolved kullan
+    try { $db->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'pending'"); } catch(\Throwable $e) {}
     $status = $_GET['status'] ?? '';
     $sql = "SELECT r.*, u.display_name as reporter_name, u.email as reporter_email
             FROM reports r LEFT JOIN users u ON u.id = r.reporter_id";
     $params = [];
-    if ($status) { $sql .= " WHERE r.status = ?"; $params[] = $status; }
+    if ($status === 'pending')   { $sql .= " WHERE (r.status='pending' OR (r.status IS NULL AND r.resolved=0))"; }
+    elseif ($status === 'reviewed')  { $sql .= " WHERE r.status='reviewed' OR r.resolved=1"; }
+    elseif ($status === 'dismissed') { $sql .= " WHERE r.status='dismissed'"; }
     $sql .= " ORDER BY r.created_at DESC LIMIT 100";
     $st = $db->prepare($sql); $st->execute($params);
     jsonSuccess(['reports' => $st->fetchAll()]);
