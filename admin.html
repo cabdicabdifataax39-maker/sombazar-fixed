@@ -771,43 +771,6 @@
     Categories
   </div>
 
-  <div class="sidebar-section-label">Reports & Content</div>
-  <div class="nav-item" onclick="showTab('reports')">
-    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-    Reports
-    <span class="nav-badge warn" id="navBadgeReports" style="display:none">0</span>
-  </div>
-  <div class="nav-item" onclick="showTab('reviews')">
-    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-    Reviews
-  </div>
-  <div class="nav-item" onclick="showTab('messages')">
-    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-    Messages
-  </div>
-
-  <div class="sidebar-section-label">Growth</div>
-  <div class="nav-item" onclick="showTab('analytics')">
-    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-    Analytics
-  </div>
-  <div class="nav-item" onclick="showTab('revenue')">
-    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-    Revenue
-  </div>
-  <div class="nav-item" onclick="showTab('announcements')">
-    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-    Announcements
-  </div>
-  <div class="nav-item" onclick="showTab('push')">
-    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-    Push Notifications
-  </div>
-  <div class="nav-item" onclick="showTab('categories')">
-    <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
-    Categories
-  </div>
-
   <div class="sidebar-section-label">System</div>
   <div class="nav-item" onclick="showTab('log')">
     <div class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
@@ -1317,73 +1280,127 @@
     </div>
 
   <!-- ── REPORTS ──────────────────────────────────────────────────────── -->
+  <!-- ══ REPORTS ══════════════════════════════════════════════════════════ -->
   <div id="tab-reports" class="tab-pane">
     <div class="page-header">
-      <div><h1 class="page-title">Reports</h1><p class="page-sub">User submitted abuse reports</p></div>
-      <select id="reportStatusFilter" class="form-select" style="width:160px" onchange="loadReports()">
-        <option value="pending">Pending</option>
-        <option value="reviewed">Reviewed</option>
-        <option value="dismissed">Dismissed</option>
-        <option value="">All</option>
-      </select>
+      <div>
+        <h1 class="page-title">Reports</h1>
+        <p class="page-sub">Review and resolve user abuse reports</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="reportStatusFilter" class="form-select" style="width:150px" onchange="loadReports()">
+          <option value="pending">⏳ Pending</option>
+          <option value="reviewed">✅ Reviewed</option>
+          <option value="dismissed">🚫 Dismissed</option>
+          <option value="">All Reports</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="loadReports()">↻ Refresh</button>
+      </div>
     </div>
-    <div class="table-wrap"><table class="data-table"><thead><tr>
-      <th>Reporter</th><th>Type</th><th>Target</th><th>Reason</th><th>Date</th><th>Actions</th>
-    </tr></thead><tbody id="reportsBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody></table></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Reporter</th><th>Type</th><th>Target</th><th>Reason</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="reportsBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody>
+      </table>
+    </div>
   </div>
 
-  <!-- ── REVIEWS ───────────────────────────────────────────────────────── -->
+  <!-- ══ REVIEWS ═══════════════════════════════════════════════════════════ -->
   <div id="tab-reviews" class="tab-pane">
     <div class="page-header">
-      <div><h1 class="page-title">Reviews</h1><p class="page-sub">Manage user reviews and ratings</p></div>
+      <div>
+        <h1 class="page-title">Reviews</h1>
+        <p class="page-sub">Manage platform reviews and ratings</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="loadReviews()">↻ Refresh</button>
     </div>
-    <div class="table-wrap"><table class="data-table"><thead><tr>
-      <th>Reviewer</th><th>Seller</th><th>Rating</th><th>Comment</th><th>Date</th><th>Actions</th>
-    </tr></thead><tbody id="reviewsBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody></table></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Reviewer</th><th>Seller</th><th>Rating</th><th>Comment</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="reviewsBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody>
+      </table>
+    </div>
   </div>
 
-  <!-- ── MESSAGES ──────────────────────────────────────────────────────── -->
+  <!-- ══ MESSAGES ══════════════════════════════════════════════════════════ -->
   <div id="tab-messages" class="tab-pane">
     <div class="page-header">
-      <div><h1 class="page-title">Messages</h1><p class="page-sub">Monitor platform conversations</p></div>
+      <div>
+        <h1 class="page-title">Messages</h1>
+        <p class="page-sub">Monitor platform conversations</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="loadAdminMessages()">↻ Refresh</button>
     </div>
-    <div class="stats-row" style="margin-bottom:20px">
-      <div class="stat-card" style="--accent:#6366f1"><div class="stat-num" id="msgTotalConvs">—</div><div class="stat-label">Total Conversations</div></div>
-      <div class="stat-card" style="--accent:#f97316"><div class="stat-num" id="msgTotalMsgs">—</div><div class="stat-label">Total Messages</div></div>
-      <div class="stat-card" style="--accent:#22c55e"><div class="stat-num" id="msgTodayMsgs">—</div><div class="stat-label">Today</div></div>
+    <div class="stats-row" style="margin-bottom:24px">
+      <div class="stat-card" style="--accent:#6366f1">
+        <div class="stat-num" id="msgTotalConvs">—</div>
+        <div class="stat-label">Total Conversations</div>
+      </div>
+      <div class="stat-card" style="--accent:#f97316">
+        <div class="stat-num" id="msgTotalMsgs">—</div>
+        <div class="stat-label">Total Messages</div>
+      </div>
+      <div class="stat-card" style="--accent:#22c55e">
+        <div class="stat-num" id="msgTodayMsgs">—</div>
+        <div class="stat-label">Sent Today</div>
+      </div>
     </div>
-    <div class="table-wrap"><table class="data-table"><thead><tr>
-      <th>Participants</th><th>Last Message</th><th>Count</th><th>Date</th>
-    </tr></thead><tbody id="messagesBody"><tr><td colspan="4" class="empty-row">Loading…</td></tr></tbody></table></div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Participants</th><th>Last Message</th><th>Count</th><th>Last Active</th></tr></thead>
+        <tbody id="messagesBody"><tr><td colspan="4" class="empty-row">Loading…</td></tr></tbody>
+      </table>
+    </div>
   </div>
 
-  <!-- ── ANALYTICS ─────────────────────────────────────────────────────── -->
+  <!-- ══ ANALYTICS ═════════════════════════════════════════════════════════ -->
   <div id="tab-analytics" class="tab-pane">
     <div class="page-header">
-      <div><h1 class="page-title">Analytics</h1><p class="page-sub">Platform growth metrics</p></div>
-      <select id="analyticsPeriod" class="form-select" style="width:140px" onchange="loadAnalytics()">
+      <div>
+        <h1 class="page-title">Analytics</h1>
+        <p class="page-sub">Platform growth and engagement</p>
+      </div>
+      <select id="analyticsPeriod" class="form-select" style="width:150px" onchange="loadAnalytics()">
         <option value="7">Last 7 days</option>
         <option value="30" selected>Last 30 days</option>
         <option value="90">Last 90 days</option>
       </select>
     </div>
     <div class="stats-row" style="margin-bottom:24px">
-      <div class="stat-card" style="--accent:#f97316"><div class="stat-num" id="anaNewUsers">—</div><div class="stat-label">New Users</div></div>
-      <div class="stat-card" style="--accent:#6366f1"><div class="stat-num" id="anaNewListings">—</div><div class="stat-label">New Listings</div></div>
-      <div class="stat-card" style="--accent:#22c55e"><div class="stat-num" id="anaNewPayments">—</div><div class="stat-label">Payments</div></div>
-      <div class="stat-card" style="--accent:#f59e0b"><div class="stat-num" id="anaNewReviews">—</div><div class="stat-label">Reviews</div></div>
+      <div class="stat-card" style="--accent:#f97316">
+        <div class="stat-num" id="anaNewUsers">—</div>
+        <div class="stat-label">New Users</div>
+      </div>
+      <div class="stat-card" style="--accent:#6366f1">
+        <div class="stat-num" id="anaNewListings">—</div>
+        <div class="stat-label">New Listings</div>
+      </div>
+      <div class="stat-card" style="--accent:#22c55e">
+        <div class="stat-num" id="anaNewPayments">—</div>
+        <div class="stat-label">Payments</div>
+      </div>
+      <div class="stat-card" style="--accent:#f59e0b">
+        <div class="stat-num" id="anaNewReviews">—</div>
+        <div class="stat-label">Reviews</div>
+      </div>
     </div>
-    <div class="section-card" style="padding:20px">
-      <h3 style="margin:0 0 16px;font-size:14px;color:var(--text2)">Daily Signups</h3>
-      <div id="analyticsChart" style="display:grid;gap:6px"></div>
+    <div class="section-card" style="padding:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <h3 style="margin:0;font-size:14px;font-weight:700;color:var(--text1)">Daily New Signups</h3>
+        <span style="font-size:12px;color:var(--text3)">users per day</span>
+      </div>
+      <div id="analyticsChart" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
   </div>
 
-  <!-- ── REVENUE ───────────────────────────────────────────────────────── -->
+  <!-- ══ REVENUE ═══════════════════════════════════════════════════════════ -->
   <div id="tab-revenue" class="tab-pane">
     <div class="page-header">
-      <div><h1 class="page-title">Revenue</h1><p class="page-sub">Subscription income overview</p></div>
-      <select id="revenuePeriod" class="form-select" style="width:140px" onchange="loadRevenue()">
+      <div>
+        <h1 class="page-title">Revenue</h1>
+        <p class="page-sub">Subscription income and payment analytics</p>
+      </div>
+      <select id="revenuePeriod" class="form-select" style="width:150px" onchange="loadRevenue()">
         <option value="7">Last 7 days</option>
         <option value="30" selected>Last 30 days</option>
         <option value="90">Last 90 days</option>
@@ -1391,71 +1408,111 @@
       </select>
     </div>
     <div class="stats-row" style="margin-bottom:24px">
-      <div class="stat-card" style="--accent:#22c55e"><div class="stat-num" id="revTotal">$—</div><div class="stat-label">Total Revenue</div></div>
-      <div class="stat-card" style="--accent:#6366f1"><div class="stat-num" id="revApproved">—</div><div class="stat-label">Approved</div></div>
-      <div class="stat-card" style="--accent:#f97316"><div class="stat-num" id="revPending">—</div><div class="stat-label">Pending</div></div>
-      <div class="stat-card" style="--accent:#f59e0b"><div class="stat-num" id="revAvg">$—</div><div class="stat-label">Avg per Payment</div></div>
+      <div class="stat-card" style="--accent:#22c55e">
+        <div class="stat-num" id="revTotal">$—</div>
+        <div class="stat-label">Total Revenue</div>
+      </div>
+      <div class="stat-card" style="--accent:#6366f1">
+        <div class="stat-num" id="revApproved">—</div>
+        <div class="stat-label">Approved</div>
+      </div>
+      <div class="stat-card" style="--accent:#f97316">
+        <div class="stat-num" id="revPending">—</div>
+        <div class="stat-label">Pending</div>
+      </div>
+      <div class="stat-card" style="--accent:#f59e0b">
+        <div class="stat-num" id="revAvg">$—</div>
+        <div class="stat-label">Avg / Payment</div>
+      </div>
     </div>
-    <div class="section-card" style="padding:20px;margin-bottom:16px">
-      <h3 style="margin:0 0 16px;font-size:14px;color:var(--text2)">Revenue by Plan</h3>
-      <div id="revByPlan" style="display:grid;gap:8px"></div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:16px">
+      <div class="section-card" style="padding:20px">
+        <h3 style="margin:0 0 16px;font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">By Plan</h3>
+        <div id="revByPlan" style="display:flex;flex-direction:column;gap:12px"></div>
+      </div>
+      <div class="section-card" style="padding:20px">
+        <h3 style="margin:0 0 16px;font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Recent Transactions</h3>
+        <div class="table-wrap" style="margin:0">
+          <table class="data-table" style="margin:0">
+            <thead><tr><th>User</th><th>Plan</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
+            <tbody id="revenueBody"><tr><td colspan="5" class="empty-row">Loading…</td></tr></tbody>
+          </table>
+        </div>
+      </div>
     </div>
-    <div class="table-wrap"><table class="data-table"><thead><tr>
-      <th>User</th><th>Plan</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th>
-    </tr></thead><tbody id="revenueBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody></table></div>
   </div>
 
-  <!-- ── ANNOUNCEMENTS ─────────────────────────────────────────────────── -->
+  <!-- ══ ANNOUNCEMENTS ══════════════════════════════════════════════════════ -->
   <div id="tab-announcements" class="tab-pane">
     <div class="page-header">
-      <div><h1 class="page-title">Announcements</h1><p class="page-sub">Post site-wide banners</p></div>
-      <button class="btn btn-primary btn-sm" onclick="showAnnouncementModal()">+ New</button>
+      <div>
+        <h1 class="page-title">Announcements</h1>
+        <p class="page-sub">Post site-wide banners and notices for all users</p>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="showAnnouncementModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Announcement
+      </button>
     </div>
-    <div id="announcementsList" style="display:grid;gap:12px">
-      <div style="padding:40px;text-align:center;color:var(--text3)">Loading…</div>
+    <div id="announcementsList" style="display:flex;flex-direction:column;gap:12px">
+      <div style="padding:60px;text-align:center;color:var(--text3)">Loading…</div>
     </div>
   </div>
 
-  <!-- ── PUSH NOTIFICATIONS ────────────────────────────────────────────── -->
+  <!-- ══ PUSH NOTIFICATIONS ═════════════════════════════════════════════════ -->
   <div id="tab-push" class="tab-pane">
     <div class="page-header">
-      <div><h1 class="page-title">Push Notifications</h1><p class="page-sub">Send bulk notifications</p></div>
-    </div>
-    <div class="section-card" style="max-width:560px;padding:24px;margin-bottom:20px">
-      <div style="margin-bottom:14px">
-        <label class="form-label">Title</label>
-        <input id="pushTitle" class="form-input" placeholder="Notification title…">
-      </div>
-      <div style="margin-bottom:14px">
-        <label class="form-label">Message</label>
-        <textarea id="pushBody" class="form-input" rows="3" placeholder="Notification body…"></textarea>
-      </div>
-      <div style="margin-bottom:20px">
-        <label class="form-label">Target Audience</label>
-        <select id="pushTarget" class="form-select">
-          <option value="all">All Users</option>
-          <option value="free">Free Plan Users</option>
-          <option value="paid">Paid Plan Users</option>
-        </select>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <span id="pushSubCount" style="font-size:13px;color:var(--text3)">Loading subscribers…</span>
-        <button class="btn btn-primary" onclick="sendPushNotification()">Send Notification</button>
+      <div>
+        <h1 class="page-title">Push Notifications</h1>
+        <p class="page-sub">Send bulk push notifications to users</p>
       </div>
     </div>
-    <div class="section-card" style="padding:20px">
-      <h3 style="margin:0 0 12px;font-size:14px;color:var(--text2)">Recent Pushes</h3>
-      <div id="pushHistory"><div style="padding:20px;text-align:center;color:var(--text3)">No history</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="section-card" style="padding:24px">
+        <h3 style="margin:0 0 20px;font-size:14px;font-weight:700;color:var(--text1)">Compose Notification</h3>
+        <div style="margin-bottom:14px">
+          <label class="form-label">Title *</label>
+          <input id="pushTitle" class="form-input" placeholder="e.g. New Feature Available!">
+        </div>
+        <div style="margin-bottom:14px">
+          <label class="form-label">Message *</label>
+          <textarea id="pushBody" class="form-input" rows="4" placeholder="Write your notification message…"></textarea>
+        </div>
+        <div style="margin-bottom:20px">
+          <label class="form-label">Target Audience</label>
+          <select id="pushTarget" class="form-select">
+            <option value="all">🌍 All Users</option>
+            <option value="free">🆓 Free Plan Only</option>
+            <option value="paid">💎 Paid Plan Only</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border)">
+          <span id="pushSubCount" style="font-size:12px;color:var(--text3)">Loading…</span>
+          <button class="btn btn-primary" onclick="sendPushNotification()">
+            Send Now →
+          </button>
+        </div>
+      </div>
+      <div class="section-card" style="padding:24px">
+        <h3 style="margin:0 0 20px;font-size:14px;font-weight:700;color:var(--text1)">Sent History</h3>
+        <div id="pushHistory" style="display:flex;flex-direction:column;gap:10px">
+          <div style="padding:40px;text-align:center;color:var(--text3)">No notifications sent yet</div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ── CATEGORIES ───────────────────────────────────────────────────── -->
+  <!-- ══ CATEGORIES ═════════════════════════════════════════════════════════ -->
   <div id="tab-categories" class="tab-pane">
     <div class="page-header">
-      <div><h1 class="page-title">Categories</h1><p class="page-sub">Listing distribution by category</p></div>
+      <div>
+        <h1 class="page-title">Categories</h1>
+        <p class="page-sub">Listing distribution across categories</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="loadCategories()">↻ Refresh</button>
     </div>
-    <div id="categoriesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">
-      <div style="padding:40px;text-align:center;color:var(--text3)">Loading…</div>
+    <div id="categoriesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
+      <div style="padding:60px;text-align:center;color:var(--text3)">Loading…</div>
     </div>
   </div>
 
