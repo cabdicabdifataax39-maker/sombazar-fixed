@@ -398,11 +398,12 @@ async function handleGoogleCredential(response) {
       body: JSON.stringify({ credential: response.credential })
     });
     const data = await res.json();
-    if (data.token) {
-      Auth.setSession(data.token, data.user);
+    const d = data.data || data;
+    if (data.success && d.token) {
+      Auth.setSession(d.token, d.user);
       window.location.href = 'index.html';
     } else {
-      showError(data.error || 'Google sign in failed');
+      showError(data.error || d.error || 'Google sign in failed');
     }
   } catch (e) {
     showError('Network error. Please try again.');
