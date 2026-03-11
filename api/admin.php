@@ -75,6 +75,19 @@ switch ($action) {
     case 'reject_payment':    handleRejectPayment();    break;
     case 'get_reports':       handleGetReports();       break;
     case 'resolve_report':    handleResolveReport();    break;
+    case 'list_reports':      handleListReports();      break;
+    case 'list_reviews':      handleListReviews();      break;
+    case 'delete_review':     handleDeleteReview();     break;
+    case 'list_conversations':handleListConversations();break;
+    case 'analytics':         handleAnalytics();        break;
+    case 'revenue':           handleRevenue();          break;
+    case 'list_announcements':handleListAnnouncements();break;
+    case 'create_announcement':handleCreateAnnouncement();break;
+    case 'update_announcement':handleUpdateAnnouncement();break;
+    case 'delete_announcement':handleDeleteAnnouncement();break;
+    case 'push_stats':        handlePushStats();        break;
+    case 'send_push':         handleSendPush();         break;
+    case 'list_categories':   handleListCategories();   break;
     default: jsonError('Unknown action', 404);
 }
 
@@ -1039,4 +1052,197 @@ function handleResolveReport(): void {
 
     logAction($adminId, 'resolve_report', 'report', $reportId, 'action='.$action);
     jsonSuccess(['message' => 'Report resolved']);
+}
+
+// ── List Reports ──────────────────────────────────────────────────────────
+function handleListReports(): void {
+    requireAdmin();
+    $db = getDB();
+    $status = $_GET['status'] ?? '';
+    $sql = "SELECT r.*, u.display_name as reporter_name, u.email as reporter_email
+            FROM reports r LEFT JOIN users u ON u.id = r.reporter_id";
+    $params = [];
+    if ($status) { $sql .= " WHERE r.status = ?"; $params[] = $status; }
+    $sql .= " ORDER BY r.created_at DESC LIMIT 100";
+    $st = $db->prepare($sql); $st->execute($params);
+    jsonSuccess(['reports' => $st->fetchAll()]);
+}
+
+// ── List Reviews ──────────────────────────────────────────────────────────
+function handleListReviews(): void {
+    requireAdmin();
+    $db = getDB();
+    try {
+        $st = $db->query("SELECT rv.*, u1.display_name as reviewer_name, u2.display_name as seller_name
+                          FROM reviews rv
+                          LEFT JOIN users u1 ON u1.id = rv.reviewer_id
+                          LEFT JOIN users u2 ON u2.id = rv.seller_id
+                          ORDER BY rv.created_at DESC LIMIT 200");
+        jsonSuccess(['reviews' => $st->fetchAll()]);
+    } catch(\Exception $e) { jsonSuccess(['reviews' => []]); }
+}
+
+function handleDeleteReview(): void {
+    requireAdmin();
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id = (int)($data['id'] ?? 0);
+    if (!$id) jsonError('Invalid ID');
+    getDB()->prepare('DELETE FROM reviews WHERE id = ?')->execute([$id]);
+    jsonSuccess(['deleted' => true]);
+}
+
+// ── List Conversations ────────────────────────────────────────────────────
+function handleListConversations(): void {
+    requireAdmin();
+    $db = getDB();
+    try {
+        $convSt = $db->query("SELECT COUNT(*) as total FROM conversations");
+        $msgSt  = $db->query("SELECT COUNT(*) as total FROM messages");
+        $todSt  = $db->query("SELECT COUNT(*) as total FROM messages WHERE DATE(created_at) = CURDATE()");
+        $listSt = $db->query("SELECT c.id, c.created_at,
+            u1.display_name as participant1, u2.display_name as participant2,
+            (SELECT body FROM messages WHERE conversation_id=c.id ORDER BY created_at DESC LIMIT 1) as last_message,
+            (SELECT COUNT(*) FROM messages WHERE conversation_id=c.id) as message_count,
+            (SELECT created_at FROM messages WHERE conversation_id=c.id ORDER BY created_at DESC LIMIT 1) as last_activity
+            FROM conversations c
+            LEFT JOIN users u1 ON u1.id = c.buyer_id
+            LEFT JOIN users u2 ON u2.id = c.seller_id
+            ORDER BY last_activity DESC LIMIT 50");
+        jsonSuccess([
+            'stats' => [
+                'total_conversations' => $convSt->fetchColumn(),
+                'total_messages'      => $msgSt->fetchColumn(),
+                'today_messages'      => $todSt->fetchColumn(),
+            ],
+            'conversations' => $listSt->fetchAll()
+        ]);
+    } catch(\Exception $e) { jsonSuccess(['stats'=>[],'conversations'=>[]]); }
+}
+
+// ── Analytics ────────────────────────────────────────────────────────────
+function handleAnalytics(): void {
+    requireAdmin();
+    $days = min(365, max(1, (int)($_GET['days'] ?? 30)));
+    $db = getDB();
+    $since = date('Y-m-d', strtotime("-{$days} days"));
+    $newUsers    = $db->prepare("SELECT COUNT(*) FROM users WHERE created_at >= ?"); $newUsers->execute([$since]);
+    $newListings = $db->prepare("SELECT COUNT(*) FROM listings WHERE created_at >= ?"); $newListings->execute([$since]);
+    $newPayments = $db->prepare("SELECT COUNT(*) FROM payments WHERE created_at >= ? AND status='approved'"); $newPayments->execute([$since]);
+    $newReviews  = $db->prepare("SELECT COUNT(*) FROM reviews WHERE created_at >= ?");
+    try { $newReviews->execute([$since]); $rc = $newReviews->fetchColumn(); } catch(\Exception $e) { $rc = 0; }
+    $dailySt = $db->prepare("SELECT DATE(created_at) as date, COUNT(*) as count FROM users WHERE created_at >= ? GROUP BY DATE(created_at) ORDER BY date ASC");
+    $dailySt->execute([$since]);
+    jsonSuccess(['analytics' => [
+        'new_users'    => $newUsers->fetchColumn(),
+        'new_listings' => $newListings->fetchColumn(),
+        'new_payments' => $newPayments->fetchColumn(),
+        'new_reviews'  => $rc,
+        'daily'        => $dailySt->fetchAll()
+    ]]);
+}
+
+// ── Revenue ───────────────────────────────────────────────────────────────
+function handleRevenue(): void {
+    requireAdmin();
+    $days = min(365, max(1, (int)($_GET['days'] ?? 30)));
+    $db = getDB();
+    $since = date('Y-m-d', strtotime("-{$days} days"));
+    $total   = $db->prepare("SELECT COALESCE(SUM(amount),0) FROM payments WHERE created_at >= ? AND status='approved'"); $total->execute([$since]);
+    $appCnt  = $db->prepare("SELECT COUNT(*) FROM payments WHERE created_at >= ? AND status='approved'"); $appCnt->execute([$since]);
+    $penCnt  = $db->prepare("SELECT COUNT(*) FROM payments WHERE created_at >= ? AND status='pending'"); $penCnt->execute([$since]);
+    $avg     = $db->prepare("SELECT COALESCE(AVG(amount),0) FROM payments WHERE created_at >= ? AND status='approved'"); $avg->execute([$since]);
+    $byPlan  = $db->prepare("SELECT plan, COUNT(*) as count, COALESCE(SUM(amount),0) as total FROM payments WHERE created_at >= ? AND status='approved' GROUP BY plan"); $byPlan->execute([$since]);
+    $payments= $db->prepare("SELECT p.*, u.display_name as user_name, u.email as user_email FROM payments p LEFT JOIN users u ON u.id=p.user_id WHERE p.created_at >= ? ORDER BY p.created_at DESC LIMIT 50"); $payments->execute([$since]);
+    $byPlanArr = [];
+    foreach ($byPlan->fetchAll() as $row) $byPlanArr[$row['plan']] = ['count'=>$row['count'],'total'=>$row['total']];
+    jsonSuccess(['revenue' => [
+        'total_revenue' => round($total->fetchColumn(), 2),
+        'approved_count'=> $appCnt->fetchColumn(),
+        'pending_count' => $penCnt->fetchColumn(),
+        'avg_amount'    => round($avg->fetchColumn(), 2),
+        'by_plan'       => $byPlanArr,
+        'payments'      => $payments->fetchAll()
+    ]]);
+}
+
+// ── Announcements ─────────────────────────────────────────────────────────
+function handleListAnnouncements(): void {
+    requireAdmin();
+    $db = getDB();
+    try {
+        $db->exec("CREATE TABLE IF NOT EXISTS announcements (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            message TEXT NOT NULL,
+            is_active TINYINT(1) DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
+        $st = $db->query("SELECT * FROM announcements ORDER BY created_at DESC");
+        jsonSuccess(['announcements' => $st->fetchAll()]);
+    } catch(\Exception $e) { jsonSuccess(['announcements' => []]); }
+}
+function handleCreateAnnouncement(): void {
+    requireAdmin();
+    $data = json_decode(file_get_contents('php://input'), true);
+    $db = getDB();
+    $db->prepare("INSERT INTO announcements (title, message, is_active) VALUES (?,?,?)")
+       ->execute([$data['title']??'', $data['message']??'', $data['is_active']??1]);
+    jsonSuccess(['id' => $db->lastInsertId()]);
+}
+function handleUpdateAnnouncement(): void {
+    requireAdmin();
+    $data = json_decode(file_get_contents('php://input'), true);
+    getDB()->prepare("UPDATE announcements SET is_active=? WHERE id=?")
+           ->execute([$data['is_active']??0, $data['id']??0]);
+    jsonSuccess(['updated' => true]);
+}
+function handleDeleteAnnouncement(): void {
+    requireAdmin();
+    $data = json_decode(file_get_contents('php://input'), true);
+    getDB()->prepare("DELETE FROM announcements WHERE id=?")->execute([$data['id']??0]);
+    jsonSuccess(['deleted' => true]);
+}
+
+// ── Push Notifications ────────────────────────────────────────────────────
+function handlePushStats(): void {
+    requireAdmin();
+    $db = getDB();
+    try {
+        $subs = $db->query("SELECT COUNT(*) FROM push_subscriptions")->fetchColumn();
+    } catch(\Exception $e) { $subs = 0; }
+    try {
+        $db->exec("CREATE TABLE IF NOT EXISTS push_logs (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255), body TEXT, target VARCHAR(50),
+            sent_count INT DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
+        $logs = $db->query("SELECT * FROM push_logs ORDER BY created_at DESC LIMIT 10")->fetchAll();
+    } catch(\Exception $e) { $logs = []; }
+    jsonSuccess(['stats' => ['subscribers' => $subs], 'logs' => $logs]);
+}
+function handleSendPush(): void {
+    requireAdmin();
+    $data  = json_decode(file_get_contents('php://input'), true);
+    $title = $data['title'] ?? ''; $body = $data['body'] ?? ''; $target = $data['target'] ?? 'all';
+    if (!$title || !$body) jsonError('Title and body required');
+    $db = getDB();
+    try {
+        $db->exec("CREATE TABLE IF NOT EXISTS push_logs (
+            id INT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(255), body TEXT,
+            target VARCHAR(50), sent_count INT DEFAULT 0, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )");
+        $db->prepare("INSERT INTO push_logs (title, body, target, sent_count) VALUES (?,?,?,0)")
+           ->execute([$title, $body, $target]);
+        jsonSuccess(['sent' => true, 'message' => 'Push logged (configure VAPID to send real pushes)']);
+    } catch(\Exception $e) { jsonError($e->getMessage()); }
+}
+
+// ── Categories ────────────────────────────────────────────────────────────
+function handleListCategories(): void {
+    requireAdmin();
+    $db = getDB();
+    $st = $db->query("SELECT category, COUNT(*) as count,
+                      SUM(CASE WHEN status='active' THEN 1 ELSE 0 END) as active_count
+                      FROM listings GROUP BY category ORDER BY count DESC");
+    jsonSuccess(['categories' => $st->fetchAll()]);
 }
