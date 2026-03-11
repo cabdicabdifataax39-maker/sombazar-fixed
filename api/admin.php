@@ -1063,20 +1063,17 @@ function handleResolveReport(): void {
 function handleListReports(): void {
     requireAdmin();
     $db = getDB();
-    // status kolonu var mi kontrol et, yoksa ekle
-    $cols = $db->query("SHOW COLUMNS FROM reports")->fetchAll(PDO::FETCH_COLUMN);
-    if (!in_array('status', $cols)) {
-        try { $db->exec("ALTER TABLE reports ADD COLUMN status VARCHAR(20) DEFAULT 'pending'"); } catch(\Throwable $e) {}
-    }
-    $filterStatus = $_GET['status'] ?? '';
-    // status kolonu artik var, guvvenle kullan
+    $filterStatus = $_GET['status'] ?? 'pending';
+    // status kolonu kullanmadan, sadece resolved kolonuyla filtrele
     $sql = "SELECT r.*, u.display_name as reporter_name, u.email as reporter_email
             FROM reports r LEFT JOIN users u ON u.id = r.reporter_id";
-    if ($filterStatus === 'pending')    { $sql .= " WHERE (r.status='pending' OR r.status IS NULL)"; }
-    elseif ($filterStatus === 'reviewed')   { $sql .= " WHERE r.status='reviewed'"; }
-    elseif ($filterStatus === 'dismissed')  { $sql .= " WHERE r.status='dismissed'"; }
+    if ($filterStatus === 'pending')    { $sql .= " WHERE r.resolved = 0"; }
+    elseif ($filterStatus === 'reviewed')   { $sql .= " WHERE r.resolved = 1"; }
+    elseif ($filterStatus === 'dismissed')  { $sql .= " WHERE r.resolved = 1"; }
+    // filterStatus = '' ise tum raporlar
     $sql .= " ORDER BY r.created_at DESC LIMIT 100";
-    $st = $db->prepare($sql); $st->execute();
+    $st = $db->prepare($sql);
+    $st->execute();
     jsonSuccess(['reports' => $st->fetchAll()]);
 }
 
