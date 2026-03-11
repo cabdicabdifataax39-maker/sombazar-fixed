@@ -54,6 +54,137 @@
   </script>
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+
+<style>
+/* ─── Listings sayfa layout override ─────────────────────────────── */
+.listings-3col-layout {
+  grid-template-columns: 220px 1fr 240px !important;
+  max-width: 1440px;
+  gap: 18px;
+  padding: 18px 20px 80px !important;
+}
+.listings-left-sidebar,
+.listings-right-sidebar {
+  position: sticky !important;
+  top: 108px !important;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.listings-left-sidebar::-webkit-scrollbar,
+.listings-right-sidebar::-webkit-scrollbar { display: none; }
+
+/* ─── Sol sidebar widget'ları ─────────────────────────────────────── */
+.sb-widget {
+  border-radius: 14px !important;
+  border: 1px solid #eef0f3 !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04) !important;
+}
+.sb-widget-head {
+  font-size: 10px !important;
+  letter-spacing: 1px !important;
+  color: #94a3b8 !important;
+  padding: 12px 14px !important;
+  background: #fafbfc !important;
+}
+.sb-cat-item {
+  padding: 7px 12px !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+  margin: 1px 6px !important;
+  width: calc(100% - 12px) !important;
+}
+.sb-cat-item.active {
+  background: rgba(249,115,22,.08) !important;
+  color: #f97316 !important;
+  font-weight: 700 !important;
+}
+.sb-city-item {
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  border-radius: 8px !important;
+  margin: 1px 6px !important;
+}
+.sb-city-item.active {
+  background: rgba(249,115,22,.08) !important;
+  color: #f97316 !important;
+  font-weight: 700 !important;
+}
+.sb-price-chip {
+  font-size: 11px !important;
+  padding: 4px 9px !important;
+}
+
+/* ─── Toolbar ─────────────────────────────────────────────────────── */
+.listings-toolbar {
+  background: white;
+  border: 1px solid #eef0f3;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 14px !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+}
+#pageTitle {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+}
+
+/* ─── Sağ sidebar widget'ları hover ─────────────────────────────── */
+.sb-city-count-item:hover {
+  background: #fff7ed !important;
+  border-radius: 8px !important;
+}
+
+/* ─── Reset butonu ─────────────────────────────────────────────── */
+#resetFilters {
+  border-radius: 10px !important;
+  border: 1.5px solid #e2e8f0 !important;
+  font-size: 12px !important;
+  color: #64748b !important;
+  background: white !important;
+  transition: all .15s !important;
+}
+#resetFilters:hover {
+  border-color: #f97316 !important;
+  color: #f97316 !important;
+  background: rgba(249,115,22,.04) !important;
+}
+
+/* ─── 1200px üstünde 3 kolon sabit ───────────────────────────────── */
+@media (min-width: 1100px) {
+  .listings-3col-layout {
+    grid-template-columns: 220px 1fr 240px !important;
+    grid-template-areas: "left main right" !important;
+  }
+  .listings-left-sidebar { grid-area: left !important; }
+  .listings-main-col     { grid-area: main !important; }
+  .listings-right-sidebar{ grid-area: right !important; position: sticky !important; }
+}
+
+/* ─── 768-1100px arası: sol sidebar gizle, 2 kolon ──────────────── */
+@media (max-width: 1099px) and (min-width: 769px) {
+  .listings-3col-layout {
+    grid-template-columns: 200px 1fr !important;
+    grid-template-areas: "left main" !important;
+  }
+  .listings-left-sidebar  { grid-area: left !important; }
+  .listings-main-col      { grid-area: main !important; }
+  .listings-right-sidebar { display: none !important; }
+}
+
+/* ─── 768px altı: tek kolon ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  .listings-3col-layout {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "main" !important;
+    padding: 12px 12px 80px !important;
+  }
+  .listings-left-sidebar  { display: none !important; }
+  .listings-main-col      { grid-area: main !important; }
+  .listings-right-sidebar { display: none !important; }
+}
+</style>
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
