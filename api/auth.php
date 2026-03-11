@@ -50,7 +50,7 @@ switch ($action) {
         handleResetPassword();
         break;
     case 'google':
-    handleGoogleAuth($pdo);
+    handleGoogleAuth();
     break;
   case 'logout':          handleLogout();         break;
     case 'delete_account':
@@ -507,4 +507,54 @@ function handleLogout(): void {
     $db->prepare('UPDATE users SET token_invalidated_at = NOW() WHERE id = ?')
        ->execute([$uid]);
     jsonSuccess(['message' => 'Logged out successfully']);
+}
+
+
+function handleGoogleAuth(): void {
+    $data     = json_decode(file_get_contents('php://input'), true);
+    $token    = $data['credential'] ?? $data['token'] ?? '';
+    $clientId = '918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com';
+
+    if (!$token) jsonError('No credential provided');
+
+    // Google token doğrula
+    $url  = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($token);
+    $resp = @file_get_contents($url);
+    if (!$resp) jsonError('Failed to verify Google token');
+
+    $info = json_decode($resp, true);
+    if (!$info || ($info['aud'] ?? '') !== $clientId) jsonError('Invalid Google token');
+    if (($info['email_verified'] ?? '') !== 'true') jsonError('Email not verified');
+
+    $email  = $info['email'];
+    $name   = $info['name']    ?? explode('@', $email)[0];
+    $avatar = $info['picture'] ?? null;
+
+    $db = getDB();
+
+    // Kullanıcı var mı?
+    $st = $db->prepare('SELECT * FROM users WHERE email = ?');
+    $st->execute([$email]);
+    $user = $st->fetch();
+
+    if (!$user) {
+        // Yeni kullanıcı oluştur
+        $db->prepare(
+            'INSERT INTO users (display_name, email, password_hash, avatar_url, is_verified) VALUES (?,?,?,?,1)'
+        )->execute([$name, $email, password_hash(bin2hex(random_bytes(16)), PASSWORD_DEFAULT), $avatar]);
+        $uid = (int)$db->lastInsertId();
+        $st->execute([$email]);
+        $user = $st->fetch();
+    } else {
+        // Avatar güncelle (Google'dan her seferinde güncel gelir)
+        if ($avatar && !$user['avatar_url']) {
+            $db->prepare('UPDATE users SET avatar_url = ?, photo_url = ? WHERE id = ?')
+               ->execute([$avatar, $avatar, $user['id']]);
+        }
+    }
+
+    if ($user['is_banned'] ?? false) jsonError('Account banned', 403);
+
+    $token = generateToken((int)$user['id']);
+    jsonSuccess(['token' => $token, 'user' => formatUser($user)]);
 }

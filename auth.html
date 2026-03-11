@@ -46,9 +46,19 @@
     })();
   </script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6H7F8Y980M');
+  </script>
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
 </head>
 <div id="g_id_onload"
-     data-client_id="GOOGLE_CLIENT_ID_PLACEHOLDER"
+     data-client_id="918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com"
      data-callback="handleGoogleCredential"
      data-auto_select="false"
      data-cancel_on_tap_outside="true">
@@ -398,7 +408,7 @@ async function handleGoogleCredential(response) {
 
 async function googleSignIn() {
   // Fallback: redirect to Google OAuth
-  const clientId = 'GOOGLE_CLIENT_ID_PLACEHOLDER';
+  const clientId = '918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com';
   const redirect  = encodeURIComponent(window.location.origin + '/auth.html?google=1');
   window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirect}&response_type=code&scope=email%20profile`;
 }
@@ -407,7 +417,7 @@ async function googleSignIn() {
 window.addEventListener('load', () => {
   if (typeof google !== 'undefined' && google.accounts) {
     google.accounts.id.initialize({
-      client_id: 'GOOGLE_CLIENT_ID_PLACEHOLDER',
+      client_id: '918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com',
       callback: handleGoogleCredential,
       auto_select: false,
     });

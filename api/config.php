@@ -16,7 +16,7 @@ header('X-XSS-Protection: 1; mode=block');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=(self)');
 header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
-header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://www.googletagmanager.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.googleapis.com https://*.gstatic.com; connect-src 'self' https://api.anthropic.com https://res.cloudinary.com; frame-src https://www.google.com;");
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://www.googletagmanager.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.googleapis.com https://*.gstatic.com; connect-src 'self' https://api.anthropic.com https://res.cloudinary.com https://www.google-analytics.com https://region1.google-analytics.com; frame-src https://www.google.com;");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);

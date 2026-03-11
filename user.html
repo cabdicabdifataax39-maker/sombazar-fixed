@@ -13,297 +13,138 @@
   <meta property="og:image"       content="" id="ogImage">
   <meta property="og:type"        content="profile">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0f0f0f; font-family: 'Outfit', sans-serif; overflow-x: hidden; min-height: 100vh; }
+    body { overflow-x: hidden; background: #f8fafc; }
 
-    /* ── HERO ──────────────────────────────────────────────── */
-    .hero-wrapper {
-      position: relative;
-      background: #0f0f0f;
-      overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(249,115,22,.18) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-bg::after {
-      content: '';
-      position: absolute; inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f97316' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-
-    .hero-inner {
-      position: relative; z-index: 1;
-      padding: 48px 24px 100px;
+    .user-hero {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      padding: 40px 20px 80px;
       text-align: center;
-      max-width: 680px;
-      margin: 0 auto;
-    }
-
-    /* Avatar */
-    .avatar-ring {
       position: relative;
-      width: 110px; height: 110px;
-      margin: 0 auto 20px;
     }
-    .avatar-ring::before {
-      content: '';
-      position: absolute; inset: -3px;
-      border-radius: 50%;
-      background: conic-gradient(from 0deg, #f97316, #fb923c, #fed7aa, #f97316);
-      animation: spin 4s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .avatar-inner {
-      position: absolute; inset: 3px;
-      border-radius: 50%;
-      background: #1a1a1a;
-      border: 3px solid #0f0f0f;
-      overflow: hidden;
+    .user-avatar {
+      width: 96px; height: 96px; border-radius: 50%;
+      border: 4px solid white;
+      background: rgba(255,255,255,.25);
       display: flex; align-items: center; justify-content: center;
-      font-size: 40px; font-weight: 900; color: white;
-      z-index: 1;
+      font-size: 36px; font-weight: 900; color: white;
+      margin: 0 auto 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
     }
-    .avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-online {
-      position: absolute; bottom: 6px; right: 6px; z-index: 2;
-      width: 16px; height: 16px; border-radius: 50%;
-      background: #22c55e;
-      border: 3px solid #0f0f0f;
+    .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .user-name {
+      font-size: 22px; font-weight: 800; color: white; margin-bottom: 4px;
     }
-
-    .hero-name {
-      font-size: 28px; font-weight: 800; color: #fff;
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
+    .user-meta { font-size: 13px; color: rgba(255,255,255,.8); margin-bottom: 12px; }
+    .user-badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .user-badge {
+      background: rgba(255,255,255,.2); color: white;
+      padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
     }
-    .hero-location {
-      font-size: 13px; color: rgba(255,255,255,.45);
-      display: flex; align-items: center; justify-content: center; gap: 4px;
-      margin-bottom: 14px;
-    }
-    .hero-badges {
-      display: flex; justify-content: center; gap: 8px; flex-wrap: wrap;
-      margin-bottom: 0;
-    }
-    .badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 4px 12px; border-radius: 100px;
-      font-size: 11px; font-weight: 700; letter-spacing: .3px;
-    }
-    .badge-verified { background: rgba(34,197,94,.15); color: #4ade80; border: 1px solid rgba(34,197,94,.25); }
-    .badge-member   { background: rgba(249,115,22,.12); color: #fb923c; border: 1px solid rgba(249,115,22,.2); }
-
-    /* ── STATS CARD ─────────────────────────────────────────── */
-    .stats-card {
+    .user-stats {
+      display: flex; justify-content: center; gap: 0;
+      background: white; border-radius: 16px;
+      max-width: 400px; margin: -40px auto 0;
+      box-shadow: 0 4px 24px rgba(0,0,0,.1);
       position: relative; z-index: 2;
-      max-width: 480px;
-      margin: -52px auto 0;
-      background: #1a1a1a;
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 20px;
-      box-shadow: 0 24px 48px rgba(0,0,0,.5), 0 0 0 1px rgba(249,115,22,.08);
-      display: grid; grid-template-columns: repeat(4, 1fr);
       overflow: hidden;
     }
-    .stat-cell {
-      padding: 18px 8px;
-      text-align: center;
-      border-right: 1px solid rgba(255,255,255,.06);
-      position: relative;
+    .user-stat {
+      flex: 1; padding: 16px 8px; text-align: center;
+      border-right: 1px solid #f1f5f9;
     }
-    .stat-cell:last-child { border-right: none; }
-    .stat-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 22px; font-weight: 700; color: #f97316;
-      line-height: 1;
-    }
-    .stat-lbl {
-      font-size: 10px; color: rgba(255,255,255,.35);
-      font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
-      margin-top: 5px;
+    .user-stat:last-child { border-right: none; }
+    .user-stat .num { font-size: 20px; font-weight: 900; color: #f97316; }
+    .user-stat .lbl { font-size: 11px; color: #94a3b8; font-weight: 600; margin-top: 2px; }
+
+    .profile-content { max-width: 700px; margin: 0 auto; padding: 20px 16px 80px; }
+
+    .action-bar {
+      display: flex; gap: 10px; margin: 20px 0;
     }
 
-    /* ── CONTENT ────────────────────────────────────────────── */
-    .page-content {
-      max-width: 680px; margin: 0 auto;
-      padding: 28px 16px 100px;
-      animation: fadeUp .4s ease both;
+    .section-card {
+      background: white; border-radius: 16px;
+      border: 1px solid #e2e8f0; margin-bottom: 16px; overflow: hidden;
     }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
-
-    /* Action Buttons */
-    .action-row {
-      display: flex; gap: 10px;
-      margin-bottom: 24px;
+    .section-header {
+      padding: 14px 16px; border-bottom: 1px solid #f1f5f9;
+      font-weight: 800; font-size: 15px; color: #1e293b;
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .btn-msg {
-      flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
-      background: #f97316; color: white;
-      border: none; border-radius: 14px;
-      padding: 14px 20px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: all .2s;
-      box-shadow: 0 4px 20px rgba(249,115,22,.35);
+    .listings-mini-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+      padding: 14px;
     }
-    .btn-msg:hover { background: #ea580c; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(249,115,22,.45); }
-    .btn-share {
-      width: 50px; height: 50px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 14px; cursor: pointer;
-      color: rgba(255,255,255,.6); transition: all .2s;
+    @media (min-width: 480px) {
+      .listings-mini-grid { grid-template-columns: repeat(3, 1fr); }
     }
-    .btn-share:hover { background: rgba(255,255,255,.1); color: white; }
-
-    /* Section */
-    .section { margin-bottom: 20px; }
-    .section-title {
-      font-size: 13px; font-weight: 700; letter-spacing: .8px;
-      text-transform: uppercase; color: rgba(255,255,255,.3);
-      margin-bottom: 12px; padding: 0 2px;
+    .mini-card {
+      border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0;
+      text-decoration: none; color: inherit; display: block;
+      transition: transform .15s, box-shadow .15s;
     }
-    .dark-card {
-      background: #1a1a1a;
-      border: 1px solid rgba(255,255,255,.07);
-      border-radius: 18px;
-      overflow: hidden;
+    .mini-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+    .mini-card-img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      background: #f1f5f9; display: flex; align-items: center;
+      justify-content: center; font-size: 28px; color: #cbd5e1;
     }
-
-    /* Listings Grid */
-    .listings-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1px;
-      background: rgba(255,255,255,.07);
-    }
-    @media (min-width: 480px) { .listings-grid { grid-template-columns: repeat(3, 1fr); } }
-
-    .listing-tile {
-      background: #1a1a1a;
-      text-decoration: none; color: inherit;
-      display: block; position: relative;
-      overflow: hidden;
-      transition: background .2s;
-    }
-    .listing-tile:hover { background: #222; }
-    .listing-tile:hover .tile-img img { transform: scale(1.05); }
-    .tile-img {
-      width: 100%; aspect-ratio: 4/3;
-      background: #111;
-      overflow: hidden;
-    }
-    .tile-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s ease; }
-    .tile-placeholder {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px; color: rgba(255,255,255,.1);
-    }
-    .tile-body { padding: 10px 12px 12px; }
-    .tile-title {
-      font-size: 12px; font-weight: 600; color: rgba(255,255,255,.8);
+    .mini-card-img img { width: 100%; height: 100%; object-fit: cover; }
+    .mini-card-body { padding: 8px; }
+    .mini-card-title {
+      font-size: 12px; font-weight: 700; color: #1e293b;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      margin-bottom: 3px;
     }
-    .tile-price { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: #f97316; }
-    .tile-badge {
-      position: absolute; top: 8px; left: 8px;
-      background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
-      color: white; font-size: 9px; font-weight: 800;
-      padding: 2px 7px; border-radius: 6px; letter-spacing: .5px;
-      text-transform: uppercase;
-    }
-    .no-listings {
-      padding: 48px 20px; text-align: center;
-      color: rgba(255,255,255,.2); font-size: 13px;
-    }
-
-    /* Reviews */
-    .review-summary {
-      padding: 20px;
-      display: flex; align-items: center; gap: 20px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .review-big-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 48px; font-weight: 700; color: #f97316;
-      line-height: 1;
-    }
-    .review-stars { display: flex; gap: 3px; margin-bottom: 6px; }
-    .star { font-size: 16px; }
-    .star.on  { color: #f59e0b; }
-    .star.off { color: rgba(255,255,255,.15); }
-    .review-label { font-size: 12px; color: rgba(255,255,255,.4); font-weight: 500; }
+    .mini-card-price { font-size: 12px; font-weight: 800; color: #f97316; margin-top: 2px; }
 
     .review-item {
-      display: flex; gap: 12px;
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.04);
-      transition: background .2s;
+      display: flex; gap: 12px; padding: 14px 16px;
+      border-bottom: 1px solid #f8fafc;
     }
     .review-item:last-child { border-bottom: none; }
-    .review-item:hover { background: rgba(255,255,255,.02); }
-    .rev-avatar {
-      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
-      background: linear-gradient(135deg, #f97316, #ea580c);
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: 14px; color: white;
+    .review-avatar {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      background: #f97316; color: white; display: flex;
+      align-items: center; justify-content: center; font-weight: 800;
       overflow: hidden;
     }
-    .rev-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .rev-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.85); }
-    .rev-date { font-size: 11px; color: rgba(255,255,255,.25); }
-    .rev-comment { font-size: 13px; color: rgba(255,255,255,.5); line-height: 1.6; margin-top: 6px; }
-    .rev-stars { display: flex; gap: 2px; margin-top: 2px; }
-    .rev-stars .star { font-size: 11px; }
+    .review-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Skeleton */
-    .sk { background: linear-gradient(90deg, #222 25%, #2a2a2a 50%, #222 75%); background-size: 200% 100%; animation: sh 1.5s infinite; border-radius: 8px; }
-    @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-    /* Navbar override for dark */
-    .nav-container { background: rgba(15,15,15,.95) !important; border-bottom: 1px solid rgba(255,255,255,.06) !important; backdrop-filter: blur(16px); }
-    .logo { color: #f97316 !important; }
-    .mobile-bottom-nav { background: rgba(15,15,15,.97) !important; border-top: 1px solid rgba(255,255,255,.06) !important; }
-    .mob-nav-btn { color: rgba(255,255,255,.4) !important; }
-
-    /* Page background */
-    .page-bg {
-      position: fixed; inset: 0; z-index: -1;
-      background: #0f0f0f;
-    }
-    .page-bg::before {
-      content: '';
-      position: absolute;
-      top: 30%; left: -20%;
-      width: 60%; height: 60%;
-      background: radial-gradient(circle, rgba(249,115,22,.04) 0%, transparent 70%);
-      pointer-events: none;
-    }
+    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .profile-content { animation: slideUp .3s ease; }
   </style>
 <script type="application/ld+json" id="userSchema">{}</script>
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6H7F8Y980M');
+  </script>
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
 </head>
 <body>
-<div class="page-bg"></div>
 
 <!-- NAVBAR -->
 <nav class="nav-container" style="overflow:visible;flex-wrap:nowrap">
   <a href="index.html" class="logo">SomBazar</a>
   <div class="header-actions">
     <div id="header-user" style="display:none;align-items:center;gap:8px">
-      <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative;color:rgba(255,255,255,.6)">
+      <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
       </a>
-      <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px;color:rgba(255,255,255,.7)"></a>
+      <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px"></a>
     </div>
-    <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin" style="color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.15)">Sign In</a>
+    <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
     <a href="post.html" class="btn-post-ad">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
       Post Ad
@@ -313,85 +154,88 @@
 
 <!-- HERO SKELETON -->
 <div id="heroSkeleton">
-  <div style="background:#0f0f0f;padding:48px 24px 100px;text-align:center">
-    <div style="width:110px;height:110px;border-radius:50%;margin:0 auto 20px" class="sk"></div>
-    <div style="width:180px;height:28px;border-radius:8px;margin:0 auto 10px" class="sk"></div>
-    <div style="width:130px;height:14px;border-radius:6px;margin:0 auto" class="sk"></div>
+  <div style="background:linear-gradient(135deg,#f97316,#ea580c);padding:40px 20px 80px;text-align:center">
+    <div style="width:96px;height:96px;border-radius:50%;margin:0 auto 12px" class="skeleton"></div>
+    <div style="width:160px;height:22px;border-radius:8px;margin:0 auto 8px" class="skeleton"></div>
+    <div style="width:120px;height:14px;border-radius:6px;margin:0 auto" class="skeleton"></div>
   </div>
 </div>
 
 <!-- HERO -->
 <div id="userHero" style="display:none">
-  <div class="hero-wrapper">
-    <div class="hero-bg"></div>
-    <div class="hero-inner">
-      <div class="avatar-ring">
-        <div class="avatar-inner" id="heroAvatar"></div>
-        <div class="avatar-online"></div>
-      </div>
-      <div class="hero-name" id="heroName">Loading…</div>
-      <div class="hero-location" id="heroMeta">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span id="heroMetaText"></span>
-      </div>
-      <div class="hero-badges" id="heroBadges"></div>
-    </div>
+  <div class="user-hero">
+    <div class="user-avatar" id="heroAvatar"></div>
+    <div class="user-name" id="heroName">Loading…</div>
+    <div class="user-meta" id="heroMeta"></div>
+    <div class="user-badges" id="heroBadges"></div>
   </div>
-
-  <div class="stats-card">
-    <div class="stat-cell">
-      <div class="stat-num" id="statListings">0</div>
-      <div class="stat-lbl">Listings</div>
+  <div class="user-stats">
+    <div class="user-stat">
+      <div class="num" id="statListings">0</div>
+      <div class="lbl">Listings</div>
     </div>
-    <div class="stat-cell">
-      <div class="stat-num" id="statRating">—</div>
-      <div class="stat-lbl">Rating</div>
+    <div class="user-stat">
+      <div class="num" id="statRating">—</div>
+      <div class="lbl">Rating</div>
     </div>
-    <div class="stat-cell">
-      <div class="stat-num" id="statReviews">0</div>
-      <div class="stat-lbl">Reviews</div>
+    <div class="user-stat">
+      <div class="num" id="statReviews">0</div>
+      <div class="lbl">Reviews</div>
     </div>
-    <div class="stat-cell">
-      <div class="stat-num" id="statMember">—</div>
-      <div class="stat-lbl">Since</div>
+    <div class="user-stat">
+      <div class="num" id="statMember">—</div>
+      <div class="lbl">Member</div>
     </div>
   </div>
 </div>
 
 <!-- CONTENT -->
-<div class="page-content">
+<div class="profile-content">
 
-  <!-- Action Row -->
-  <div class="action-row" id="actionBar" style="display:none;margin-top:28px">
-    <button onclick="sendMessage()" class="btn-msg">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <!-- Action Buttons -->
+  <div class="action-bar" id="actionBar" style="display:none">
+    <button onclick="sendMessage()" class="btn btn-primary" style="flex:2;display:flex;align-items:center;justify-content:center;gap:6px">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       Send Message
     </button>
-    <button onclick="shareProfile()" class="btn-share" title="Share">
+    <button onclick="shareProfile()" class="btn btn-ghost" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Share
     </button>
   </div>
 
   <!-- Listings -->
-  <div class="section">
-    <div class="section-title">Active Listings <span id="listingsCount" style="color:rgba(255,255,255,.2)"></span></div>
-    <div class="dark-card">
-      <div id="listingsGrid" class="listings-grid">
-        <div style="background:#1a1a1a"><div style="aspect-ratio:4/3" class="sk"></div><div style="padding:10px 12px;height:50px" class="sk" style="margin:8px 12px"></div></div>
-        <div style="background:#1a1a1a"><div style="aspect-ratio:4/3" class="sk"></div><div style="padding:10px 12px;height:50px"></div></div>
-        <div style="background:#1a1a1a"><div style="aspect-ratio:4/3" class="sk"></div><div style="padding:10px 12px;height:50px"></div></div>
-      </div>
-      <div id="noListings" style="display:none" class="no-listings">No active listings yet</div>
+  <div class="section-card">
+    <div class="section-header">
+      <span> Active Listings</span>
+      <span id="listingsCount" style="font-size:12px;font-weight:600;color:#94a3b8"></span>
     </div>
+    <div id="listingsGrid" class="listings-mini-grid">
+      <!-- skeletons -->
+      <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="width:100%;aspect-ratio:4/3" class="skeleton"></div>
+        <div style="padding:8px"><div style="height:14px;border-radius:4px;margin-bottom:6px" class="skeleton"></div><div style="height:12px;width:60%;border-radius:4px" class="skeleton"></div></div>
+      </div>
+      <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="width:100%;aspect-ratio:4/3" class="skeleton"></div>
+        <div style="padding:8px"><div style="height:14px;border-radius:4px;margin-bottom:6px" class="skeleton"></div><div style="height:12px;width:60%;border-radius:4px" class="skeleton"></div></div>
+      </div>
+      <div style="border-radius:10px;overflow:hidden;border:1px solid #e2e8f0">
+        <div style="width:100%;aspect-ratio:4/3" class="skeleton"></div>
+        <div style="padding:8px"><div style="height:14px;border-radius:4px;margin-bottom:6px" class="skeleton"></div><div style="height:12px;width:60%;border-radius:4px" class="skeleton"></div></div>
+      </div>
+    </div>
+    <div id="noListings" style="display:none;text-align:center;padding:30px;color:#94a3b8;font-size:13px">No active listings yet</div>
   </div>
 
   <!-- Reviews -->
-  <div class="section">
-    <div class="section-title">Reviews <span id="reviewsCount" style="color:rgba(255,255,255,.2)"></span></div>
-    <div class="dark-card">
-      <div id="reviewsContainer">
-        <div style="padding:32px;text-align:center;color:rgba(255,255,255,.2);font-size:13px">Loading reviews…</div>
-      </div>
+  <div class="section-card">
+    <div class="section-header">
+      <span>⭐ Reviews</span>
+      <span id="reviewsCount" style="font-size:12px;font-weight:600;color:#94a3b8"></span>
+    </div>
+    <div id="reviewsContainer">
+      <div style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Loading reviews…</div>
     </div>
   </div>
 
@@ -409,11 +253,12 @@
 </nav>
 
 <script>
+// Fallback Auth stub
 window.Auth = window.Auth || {
   getToken:    () => localStorage.getItem('sb_token') || '',
   getUser:     () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
   isLoggedIn:  () => !!localStorage.getItem('sb_token'),
-  setSession:  (token, user) => { localStorage.setItem('sb_token', token); localStorage.setItem('sb_user', JSON.stringify(user)); },
+  setSession:  () => {},
   clearSession:() => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
 };
 </script>
@@ -424,21 +269,17 @@ const userId   = parseInt(params.get('id') || '0');
 let   sellerData = null;
 
 if (!userId) {
-  document.body.innerHTML = '<div style="text-align:center;padding:60px;font-size:15px;color:rgba(255,255,255,.4)">User not found. <a href="index.html" style="color:#f97316">Go Home</a></div>';
-}
-
-function starsHTML(rating, size = 14) {
-  return [1,2,3,4,5].map(i =>
-    `<span class="star ${i <= Math.round(rating) ? 'on' : 'off'}" style="font-size:${size}px">★</span>`
-  ).join('');
+  document.body.innerHTML = '<div style="text-align:center;padding:60px;font-size:15px;color:#64748b">User not found. <a href="index.html">Go Home</a></div>';
 }
 
 async function loadProfile() {
   try {
+    // Kullanıcı bilgilerini listings API üzerinden al
     const r = await fetch(`api/listings.php?action=list&user_id=${userId}&pageSize=50`);
     const d = await r.json();
     const listings = d.success ? (d.data || []) : [];
 
+    // İlk listing'den seller bilgisi al
     if (listings.length > 0) {
       const l = listings[0];
       sellerData = {
@@ -450,6 +291,7 @@ async function loadProfile() {
         memberSince: l.seller?.memberSince || l.sellerMemberSince || null,
       };
     } else {
+      // Listings yok - kullanıcıyı doğrudan çek (auth/me yetersiz, ama user_id ile deneyebiliriz)
       sellerData = { id: userId, name: 'Seller', avatar: null, city: 'Somaliland', verified: false };
     }
 
@@ -457,6 +299,7 @@ async function loadProfile() {
     renderListings(listings);
     loadReviews();
 
+    // SEO
     document.title = `${sellerData.name} — SomBazar`;
     document.getElementById('ogTitle')?.setAttribute('content', `${sellerData.name} — SomBazar`);
     document.getElementById('metaDesc')?.setAttribute('content', `View ${sellerData.name}'s listings and reviews on SomBazar`);
@@ -473,6 +316,7 @@ function renderHero(s, listingCount) {
   document.getElementById('userHero').style.display = '';
   document.getElementById('actionBar').style.display = 'flex';
 
+  // Avatar
   const avatarEl = document.getElementById('heroAvatar');
   if (s.avatar) {
     avatarEl.innerHTML = `<img loading="lazy" src="${s.avatar}" alt="${s.name}">`;
@@ -483,26 +327,30 @@ function renderHero(s, listingCount) {
   document.getElementById('heroName').textContent = s.name;
 
   const metaParts = [];
-  if (s.city) metaParts.push(s.city);
+  if (s.city) metaParts.push(' ' + s.city);
   if (s.memberSince) metaParts.push('Member since ' + s.memberSince);
-  document.getElementById('heroMetaText').textContent = metaParts.join(' · ');
+  document.getElementById('heroMeta').textContent = metaParts.join(' · ');
 
+  // Badges
   const badges = [];
-  if (s.verified) badges.push(`<span class="badge badge-verified">✓ Verified</span>`);
-  if (s.memberSince) badges.push(`<span class="badge badge-member">Since ${s.memberSince}</span>`);
-  document.getElementById('heroBadges').innerHTML = badges.join('');
+  if (s.verified) badges.push('✓ Verified');
+  document.getElementById('heroBadges').innerHTML = badges.map(b =>
+    `<span class="user-badge">${b}</span>`
+  ).join('');
 
   document.getElementById('statListings').textContent = listingCount;
-  if (s.memberSince) document.getElementById('statMember').textContent = s.memberSince;
-
-  const schema = {
-    "@context": "https://schema.org", "@type": "Person",
-    "name": s.name, "image": s.avatar || '',
+  // Person schema
+  const _uSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": s.name,
+    "image": s.avatar || '',
     "address": { "@type": "PostalAddress", "addressLocality": s.city || 'Somaliland' }
   };
-  const schemaEl = document.getElementById('userSchema');
-  if (schemaEl) schemaEl.textContent = JSON.stringify(schema);
+  const _uSchemaEl = document.getElementById('userSchema');
+  if (_uSchemaEl) _uSchemaEl.textContent = JSON.stringify(_uSchema);
 
+  // Kendi profiline bakıyorsa "Send Message" gizle
   const me = Auth.getUser();
   if (me && parseInt(me.id) === userId) {
     document.getElementById('actionBar').style.display = 'none';
@@ -512,27 +360,24 @@ function renderHero(s, listingCount) {
 function renderListings(listings) {
   const grid = document.getElementById('listingsGrid');
   const none = document.getElementById('noListings');
-  document.getElementById('listingsCount').textContent = listings.length ? `${listings.length}` : '';
+  document.getElementById('listingsCount').textContent = listings.length ? `${listings.length} listings` : '';
 
   if (!listings.length) {
     grid.style.display = 'none';
     none.style.display = '';
     return;
   }
-
   grid.innerHTML = listings.slice(0, 12).map(l => {
-    const img   = l.images?.[0] || l.image || null;
-    const price = l.price ? `${l.currency || 'USD'} ${Number(l.price).toLocaleString()}` : 'Negotiable';
-    const isNew = l.createdAt && (Date.now() - new Date(l.createdAt)) < 7*24*3600*1000;
+    const img  = l.images?.[0] || l.image || null;
+    const price = l.price ? `${l.currency || 'USD'} ${Number(l.price).toLocaleString()}` : 'Price negotiable';
     return `
-      <a href="listing.html?id=${l.id}" class="listing-tile">
-        <div class="tile-img">
-          ${img ? `<img loading="lazy" src="${img}" alt="${l.title}">` : `<div class="tile-placeholder">🏷️</div>`}
+      <a href="listing.html?id=${l.id}" class="mini-card">
+        <div class="mini-card-img">
+          ${img ? `<img loading="lazy" src="${img}" alt="${l.title}">` : ''}
         </div>
-        ${isNew ? `<div class="tile-badge">New</div>` : ''}
-        <div class="tile-body">
-          <div class="tile-title">${l.title || 'Listing'}</div>
-          <div class="tile-price">${price}</div>
+        <div class="mini-card-body">
+          <div class="mini-card-title">${l.title || 'Listing'}</div>
+          <div class="mini-card-price">${price}</div>
         </div>
       </a>`;
   }).join('');
@@ -548,49 +393,56 @@ async function loadReviews() {
 
     document.getElementById('statRating').textContent  = avg_rating || '—';
     document.getElementById('statReviews').textContent = total || 0;
-    document.getElementById('reviewsCount').textContent = total ? `${total}` : '';
+    document.getElementById('reviewsCount').textContent = total ? `${total} reviews` : '';
 
     if (!total) {
-      container.innerHTML = '<div class="no-listings" style="padding:36px">No reviews yet</div>';
+      container.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">No reviews yet</div>';
       return;
     }
 
-    const label = avg_rating >= 4.5 ? '🌟 Excellent Seller' : avg_rating >= 3.5 ? '👍 Good Seller' : '— Average';
+    // Özet bar
+    const starsHtml = (rating, size=14) => [1,2,3,4,5].map(i =>
+      `<span style="color:${i<=Math.round(rating)?'#f59e0b':'#e2e8f0'};font-size:${size}px">★</span>`
+    ).join('');
 
     const summaryHTML = `
-      <div class="review-summary">
-        <div class="review-big-num">${avg_rating}</div>
+      <div style="display:flex;align-items:center;gap:16px;padding:14px 16px;background:#fffbeb;border-bottom:1px solid #fef3c7">
+        <div style="text-align:center">
+          <div style="font-size:32px;font-weight:900;color:#f59e0b;line-height:1">${avg_rating}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">${total} review${total!==1?'s':''}</div>
+        </div>
         <div>
-          <div class="review-stars">${starsHTML(avg_rating, 18)}</div>
-          <div class="review-label">${label} · ${total} review${total !== 1 ? 's' : ''}</div>
+          ${starsHtml(avg_rating, 18)}
+          <div style="font-size:12px;color:#64748b;margin-top:4px">
+            ${avg_rating >= 4.5 ? ' Excellent Seller' : avg_rating >= 3.5 ? '👍 Good Seller' : ' Average'}
+          </div>
         </div>
       </div>`;
 
     const reviewsHTML = reviews.map(rev => {
-      const date = new Date(rev.createdAt).toLocaleDateString('en', {year:'numeric', month:'short', day:'numeric'});
-      const avEl = rev.reviewerAvatar
+      const date    = new Date(rev.createdAt).toLocaleDateString('en', {year:'numeric',month:'short',day:'numeric'});
+      const avatarEl = rev.reviewerAvatar
         ? `<img loading="lazy" src="${rev.reviewerAvatar}" style="width:100%;height:100%;object-fit:cover">`
-        : `<span>${(rev.reviewerName || '?')[0].toUpperCase()}</span>`;
+        : `<span style="font-size:15px;font-weight:800">${(rev.reviewerName||'?')[0].toUpperCase()}</span>`;
       return `
         <div class="review-item">
-          <div class="rev-avatar">${avEl}</div>
+          <div class="review-avatar">${avatarEl}</div>
           <div style="flex:1;min-width:0">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
               <div>
-                <div class="rev-name">${rev.reviewerName || 'Anonymous'}</div>
-                <div class="rev-stars">${starsHTML(rev.rating, 11)}</div>
+                <div style="font-weight:700;font-size:13px;color:#1e293b">${rev.reviewerName || 'Anonymous'}</div>
+                <div style="margin-top:2px">${starsHtml(rev.rating)}</div>
               </div>
-              <div class="rev-date">${date}</div>
+              <div style="font-size:11px;color:#94a3b8;white-space:nowrap">${date}</div>
             </div>
-            ${rev.comment ? `<p class="rev-comment">${rev.comment}</p>` : ''}
+            ${rev.comment ? `<p style="font-size:13px;color:#475569;margin:6px 0 0;line-height:1.5">${rev.comment}</p>` : ''}
           </div>
         </div>`;
     }).join('');
 
     container.innerHTML = summaryHTML + reviewsHTML;
-
   } catch(e) {
-    container.innerHTML = '<div style="padding:24px;color:rgba(255,255,255,.2);font-size:13px;text-align:center">Could not load reviews</div>';
+    container.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:13px;text-align:center">Could not load reviews</div>';
   }
 }
 
@@ -605,6 +457,7 @@ async function sendMessage() {
     return;
   }
   try {
+    // Varsa ilk listing ile konuşma başlat
     const r = await fetch('api/messages.php?action=get_or_create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
@@ -631,8 +484,10 @@ function shareProfile() {
   }
 }
 
+// Init
 if (userId) {
   loadProfile();
+  // Navbar
   document.addEventListener('DOMContentLoaded', () => {
     const u = Auth.getUser();
     if (u) {
@@ -640,13 +495,7 @@ if (userId) {
       const hu = document.getElementById('header-user');
       hu.style.display = 'flex';
       const av = hu.querySelector('.header-avatar');
-      if (av) {
-        if (u.photoURL) {
-          av.innerHTML = `<img src="${u.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`;
-        } else {
-          av.textContent = (u.displayName || 'U')[0].toUpperCase();
-        }
-      }
+      if (av) av.textContent = (u.displayName || u.display_name || 'U')[0].toUpperCase();
     }
     if (typeof Notif !== 'undefined' && Auth.isLoggedIn()) Notif.init();
   });
