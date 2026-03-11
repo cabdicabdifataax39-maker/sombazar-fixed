@@ -1063,17 +1063,20 @@ function handleResolveReport(): void {
 function handleListReports(): void {
     requireAdmin();
     $db = getDB();
-    // status kolonu yoksa resolved kullan
-    try { $db->exec("ALTER TABLE reports ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'pending'"); } catch(\Throwable $e) {}
-    $status = $_GET['status'] ?? '';
+    // status kolonu var mi kontrol et, yoksa ekle
+    $cols = $db->query("SHOW COLUMNS FROM reports")->fetchAll(PDO::FETCH_COLUMN);
+    if (!in_array('status', $cols)) {
+        try { $db->exec("ALTER TABLE reports ADD COLUMN status VARCHAR(20) DEFAULT 'pending'"); } catch(\Throwable $e) {}
+    }
+    $filterStatus = $_GET['status'] ?? '';
+    // status kolonu artik var, guvvenle kullan
     $sql = "SELECT r.*, u.display_name as reporter_name, u.email as reporter_email
             FROM reports r LEFT JOIN users u ON u.id = r.reporter_id";
-    $params = [];
-    if ($status === 'pending')   { $sql .= " WHERE (r.status='pending' OR (r.status IS NULL AND r.resolved=0))"; }
-    elseif ($status === 'reviewed')  { $sql .= " WHERE r.status='reviewed' OR r.resolved=1"; }
-    elseif ($status === 'dismissed') { $sql .= " WHERE r.status='dismissed'"; }
+    if ($filterStatus === 'pending')    { $sql .= " WHERE (r.status='pending' OR r.status IS NULL)"; }
+    elseif ($filterStatus === 'reviewed')   { $sql .= " WHERE r.status='reviewed'"; }
+    elseif ($filterStatus === 'dismissed')  { $sql .= " WHERE r.status='dismissed'"; }
     $sql .= " ORDER BY r.created_at DESC LIMIT 100";
-    $st = $db->prepare($sql); $st->execute($params);
+    $st = $db->prepare($sql); $st->execute();
     jsonSuccess(['reports' => $st->fetchAll()]);
 }
 

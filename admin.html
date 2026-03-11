@@ -1407,7 +1407,7 @@
         <option value="365">This year</option>
       </select>
     </div>
-    <div class="stats-row" style="margin-bottom:24px">
+    <div class="stats-row" style="margin-bottom:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
       <div class="stat-card" style="--accent:#22c55e">
         <div class="stat-num" id="revTotal">$—</div>
         <div class="stat-label">Total Revenue</div>
@@ -1725,6 +1725,13 @@ function escHTML(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 const esc = escHTML; // alias
+function fmtDate(d) {
+  if (!d) return '—';
+  try {
+    return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  } catch(e) { return d; }
+}
+function fmtMoney(v) { return '$' + parseFloat(v||0).toFixed(2); }
 
 
 function debounce(fn, delay) {
