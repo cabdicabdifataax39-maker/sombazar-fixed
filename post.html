@@ -43,6 +43,485 @@
   </script>
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script>tailwind.config={ theme:{ extend:{ colors:{ primary:"#ec5b13" }, fontFamily:{ sans:["Public Sans","sans-serif"] } } } }</script>
+  <style>
+    body { font-family: "Public Sans", sans-serif; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
+    .toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+    .toast{background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);}
+    .toast.success{background:#10b981;} .toast.error{background:#ef4444;}
+    .cat-card.selected { border-color:#ec5b13 !important; background:rgba(236,91,19,.05) !important; }
+    .cat-card.selected .cat-icon { background:#ec5b13 !important; color:white !important; }
+    .image-slot { aspect-ratio:1; border-radius:12px; border:2px dashed #e2e8f0; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:all .2s; background:#f8fafc; overflow:hidden; position:relative; }
+    .image-slot:hover { border-color:#ec5b13; background:rgba(236,91,19,.03); }
+    .image-slot.filled { border-style:solid; border-color:#ec5b13; }
+    .image-slot.filled img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+    [data-theme="dark"] body { background:#1e293b;color:#f1f5f9; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 w-full bg-white border-b border-slate-200 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-14 gap-6">
+      <a href="index.html" class="flex items-center gap-2 flex-shrink-0">
+        <div class="bg-primary p-1.5 rounded-lg text-white"><span class="material-symbols-outlined text-lg block">sell</span></div>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900">SomBazar</h1>
+      </a>
+      <div class="hidden md:flex flex-1 max-w-lg">
+        <div class="relative w-full">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+          <input class="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="Search for anything...">
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <nav class="hidden lg:flex items-center gap-5 mr-3">
+          <a href="index.html" class="text-sm font-medium text-slate-600 hover:text-primary">Home</a>
+          <a href="listings.html" class="text-sm font-medium text-slate-600 hover:text-primary">Browse</a>
+          <a href="profile.html" class="text-sm font-medium text-slate-600 hover:text-primary">My Ads</a>
+        </nav>
+        <div style="position:relative" id="notifBellWrap">
+          <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-2 text-slate-500 hover:text-primary transition-colors">
+            <span class="material-symbols-outlined">notifications</span>
+            <span id="notifBadge" style="display:none" class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
+          </button>
+          <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;max-height:400px;overflow-y:auto">
+            <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9"><span style="font-weight:800;font-size:14px">Notifications</span></div>
+            <div id="notifList"></div>
+          </div>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden border-2 border-slate-100" id="headerAvatarWrap">
+          <a href="profile.html" id="headerAvatarLink" class="w-full h-full flex items-center justify-center font-black text-slate-600 text-xs"></a>
+        </div>
+        <a href="auth.html" id="header-signin" class="text-sm font-bold text-slate-700 hover:text-primary px-2">Sign In</a>
+        <div id="header-user" style="display:none"></div>
+        <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <!-- PAGE HEADER -->
+  <div class="mb-8">
+    <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Sell Something New</h2>
+    <p class="text-slate-500">Fill in the details below to reach thousands of buyers across Somaliland.</p>
+  </div>
+
+  <!-- DRAFT BANNER -->
+  <div id="draftBanner" style="display:none" class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <span class="material-symbols-outlined text-amber-500 text-2xl">draft</span>
+      <div>
+        <p class="font-bold text-amber-800 text-sm">You have a saved draft</p>
+        <p class="text-amber-600 text-xs">Continue where you left off</p>
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button id="restoreDraft" class="text-xs font-bold bg-amber-500 text-white px-4 py-2 rounded-xl hover:bg-amber-600 transition-colors">Restore</button>
+      <button id="clearDraft" class="text-xs font-bold text-slate-500 hover:text-red-500 px-3 py-2">Clear</button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+    <!-- LEFT: Form -->
+    <div class="lg:col-span-8 space-y-6">
+
+      <!-- STEP PROGRESS BAR -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="relative">
+          <div class="absolute top-5 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
+          <div class="absolute top-5 left-0 h-0.5 bg-primary -z-0 transition-all" id="progressBar" style="width:20%"></div>
+          <div class="flex justify-between relative z-10">
+            <div class="flex flex-col items-center gap-2" id="step-dot-1">
+              <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-lg shadow-primary/20">1</div>
+              <span class="text-xs font-semibold text-primary">Category</span>
+            </div>
+            <div class="flex flex-col items-center gap-2" id="step-dot-2">
+              <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center font-bold">2</div>
+              <span class="text-xs font-medium text-slate-400">Details</span>
+            </div>
+            <div class="flex flex-col items-center gap-2" id="step-dot-3">
+              <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center font-bold">3</div>
+              <span class="text-xs font-medium text-slate-400">Photos</span>
+            </div>
+            <div class="flex flex-col items-center gap-2" id="step-dot-4">
+              <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center font-bold">4</div>
+              <span class="text-xs font-medium text-slate-400">Location</span>
+            </div>
+            <div class="flex flex-col items-center gap-2" id="step-dot-5">
+              <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center font-bold">5</div>
+              <span class="text-xs font-medium text-slate-400">Review</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 1: Category -->
+      <section id="step1" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100">
+          <h3 class="text-xl font-bold text-slate-900">Step 1: Choose a Category</h3>
+          <p class="text-sm text-slate-500 mt-1">Select the type of item you are listing to help buyers find it easier.</p>
+        </div>
+        <div class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-4" id="categoryGrid">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="car">
+            <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-2xl">directions_car</span>
+            </div>
+            <span class="font-bold text-slate-900 text-sm block mb-0.5">Cars</span>
+            <span class="text-[11px] text-slate-400">Vehicles &amp; Parts</span>
+          </button>
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="house">
+            <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-2xl">home</span>
+            </div>
+            <span class="font-bold text-slate-900 text-sm block mb-0.5">Houses</span>
+            <span class="text-[11px] text-slate-400">Rent or Buy</span>
+          </button>
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="land">
+            <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-2xl">landscape</span>
+            </div>
+            <span class="font-bold text-slate-900 text-sm block mb-0.5">Land</span>
+            <span class="text-[11px] text-slate-400">Plots &amp; Farms</span>
+          </button>
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="electronics">
+            <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-2xl">devices</span>
+            </div>
+            <span class="font-bold text-slate-900 text-sm block mb-0.5">Electronics</span>
+            <span class="text-[11px] text-slate-400">Gadgets &amp; Phones</span>
+          </button>
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="furniture">
+            <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-2xl">chair</span>
+            </div>
+            <span class="font-bold text-slate-900 text-sm block mb-0.5">Furniture</span>
+            <span class="text-[11px] text-slate-400">Home Decor</span>
+          </button>
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="jobs">
+            <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-2xl">work</span>
+            </div>
+            <span class="font-bold text-slate-900 text-sm block mb-0.5">Jobs</span>
+            <span class="text-[11px] text-slate-400">Hiring &amp; CVs</span>
+          </button>
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="services">
+            <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-2xl">construction</span>
+            </div>
+            <span class="font-bold text-slate-900 text-sm block mb-0.5">Services</span>
+            <span class="text-[11px] text-slate-400">Professional Help</span>
+          </button>
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="hotel">
+            <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-2xl">apartment</span>
+            </div>
+            <span class="font-bold text-slate-900 text-sm block mb-0.5">Hotels</span>
+            <span class="text-[11px] text-slate-400">Stays &amp; Bookings</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- STEP 2: Details -->
+      <section id="step2" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100">
+          <h3 class="text-xl font-bold text-slate-900">Step 2: Listing Details</h3>
+          <p class="text-sm text-slate-500 mt-1">Tell buyers what you're selling.</p>
+        </div>
+        <div class="p-6 space-y-5">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Ad Title *</label>
+            <input id="adTitle" type="text" placeholder="e.g. Toyota Vitz 2018 - Clean Condition" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">Price (USD) *</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-sm">$</span>
+                <input id="adPrice" type="number" placeholder="0" class="w-full pl-8 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">Price Type</label>
+              <select id="adPriceType" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+                <option value="fixed">Fixed</option>
+                <option value="negotiable">Negotiable</option>
+                <option value="free">Free</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Condition</label>
+            <select id="adCondition" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+              <option value="new">New</option>
+              <option value="like_new">Like New</option>
+              <option value="good">Good</option>
+              <option value="fair">Fair</option>
+              <option value="parts">For Parts</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Description *</label>
+            <textarea id="adDesc" rows="5" placeholder="Describe your item in detail — condition, features, reason for selling..." class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none resize-none"></textarea>
+          </div>
+          <div id="specFields" class="space-y-4"></div>
+        </div>
+      </section>
+
+      <!-- STEP 3: Photos -->
+      <section id="step3" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100">
+          <h3 class="text-xl font-bold text-slate-900">Step 3: Add Photos</h3>
+          <p class="text-sm text-slate-500 mt-1">Add up to 10 photos. First photo will be the main image.</p>
+        </div>
+        <div class="p-6">
+          <div id="dropZone" class="border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center cursor-pointer hover:border-primary hover:bg-primary/3 transition-all mb-4">
+            <span class="material-symbols-outlined text-4xl text-slate-300 mb-3 block">cloud_upload</span>
+            <p class="font-bold text-slate-700 mb-1">Drag &amp; drop photos here</p>
+            <p class="text-sm text-slate-400 mb-4">or click to browse — JPG, PNG up to 8MB each</p>
+            <button type="button" class="bg-primary text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">Select Photos</button>
+            <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
+          </div>
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-3" id="photoPreviewGrid"></div>
+        </div>
+      </section>
+
+      <!-- STEP 4: Location -->
+      <section id="step4" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100">
+          <h3 class="text-xl font-bold text-slate-900">Step 4: Location</h3>
+          <p class="text-sm text-slate-500 mt-1">Help buyers find your listing.</p>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">City *</label>
+              <select id="adCity" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+                <option value="Hargeisa">Hargeisa</option>
+                <option value="Berbera">Berbera</option>
+                <option value="Burco">Burco</option>
+                <option value="Borama">Borama</option>
+                <option value="Gabiley">Gabiley</option>
+                <option value="Ceerigaavo">Ceerigaavo</option>
+                <option value="Laascaanood">Laascaanood</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">Phone Number *</label>
+              <input id="adPhone" type="tel" placeholder="+252 63 456 789" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Specific Address / Landmark (optional)</label>
+            <input id="adAddress" type="text" placeholder="e.g. Near Hargeisa Hospital, Sha'ab area" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+          </div>
+          <div class="flex items-center gap-2 p-4 bg-slate-50 rounded-xl">
+            <input type="checkbox" id="showWhatsapp" class="rounded border-slate-300 text-primary focus:ring-primary">
+            <label for="showWhatsapp" class="text-sm text-slate-700 font-medium">Also show WhatsApp button to buyers</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 5: Review -->
+      <section id="step5" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-slate-100">
+          <h3 class="text-xl font-bold text-slate-900">Step 5: Review &amp; Submit</h3>
+          <p class="text-sm text-slate-500 mt-1">Check your listing before publishing.</p>
+        </div>
+        <div class="p-6" id="reviewPreview"></div>
+      </section>
+
+      <!-- NAVIGATION BUTTONS -->
+      <div class="flex items-center justify-between py-4">
+        <button id="backBtn" onclick="prevStep()" class="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-slate-300 font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+          <span class="material-symbols-outlined text-lg">arrow_back</span> Back
+        </button>
+        <button id="nextBtn" onclick="nextStep()" class="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/25">
+          Next Step <span class="material-symbols-outlined text-lg">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Sidebar -->
+    <div class="lg:col-span-4 space-y-5">
+
+      <!-- Posting Tips -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-yellow-100 text-yellow-700 rounded-lg">
+            <span class="material-symbols-outlined block">lightbulb</span>
+          </div>
+          <h4 class="font-bold text-slate-900">Posting Tips</h4>
+        </div>
+        <ul class="space-y-3">
+          <li class="flex gap-3">
+            <span class="material-symbols-outlined text-primary text-xl flex-shrink-0">check_circle</span>
+            <p class="text-sm text-slate-600"><span class="font-bold text-slate-800">Be Descriptive:</span> Mention key features like condition, color, and size.</p>
+          </li>
+          <li class="flex gap-3">
+            <span class="material-symbols-outlined text-primary text-xl flex-shrink-0">check_circle</span>
+            <p class="text-sm text-slate-600"><span class="font-bold text-slate-800">Quality Photos:</span> Ads with clear photos get 3x more interest.</p>
+          </li>
+          <li class="flex gap-3">
+            <span class="material-symbols-outlined text-primary text-xl flex-shrink-0">check_circle</span>
+            <p class="text-sm text-slate-600"><span class="font-bold text-slate-800">Fair Pricing:</span> Check similar items on SomBazar.</p>
+          </li>
+          <li class="flex gap-3">
+            <span class="material-symbols-outlined text-primary text-xl flex-shrink-0">check_circle</span>
+            <p class="text-sm text-slate-600"><span class="font-bold text-slate-800">Accurate Location:</span> Help buyers near you find your listing quickly.</p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Why SomBazar -->
+      <div class="bg-primary/5 p-6 rounded-2xl border border-primary/20 shadow-sm">
+        <h4 class="font-bold text-slate-900 mb-4">Why sell on SomBazar?</h4>
+        <div class="space-y-4">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0 text-primary shadow-sm">
+              <span class="material-symbols-outlined text-lg">group</span>
+            </div>
+            <div>
+              <h5 class="text-sm font-bold text-slate-900">Largest Audience</h5>
+              <p class="text-xs text-slate-500 mt-0.5">Reach thousands of active buyers daily across Somaliland.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0 text-primary shadow-sm">
+              <span class="material-symbols-outlined text-lg">flash_on</span>
+            </div>
+            <div>
+              <h5 class="text-sm font-bold text-slate-900">Quick Sales</h5>
+              <p class="text-xs text-slate-500 mt-0.5">Our optimized search helps items sell faster.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center flex-shrink-0 text-primary shadow-sm">
+              <span class="material-symbols-outlined text-lg">savings</span>
+            </div>
+            <div>
+              <h5 class="text-sm font-bold text-slate-900">Totally Free</h5>
+              <p class="text-xs text-slate-500 mt-0.5">Post up to 5 ads per month completely for free.</p>
+            </div>
+          </div>
+        </div>
+        <a href="plans.html" class="w-full mt-5 py-2.5 border border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-all text-sm flex items-center justify-center">Learn More About Fees</a>
+      </div>
+
+      <!-- Need Help -->
+      <div class="bg-slate-900 p-6 rounded-2xl text-white">
+        <h4 class="font-bold mb-2">Need help?</h4>
+        <p class="text-xs text-slate-400 mb-4 leading-relaxed">Our support team is available 24/7 to assist you with your listing.</p>
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-primary">support_agent</span>
+          <div class="text-sm">
+            <p class="font-semibold">+252 (0) 63 456789</p>
+            <p class="text-slate-500 text-[11px]">support@sombazar.com</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- FOOTER -->
+<footer class="bg-white border-t border-slate-200 py-8 mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <div class="bg-primary/20 p-1.5 rounded-lg text-primary"><span class="material-symbols-outlined text-lg block">sell</span></div>
+        <span class="font-bold text-lg text-slate-800">SomBazar</span>
+      </div>
+      <div class="flex gap-6 text-sm text-slate-500">
+        <a href="#" class="hover:text-primary">Help Center</a>
+        <a href="#" class="hover:text-primary">Safety Tips</a>
+        <a href="terms.html" class="hover:text-primary">Terms of Service</a>
+        <a href="privacy.html" class="hover:text-primary">Privacy Policy</a>
+      </div>
+      <p class="text-sm text-slate-400" id="footer-copy">© 2026 SomBazar. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-50">
+  <div class="flex h-16">
+    <a href="index.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-semibold">Home</span>
+    </a>
+    <a href="listings.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-semibold">Browse</span>
+    </a>
+    <a href="post.html" class="flex-1 flex flex-col items-center justify-center gap-0.5">
+      <div class="w-11 h-11 bg-primary rounded-full flex items-center justify-center shadow-lg -mt-4">
+        <span class="material-symbols-outlined text-white text-2xl">add</span>
+      </div>
+    </a>
+    <a href="messages.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">chat_bubble</span><span class="text-[10px] font-semibold">Messages</span>
+    </a>
+    <a href="profile.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-semibold">Profile</span>
+    </a>
+  </div>
+</nav>
+
+YPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post Ad — SomBazar</title>
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
+  <script>
+    (function(){
+      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
+      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, {
+        page_title: document.title,
+        page_location: window.location.href,
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+    })();
+  </script>
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6H7F8Y980M', {
+      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
+      'cookie_flags': 'SameSite=None;Secure'
+    });
+  </script>
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -900,5 +1379,6 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 </script>
+
 </body>
 </html>

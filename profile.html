@@ -57,6 +57,405 @@
   </script>
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script>tailwind.config={ theme:{ extend:{ colors:{ primary:"#ec5b13" }, fontFamily:{ sans:["Public Sans","sans-serif"] } } } }</script>
+  <style>
+    body { font-family: "Public Sans", sans-serif; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
+    .no-scrollbar::-webkit-scrollbar{ display:none; } .no-scrollbar{ -ms-overflow-style:none;scrollbar-width:none; }
+    .skeleton-card { background:#fff;border-radius:16px;overflow:hidden;border:1px solid #f0f0f0; }
+    .skeleton-img { height:180px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; }
+    .skeleton-line { height:14px;border-radius:6px;margin:10px 12px 6px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; }
+    .skeleton-line.short{ width:55%; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .listing-card-badge { position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#ff6b00,#ffaa00);color:white;font-size:9px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.8px;text-transform:uppercase; }
+    .listing-card-fav{ position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer; }
+    .toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+    .toast{background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);}
+    .toast.success{background:#10b981;} .toast.error{background:#ef4444;}
+    .tab-btn.active{ background:#ec5b13 !important; color:white !important; }
+    [data-theme="dark"] body { background:#1e293b;color:#f1f5f9; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 items-center justify-between gap-4">
+      <a href="index.html" class="flex items-center gap-2 group">
+        <div class="bg-primary p-1.5 rounded-lg text-white"><span class="material-symbols-outlined text-xl block">storefront</span></div>
+        <h1 class="text-xl font-bold tracking-tight text-slate-900">Som<span class="text-primary">Bazar</span></h1>
+      </a>
+      <div class="hidden md:flex flex-1 max-w-md">
+        <div class="relative w-full">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+          <input class="w-full bg-slate-100 border-transparent rounded-xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-primary/50 transition-all text-sm outline-none" placeholder="Search your listings...">
+        </div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="post.html" class="hidden sm:flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors">
+          <span class="material-symbols-outlined text-lg">add_circle</span> Post New Ad
+        </a>
+        <div class="flex items-center gap-1 border-l border-slate-200 ml-2 pl-2">
+          <div style="position:relative" id="notifBellWrap">
+            <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
+              <span class="material-symbols-outlined">notifications</span>
+              <span id="notifBadge" style="display:none" class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
+            </button>
+            <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;max-height:400px;overflow-y:auto">
+              <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9"><span style="font-weight:800;font-size:14px">Notifications</span></div>
+              <div id="notifList"></div>
+            </div>
+          </div>
+          <a href="messages.html" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors" id="msgBellBtn">
+            <span class="material-symbols-outlined">chat_bubble</span>
+          </a>
+          <div class="ml-1 w-9 h-9 rounded-full bg-primary/10 border-2 border-slate-100 overflow-hidden cursor-pointer" id="headerAvatarWrap">
+            <div id="headerAvatarLink" class="w-full h-full flex items-center justify-center font-black text-primary text-sm"></div>
+          </div>
+        </div>
+        <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
+        <a href="auth.html" id="header-signin" class="text-sm font-bold text-slate-700 hover:text-primary px-2">Sign In</a>
+        <div id="header-user" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+    <!-- LEFT: Profile + Navigation -->
+    <aside class="lg:col-span-4 space-y-5">
+
+      <!-- User Profile Card -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+        <div class="flex flex-col items-center text-center">
+          <div class="relative mb-4">
+            <div class="w-24 h-24 rounded-full bg-primary/10 border-4 border-primary/20 overflow-hidden flex items-center justify-center" id="profileAvatarWrap">
+              <span class="material-symbols-outlined text-4xl text-primary" id="profileAvatarFallback">person</span>
+            </div>
+            <button id="editAvatarBtn" onclick="document.getElementById('avatarInput').click()" class="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full border-2 border-white shadow">
+              <span class="material-symbols-outlined text-sm block">photo_camera</span>
+            </button>
+            <input type="file" id="avatarInput" accept="image/*" style="display:none">
+          </div>
+          <h2 class="text-xl font-bold text-slate-900 mb-1" id="profileName">Loading...</h2>
+          <div class="flex items-center gap-1 text-slate-500 text-sm mb-4">
+            <span class="material-symbols-outlined text-base">location_on</span>
+            <span id="profileLocation">Hargeisa, Somaliland</span>
+          </div>
+          <div class="grid grid-cols-3 w-full gap-2 pt-4 border-t border-slate-100">
+            <div class="flex flex-col items-center">
+              <span class="text-xl font-bold text-slate-900" id="statListings">0</span>
+              <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Listings</span>
+            </div>
+            <div class="flex flex-col items-center border-x border-slate-100">
+              <span class="text-xl font-bold text-slate-900" id="statReviews">0</span>
+              <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Reviews</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <span class="text-xl font-bold text-slate-900" id="statRating">4.9</span>
+              <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Rating</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pro Plan Card -->
+      <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden" id="planCard">
+        <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/20 rounded-full blur-2xl"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between mb-3">
+            <div class="bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest" id="planBadge">Free Plan</div>
+            <span class="text-slate-400 text-xs" id="planExpiry"></span>
+          </div>
+          <h3 class="text-white font-bold text-lg mb-1" id="planName">Free Plan</h3>
+          <p class="text-slate-400 text-sm mb-4" id="planDesc">Upgrade to reach more buyers across Somaliland.</p>
+          <a href="plans.html" class="w-full bg-white text-slate-900 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors flex items-center justify-center gap-2">
+            <span id="planBtnText">Upgrade Plan</span>
+            <span class="material-symbols-outlined text-lg">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden lg:flex flex-col gap-1">
+        <button onclick="switchTab('listings')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white active" data-tab="listings">
+          <span class="material-symbols-outlined">list_alt</span> My Listings
+        </button>
+        <button onclick="switchTab('favorites')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="favorites">
+          <span class="material-symbols-outlined">favorite</span> Favorites
+        </button>
+        <button onclick="switchTab('offers')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="offers">
+          <span class="material-symbols-outlined">local_offer</span> Offers Received
+        </button>
+        <button onclick="switchTab('reviews')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="reviews">
+          <span class="material-symbols-outlined">reviews</span> My Reviews
+        </button>
+        <button onclick="switchTab('billing')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="billing">
+          <span class="material-symbols-outlined">payments</span> Payments &amp; Billing
+        </button>
+        <button onclick="switchTab('settings')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="settings">
+          <span class="material-symbols-outlined">settings</span> Account Settings
+        </button>
+      </nav>
+    </aside>
+
+    <!-- RIGHT: Dashboard Content -->
+    <div class="lg:col-span-8 space-y-6">
+
+      <!-- Mobile nav tabs -->
+      <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-2 pb-2">
+        <button onclick="switchTab('listings')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold active" data-tab="listings">My Listings</button>
+        <button onclick="switchTab('favorites')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-white text-slate-600 text-sm font-semibold shadow-sm" data-tab="favorites">Favorites</button>
+        <button onclick="switchTab('offers')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-white text-slate-600 text-sm font-semibold shadow-sm" data-tab="offers">Offers</button>
+        <button onclick="switchTab('billing')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-white text-slate-600 text-sm font-semibold shadow-sm" data-tab="billing">Payments</button>
+        <button onclick="switchTab('settings')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-white text-slate-600 text-sm font-semibold shadow-sm" data-tab="settings">Settings</button>
+      </div>
+
+      <!-- LISTINGS TAB -->
+      <div id="tab-listings">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Active Listings</h2>
+            <p class="text-slate-500 text-sm" id="listingSubtitle">Your live ads on SomBazar</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:border-primary transition-colors">
+              <span class="material-symbols-outlined">grid_view</span>
+            </button>
+            <button class="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:border-primary transition-colors">
+              <span class="material-symbols-outlined">view_list</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="myListingsGrid">
+          <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+          <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+        </div>
+
+        <!-- Post new placeholder -->
+        <a href="post.html" class="mt-4 flex flex-col items-center justify-center p-8 bg-slate-100/50 rounded-3xl border-2 border-dashed border-slate-300 hover:border-primary transition-colors cursor-pointer group min-h-[160px]">
+          <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined text-primary text-3xl">add</span>
+          </div>
+          <h3 class="text-base font-bold text-slate-900 mb-1">Post a New Ad</h3>
+          <p class="text-slate-500 text-sm text-center max-w-[200px]">Reach thousands of potential buyers instantly.</p>
+        </a>
+      </div>
+
+      <!-- FAVORITES TAB -->
+      <div id="tab-favorites" style="display:none">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Favorites</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="favoritesGrid">
+          <div class="col-span-2 text-center py-12 text-slate-400">
+            <span class="material-symbols-outlined text-5xl">favorite_border</span>
+            <p class="mt-3 font-semibold">No favorites yet</p>
+            <a href="listings.html" class="mt-3 inline-block text-primary font-bold text-sm hover:underline">Browse listings</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- OFFERS TAB -->
+      <div id="tab-offers" style="display:none">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Offers Received</h2>
+        <div id="offersContainer" class="space-y-3">
+          <div class="text-center py-12 text-slate-400">
+            <span class="material-symbols-outlined text-5xl">local_offer</span>
+            <p class="mt-3 font-semibold">No offers yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEWS TAB -->
+      <div id="tab-reviews" style="display:none">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">My Reviews</h2>
+        <div id="reviewsContainer" class="space-y-3">
+          <div class="text-center py-12 text-slate-400">
+            <span class="material-symbols-outlined text-5xl">reviews</span>
+            <p class="mt-3 font-semibold">No reviews yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- BILLING TAB -->
+      <div id="tab-billing" style="display:none">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Payments &amp; Billing</h2>
+        <div id="billingContainer" class="space-y-3">
+          <div class="text-center py-12 text-slate-400">
+            <span class="material-symbols-outlined text-5xl">payments</span>
+            <p class="mt-3 font-semibold">No billing history</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div id="tab-settings" style="display:none">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Account Settings</h2>
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5" id="settingsForm">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Full Name</label>
+            <input id="settingName" type="text" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Email</label>
+            <input id="settingEmail" type="email" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-slate-50" readonly>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Phone</label>
+            <input id="settingPhone" type="tel" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">City</label>
+            <select id="settingCity" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+              <option>Hargeisa</option><option>Berbera</option><option>Burco</option><option>Borama</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Bio</label>
+            <textarea id="settingBio" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none resize-none"></textarea>
+          </div>
+          <div class="flex gap-3">
+            <button onclick="saveSettings()" class="flex-1 bg-primary text-white py-2.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">Save Changes</button>
+            <button onclick="logout()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-sm hover:bg-red-50 hover:text-red-600 transition-colors">Sign Out</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PERFORMANCE STATS -->
+      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100" id="perfStats">
+        <h3 class="text-lg font-bold text-slate-900 mb-4">Marketplace Performance</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-slate-50 p-4 rounded-2xl">
+            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Views</p>
+            <p class="text-xl font-bold text-slate-900" id="statViews">—</p>
+            <span class="text-emerald-500 text-[10px] font-bold">This month</span>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-2xl">
+            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Inquiries</p>
+            <p class="text-xl font-bold text-slate-900" id="statInquiries">—</p>
+            <span class="text-emerald-500 text-[10px] font-bold">This month</span>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-2xl">
+            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Sold Items</p>
+            <p class="text-xl font-bold text-slate-900" id="statSold">—</p>
+            <span class="text-slate-400 text-[10px] font-bold">Last 30 days</span>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-2xl">
+            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Active Ads</p>
+            <p class="text-xl font-bold text-slate-900" id="statActive">—</p>
+            <span class="text-primary text-[10px] font-bold" id="planLimitNote">Free plan</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- FOOTER -->
+<footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-slate-200 mt-8">
+  <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-sm">
+    <p id="footer-copy">© 2026 SomBazar Marketplace. All rights reserved.</p>
+    <div class="flex gap-6">
+      <a href="#" class="hover:text-primary transition-colors">Help Center</a>
+      <a href="#" class="hover:text-primary transition-colors">Safety Tips</a>
+      <a href="privacy.html" class="hover:text-primary transition-colors">Privacy Policy</a>
+    </div>
+  </div>
+</footer>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-50">
+  <div class="flex h-16">
+    <a href="index.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-semibold">Home</span>
+    </a>
+    <a href="listings.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-semibold">Browse</span>
+    </a>
+    <a href="post.html" class="flex-1 flex flex-col items-center justify-center gap-0.5">
+      <div class="w-11 h-11 bg-primary rounded-full flex items-center justify-center shadow-lg -mt-4">
+        <span class="material-symbols-outlined text-white text-2xl">add</span>
+      </div>
+    </a>
+    <a href="messages.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">chat_bubble</span><span class="text-[10px] font-semibold">Messages</span>
+    </a>
+    <a href="profile.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-primary">
+      <span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-semibold">Profile</span>
+    </a>
+  </div>
+</nav>
+
+YPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="csrf-token" content="" id="csrfMeta">
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+    <!-- Apple PWA Meta -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SomBazar">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Profile — SomBazar</title>
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
+  <script>
+    (function(){
+      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
+      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', GA_ID, {
+        page_title: document.title,
+        page_location: window.location.href,
+        anonymize_ip: true,
+        cookie_flags: 'SameSite=None;Secure'
+      });
+    })();
+  </script>
+  <script>
+    // Dark mode FOUC prevention — must run before DOM
+    (function(){
+      var t=localStorage.getItem('sb_theme')||
+        (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6H7F8Y980M', {
+      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
+      'cookie_flags': 'SameSite=None;Secure'
+    });
+  </script>
+  <!-- Google Search Console Verification -->
+  <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
 </head>
 <body>
 <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -1269,5 +1668,6 @@ async function loadVerifyStatus() {
   }
 }
 </script>
+
 </body>
 </html>

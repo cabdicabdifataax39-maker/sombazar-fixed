@@ -185,257 +185,322 @@
   .listings-right-sidebar { display: none !important; }
 }
 </style>
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: "#ec5b13" }, fontFamily: { sans: ["Public Sans","sans-serif"] } } }
+    }
+  </script>
+  <style>
+    body { font-family: "Public Sans", sans-serif; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
+    .search-wrap { position:relative; }
+    .autocomplete-dropdown { position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:999;overflow:hidden;max-height:280px;overflow-y:auto; }
+    .autocomplete-item { display:flex;align-items:center;gap:10px;padding:11px 16px;cursor:pointer;font-size:14px;font-weight:500; }
+    .autocomplete-item:hover,.autocomplete-item.ac-active { background:#fff7ed; }
+    .skeleton-card { background:#fff;border-radius:16px;overflow:hidden;border:1px solid #f0f0f0; }
+    .skeleton-img { height:180px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; }
+    .skeleton-line { height:14px;border-radius:6px;margin:10px 12px 6px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; }
+    .skeleton-line.short{ width:55%; } .skeleton-line.xshort{ width:35%;height:12px; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .listing-card-badge { position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#ff6b00,#ffaa00);color:white;font-size:9px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.8px;text-transform:uppercase; }
+    .listing-card-fav { position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer; }
+    .listing-card-fav.active { color:#ef4444; }
+    .price-chip.active { background:#ec5b13;border-color:#ec5b13;color:white; }
+    [data-theme="dark"] body { background:#1e293b;color:#f1f5f9; }
+  </style>
 </head>
-<body>
-<a href="#main-content" class="skip-link">Skip to main content</a>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
 
-
-<header class="header">
-  <nav class="nav-container">
-    <a href="index.html" class="logo">SomBazar</a>
-    <form class="header-search" id="headerSearchForm">
-      <div class="search-wrap" style="flex:1;position:relative">
-        <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…" autocomplete="off">
-        <div class="autocomplete-dropdown" id="headerAcDrop" style="display:none"></div>
-      </div>
-      <button type="submit" class="header-search-btn" aria-label="Search">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      </button>
-    </form>
-    <div class="header-actions">
-      <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
-      <div id="header-user" style="display:none;align-items:center;gap:8px">
-        <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
-        </a>
-        <a href="profile.html?tab=offers" class="icon-btn" aria-label="Offers" style="position:relative" id="offerNavBtn" title="My Offers">
-          
-          <span id="offerNavBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#f97316;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
-        </a>
-        <!-- Notification Bell -->
-        <div style="position:relative" id="notifBellWrap">
-          <button id="notifBell" onclick="toggleNotifDropdown()" class="icon-btn" aria-label="Notifications" style="position:relative;background:none;border:none;cursor:pointer;padding:6px;border-radius:50%;display:flex;align-items:center;justify-content:center">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px"></span>
-          </button>
-          <!-- Dropdown -->
-          <div id="notifDropdown" class="notif-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:320px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;overflow:hidden;max-height:480px;overflow-y:auto">
-            <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
-              <span style="font-weight:800;font-size:14px;color:#1e293b"> Notifications</span>
-              <button onclick="Notif.requestPushPermission()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;font-family:DM Sans" title="Enable push notifications">Enable push</button>
-            </div>
-            <div id="notifList"></div>
-          </div>
-        </div>
-        <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px"></a>
-      </div>
-      <a href="admin.html" id="admin-btn" style="display:none;background:#1e293b;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;align-items:center;gap:5px">Admin</a>
-      <button id="langBtn" onclick="toggleLang()" style="background:var(--light-gray);border:1px solid var(--border-color);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:DM Sans;font-size:12px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:5px;transition:all .2s" title="Switch Language">
-          <span style="font-size:14px">&#x1F1F8;&#x1F1F4;</span> Somali
-        </button>
-      <a href="post.html" class="btn-post-ad">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        Post Ad
+<!-- HEADER -->
+<header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-14 gap-6">
+      <a href="index.html" class="flex items-center gap-2 flex-shrink-0">
+        <div class="bg-primary p-1.5 rounded-lg text-white"><span class="material-symbols-outlined text-xl block">storefront</span></div>
+        <span class="text-xl font-black tracking-tight text-slate-900">Som<span class="text-primary">Bazar</span></span>
       </a>
+      <form class="hidden md:flex flex-1 max-w-xl" id="headerSearchForm">
+        <div class="relative w-full search-wrap">
+          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+          <input id="headerSearchInput" type="search" autocomplete="off"
+            class="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-full text-sm focus:ring-2 focus:ring-primary/40 focus:bg-white transition-all outline-none"
+            placeholder="Search cars, houses, electronics...">
+          <div class="autocomplete-dropdown" id="headerAcDrop" style="display:none"></div>
+        </div>
+      </form>
+      <div class="flex items-center gap-2">
+        <button id="langBtn" onclick="toggleLang()" class="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-xs font-bold text-slate-700">
+          <span>&#x1F1F8;&#x1F1F4;</span> Somali
+        </button>
+        <a href="auth.html" id="header-signin" class="text-sm font-bold text-slate-700 hover:text-primary transition-colors px-2 py-1.5">Sign In</a>
+        <div id="header-user" style="display:none" class="flex items-center gap-1.5">
+          <a href="messages.html" class="relative p-2 rounded-full hover:bg-slate-100 text-slate-600">
+            <span class="material-symbols-outlined text-xl">chat_bubble</span>
+            <span id="msgBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
+          </a>
+          <div style="position:relative" id="notifBellWrap">
+            <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-2 rounded-full hover:bg-slate-100 text-slate-600">
+              <span class="material-symbols-outlined text-xl">notifications</span>
+              <span id="notifBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
+            </button>
+            <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;max-height:400px;overflow-y:auto">
+              <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9"><span style="font-weight:800;font-size:14px">Notifications</span></div>
+              <div id="notifList"></div>
+            </div>
+          </div>
+          <a href="profile.html" id="headerAvatarLink" class="header-avatar w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-xs"></a>
+        </div>
+        <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
+        <a href="post.html" class="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg shadow-primary/20">
+          <span class="material-symbols-outlined text-lg">add</span>
+          <span class="hidden sm:inline">Post Ad</span>
+        </a>
+      </div>
     </div>
-  </nav>
+  </div>
+  <!-- Category sub-nav -->
+  <div class="border-t border-slate-100 bg-white overflow-x-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <ul class="flex items-center gap-1.5 py-2 whitespace-nowrap" id="categoryPills">
+        <li><button class="px-3 py-1.5 rounded-full bg-primary text-white text-xs font-semibold category-pill" data-cat="all">All</button></li>
+        <li><button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 category-pill" data-cat="car">Cars</button></li>
+        <li><button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 category-pill" data-cat="house">Houses</button></li>
+        <li><button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 category-pill" data-cat="land">Land</button></li>
+        <li><button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 category-pill" data-cat="electronics">Electronics</button></li>
+        <li><button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 category-pill" data-cat="furniture">Furniture</button></li>
+        <li><button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 category-pill" data-cat="jobs">Jobs</button></li>
+        <li><button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 category-pill" data-cat="services">Services</button></li>
+        <li><button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-xs font-medium hover:bg-slate-200 category-pill" data-cat="hotel">Hotels</button></li>
+      </ul>
+    </div>
+  </div>
 </header>
 
-<!-- CATEGORY PILLS -->
-<div class="category-pills-section">
-  <div class="category-pills-wrap" id="categoryPills">
-    <button class="category-pill" data-cat="all"> All</button>
-    <button class="category-pill" data-cat="car">Cars</button>
-    <button class="category-pill" data-cat="house">Houses</button>
-    <button class="category-pill" data-cat="land">Land</button>
-    <button class="category-pill" data-cat="electronics">Electronics</button>
-    <button class="category-pill" data-cat="furniture"> Furniture</button>
-    <button class="category-pill" data-cat="jobs"> Jobs</button>
-    <button class="category-pill" data-cat="services"> Services</button>
-    <button class="category-pill" data-cat="hotel">Hotels</button>
-  </div>
-</div>
+<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row gap-8">
 
-<div class="listings-3col-layout" id="main-content">
+  <!-- LEFT SIDEBAR FILTERS -->
+  <aside class="w-full md:w-64 flex-shrink-0 space-y-5">
 
-  <!-- ═══ SOL SIDEBAR: FİLTRELER ═══════════════════════════════════ -->
-  <aside class="listings-left-sidebar" aria-label="Search filters" role="search">
-
-    <!-- Arama -->
-    <div class="sb-widget">
-      <div class="sb-widget-head">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Search
-      </div>
-      <div class="sb-widget-body">
-        <div class="search-wrap" style="position:relative">
-          <input class="form-input" type="search" id="searchInput" placeholder="Keywords…" style="font-size:13px" autocomplete="off">
-          <div class="autocomplete-dropdown" id="sidebarAcDrop" style="display:none"></div>
-        </div>
+    <!-- Search -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">search</span> Search
+      </h3>
+      <div class="search-wrap">
+        <input id="keywordInput" type="text" placeholder="Keywords..."
+          class="w-full text-sm rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
       </div>
     </div>
 
-    <!-- Kategori -->
-    <div class="sb-widget">
-      <div class="sb-widget-head">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        Category
-      </div>
-      <div class="sb-widget-body" style="padding:8px 0">
-        <button class="sb-cat-item active" data-cat="all" onclick="setSbCat(this,'all')">
-          <span class="sb-cat-dot" style="background:#f97316"></span> All Categories
-        </button>
-        <button class="sb-cat-item" data-cat="car" onclick="setSbCat(this,'car')">
-          <span class="sb-cat-dot" style="background:#3b82f6"></span> Cars
-        </button>
-        <button class="sb-cat-item" data-cat="house" onclick="setSbCat(this,'house')">
-          <span class="sb-cat-dot" style="background:#22c55e"></span> Houses
-        </button>
-        <button class="sb-cat-item" data-cat="land" onclick="setSbCat(this,'land')">
-          <span class="sb-cat-dot" style="background:#84cc16"></span> Land
-        </button>
-        <button class="sb-cat-item" data-cat="electronics" onclick="setSbCat(this,'electronics')">
-          <span class="sb-cat-dot" style="background:#a855f7"></span> Electronics
-        </button>
-        <button class="sb-cat-item" data-cat="furniture" onclick="setSbCat(this,'furniture')">
-          <span class="sb-cat-dot" style="background:#f59e0b"></span> Furniture
-        </button>
-        <button class="sb-cat-item" data-cat="jobs" onclick="setSbCat(this,'jobs')">
-          <span class="sb-cat-dot" style="background:#06b6d4"></span> Jobs
-        </button>
-        <button class="sb-cat-item" data-cat="services" onclick="setSbCat(this,'services')">
-          <span class="sb-cat-dot" style="background:#ef4444"></span> Services
-        </button>
-        <button class="sb-cat-item" data-cat="hotel" onclick="setSbCat(this,'hotel')">
-          <span class="sb-cat-dot" style="background:#f97316"></span> Hotels
-        </button>
-      </div>
-    </div>
-
-    <!-- Şehir -->
-    <div class="sb-widget">
-      <div class="sb-widget-head">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        City
-      </div>
-      <div class="sb-widget-body" style="padding:8px 0">
-        <button class="sb-city-item active" data-city="All" onclick="setSbCity(this,'All')">All Cities</button>
-        <button class="sb-city-item" data-city="Hargeisa" onclick="setSbCity(this,'Hargeisa')">Hargeisa</button>
-        <button class="sb-city-item" data-city="Berbera" onclick="setSbCity(this,'Berbera')">Berbera</button>
-        <button class="sb-city-item" data-city="Burco" onclick="setSbCity(this,'Burco')">Burco</button>
-        <button class="sb-city-item" data-city="Borama" onclick="setSbCity(this,'Borama')">Borama</button>
-        <button class="sb-city-item" data-city="Gabiley" onclick="setSbCity(this,'Gabiley')">Gabiley</button>
-        <button class="sb-city-item" data-city="Ceerigaavo" onclick="setSbCity(this,'Ceerigaavo')">Ceerigaavo</button>
-        <button class="sb-city-item" data-city="Laascaanood" onclick="setSbCity(this,'Laascaanood')">Laascaanood</button>
-      </div>
-    </div>
-
-    <!-- Fiyat -->
-    <div class="sb-widget">
-      <div class="sb-widget-head">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-        Price Range (USD)
-      </div>
-      <div class="sb-widget-body">
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
-          <input class="form-input" type="number" id="priceMin" placeholder="Min" style="flex:1;font-size:13px">
-          <span style="color:var(--gray);font-size:13px">–</span>
-          <input class="form-input" type="number" id="priceMax" placeholder="Max" style="flex:1;font-size:13px">
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px">
-          <button class="sb-price-chip" onclick="setPrice(0,100)">Under $100</button>
-          <button class="sb-price-chip" onclick="setPrice(100,500)">$100–$500</button>
-          <button class="sb-price-chip" onclick="setPrice(500,2000)">$500–$2K</button>
-          <button class="sb-price-chip" onclick="setPrice(2000,10000)">$2K–$10K</button>
-          <button class="sb-price-chip" onclick="setPrice(10000,'')">$10K+</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Durum -->
-    <div class="sb-widget">
-      <div class="sb-widget-head">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        Condition
-      </div>
-      <div class="sb-widget-body">
-        <select class="form-select" id="conditionSelect" style="font-size:13px">
-          <option>All</option><option>New</option><option>Like New</option><option>Good</option><option>Used</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Reset -->
-    <button class="btn btn-ghost btn-sm" id="resetFilters" style="width:100%;font-size:13px">Reset All Filters</button>
-
-  </aside>
-
-  <!-- ═══ ORTA: İLANLAR ════════════════════════════════════════════ -->
-  <main class="listings-main-col">
-
-    <!-- Toolbar -->
-    <div class="listings-toolbar">
-      <h1 style="font-size:16px;font-weight:800;color:var(--dark);margin:0" id="pageTitle">
-        All Listings <span style="font-size:12px;font-weight:600;color:var(--gray);font-family:'DM Sans',sans-serif" id="countBadge"></span>
-      </h1>
-      <select class="form-select" id="sortSelect" style="width:160px;height:36px;padding:0 10px;font-size:13px">
-        <option value="createdAt">Newest First</option>
-        <option value="price">Price: Low to High</option>
-        <option value="views">Most Viewed</option>
+    <!-- Category -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">category</span> Category
+      </h3>
+      <select id="catFilter" class="w-full text-sm rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+        <option value="">All Categories</option>
+        <option value="car">Cars</option>
+        <option value="house">Houses</option>
+        <option value="land">Land</option>
+        <option value="electronics">Electronics</option>
+        <option value="furniture">Furniture</option>
+        <option value="jobs">Jobs</option>
+        <option value="services">Services</option>
+        <option value="hotel">Hotels</option>
       </select>
     </div>
 
-    <!-- İlanlar -->
-    <div id="listingsGrid" class="listings-grid" style="padding:0">
-<div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
-    </div><div class="skeleton-card">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
-    </div><div class="skeleton-card">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
-    </div><div class="skeleton-card">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
-    </div><div class="skeleton-card">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
-    </div><div class="skeleton-card">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
-    </div><div class="skeleton-card">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
-    </div><div class="skeleton-card">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-      <div class="skeleton-line xshort" style="margin-bottom:12px"></div>
-    </div>
-</div>
-    <div id="emptyState" class="empty-state section-block" style="display:none">
-      <div class="empty-state-icon"></div>
-      <div class="empty-state-title">No listings found</div>
-      <p class="empty-state-desc">Try adjusting your filters or be the first to post!</p>
-      <a href="post.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">+ Post an Ad</a>
+    <!-- City -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">location_on</span> City
+      </h3>
+      <select id="cityFilter" class="w-full text-sm rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+        <option value="">All Cities</option>
+        <option value="Hargeisa">Hargeisa</option>
+        <option value="Berbera">Berbera</option>
+        <option value="Burco">Burco</option>
+        <option value="Borama">Borama</option>
+        <option value="Gabiley">Gabiley</option>
+        <option value="Ceerigaavo">Ceerigaavo</option>
+        <option value="Laascaanood">Laascaanood</option>
+      </select>
     </div>
 
-  </main>
+    <!-- Price Range -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">payments</span> Price Range (USD)
+      </h3>
+      <div class="flex gap-2 mb-3">
+        <input id="minPrice" type="number" placeholder="Min" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+        <span class="text-slate-300 self-center">—</span>
+        <input id="maxPrice" type="number" placeholder="Max" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+      </div>
+      <div class="flex flex-wrap gap-1.5">
+        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="0" data-max="100">Under $100</button>
+        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="100" data-max="500">$100–$500</button>
+        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="500" data-max="2000">$500–$2K</button>
+        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="2000" data-max="10000">$2K–$10K</button>
+        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="10000" data-max="">$10K+</button>
+      </div>
+    </div>
+
+    <!-- Condition -->
+    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+      <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">verified</span> Condition
+      </h3>
+      <select id="condFilter" class="w-full text-sm rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+        <option value="">All</option>
+        <option value="new">New</option>
+        <option value="like_new">Like New</option>
+        <option value="good">Good</option>
+        <option value="fair">Fair</option>
+      </select>
+    </div>
+
+    <button id="resetFilters" class="w-full py-2.5 text-sm font-semibold text-slate-500 hover:text-primary transition-colors rounded-xl border border-slate-200 bg-white">
+      Reset All Filters
+    </button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <section class="flex-1 min-w-0">
+    <!-- Sort & Count Bar -->
+    <div class="flex items-center justify-between mb-5 bg-white rounded-2xl px-5 py-3 shadow-sm border border-slate-100">
+      <h2 class="text-base font-bold text-slate-800" id="pageTitle">
+        All Listings <span class="text-slate-400 font-normal text-sm ml-1">(<span id="listingCount">...</span> items)</span>
+      </h2>
+      <select id="sortSelect" class="text-sm border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+        <option value="newest">Newest First</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+      </select>
+    </div>
+
+    <!-- Listings Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="listingsGrid">
+      <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line xshort" style="margin-bottom:12px"></div></div>
+      <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line xshort" style="margin-bottom:12px"></div></div>
+      <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-line xshort" style="margin-bottom:12px"></div></div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" style="display:none" class="text-center py-20 bg-white rounded-2xl border border-slate-100">
+      <span class="material-symbols-outlined text-5xl text-slate-300">inventory_2</span>
+      <p class="text-lg font-bold text-slate-700 mt-4">No listings found</p>
+      <p class="text-slate-500 text-sm mt-1">Try adjusting your filters</p>
+      <button id="emptyReset" class="mt-4 text-primary font-bold text-sm hover:underline">Reset Filters</button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-10 flex items-center justify-center gap-2" id="paginationWrap">
+      <button id="prevPage" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600">
+        <span class="material-symbols-outlined text-lg">chevron_left</span>
+      </button>
+      <div id="pageButtons" class="flex gap-1.5"></div>
+      <button id="nextPage" class="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600">
+        <span class="material-symbols-outlined text-lg">chevron_right</span>
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<!-- STAY SAFE -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="bg-green-50 border border-green-100 rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8">
+    <div class="bg-green-100 p-4 rounded-2xl flex-shrink-0">
+      <span class="material-symbols-outlined text-5xl text-green-600">security</span>
+    </div>
+    <div class="flex-1">
+      <h2 class="text-xl font-bold text-green-800 mb-3">Stay Safe on SomBazar</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-green-700">
+        <div class="flex items-center gap-2"><span class="font-bold text-green-600">✓</span> Meet in a public place in Hargeisa</div>
+        <div class="flex items-center gap-2"><span class="font-bold text-green-600">✓</span> Never pay before receiving the item</div>
+        <div class="flex items-center gap-2"><span class="font-bold text-green-600">✓</span> Check seller's verification badge</div>
+        <div class="flex items-center gap-2"><span class="font-bold text-green-600">✓</span> Be suspicious of prices too low</div>
+      </div>
+      <a href="#" class="mt-4 inline-flex items-center gap-1 text-green-700 font-bold text-sm hover:underline">Read Safety Guide <span class="material-symbols-outlined text-lg">arrow_forward</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- BOOST BANNER -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+  <div class="relative overflow-hidden rounded-3xl bg-slate-900 text-white p-8 md:p-12">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="max-w-md">
+        <div class="inline-flex items-center gap-1.5 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4">
+          <span class="material-symbols-outlined text-sm">star</span> Go Pro
+        </div>
+        <h2 class="text-3xl font-extrabold mb-4">Boost your listings to the top</h2>
+        <ul class="space-y-2 text-slate-300 text-sm">
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Unlimited listings</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Up to 15 photos per ad</li>
+          <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-lg">check_circle</span> Boost credits included monthly</li>
+        </ul>
+      </div>
+      <div class="text-center md:text-right">
+        <p class="text-slate-400 mb-1 font-medium text-sm">Starting from</p>
+        <div class="text-5xl font-black text-white mb-5">$8<span class="text-xl font-normal text-slate-400">/mo</span></div>
+        <a href="plans.html" class="inline-block bg-primary hover:bg-primary/90 text-white px-10 py-3.5 rounded-2xl font-bold shadow-lg shadow-primary/20 transition-all">View Plans &amp; Pricing</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-white border-t border-slate-200 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-xs">
+    <div class="flex items-center gap-2">
+      <div class="bg-primary/20 p-1 rounded text-primary"><span class="material-symbols-outlined text-base block">storefront</span></div>
+      <span class="font-bold text-slate-700">SomBazar</span>
+    </div>
+    <div class="flex gap-6">
+      <a href="terms.html" class="hover:text-primary">Terms</a>
+      <a href="privacy.html" class="hover:text-primary">Privacy</a>
+      <a href="contact.html" class="hover:text-primary">Contact</a>
+    </div>
+    <p id="footer-copy">© 2026 SomBazar. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-50">
+  <div class="flex h-16">
+    <a href="index.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-semibold">Home</span>
+    </a>
+    <a href="listings.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-primary">
+      <span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-semibold">Browse</span>
+    </a>
+    <a href="post.html" class="flex-1 flex flex-col items-center justify-center gap-0.5">
+      <div class="w-11 h-11 bg-primary rounded-full flex items-center justify-center shadow-lg -mt-4">
+        <span class="material-symbols-outlined text-white text-2xl">add</span>
+      </div>
+    </a>
+    <a href="messages.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">chat_bubble</span><span class="text-[10px] font-semibold">Messages</span>
+    </a>
+    <a href="profile.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
+      <span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-semibold">Profile</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Fixed mobile FAB -->
+<a href="post.html" class="md:hidden fixed bottom-20 right-5 w-14 h-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center z-40">
+  <span class="material-symbols-outlined text-3xl">add</span>
+</a>
+
+
 
   <!-- ═══ SAĞ SIDEBAR: WİDGETLER ══════════════════════════════════ -->
   <aside class="listings-right-sidebar" aria-label="Additional information">
@@ -905,5 +970,6 @@ function selectSuggestion(val, el) {
 
 document.addEventListener("DOMContentLoaded",()=>{ initAutocomplete("searchInput","sidebarAcDrop"); initAutocomplete("headerSearchInput","headerAcDrop"); });
 </script>
+
 </body>
 </html>
