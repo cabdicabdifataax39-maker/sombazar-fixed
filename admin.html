@@ -660,6 +660,110 @@
       padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
       background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
     }
+
+    /* ── Section Card ─────────────────────────────────────── */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .section-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-card-title {
+      font-size: 13px; font-weight: 700; color: var(--text);
+      text-transform: uppercase; letter-spacing: .6px;
+    }
+    /* ── New Tab Layouts ──────────────────────────────────── */
+    .tab-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 16px;
+    }
+    .plan-bar-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px;
+    }
+    .plan-bar-row .plan-name {
+      width: 70px; font-weight: 600; color: var(--text); text-transform: capitalize;
+    }
+    .plan-bar-track {
+      flex: 1; background: var(--border); border-radius: 99px; height: 10px; overflow: hidden;
+    }
+    .plan-bar-fill {
+      height: 100%; background: var(--primary); border-radius: 99px;
+      transition: width .5s ease;
+    }
+    .plan-bar-info { color: var(--green); font-weight: 700; min-width: 52px; text-align: right; }
+    .plan-bar-count { color: var(--text3); min-width: 28px; text-align: right; }
+    .chart-bar-row {
+      display: flex; align-items: center; gap: 8px; font-size: 12px;
+    }
+    .chart-bar-date { width: 90px; color: var(--text3); font-family: var(--mono); }
+    .chart-bar-track {
+      flex: 1; background: var(--border); border-radius: 99px; height: 12px; overflow: hidden;
+    }
+    .chart-bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--primary), #f59e0b);
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+    .chart-bar-val { width: 20px; color: var(--text); font-weight: 700; font-family: var(--mono); font-size: 11px; }
+    .cat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+      transition: transform .15s, box-shadow .15s;
+    }
+    .cat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow2); }
+    .cat-name { font-weight: 700; font-size: 14px; color: var(--text); margin-bottom: 10px; text-transform: capitalize; }
+    .cat-bar-track { background: var(--border); border-radius: 99px; height: 6px; margin-bottom: 8px; overflow: hidden; }
+    .cat-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--primary), #f59e0b); }
+    .cat-meta { font-size: 12px; color: var(--text3); display: flex; justify-content: space-between; }
+    .cat-total { font-weight: 700; color: var(--text); }
+    .push-form-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .push-history-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .push-history-item:last-child { border-bottom: none; }
+    .push-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--primary-s); color: var(--primary);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .announcement-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+      box-shadow: var(--shadow);
+      transition: box-shadow .15s;
+    }
+    .announcement-card:hover { box-shadow: var(--shadow2); }
+    .announcement-card.active { border-left: 3px solid var(--primary); }
+    .badge-success { background: var(--green-s); color: var(--green-t); }
+    .badge-warn { background: var(--yellow-s); color: var(--yellow-t); }
+
   </style>
   <!-- Google Analytics GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
@@ -1288,20 +1392,25 @@
         <p class="page-sub">Review and resolve user abuse reports</p>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <select id="reportStatusFilter" class="form-select" style="width:150px" onchange="loadReports()">
+        <select id="reportStatusFilter" class="form-select" style="width:160px" onchange="loadReports()">
           <option value="pending">⏳ Pending</option>
           <option value="reviewed">✅ Reviewed</option>
           <option value="dismissed">🚫 Dismissed</option>
           <option value="">All Reports</option>
         </select>
-        <button class="btn btn-ghost btn-sm" onclick="loadReports()">↻ Refresh</button>
       </div>
     </div>
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead><tr><th>Reporter</th><th>Type</th><th>Target</th><th>Reason</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead>
-        <tbody id="reportsBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody>
-      </table>
+    <div class="section-card" style="overflow:hidden">
+      <div class="section-card-header">
+        <span class="section-card-title">Abuse Reports</span>
+        <span id="reportCount" style="font-size:12px;color:var(--text3)"></span>
+      </div>
+      <div class="table-wrap" style="margin:0">
+        <table class="data-table" style="margin:0">
+          <thead><tr><th>Reporter</th><th>Type</th><th>Target</th><th>Reason</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead>
+          <tbody id="reportsBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -1312,13 +1421,18 @@
         <h1 class="page-title">Reviews</h1>
         <p class="page-sub">Manage platform reviews and ratings</p>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="loadReviews()">↻ Refresh</button>
     </div>
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead><tr><th>Reviewer</th><th>Seller</th><th>Rating</th><th>Comment</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead>
-        <tbody id="reviewsBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody>
-      </table>
+    <div class="section-card" style="overflow:hidden">
+      <div class="section-card-header">
+        <span class="section-card-title">User Reviews</span>
+        <span id="reviewCount" style="font-size:12px;color:var(--text3)"></span>
+      </div>
+      <div class="table-wrap" style="margin:0">
+        <table class="data-table" style="margin:0">
+          <thead><tr><th>Reviewer</th><th>Seller</th><th>Rating</th><th>Comment</th><th>Date</th><th style="text-align:right">Actions</th></tr></thead>
+          <tbody id="reviewsBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -1329,27 +1443,34 @@
         <h1 class="page-title">Messages</h1>
         <p class="page-sub">Monitor platform conversations</p>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="loadAdminMessages()">↻ Refresh</button>
     </div>
-    <div class="stats-row" style="margin-bottom:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
-      <div class="stat-card" style="--accent:#6366f1">
+    <div class="tab-stats-grid">
+      <div class="stat-card" style="--accent-color:#6366f1;--accent-bg:rgba(99,102,241,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
         <div class="stat-num" id="msgTotalConvs">—</div>
-        <div class="stat-label">Total Conversations</div>
+        <div class="stat-label">Conversations</div>
       </div>
-      <div class="stat-card" style="--accent:#f97316">
+      <div class="stat-card" style="--accent-color:#f97316;--accent-bg:rgba(249,115,22,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
         <div class="stat-num" id="msgTotalMsgs">—</div>
         <div class="stat-label">Total Messages</div>
       </div>
-      <div class="stat-card" style="--accent:#22c55e">
+      <div class="stat-card" style="--accent-color:#22c55e;--accent-bg:rgba(34,197,94,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
         <div class="stat-num" id="msgTodayMsgs">—</div>
         <div class="stat-label">Sent Today</div>
       </div>
     </div>
-    <div class="table-wrap">
-      <table class="data-table">
-        <thead><tr><th>Participants</th><th>Last Message</th><th>Count</th><th>Last Active</th></tr></thead>
-        <tbody id="messagesBody"><tr><td colspan="4" class="empty-row">Loading…</td></tr></tbody>
-      </table>
+    <div class="section-card" style="overflow:hidden">
+      <div class="section-card-header">
+        <span class="section-card-title">Conversations</span>
+      </div>
+      <div class="table-wrap" style="margin:0">
+        <table class="data-table" style="margin:0">
+          <thead><tr><th>Participants</th><th>Last Message</th><th>Count</th><th>Last Active</th></tr></thead>
+          <tbody id="messagesBody"><tr><td colspan="4" class="empty-row">Loading…</td></tr></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -1358,7 +1479,7 @@
     <div class="page-header">
       <div>
         <h1 class="page-title">Analytics</h1>
-        <p class="page-sub">Platform growth and engagement</p>
+        <p class="page-sub">Platform growth and engagement metrics</p>
       </div>
       <select id="analyticsPeriod" class="form-select" style="width:150px" onchange="loadAnalytics()">
         <option value="7">Last 7 days</option>
@@ -1366,34 +1487,38 @@
         <option value="90">Last 90 days</option>
       </select>
     </div>
-    <div class="stats-row" style="margin-bottom:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-      <div class="stat-card" style="--accent:#f97316">
+    <div class="tab-stats-grid">
+      <div class="stat-card" style="--accent-color:#f97316;--accent-bg:rgba(249,115,22,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
         <div class="stat-num" id="anaNewUsers">—</div>
         <div class="stat-label">New Users</div>
       </div>
-      <div class="stat-card" style="--accent:#6366f1">
+      <div class="stat-card" style="--accent-color:#6366f1;--accent-bg:rgba(99,102,241,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg></div>
         <div class="stat-num" id="anaNewListings">—</div>
         <div class="stat-label">New Listings</div>
       </div>
-      <div class="stat-card" style="--accent:#22c55e">
+      <div class="stat-card" style="--accent-color:#22c55e;--accent-bg:rgba(34,197,94,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
         <div class="stat-num" id="anaNewPayments">—</div>
         <div class="stat-label">Payments</div>
       </div>
-      <div class="stat-card" style="--accent:#f59e0b">
+      <div class="stat-card" style="--accent-color:#f59e0b;--accent-bg:rgba(245,158,11,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
         <div class="stat-num" id="anaNewReviews">—</div>
         <div class="stat-label">Reviews</div>
       </div>
     </div>
-    <div class="section-card" style="padding:24px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h3 style="margin:0;font-size:14px;font-weight:700;color:var(--text1)">Daily New Signups</h3>
-        <span style="font-size:12px;color:var(--text3)">users per day</span>
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="section-card-title">Daily New Signups</span>
+        <span style="font-size:12px;color:var(--text3)">users / day</span>
       </div>
-      <div id="analyticsChart" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:10px" id="analyticsChart"></div>
     </div>
   </div>
 
-  <!-- ══ REVENUE ═══════════════════════════════════════════════════════════ -->
+    <!-- ══ REVENUE ═══════════════════════════════════════════════════════════ -->
   <div id="tab-revenue" class="tab-pane">
     <div class="page-header">
       <div>
@@ -1407,31 +1532,41 @@
         <option value="365">This year</option>
       </select>
     </div>
-    <div class="stats-row" style="margin-bottom:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-      <div class="stat-card" style="--accent:#22c55e">
+    <div class="tab-stats-grid">
+      <div class="stat-card" style="--accent-color:#22c55e;--accent-bg:rgba(34,197,94,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
         <div class="stat-num" id="revTotal">$—</div>
         <div class="stat-label">Total Revenue</div>
       </div>
-      <div class="stat-card" style="--accent:#6366f1">
+      <div class="stat-card" style="--accent-color:#6366f1;--accent-bg:rgba(99,102,241,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
         <div class="stat-num" id="revApproved">—</div>
         <div class="stat-label">Approved</div>
       </div>
-      <div class="stat-card" style="--accent:#f97316">
+      <div class="stat-card" style="--accent-color:#f97316;--accent-bg:rgba(249,115,22,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
         <div class="stat-num" id="revPending">—</div>
         <div class="stat-label">Pending</div>
       </div>
-      <div class="stat-card" style="--accent:#f59e0b">
+      <div class="stat-card" style="--accent-color:#f59e0b;--accent-bg:rgba(245,158,11,.1)">
+        <div class="stat-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
         <div class="stat-num" id="revAvg">$—</div>
         <div class="stat-label">Avg / Payment</div>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:16px">
-      <div class="section-card" style="padding:20px">
-        <h3 style="margin:0 0 16px;font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">By Plan</h3>
-        <div id="revByPlan" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div class="two-col-grid">
+      <div class="section-card">
+        <div class="section-card-header">
+          <span class="section-card-title">By Plan</span>
+        </div>
+        <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px" id="revByPlan">
+          <div style="color:var(--text3);font-size:13px">Loading…</div>
+        </div>
       </div>
-      <div class="section-card" style="padding:20px">
-        <h3 style="margin:0 0 16px;font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px">Recent Transactions</h3>
+      <div class="section-card" style="overflow:hidden">
+        <div class="section-card-header">
+          <span class="section-card-title">Recent Transactions</span>
+        </div>
         <div class="table-wrap" style="margin:0">
           <table class="data-table" style="margin:0">
             <thead><tr><th>User</th><th>Plan</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
@@ -1442,79 +1577,84 @@
     </div>
   </div>
 
-  <!-- ══ ANNOUNCEMENTS ══════════════════════════════════════════════════════ -->
+    <!-- ══ ANNOUNCEMENTS ══════════════════════════════════════════════════════ -->
   <div id="tab-announcements" class="tab-pane">
     <div class="page-header">
       <div>
         <h1 class="page-title">Announcements</h1>
         <p class="page-sub">Post site-wide banners and notices for all users</p>
       </div>
-      <button class="btn btn-primary btn-sm" onclick="showAnnouncementModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <button class="btn btn-primary btn-sm" onclick="showAnnouncementModal()" style="display:flex;align-items:center;gap:6px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Announcement
       </button>
     </div>
-    <div id="announcementsList" style="display:flex;flex-direction:column;gap:12px">
+    <div id="announcementsList" style="display:flex;flex-direction:column;gap:10px">
       <div style="padding:60px;text-align:center;color:var(--text3)">Loading…</div>
     </div>
   </div>
 
-  <!-- ══ PUSH NOTIFICATIONS ═════════════════════════════════════════════════ -->
+    <!-- ══ PUSH NOTIFICATIONS ═════════════════════════════════════════════════ -->
   <div id="tab-push" class="tab-pane">
     <div class="page-header">
       <div>
         <h1 class="page-title">Push Notifications</h1>
-        <p class="page-sub">Send bulk push notifications to users</p>
+        <p class="page-sub">Send bulk push notifications to subscribed users</p>
       </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-      <div class="section-card" style="padding:24px">
-        <h3 style="margin:0 0 20px;font-size:14px;font-weight:700;color:var(--text1)">Compose Notification</h3>
-        <div style="margin-bottom:14px">
+      <div class="push-form-card">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px">
+          <div style="width:36px;height:36px;border-radius:10px;background:var(--primary-s);display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" style="width:18px;height:18px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          </div>
+          <div>
+            <div style="font-weight:700;font-size:14px;color:var(--text)">Compose Notification</div>
+            <div style="font-size:12px;color:var(--text3)" id="pushSubCount">Loading subscribers…</div>
+          </div>
+        </div>
+        <div class="form-group">
           <label class="form-label">Title *</label>
           <input id="pushTitle" class="form-input" placeholder="e.g. New Feature Available!">
         </div>
-        <div style="margin-bottom:14px">
+        <div class="form-group">
           <label class="form-label">Message *</label>
-          <textarea id="pushBody" class="form-input" rows="4" placeholder="Write your notification message…"></textarea>
+          <textarea id="pushBody" class="form-input" rows="4" placeholder="Write your notification message…" style="resize:vertical"></textarea>
         </div>
-        <div style="margin-bottom:20px">
+        <div class="form-group">
           <label class="form-label">Target Audience</label>
-          <select id="pushTarget" class="form-select">
+          <select id="pushTarget" class="form-input">
             <option value="all">🌍 All Users</option>
             <option value="free">🆓 Free Plan Only</option>
             <option value="paid">💎 Paid Plan Only</option>
           </select>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid var(--border)">
-          <span id="pushSubCount" style="font-size:12px;color:var(--text3)">Loading…</span>
-          <button class="btn btn-primary" onclick="sendPushNotification()">
-            Send Now →
-          </button>
+        <div style="padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+          <button class="btn btn-primary" onclick="sendPushNotification()">Send Now →</button>
         </div>
       </div>
-      <div class="section-card" style="padding:24px">
-        <h3 style="margin:0 0 20px;font-size:14px;font-weight:700;color:var(--text1)">Sent History</h3>
-        <div id="pushHistory" style="display:flex;flex-direction:column;gap:10px">
-          <div style="padding:40px;text-align:center;color:var(--text3)">No notifications sent yet</div>
+      <div class="push-form-card">
+        <div style="font-weight:700;font-size:13px;color:var(--text);text-transform:uppercase;letter-spacing:.6px;margin-bottom:16px">Sent History</div>
+        <div id="pushHistory">
+          <div style="padding:40px 0;text-align:center;color:var(--text3);font-size:13px">No notifications sent yet</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ══ CATEGORIES ═════════════════════════════════════════════════════════ -->
+    <!-- ══ CATEGORIES ═════════════════════════════════════════════════════════ -->
   <div id="tab-categories" class="tab-pane">
     <div class="page-header">
       <div>
         <h1 class="page-title">Categories</h1>
         <p class="page-sub">Listing distribution across categories</p>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="loadCategories()">↻ Refresh</button>
     </div>
-    <div id="categoriesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
+    <div id="categoriesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px">
       <div style="padding:60px;text-align:center;color:var(--text3)">Loading…</div>
     </div>
   </div>
+
 
   </div><!-- /content -->
 </div><!-- /main -->
@@ -2409,19 +2549,21 @@ async function loadReports() {
     const d = await adminFetch('list_reports' + (status ? '&status=' + status : ''));
     const rows = d.reports || d.data?.reports || [];
     if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-row">No reports found</td></tr>'; return; }
-    tbody.innerHTML = rows.map(r => `<tr>
-      <td>${esc(r.reporter_name || r.reporter_email || '#'+r.reporter_id)}</td>
-      <td><span class="badge">${esc(r.report_type||r.type||'—')}</span></td>
-      <td>${esc(r.target_title||r.target_id||'—')}</td>
-      <td>${esc(r.reason||'—')}</td>
-      <td>${fmtDate(r.created_at)}</td>
-      <td style="display:flex;gap:6px">
-        <button class="btn btn-xs btn-ghost" onclick="resolveReport(${r.id},'reviewed')">✓ Review</button>
-        <button class="btn btn-xs" style="background:#ef4444;color:white;border:none" onclick="resolveReport(${r.id},'dismissed')">Dismiss</button>
-      </td>
-    </tr>`).join('');
+    const rc2 = document.getElementById('reportCount');
+    if(rc2) rc2.textContent = rows.length + ' reports';
     const badge = document.getElementById('navBadgeReports');
     if (badge && status === 'pending') { badge.textContent = rows.length; badge.style.display = rows.length ? '' : 'none'; }
+    tbody.innerHTML = rows.map(r => `<tr>
+      <td><span style="font-weight:600;color:var(--text)">${esc(r.reporter_name || r.reporter_email || '#'+r.reporter_id)}</span></td>
+      <td><span class="badge badge-yellow">${esc(r.report_type||r.type||'listing')}</span></td>
+      <td style="color:var(--text2)">${esc(r.target_title||r.target_id||'—')}</td>
+      <td style="color:var(--text2);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.reason||'—')}</td>
+      <td style="color:var(--text3)">${fmtDate(r.created_at)}</td>
+      <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
+        <button class="btn btn-xs" style="background:var(--green-s);color:var(--green-t);border:none" onclick="resolveReport(${r.id},'reviewed')">✓ Resolve</button>
+        <button class="btn btn-xs" style="background:var(--red-s);color:var(--red-t);border:none" onclick="resolveReport(${r.id},'dismissed')">Dismiss</button>
+      </td>
+    </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-row">${e.message}</td></tr>`; }
 }
 async function resolveReport(id, status) {
@@ -2441,13 +2583,15 @@ async function loadReviews() {
     const rows = d.reviews || d.data?.reviews || [];
     if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-row">No reviews yet</td></tr>'; return; }
     const stars = n => '★'.repeat(Math.max(0,Math.min(5,n||0))) + '☆'.repeat(5 - Math.max(0,Math.min(5,n||0)));
+    const rc = document.getElementById('reviewCount');
+    if(rc) rc.textContent = rows.length + ' reviews';
     tbody.innerHTML = rows.map(r => `<tr>
       <td>${esc(r.reviewer_name||'#'+r.reviewer_id)}</td>
       <td>${esc(r.seller_name||'#'+r.seller_id)}</td>
-      <td style="color:#f59e0b">${stars(r.rating)} <span style="color:var(--text3);font-size:12px">${r.rating}/5</span></td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.comment||'—')}</td>
+      <td style="color:#f59e0b">${stars(r.rating)} <span style="color:var(--text3);font-size:11px">${r.rating}/5</span></td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2)">${esc(r.comment||'—')}</td>
       <td>${fmtDate(r.created_at)}</td>
-      <td><button class="btn btn-xs" style="background:#ef4444;color:white;border:none" onclick="deleteReview(${r.id})">Delete</button></td>
+      <td style="text-align:right"><button class="btn btn-xs" style="background:var(--red-s);color:var(--red-t);border:none" onclick="deleteReview(${r.id})">Delete</button></td>
     </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-row">${e.message}</td></tr>`; }
 }
@@ -2496,12 +2640,12 @@ async function loadAnalytics() {
     if (chart && a.daily) {
       const max = Math.max(...a.daily.map(x => x.count || 0), 1);
       chart.innerHTML = a.daily.map(x => `
-        <div style="display:flex;align-items:center;gap:8px;font-size:12px">
-          <span style="width:80px;color:var(--text3)">${x.date}</span>
-          <div style="flex:1;background:var(--bg3);border-radius:4px;height:18px;overflow:hidden">
-            <div style="width:${Math.round(x.count/max*100)}%;height:100%;background:var(--primary);border-radius:4px"></div>
+        <div class="chart-bar-row">
+          <span class="chart-bar-date">${x.date}</span>
+          <div class="chart-bar-track">
+            <div class="chart-bar-fill" style="width:${Math.round(x.count/max*100)}%"></div>
           </div>
-          <span style="width:24px;text-align:right;color:var(--text1)">${x.count}</span>
+          <span class="chart-bar-val">${x.count}</span>
         </div>`).join('');
     }
   } catch(e) { console.error('Analytics error:', e); }
@@ -2535,13 +2679,13 @@ async function loadRevenue() {
     if (plans && r.by_plan) {
       const max = Math.max(...Object.values(r.by_plan).map(x => x.total||0), 1);
       plans.innerHTML = Object.entries(r.by_plan).map(([plan, info]) => `
-        <div style="display:flex;align-items:center;gap:10px;font-size:13px">
-          <span style="width:80px;text-transform:capitalize;font-weight:600;color:var(--text1)">${plan}</span>
-          <div style="flex:1;background:var(--bg3);border-radius:4px;height:20px;overflow:hidden">
-            <div style="width:${Math.round((info.total||0)/max*100)}%;height:100%;background:var(--primary);border-radius:4px"></div>
+        <div class="plan-bar-row">
+          <span class="plan-name">${plan}</span>
+          <div class="plan-bar-track">
+            <div class="plan-bar-fill" style="width:${Math.round((info.total||0)/max*100)}%"></div>
           </div>
-          <span style="color:#22c55e;font-weight:700;width:60px;text-align:right">$${info.total||0}</span>
-          <span style="color:var(--text3);width:40px">${info.count||0}x</span>
+          <span class="plan-bar-info">$${info.total||0}</span>
+          <span class="plan-bar-count">${info.count||0}x</span>
         </div>`).join('');
     }
   } catch(e) { console.error('Revenue error:', e); }
@@ -2557,15 +2701,18 @@ async function loadAnnouncements() {
     const rows = d.announcements || d.data?.announcements || [];
     if (!rows.length) { list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)">No announcements yet</div>'; return; }
     list.innerHTML = rows.map(a => `
-      <div class="section-card" style="padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
-        <div>
-          <div style="font-weight:700;color:var(--text1);margin-bottom:4px">${esc(a.title||'Untitled')}</div>
-          <div style="color:var(--text3);font-size:13px">${esc(a.message||a.body||'')}</div>
-          <div style="color:var(--text3);font-size:11px;margin-top:6px">${fmtDate(a.created_at)} · <span class="badge ${a.is_active?'badge-success':''}">${a.is_active?'Active':'Inactive'}</span></div>
+      <div class="announcement-card ${a.is_active?'active':''}">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="font-weight:700;font-size:14px;color:var(--text)">${esc(a.title||'Untitled')}</span>
+            <span class="badge ${a.is_active?'badge-success':'badge-gray'}">${a.is_active?'Active':'Inactive'}</span>
+          </div>
+          <div style="color:var(--text2);font-size:13px;line-height:1.5;margin-bottom:8px">${esc(a.message||a.body||'')}</div>
+          <div style="color:var(--text3);font-size:11px">${fmtDate(a.created_at)}</div>
         </div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
+        <div style="display:flex;gap:6px;flex-shrink:0;align-items:flex-start">
           <button class="btn btn-xs btn-ghost" onclick="toggleAnnouncement(${a.id},${a.is_active?0:1})">${a.is_active?'Deactivate':'Activate'}</button>
-          <button class="btn btn-xs" style="background:#ef4444;color:white;border:none" onclick="deleteAnnouncement(${a.id})">Delete</button>
+          <button class="btn btn-xs" style="background:var(--red-s);color:var(--red-t);border:none" onclick="deleteAnnouncement(${a.id})">Delete</button>
         </div>
       </div>`).join('');
   } catch(e) { list.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">${e.message}</div>`; }
@@ -2603,10 +2750,15 @@ async function loadPushNotifs() {
     const logs = d.logs || d.data?.logs || s.recent || [];
     if (hist && logs.length) {
       hist.innerHTML = logs.map(l => `
-        <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:13px">
-          <strong style="color:var(--text1)">${esc(l.title||'—')}</strong>
-          <span style="color:var(--text3);margin-left:8px">${fmtDate(l.sent_at||l.created_at)}</span>
-          <div style="color:var(--text3)">${esc(l.body||'')} · ${l.sent_count||0} sent</div>
+        <div class="push-history-item">
+          <div class="push-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-weight:600;font-size:13px;color:var(--text);margin-bottom:2px">${esc(l.title||'—')}</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:4px">${esc(l.body||'')}</div>
+            <div style="font-size:11px;color:var(--text3)">Sent to: ${esc(l.target||'all')} · ${l.sent_count||0} delivered · ${fmtDate(l.sent_at||l.created_at)}</div>
+          </div>
         </div>`).join('');
     }
   } catch(e) { console.error('Push error:', e); }
@@ -2636,13 +2788,16 @@ async function loadCategories() {
     const cats = d.categories || d.data?.categories || [];
     if (!cats.length) { grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)">No data</div>'; return; }
     const max = Math.max(...cats.map(c => c.count||0), 1);
-    grid.innerHTML = cats.map(c => `
-      <div class="section-card" style="padding:16px 20px">
-        <div style="font-weight:700;color:var(--text1);margin-bottom:8px">${esc(c.category||c.name||'Unknown')}</div>
-        <div style="background:var(--bg3);border-radius:6px;height:8px;overflow:hidden;margin-bottom:8px">
-          <div style="width:${Math.round((c.count||0)/max*100)}%;height:100%;background:var(--primary);border-radius:6px"></div>
+    grid.innerHTML = cats.map(cat => `
+      <div class="cat-card">
+        <div class="cat-name">${esc(cat.category||cat.name||'Unknown')}</div>
+        <div class="cat-bar-track">
+          <div class="cat-bar-fill" style="width:${Math.round((cat.count||0)/max*100)}%"></div>
         </div>
-        <div style="font-size:13px;color:var(--text3)">${c.count||0} listings · ${c.active_count||0} active</div>
+        <div class="cat-meta">
+          <span class="cat-total">${cat.count||0} listings</span>
+          <span>${cat.active_count||0} active</span>
+        </div>
       </div>`).join('');
   } catch(e) { grid.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">${e.message}</div>`; }
 }
