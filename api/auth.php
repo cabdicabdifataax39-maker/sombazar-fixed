@@ -555,6 +555,6 @@ function handleGoogleAuth(): void {
 
     if ($user['is_banned'] ?? false) jsonError('Account banned', 403);
 
-    $token = generateToken((int)$user['id']);
+    $token = createToken((int)$user['id']);
     jsonSuccess(['token' => $token, 'user' => formatUser($user)]);
 }
