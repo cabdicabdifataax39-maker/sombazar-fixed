@@ -36,7 +36,10 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M');
+    gtag('config', 'G-6H7F8Y980M', {
+      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
+      'cookie_flags': 'SameSite=None;Secure'
+    });
   </script>
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
