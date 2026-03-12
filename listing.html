@@ -4,642 +4,804 @@
   <meta charset="UTF-8">
   <meta name="csrf-token" content="" id="csrfMeta">
   <link rel="icon" href="assets/favicon.png" type="image/png">
-    <!-- Apple PWA Meta -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="SomBazar">
-  <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f97316">
+  <meta name="theme-color" content="#ec5b13">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Listing — SomBazar</title>
-    <link rel="alternate" hreflang="en" href="" id="hreflang-en">
-  <link rel="alternate" hreflang="so" href="" id="hreflang-so">
-  <link rel="alternate" hreflang="x-default" href="" id="hreflang-default">
   <link rel="canonical" id="canonicalTag" href="">
-    <link rel="preload" href="assets/style.min.css" as="style">
-  <link rel="preload" href="assets/app.min.js" as="script">
-<link rel="stylesheet" href="assets/style.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
-  <style>
-body { overflow-x: hidden; margin: 0; }
-    .detail-layout{display:grid;grid-template-columns:1fr 360px;gap:24px;max-width:1200px;margin:0 auto;padding:24px 20px 80px}
-    @media(max-width:900px){.detail-layout{grid-template-columns:1fr}.sticky-aside{position:static!important}}
-    .gallery-wrap{border-radius:16px;overflow:hidden;background:#f3f4f6;margin-bottom:12px;position:relative}
-    .gallery-main-img{width:100%;height:400px;object-fit:cover;display:block;cursor:zoom-in;transition:opacity .2s}
-    /* ── Lightbox ── */
-    #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column}
-    #lightbox.open{display:flex}
-    #lightbox-img{max-width:92vw;max-height:82vh;object-fit:contain;border-radius:8px;box-shadow:0 24px 80px rgba(0,0,0,.6);transition:opacity .2s;user-select:none}
-    #lightbox-close{position:absolute;top:16px;right:20px;background:rgba(255,255,255,.12);border:none;color:white;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;line-height:1}
-    #lightbox-close:hover{background:rgba(255,255,255,.25)}
-    #lightbox-prev,#lightbox-next{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.12);border:none;color:white;width:44px;height:44px;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;line-height:1}
-    #lightbox-prev{left:16px}
-    #lightbox-next{right:16px}
-    #lightbox-prev:hover,#lightbox-next:hover{background:rgba(255,255,255,.28)}
-    #lightbox-counter{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.7);font-size:13px;font-weight:600;letter-spacing:.5px}
-    #lightbox-thumbs{display:flex;gap:8px;margin-top:14px;max-width:92vw;overflow-x:auto;padding:4px;scrollbar-width:none}
-    #lightbox-thumbs::-webkit-scrollbar{display:none}
-    #lightbox-thumbs img{width:56px;height:56px;object-fit:cover;border-radius:8px;cursor:pointer;opacity:.55;transition:all .15s;border:2px solid transparent;flex-shrink:0}
-    #lightbox-thumbs img.lb-active{opacity:1;border-color:#f97316}
-    .gallery-zoom-hint{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.5);color:white;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;pointer-events:none;opacity:0;transition:opacity .3s}
-    .gallery-wrap:hover .gallery-zoom-hint{opacity:1}
-    .gallery-placeholder{width:100%;height:400px;display:flex;align-items:center;justify-content:center;font-size:90px;background:linear-gradient(135deg,#f8f9fa,#e9ecef)}
-    .thumb-strip{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px}
-    .thumb-strip img{width:70px;height:70px;object-fit:cover;border-radius:10px;cursor:pointer;flex-shrink:0;border:2px solid transparent;transition:all .15s}
-    .thumb-strip img.active{border-color:var(--primary-color)}
-    .info-card{background:white;border-radius:16px;border:1px solid var(--border-color);padding:20px;margin-bottom:16px}
-    .info-card-title{font-size:13px;font-weight:800;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px}
-    .specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .spec-item{background:var(--light-gray);border-radius:10px;padding:10px 14px}
-    .spec-key{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
-    .spec-val{font-size:14px;font-weight:700;color:var(--dark)}
-    .share-row{display:flex;gap:8px;flex-wrap:wrap}
-    .share-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;border:1px solid var(--border-color);background:white;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans';color:var(--dark);transition:all .15s}
-    .share-btn:hover{background:var(--light-gray)}
-    .review-item{padding:14px 0;border-bottom:1px solid var(--border-color)}
-    .review-item:last-child{border-bottom:none}
-    .stars{color:#f59e0b;font-size:14px;letter-spacing:1px}
-    .map-box{border-radius:12px;overflow:hidden;border:1px solid var(--border-color);height:260px;background:#f1f5f9;position:relative} #leafletMap{width:100%;height:100%}
-    .map-box iframe{width:100%;height:100%;border:none;display:block}
-    .map-box-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#e0f2fe,#bae6fd)}
-    .sticky-aside{position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto}
-    .cta-card{background:white;border-radius:16px;border:1px solid var(--border-color);padding:20px;margin-bottom:16px}
-    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px}
-    .modal-box{background:white;border-radius:20px;padding:28px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto}
-    .modal-title{font-size:18px;font-weight:800;color:var(--dark);margin-bottom:6px}
-    .modal-sub{font-size:13px;color:var(--gray);margin-bottom:20px}
-    .report-option{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;transition:background .15s}
-    .report-option:hover{background:var(--light-gray)}
-    .report-option input{accent-color:var(--primary-color)}
-    .type-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;margin-bottom:10px}
-    .type-sale{background:#dcfce7;color:#16a34a}
-    .type-rent{background:#dbeafe;color:#2563eb}
-    .star-rating{display:flex;gap:4px;font-size:30px;cursor:pointer}
-    .star-rating span{color:#d1d5db;transition:color .1s;user-select:none}
-    .star-rating span.lit{color:#f59e0b}
-  
-    /* Autocomplete dropdown */
-    .autocomplete-dropdown {
-      position:absolute;top:calc(100% + 6px);left:0;right:0;
-      background:#fff;border:1px solid #e2e8f0;border-radius:12px;
-      box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:9999;
-      max-height:320px;overflow-y:auto;
-    }
-    .autocomplete-item {
-      display:flex;align-items:center;gap:10px;
-      padding:10px 14px;font-size:13px;cursor:pointer;transition:background .15s;
-    }
-    .autocomplete-item:hover,.autocomplete-item.ac-active{background:#f8f9fa;}
-    .search-wrap{position:relative;}
-</style>
-  <!-- Dynamic OG Meta - JS ile doldurulur -->
   <meta property="og:type" content="product" id="ogType">
   <meta property="og:title" content="SomBazar" id="ogTitle">
   <meta property="og:description" content="Buy and sell in Somaliland" id="ogDesc">
   <meta property="og:image" content="" id="ogImage">
   <meta property="og:url" content="" id="ogUrl">
   <meta name="description" content="Buy and sell in Somaliland" id="metaDesc">
-<script type="application/ld+json" id="listingSchema">{}</script>
-  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
+  <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+  <script type="application/ld+json" id="listingSchema">{}</script>
+  <!-- Preload critical assets -->
+  <link rel="preload" href="assets/style.min.css" as="style">
+  <link rel="preload" href="assets/app.min.js" as="script">
+  <link rel="stylesheet" href="assets/style.min.css">
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
   <script>
-    (function(){
-      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
-      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(s);
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', GA_ID, {
-        page_title: document.title,
-        page_location: window.location.href,
-        anonymize_ip: true,
-        cookie_flags: 'SameSite=None;Secure'
-      });
-    })();
+    tailwind.config = {
+      theme: { extend: { colors: { primary: "#ec5b13" }, fontFamily: { sans: ["Public Sans","sans-serif"] } } }
+    }
   </script>
+  <!-- GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
   <script>
-    // Dark mode FOUC prevention — must run before DOM
+    window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+    gtag('js',new Date());
+    gtag('config','G-6H7F8Y980M',{'cookie_domain':'sombazar-fixed-production.up.railway.app','cookie_flags':'SameSite=None;Secure'});
+  </script>
+  <!-- Dark mode FOUC prevention -->
+  <script>
     (function(){
-      var t=localStorage.getItem('sb_theme')||
-        (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
       document.documentElement.setAttribute('data-theme',t);
     })();
   </script>
-  <style id="critical-css">
-    /* Critical CSS — Above the fold */
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f8fafc;color:#0f172a}
-    .topbar{height:56px;background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:100}
-    .detail-layout{max-width:1100px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr 340px;gap:24px}
-    @media(max-width:768px){.detail-layout{grid-template-columns:1fr}}
-    .detail-images{border-radius:16px;overflow:hidden;background:#f3f4f6;aspect-ratio:4/3;position:relative}
-    .detail-images img{width:100%;height:100%;object-fit:cover}
-  </style>
-  <!-- Leaflet Map -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <!-- Google Analytics GA4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M', {
-      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
-      'cookie_flags': 'SameSite=None;Secure'
-    });
-  </script>
-  <!-- Google Search Console Verification -->
-  <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
-
-  <link rel="stylesheet" href="https://cdn.tailwindcss.com?plugins=forms">
-  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-  <script>tailwind.config={ theme:{ extend:{ colors:{ primary:"#ec5b13" }, fontFamily:{ sans:["Public Sans","sans-serif"] } } } }</script>
   <style>
-    body { font-family: "Public Sans", sans-serif; }
-    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
-    .skeleton-card { background:#fff;border-radius:16px;overflow:hidden;border:1px solid #f0f0f0; }
-    .skeleton-img { height:180px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; }
-    .skeleton-line { height:14px;border-radius:6px;margin:10px 12px 6px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; }
-    .skeleton-line.short{ width:55%; } .skeleton-line.xshort{ width:35%;height:12px; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Public Sans", sans-serif; background: #f8fafc; color: #0f172a; overflow-x: hidden; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24; vertical-align: middle; line-height: 1; }
+
+    /* ── Layout ── */
+    .page-wrap { max-width: 1100px; margin: 0 auto; padding: 24px 20px 100px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; }
+    @media (max-width: 900px) { .detail-grid { grid-template-columns: 1fr; } .sticky-sidebar { position: static !important; } }
+
+    /* ── Card base ── */
+    .card { background: #fff; border-radius: 16px; border: 1px solid #e8ecf0; }
+
+    /* ── Gallery ── */
+    .gallery-wrap { position: relative; background: #f1f5f9; border-radius: 16px 16px 0 0; overflow: hidden; }
+    .gallery-main-img { width: 100%; height: 400px; object-fit: cover; display: block; cursor: zoom-in; transition: opacity .15s; }
+    .gallery-placeholder { width: 100%; height: 400px; display: flex; align-items: center; justify-content: center; font-size: 80px; background: #f1f5f9; }
+    @media (max-width: 768px) { .gallery-main-img, .gallery-placeholder { height: 260px; } }
+    .gal-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.85); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,.15); z-index: 2; transition: background .15s; }
+    .gal-arrow:hover { background: #fff; }
+    .photo-counter { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,.52); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .zoom-hint { position: absolute; bottom: 12px; left: 12px; background: rgba(0,0,0,.45); color: #fff; font-size: 10px; font-weight: 600; padding: 4px 9px; border-radius: 20px; opacity: 0; transition: opacity .25s; pointer-events: none; }
+    .gallery-wrap:hover .zoom-hint { opacity: 1; }
+    .thumb-strip { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; background: #fff; border-radius: 0 0 16px 16px; scrollbar-width: none; }
+    .thumb-strip::-webkit-scrollbar { display: none; }
+    .thumb-item { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; cursor: pointer; flex-shrink: 0; border: 2px solid transparent; transition: all .15s; }
+    .thumb-item:hover { opacity: .8; }
+    .thumb-item.active { border-color: #ec5b13; }
+
+    /* ── Type badge ── */
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: .3px; }
+    .badge-sale { background: #dcfce7; color: #16a34a; }
+    .badge-rent { background: #dbeafe; color: #2563eb; }
+    .badge-sold { background: #f1f5f9; color: #64748b; }
+
+    /* ── Spec pills ── */
+    .spec-pill { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e8ecf0; text-align: center; min-width: 0; }
+    .spec-icon { color: #ec5b13; font-size: 20px; display: block; }
+    .spec-label { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
+    .spec-value { font-size: 13px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px; }
+
+    /* ── Sidebar CTA buttons ── */
+    .cta-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 13px 16px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; border: none; font-family: inherit; text-decoration: none; transition: filter .15s, transform .1s; }
+    .cta-btn:hover { filter: brightness(1.08); }
+    .cta-btn:active { transform: scale(.98); }
+    .btn-orange { background: #ec5b13; color: #fff; }
+    .btn-dark   { background: #0f172a; color: #fff; }
+    .btn-green  { background: #25d366; color: #fff; }
+    .btn-outline { background: #eff6ff; color: #2563eb; border: 2px solid #bfdbfe !important; }
+    .btn-ghost  { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 10px; background: #f8fafc; border: 1.5px solid #e8ecf0; font-size: 13px; font-weight: 700; color: #374151; cursor: pointer; font-family: inherit; transition: background .15s; }
+    .btn-ghost:hover { background: #f1f5f9; }
+
+    /* ── Seller avatar ── */
+    .seller-av { width: 52px; height: 52px; border-radius: 50%; background: #ec5b13; color: #fff; font-size: 20px; font-weight: 900; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+
+    /* ── Safety tips ── */
+    .safety-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; flex-shrink: 0; margin-top: 2px; }
+
+    /* ── Lightbox ── */
+    #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,.93); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; }
+    #lightbox.open { display: flex; }
+    #lb-img { max-width: 90vw; max-height: 78vh; object-fit: contain; border-radius: 8px; transition: opacity .18s; user-select: none; }
+    .lb-nav { position: absolute; background: rgba(255,255,255,.14); border: none; color: #fff; width: 42px; height: 42px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .2s; top: 50%; transform: translateY(-50%); }
+    .lb-nav:hover { background: rgba(255,255,255,.28); }
+    #lb-prev { left: 16px; }
+    #lb-next { right: 16px; }
+    #lb-close { position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,.14); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    #lb-close:hover { background: rgba(255,255,255,.28); }
+    #lb-counter { position: absolute; bottom: 52px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.7); font-size: 13px; font-weight: 600; }
+    #lb-thumbs { display: flex; gap: 7px; position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); max-width: 92vw; overflow-x: auto; padding: 4px; scrollbar-width: none; }
+    #lb-thumbs::-webkit-scrollbar { display: none; }
+    #lb-thumbs img { width: 50px; height: 50px; object-fit: cover; border-radius: 7px; cursor: pointer; opacity: .5; border: 2px solid transparent; transition: all .15s; flex-shrink: 0; }
+    #lb-thumbs img.lb-active { opacity: 1; border-color: #ec5b13; }
+
+    /* ── Review row ── */
+    .review-row { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
+    .review-row:last-child { border-bottom: none; }
+
+    /* ── Similar cards ── */
+    .sim-card { background: #fff; border-radius: 14px; overflow: hidden; border: 1.5px solid #e8ecf0; cursor: pointer; transition: all .2s; position: relative; }
+    .sim-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+    .sim-card-img { width: 100%; height: 130px; object-fit: cover; display: block; }
+    .sim-card-body { padding: 10px 12px; }
+    .sim-fav { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,.88); border: none; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; }
+    @media (max-width: 600px) { .sim-card-img { height: 90px; } }
+
+    /* ── Modal overlay ── */
+    .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .modal-box { background: #fff; border-radius: 20px; padding: 24px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+
+    /* ── Map ── */
+    #leafletMap { width: 100%; height: 240px; display: block; }
+
+    /* ── Skeleton ── */
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-    .listing-card-badge { position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#ff6b00,#ffaa00);color:white;font-size:9px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.8px;text-transform:uppercase; }
-    .listing-card-fav { position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer; }
-    .gallery-thumb:hover { opacity:.8; }
-    [data-theme="dark"] body { background:#1e293b;color:#f1f5f9; }
-    .toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
-    .toast{background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);}
-    .toast.success{background:#10b981;} .toast.error{background:#ef4444;}
+    .skel { background: linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 10px; }
+
+    /* ── Toast ── */
+    .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: #0f172a; color: #fff; padding: 12px 18px; border-radius: 12px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
+    .toast.success { background: #10b981; }
+    .toast.error   { background: #ef4444; }
+
+    /* ── Mobile bottom nav ── */
+    .mobile-nav { display: none; }
+    @media (max-width: 768px) { .mobile-nav { display: flex; } }
+
+    /* ── Footer ── */
+    .footer-link { color: #64748b; text-decoration: none; font-size: 13px; line-height: 2; transition: color .15s; }
+    .footer-link:hover { color: #ec5b13; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen">
 
-<!-- HEADER -->
+<body class="bg-slate-50">
+
+<!-- ═══════════ STICKY HEADER ═══════════ -->
 <header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-14 gap-6">
-      <a href="index.html" class="flex items-center gap-2 flex-shrink-0">
-        <div class="bg-primary p-1.5 rounded-lg text-white"><span class="material-symbols-outlined text-lg block">shopping_bag</span></div>
-        <span class="text-xl font-black tracking-tight text-primary">SomBazar</span>
-      </a>
-      <form class="hidden md:flex flex-1 max-w-xl" id="headerSearchForm">
-        <div class="relative w-full">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-          <input type="search" id="headerSearchInput" class="w-full pl-10 pr-4 py-2 bg-slate-100 border-transparent rounded-xl text-sm focus:ring-2 focus:ring-primary/40 focus:bg-white transition-all outline-none" placeholder="Search for cars, property, electronics...">
-        </div>
-      </form>
-      <div class="flex items-center gap-2">
-        <a href="listings.html" class="p-2 rounded-full hover:bg-slate-100 text-slate-600"><span class="material-symbols-outlined text-xl">favorite</span></a>
-        <div style="position:relative" id="notifBellWrap">
-          <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-2 rounded-full hover:bg-slate-100 text-slate-600">
-            <span class="material-symbols-outlined text-xl">notifications</span>
-            <span id="notifBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
-          </button>
-          <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;max-height:400px;overflow-y:auto">
-            <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9"><span style="font-weight:800;font-size:14px">Notifications</span></div>
-            <div id="notifList"></div>
-          </div>
-        </div>
-        <a href="profile.html" id="headerAvatarLink" class="header-avatar w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center font-black text-xs text-slate-600"></a>
-        <a href="auth.html" id="header-signin" class="text-sm font-bold text-slate-700 hover:text-primary px-2 py-1.5">Sign In</a>
-        <div id="header-user" style="display:none">
-          <a href="profile.html" class="header-avatar w-8 h-8 rounded-full bg-primary/90 text-white flex items-center justify-center font-black text-xs overflow-hidden flex-shrink-0" data-visual-avatar="1"></a></div>
-        <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
+  <div style="max-width:1100px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:14px;">
+    <!-- Logo -->
+    <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;">
+      <div style="background:#ec5b13;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#fff;font-size:18px;">sell</span>
       </div>
+      <span style="font-size:17px;font-weight:900;color:#0f172a;letter-spacing:-.3px;">SomBazar</span>
+    </a>
+    <!-- Search -->
+    <form id="headerSearchForm" style="flex:1;max-width:500px;position:relative;" onsubmit="return doHeaderSearch(event)">
+      <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:18px;pointer-events:none;">search</span>
+      <input id="headerSearchInput" type="search" placeholder="Search for cars, property, electronics..."
+        style="width:100%;padding:9px 12px 9px 38px;background:#f1f5f9;border:1.5px solid transparent;border-radius:12px;font-size:13px;outline:none;font-family:inherit;transition:all .2s;"
+        onfocus="this.style.background='#fff';this.style.borderColor='#ec5b13';"
+        onblur="this.style.background='#f1f5f9';this.style.borderColor='transparent';">
+    </form>
+    <!-- Right actions -->
+    <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+      <div style="position:relative;" id="notifBellWrap">
+        <button onclick="toggleNotifDropdown()" id="notifBell" style="background:none;border:none;cursor:pointer;padding:8px;color:#64748b;position:relative;">
+          <span class="material-symbols-outlined" style="font-size:22px;">notifications</span>
+          <span id="notifBadge" style="display:none;position:absolute;top:7px;right:7px;width:8px;height:8px;background:#ec5b13;border-radius:50%;border:2px solid #fff;"></span>
+        </button>
+        <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:310px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:400px;overflow-y:auto;">
+          <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9;font-weight:800;font-size:14px;">Notifications</div>
+          <div id="notifList" style="padding:12px 16px;font-size:13px;color:#94a3b8;">No new notifications</div>
+        </div>
+      </div>
+      <a href="auth.html" id="header-signin" style="font-size:13px;font-weight:700;color:#374151;text-decoration:none;padding:7px 14px;border:1.5px solid #e2e8f0;border-radius:10px;white-space:nowrap;">Sign In</a>
+      <div id="header-user" style="display:none;">
+        <a href="profile.html" class="header-avatar" data-visual-avatar="1" style="width:34px;height:34px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px;text-decoration:none;overflow:hidden;"></a>
+      </div>
+      <a href="admin.html" id="admin-btn" style="display:none;font-size:12px;font-weight:800;background:#0f172a;color:#fff;padding:6px 12px;border-radius:8px;text-decoration:none;">Admin</a>
     </div>
   </div>
 </header>
 
-<!-- BREADCRUMB -->
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-  <nav class="flex items-center gap-1.5 text-xs text-slate-500" id="breadcrumb">
-    <a href="index.html" class="hover:text-primary">Home</a>
-    <span class="material-symbols-outlined text-base text-slate-300">chevron_right</span>
-    <a href="listings.html" class="hover:text-primary">Listings</a>
-    <span class="material-symbols-outlined text-base text-slate-300">chevron_right</span>
-    <span id="breadCat" class="hover:text-primary cursor-pointer"></span>
-    <span class="material-symbols-outlined text-base text-slate-300">chevron_right</span>
-    <span id="breadTitle" class="text-slate-700 font-medium truncate max-w-[200px]"></span>
-  </nav>
+<!-- ═══════════ BREADCRUMB ═══════════ -->
+<div style="background:#fff;border-bottom:1px solid #f1f5f9;">
+  <div style="max-width:1100px;margin:0 auto;padding:9px 20px;">
+    <nav style="display:flex;align-items:center;gap:5px;font-size:12px;color:#94a3b8;flex-wrap:wrap;" id="breadcrumb">
+      <a href="index.html" style="color:#94a3b8;text-decoration:none;font-weight:600;" onmouseover="this.style.color='#ec5b13'" onmouseout="this.style.color='#94a3b8'">Home</a>
+      <span class="material-symbols-outlined" style="font-size:14px;color:#cbd5e1;">chevron_right</span>
+      <a href="listings.html" id="bcCat" style="color:#94a3b8;text-decoration:none;font-weight:600;" onmouseover="this.style.color='#ec5b13'" onmouseout="this.style.color='#94a3b8'">Cars</a>
+      <span class="material-symbols-outlined" style="font-size:14px;color:#cbd5e1;">chevron_right</span>
+      <a href="listings.html" id="bcSub" style="color:#94a3b8;text-decoration:none;font-weight:600;" onmouseover="this.style.color='#ec5b13'" onmouseout="this.style.color='#94a3b8'">Cars</a>
+      <span class="material-symbols-outlined" style="font-size:14px;color:#cbd5e1;" id="bcSep">chevron_right</span>
+      <span id="bcTitle" style="color:#374151;font-weight:700;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+    </nav>
+  </div>
 </div>
 
-<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-  <!-- Loading state -->
-  <div id="loadingState" class="py-20 text-center">
-    <div class="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-    <p class="text-slate-500">Loading listing...</p>
+<!-- ═══════════ LOADING SKELETON ═══════════ -->
+<div id="loadingState" style="max-width:1100px;margin:24px auto;padding:0 20px;">
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:24px;" id="skeletonGrid">
+    <div>
+      <div class="skel" style="height:400px;border-radius:16px;margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <div class="skel" style="width:70px;height:70px;border-radius:10px;"></div>
+        <div class="skel" style="width:70px;height:70px;border-radius:10px;"></div>
+        <div class="skel" style="width:70px;height:70px;border-radius:10px;"></div>
+      </div>
+      <div class="card" style="padding:22px;">
+        <div class="skel" style="height:12px;width:60px;border-radius:20px;margin-bottom:14px;"></div>
+        <div class="skel" style="height:26px;width:70%;margin-bottom:10px;"></div>
+        <div class="skel" style="height:14px;width:45%;"></div>
+      </div>
+    </div>
+    <div>
+      <div class="skel" style="height:420px;border-radius:16px;"></div>
+    </div>
   </div>
-  <!-- Main content (hidden until loaded) -->
-  <div id="mainContent" style="display:none">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+</div>
 
-    <!-- LEFT: Listing Content -->
-    <div class="lg:col-span-8 space-y-5">
-      <div id="loadingState" style="display:none" class="text-center py-20"><div class="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full mx-auto"></div></div>
-      <div id="mainContent">
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<div id="mainContent" style="display:none;">
+<div class="page-wrap">
+<div class="detail-grid">
 
-      <!-- PHOTO GALLERY -->
-      <div>
-        <!-- Main image -->
-        <div class="relative bg-slate-200 rounded-2xl overflow-hidden" style="height:420px" id="galleryWrap">
-          <span id="galleryPlaceholder" class="text-5xl absolute inset-0 flex items-center justify-center" style="display:none!important"></span>
-          <img id="mainGalleryImg" src="" alt="Listing" class="w-full h-full object-cover">
-          <div class="absolute bottom-4 right-4 bg-black/50 text-white text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur" id="photoCounter">1 / 1</div>
+  <!-- ───────── LEFT COLUMN ───────── -->
+  <div>
 
-        </div>
-        <!-- Thumbnail strip -->
-        <div class="flex gap-2 mt-2 overflow-x-auto pb-1" id="thumbStrip"></div>
+    <!-- GALLERY CARD -->
+    <div class="card" style="margin-bottom:16px;overflow:hidden;">
+      <div class="gallery-wrap" id="galleryWrap">
+        <img id="mainGalleryImg" src="" alt="" class="gallery-main-img" onclick="openLightbox(0)">
+        <div id="galleryPlaceholder" class="gallery-placeholder" style="display:none;">🚗</div>
+        <button class="gal-arrow" id="galPrev" onclick="galNav(-1)" style="left:12px;display:none;">‹</button>
+        <button class="gal-arrow" id="galNext" onclick="galNav(1)" style="right:12px;display:none;">›</button>
+        <div class="photo-counter" id="photoCounter">1 / 1</div>
+        <div class="zoom-hint">Click to zoom</div>
       </div>
+      <div class="thumb-strip" id="thumbStrip"></div>
+    </div>
 
-      <!-- LISTING INFO -->
-      <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <div id="typeBadge" class="mb-2"></div>
-        <div class="flex items-start justify-between gap-4 mb-3">
-          <div>
-            <h1 id="mainTitle" class="text-2xl font-black text-slate-900 leading-tight mb-2"></h1>
-            <div class="flex items-center gap-3 text-sm text-slate-500">
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">location_on</span><span id="listingCitySpan"></span></span>
-              <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span><span id="listingTime"></span></span>
-            </div>
-          </div>
-          <div class="text-right flex-shrink-0">
-            <div id="mainPrice" class="text-3xl font-black text-primary"></div>
-            <div id="perPeriod" style="display:none" class="text-sm text-slate-500 font-medium"></div>
-            <div id="negotiableTag" style="display:none" class="text-xs text-blue-500 font-bold mt-1">Negotiable</div>
-            <div id="typeBadge" class="text-xs text-slate-400 font-semibold uppercase mt-0.5"></div>
-          </div>
-        </div>
-
-        <!-- Specs -->
-      <div id="specsCard" style="display:none">
-        <h4 id="specsTitle" class="font-bold text-slate-800 mb-2"></h4>
-            <div id="specsGrid" class="flex flex-wrap gap-4 py-4 border-t border-b border-slate-100 my-4 text-sm text-slate-600"></div>
-
-        <!-- Tags -->
-        <div class="flex flex-wrap gap-2 mb-4" id="mainTags"></div>
-
-        <!-- Description -->
-        <div id="descCard" style="display:none">
-        <div>
-          <h3 class="font-bold text-slate-900 mb-2">Description</h3>
-          <p id="descText" style="display:block" class="text-slate-600 text-sm leading-relaxed whitespace-pre-line"></p>
-          </div><!-- /descCard -->
-        </div>
-      </div>
-
-      <!-- LOCATION -->
-      <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <h3 class="font-bold text-slate-900 mb-3">Location</h3>
-        <div id="leafletMap" style="height:220px;width:100%;border-radius:12px"></div>
-        <div id="listingMapArea" class="bg-slate-100 rounded-xl overflow-hidden" style="height:220px;display:flex;align-items:center;justify-content:center">
-          <div class="text-center text-slate-400">
-            <span class="material-symbols-outlined text-4xl">map</span>
-            <p class="text-sm mt-2" id="listingMapBox"></p>
+    <!-- TITLE + PRICE + SPECS -->
+    <div class="card" style="padding:22px;margin-bottom:16px;">
+      <div id="typeBadge" style="margin-bottom:10px;"></div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px;">
+        <div style="flex:1;min-width:0;">
+          <h1 id="mainTitle" style="font-size:22px;font-weight:900;color:#0f172a;line-height:1.3;margin-bottom:8px;"></h1>
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+            <span style="display:flex;align-items:center;gap:4px;font-size:13px;color:#64748b;">
+              <span class="material-symbols-outlined" style="font-size:16px;color:#ec5b13;">location_on</span>
+              <span id="listingCity"></span>
+            </span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:12px;color:#94a3b8;">
+              <span class="material-symbols-outlined" style="font-size:15px;">schedule</span>
+              <span id="listingTime"></span>
+            </span>
           </div>
         </div>
-      </div>
-      <button id="openMapsBtn" style="display:none" onclick="openInMaps()" class="mt-2 text-primary font-bold text-sm flex items-center gap-1"><span class="material-symbols-outlined text-base">open_in_new</span> Open in Google Maps</button>
-
-      <!-- REVIEWS -->
-      <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm" id="reviewsSection">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="font-bold text-slate-900">Reviews (<span id="reviewCount">0</span>)</h3>
-          <button id="writeReviewBtn" class="text-primary font-bold text-sm hover:underline">Write a Review</button>
+        <div style="text-align:right;flex-shrink:0;">
+          <div id="mainPrice" style="font-size:26px;font-weight:900;color:#ec5b13;line-height:1.1;"></div>
+          <div id="perPeriod" style="display:none;font-size:12px;color:#64748b;font-weight:600;margin-top:2px;"></div>
+          <div id="negotiableTag" style="display:none;font-size:11px;color:#2563eb;font-weight:700;margin-top:3px;letter-spacing:.3px;">NEGOTIABLE</div>
         </div>
-        <div id="reviewsContainer" class="space-y-4"></div>
       </div>
 
-      </div><!-- /mainContent -->
-      <!-- SIMILAR LISTINGS -->
-      <div id="similarSection" style="display:none">
-        <div class="flex items-center justify-between mb-4"><h3 class="font-bold text-slate-900 text-lg">Similar Listings</h3><a id="similarSeeAll" href="listings.html" class="text-primary font-bold text-sm hover:underline">See all</a></div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4" id="similarGrid"></div>
+      <!-- SPEC PILLS (car: mileage, transmission, fuel, condition) -->
+      <div id="specPillsGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:16px;border-top:1px solid #f1f5f9;"></div>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div id="descCard" class="card" style="padding:22px;margin-bottom:16px;display:none;">
+      <h3 style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:12px;">Description</h3>
+      <p id="descText" style="font-size:14px;color:#475569;line-height:1.8;white-space:pre-line;"></p>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="card" style="overflow:hidden;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;">
+        <h3 style="font-size:15px;font-weight:800;color:#0f172a;">Location</h3>
+        <button id="openMapsBtn" onclick="openInMaps()" style="display:none;background:none;border:none;color:#ec5b13;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;font-family:inherit;">
+          <span class="material-symbols-outlined" style="font-size:15px;">open_in_new</span> Open in Maps
+        </button>
+      </div>
+      <div id="leafletMap"></div>
+      <div style="padding:12px 20px;display:flex;align-items:center;gap:6px;">
+        <span class="material-symbols-outlined" style="color:#ec5b13;font-size:16px;">location_on</span>
+        <span id="mapAddress" style="font-size:13px;color:#374151;font-weight:600;"></span>
       </div>
     </div>
 
-    <!-- RIGHT: Seller & CTA -->
-    <div class="lg:col-span-4 space-y-4">
-      <!-- Seller Card -->
-      <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm sticky top-20">
-        <!-- Seller info -->
-        <!-- CTA price shown in seller card -->
-        <div id="ctaPrice" class="text-2xl font-black text-primary mb-0.5"></div>
-        <div id="ctaPeriod" style="display:none" class="text-xs text-slate-400 mb-1"></div>
-        <div id="ctaNegotiable" style="display:none" class="text-xs text-blue-500 font-bold mb-3">Negotiable</div>
-        <div class="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100">
-          <div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-white font-black text-xl overflow-hidden flex-shrink-0" id="sellerAvatar"></div>
-          <div class="flex-1">
-            <div class="font-bold text-slate-900" id="sellerName">Loading...</div>
-            <div class="text-xs text-slate-400" id="sellerMeta"></div>
-            <div class="flex items-center gap-1 mt-1" id="ratingLabel">
-              <span class="material-symbols-outlined text-yellow-400 text-base" style="font-variation-settings:'FILL' 1">star</span>
-              <span class="text-xs font-bold text-slate-700" id="sellerRating">4.9</span>
-              <span class="text-xs text-slate-400">(<span id="sellerReviews">84</span> Sales)</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- CTA Buttons -->
-        <div class="space-y-2.5 mb-4">
-          <a id="callBtn" href="#" class="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
-            <span class="material-symbols-outlined text-xl">call</span>
-            Show Phone Number
-          </a>
-          <button id="sendMsgBtn" onclick="startChat()" class="w-full flex items-center justify-center gap-2 bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-all">
-            <span class="material-symbols-outlined text-xl">chat_bubble</span>
-            Send Message
-          </button>
-          <button id="offerBtn" style="display:none" onclick="showOfferModal()" class="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 rounded-xl font-bold">Make an Offer</button>
-          <a id="waBtn" href="#" style="display:none" target="_blank" class="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white py-3 rounded-xl font-bold hover:bg-[#20c35a] transition-all">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            Chat on WhatsApp
-          </a>
-        </div>
-
-        <!-- Fav + Share -->
-        <div class="flex gap-2 mb-3">
-          <button id="favBtn" onclick="toggleFav()" class="flex-1 flex items-center justify-center gap-2 bg-slate-100 py-2.5 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-200 transition-colors">
-            <span class="material-symbols-outlined text-lg">favorite_border</span> Save
-          </button>
-          <button onclick="toggleSharePanel()" class="flex-1 flex items-center justify-center gap-2 bg-slate-100 py-2.5 rounded-xl font-bold text-sm text-slate-700 hover:bg-slate-200 transition-colors">
-            <span class="material-symbols-outlined text-lg">share</span> Share
-          </button>
-        </div>
-        <div id="sharePanel" style="display:none" class="bg-slate-50 rounded-xl p-3 mb-3 flex flex-wrap gap-2">
-          <button onclick="shareWhatsApp()" class="flex-1 bg-[#25D366] text-white px-3 py-2 rounded-lg text-xs font-bold">WhatsApp</button>
-          <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>showToast('Link copied!'))" class="flex-1 bg-slate-200 text-slate-800 px-3 py-2 rounded-lg text-xs font-bold">Copy Link</button>
-        </div>
-        <!-- Safety Tips -->
-        <div class="bg-slate-50 rounded-xl p-4">
-          <div class="flex items-center gap-2 mb-3">
-            <span class="material-symbols-outlined text-primary text-lg">security</span>
-            <span class="font-bold text-slate-800 text-sm">Safety Tips</span>
-          </div>
-          <ul class="space-y-1.5 text-xs text-slate-600">
-            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>Meet in a safe, public location</li>
-            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>Don't pay anything before inspection</li>
-            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>Check documentation thoroughly</li>
-            <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0"></span>Take a friend along for inspection</li>
-          </ul>
-        </div>
-
-        <!-- Offers panel -->
-        <div id="offersPanel" style="display:none" class="mt-3 bg-blue-50 border border-blue-100 rounded-xl p-4">
-          <h4 class="font-bold text-blue-900 text-sm mb-2">Active Offers</h4>
-          <div id="offerRoundText" class="text-xs text-blue-700"></div>
-          <div id="offerRoundInfo" class="text-xs text-slate-500 mt-1"></div>
-          <div id="offerRoundDots" class="flex gap-1 mt-2"></div>
-          <div id="offerSub" class="text-xs text-slate-400 mt-1"></div>
-        </div>
-        <!-- Offer modal inline -->
-        <div id="offerModal" style="display:none" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 class="font-bold text-lg mb-4">Make an Offer</h3>
-            <div id="offerHistory" class="mb-3 max-h-32 overflow-y-auto space-y-2"></div>
-            <div class="flex gap-2 mb-3">
-              <select id="offerCurrency" class="w-24 border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none"><option>USD</option><option>SLS</option></select>
-              <input id="offerAmount" type="number" placeholder="Amount" class="flex-1 border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none">
-            </div>
-            <textarea id="offerNote" rows="2" placeholder="Add a note (optional)" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none resize-none mb-2"></textarea>
-            <div id="counterToggleBtn" class="text-xs text-primary font-bold cursor-pointer mb-2">+ Add counter offer</div>
-            <div id="counterSubmitWrap" style="display:none" class="mb-2">
-              <input id="counterAmount" type="number" placeholder="Counter amount" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none mb-1">
-              <input id="counterNote" placeholder="Counter note" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none">
-            </div>
-            <div id="offerError" class="text-red-500 text-xs mb-2" style="display:none"></div>
-            <div class="flex gap-2">
-              <button onclick="closeOfferModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-sm">Cancel</button>
-              <button id="offerSubmitBtn" onclick="submitOffer()" class="flex-1 bg-primary text-white py-2.5 rounded-xl font-bold text-sm">Submit</button>
-            </div>
-          </div>
-        </div>
-        <!-- Respond to offer modal -->
-        <div id="offerRespondModal" style="display:none" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 class="font-bold text-lg mb-3">Respond to Offer</h3>
-            <div id="respondOfferDetails" class="bg-slate-50 rounded-xl p-3 mb-3 text-sm"></div>
-            <div id="respondCounterFields" style="display:none" class="mb-3">
-              <input type="number" placeholder="Counter amount" class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none mb-2">
-            </div>
-            <div id="respondError" class="text-red-500 text-xs mb-2" style="display:none"></div>
-            <div class="flex gap-2">
-              <button onclick="document.getElementById('offerRespondModal').style.display='none'" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-sm">Close</button>
-            </div>
-          </div>
-        </div>
-        <!-- Report modal -->
-        <div id="reportModal" style="display:none" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 class="font-bold text-lg mb-4">Report this Ad</h3>
-            <div class="space-y-2 mb-4">
-              <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="reportReason" value="spam" class="text-primary"> Spam or misleading</label>
-              <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="reportReason" value="fraud" class="text-primary"> Fraud or scam</label>
-              <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="reportReason" value="inappropriate" class="text-primary"> Inappropriate content</label>
-              <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="radio" name="reportReason" value="wrong_category" class="text-primary"> Wrong category</label>
-            </div>
-            <div class="flex gap-2">
-              <button onclick="closeReportModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-sm">Cancel</button>
-              <button onclick="submitReport()" class="flex-1 bg-red-500 text-white py-2.5 rounded-xl font-bold text-sm">Report</button>
-            </div>
-          </div>
-        </div>
-        <!-- Review modal -->
-        <div id="reviewModal" style="display:none" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 class="font-bold text-lg mb-3">Write a Review</h3>
-            <div class="flex gap-2 mb-3" id="ratingLabel">
-              <button onclick="setStarRating(1)" class="text-2xl">⭐</button>
-              <button onclick="setStarRating(2)" class="text-2xl">⭐</button>
-              <button onclick="setStarRating(3)" class="text-2xl">⭐</button>
-              <button onclick="setStarRating(4)" class="text-2xl">⭐</button>
-              <button onclick="setStarRating(5)" class="text-2xl">⭐</button>
-            </div>
-            <textarea id="reviewText" rows="3" placeholder="Share your experience..." class="w-full border border-slate-200 rounded-xl px-3 py-2 text-sm outline-none resize-none mb-2"></textarea>
-            <div class="flex gap-2">
-              <button onclick="document.getElementById('reviewModal').style.display='none'" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-sm">Cancel</button>
-              <button id="submitReviewBtn" onclick="submitReview()" class="flex-1 bg-primary text-white py-2.5 rounded-xl font-bold text-sm">Submit</button>
-            </div>
-          </div>
-        </div>
-        <!-- Lightbox -->
-        <div id="lightbox" style="display:none" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
-          <button id="lightbox-prev" onclick="lbNav(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/40">‹</button>
-          <img id="lightbox-img" src="" class="max-h-screen max-w-full object-contain px-16">
-          <button id="lightbox-next" onclick="lbNav(1)" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-white/40">›</button>
-          <button onclick="document.getElementById('lightbox').style.display='none'" class="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white">✕</button>
-          <div id="lightbox-counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm"></div>
-          <div id="lightbox-thumbs" class="absolute bottom-12 left-1/2 -translate-x-1/2 flex gap-2"></div>
-        </div>
-        <!-- Need Help -->
-        <div class="mt-3 bg-slate-50 rounded-xl p-4">
-          <p class="font-bold text-slate-800 text-sm mb-1">Need Help?</p>
-          <p class="text-xs text-slate-500 mb-2">Contact our support team for any issues regarding this listing.</p>
-          <button id="reportBtn" onclick="showReportModal()" class="text-primary font-bold text-xs hover:underline flex items-center gap-1">
-            <span class="material-symbols-outlined text-base">flag</span> Report this ad
-          </button>
-        </div>
+    <!-- REVIEWS -->
+    <div class="card" style="padding:22px;margin-bottom:16px;" id="reviewsSection">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h3 style="font-size:15px;font-weight:800;color:#0f172a;">Reviews (<span id="reviewCount">0</span>)</h3>
+        <button id="writeReviewBtn" onclick="openReviewModal()" style="display:none;background:none;border:none;color:#ec5b13;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Write a Review</button>
       </div>
+      <div id="reviewsContainer"></div>
     </div>
 
-  </div>
+    <!-- SIMILAR LISTINGS -->
+    <div id="similarSection" style="display:none;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-size:16px;font-weight:800;color:#0f172a;">Similar Listings</h3>
+        <a id="similarSeeAll" href="listings.html" style="font-size:13px;font-weight:700;color:#ec5b13;text-decoration:none;">See all →</a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;" id="similarGrid"></div>
+    </div>
+
+  </div><!-- /left -->
+
+  <!-- ───────── RIGHT SIDEBAR ───────── -->
+  <div class="sticky-sidebar" style="position:sticky;top:68px;align-self:start;">
+    <div class="card" style="padding:20px;margin-bottom:14px;">
+
+      <!-- Seller info -->
+      <div style="display:flex;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid #f1f5f9;margin-bottom:16px;">
+        <div class="seller-av" id="sellerAvatar"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:14px;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span id="sellerName">Loading...</span>
+            <span id="verifiedBadge" style="display:none;background:#2563eb;color:#fff;font-size:8px;font-weight:800;padding:2px 6px;border-radius:20px;letter-spacing:.3px;">✓ VERIFIED</span>
+          </div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:3px;" id="sellerMeta"></div>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:5px;" id="sellerRatingRow">
+            <div id="sellerStars"></div>
+            <span id="sellerRatingVal" style="font-size:12px;font-weight:800;color:#0f172a;"></span>
+            <span id="sellerSalesCount" style="font-size:11px;color:#94a3b8;"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Price in sidebar -->
+      <div style="margin-bottom:14px;">
+        <div id="sidePrice" style="font-size:24px;font-weight:900;color:#ec5b13;"></div>
+        <div id="sidePeriod" style="display:none;font-size:12px;color:#64748b;font-weight:600;margin-top:2px;"></div>
+        <div id="sideNegotiable" style="display:none;font-size:11px;color:#2563eb;font-weight:700;margin-top:2px;letter-spacing:.3px;">NEGOTIABLE</div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px;">
+        <a id="callBtn" href="#" class="cta-btn btn-orange" onclick="return revealPhone(event,false)">
+          <span class="material-symbols-outlined" style="font-size:20px;">call</span>
+          <span id="callBtnTxt">Show Phone Number</span>
+        </a>
+        <button onclick="startChat()" class="cta-btn btn-dark">
+          <span class="material-symbols-outlined" style="font-size:20px;">chat_bubble</span>
+          Send Message
+        </button>
+        <a id="waBtn" href="#" class="cta-btn btn-green" style="display:none;" onclick="return revealPhone(event,true)">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Chat on WhatsApp
+        </a>
+        <button id="offerBtn" onclick="showOfferModal()" class="cta-btn btn-outline" style="display:none;">
+          <span class="material-symbols-outlined" style="font-size:18px;">local_offer</span> Make an Offer
+        </button>
+      </div>
+
+      <!-- Save + Share -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button id="favBtn" onclick="toggleFav()" class="btn-ghost">
+          <span class="material-symbols-outlined" style="font-size:18px;" id="favIcon">favorite_border</span> Save
+        </button>
+        <button onclick="doShare()" class="btn-ghost">
+          <span class="material-symbols-outlined" style="font-size:18px;">share</span> Share
+        </button>
+      </div>
+      <!-- Share panel -->
+      <div id="sharePanel" style="display:none;background:#f8fafc;border-radius:12px;padding:10px;margin-bottom:12px;gap:8px;flex-wrap:wrap;">
+        <button onclick="shareWhatsApp()" style="flex:1;background:#25d366;color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">WhatsApp</button>
+        <button onclick="copyLink()" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Copy Link</button>
+      </div>
+
+      <!-- Safety Tips -->
+      <div style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">
+          <span class="material-symbols-outlined" style="color:#ec5b13;font-size:17px;">security</span>
+          <span style="font-size:13px;font-weight:800;color:#0f172a;">Safety Tips</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#374151;"><div class="safety-dot"></div>Meet in a safe, public location</div>
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#374151;"><div class="safety-dot"></div>Don't pay anything before inspection</div>
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#374151;"><div class="safety-dot"></div>Check documentation thoroughly</div>
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#374151;"><div class="safety-dot"></div>Take a friend along for inspection</div>
+        </div>
+      </div>
+
+      <!-- Need Help -->
+      <div style="background:#f8fafc;border-radius:12px;padding:12px;">
+        <p style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:4px;">Need Help?</p>
+        <p style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:8px;">Contact our support team for any issues regarding this listing.</p>
+        <button onclick="showReportModal()" style="background:none;border:none;color:#ec5b13;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;font-family:inherit;">
+          <span class="material-symbols-outlined" style="font-size:15px;">flag</span> Report this ad →
+        </button>
+      </div>
+
+      <!-- Seller offers panel (visible to listing owner) -->
+      <div id="offersPanel" style="display:none;margin-top:12px;"></div>
+
+    </div><!-- /sidebar card -->
+  </div><!-- /sidebar -->
+
+</div><!-- /detail-grid -->
+</div><!-- /page-wrap -->
 </div><!-- /mainContent -->
-</main>
 
-<!-- Toast container -->
-<div class="toast-container" id="toastContainer"></div>
 
-<!-- FOOTER -->
-<footer class="bg-slate-950 text-slate-400 py-10 mt-4">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-sm">
-      <div class="flex items-center gap-2">
-        <div class="bg-primary p-1.5 rounded text-white"><span class="material-symbols-outlined text-lg block">storefront</span></div>
-        <span class="font-black text-white">SomBazar</span>
-      </div>
-      <div class="flex gap-6">
-        <a href="about.html" class="hover:text-primary transition-colors">About Us</a>
-        <a href="#" class="hover:text-primary transition-colors">Safety Tips</a>
-        <a href="contact.html" class="hover:text-primary transition-colors">Contact Support</a>
-      </div>
-      <div class="flex gap-6 text-xs">
-        <a href="privacy.html" class="hover:text-white">Privacy Policy</a>
-        <a href="terms.html" class="hover:text-white">Terms of Service</a>
-        <a href="contact.html" class="hover:text-white">Ad Policy</a>
+<!-- ═══════════ LIGHTBOX ═══════════ -->
+<div id="lightbox">
+  <button class="lb-nav" id="lb-prev" onclick="lbNav(-1)">‹</button>
+  <img id="lb-img" src="" alt="">
+  <button class="lb-nav" id="lb-next" onclick="lbNav(1)">›</button>
+  <button id="lb-close" onclick="closeLightbox()">✕</button>
+  <div id="lb-counter"></div>
+  <div id="lb-thumbs"></div>
+</div>
+
+
+<!-- ═══════════ MODALS ═══════════ -->
+
+<!-- OFFER MODAL -->
+<div id="offerModal" class="modal-bg" style="display:none;">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="font-size:17px;font-weight:900;color:#0f172a;">Make an Offer</h3>
+      <button onclick="closeOfferModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1;">✕</button>
+    </div>
+    <div id="offerHistory" style="display:none;background:#f8fafc;border-radius:12px;padding:12px;margin-bottom:12px;font-size:13px;"></div>
+    <div id="offerRoundInfo" style="display:none;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+        <span id="offerRoundText" style="font-size:12px;font-weight:700;color:#64748b;"></span>
+        <div style="display:flex;gap:4px;" id="offerRoundDots"></div>
       </div>
     </div>
-    <p class="text-center text-xs text-slate-600 mt-6" id="footer-copy">© 2026 SomBazar Marketplace. All rights reserved.</p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <select id="offerCurrency" style="width:80px;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 10px;font-size:13px;outline:none;font-family:inherit;background:#fff;">
+        <option>USD</option><option>SLS</option>
+      </select>
+      <input id="offerAmount" type="number" placeholder="Your offer amount" style="flex:1;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;">
+    </div>
+    <textarea id="offerNote" rows="2" placeholder="Add a note (optional)" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;resize:none;margin-bottom:10px;font-family:inherit;"></textarea>
+    <div id="offerError" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeOfferModal()" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:11px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>
+      <button id="offerSubmitBtn" onclick="submitOffer()" style="flex:1;background:#ec5b13;color:#fff;border:none;padding:11px;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;">Send Offer</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESPOND OFFER MODAL (seller) -->
+<div id="offerRespondModal" class="modal-bg" style="display:none;">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="font-size:17px;font-weight:900;color:#0f172a;">Respond to Offer</h3>
+      <button onclick="document.getElementById('offerRespondModal').style.display='none'" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1;">✕</button>
+    </div>
+    <div id="respondOfferDetails" style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:14px;font-size:13px;"></div>
+    <div id="respondCounterFields" style="display:none;margin-bottom:10px;">
+      <input id="counterAmount" type="number" placeholder="Counter amount" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;margin-bottom:8px;">
+      <input id="counterNote" placeholder="Counter note (optional)" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;">
+    </div>
+    <div id="respondError" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="respondOffer('accept')" style="flex:1;background:#10b981;color:#fff;border:none;padding:11px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">✓ Accept</button>
+      <button id="counterToggleBtn" onclick="toggleCounterFields()" style="flex:1;background:#eff6ff;color:#2563eb;border:1.5px solid #bfdbfe;padding:11px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">↩ Counter</button>
+      <button onclick="respondOffer('reject')" style="flex:1;background:#fee2e2;color:#dc2626;border:none;padding:11px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">✕ Reject</button>
+    </div>
+    <div id="counterSubmitWrap" style="display:none;margin-top:10px;">
+      <button onclick="respondOffer('counter')" style="width:100%;background:#2563eb;color:#fff;border:none;padding:11px;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;">Send Counter Offer</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT MODAL -->
+<div id="reportModal" class="modal-bg" style="display:none;">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="font-size:17px;font-weight:900;color:#0f172a;">Report this Ad</h3>
+      <button onclick="closeReportModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1;">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;" id="reportOptions">
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;padding:10px 12px;border-radius:10px;border:1.5px solid #e2e8f0;transition:border-color .15s;">
+        <input type="radio" name="reportReason" value="spam" style="accent-color:#ec5b13;"> Spam or misleading
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;padding:10px 12px;border-radius:10px;border:1.5px solid #e2e8f0;transition:border-color .15s;">
+        <input type="radio" name="reportReason" value="fraud" style="accent-color:#ec5b13;"> Fraud or scam
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;padding:10px 12px;border-radius:10px;border:1.5px solid #e2e8f0;transition:border-color .15s;">
+        <input type="radio" name="reportReason" value="inappropriate" style="accent-color:#ec5b13;"> Inappropriate content
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;padding:10px 12px;border-radius:10px;border:1.5px solid #e2e8f0;transition:border-color .15s;">
+        <input type="radio" name="reportReason" value="wrong_category" style="accent-color:#ec5b13;"> Wrong category
+      </label>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeReportModal()" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:11px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>
+      <button onclick="submitReport()" style="flex:1;background:#ef4444;color:#fff;border:none;padding:11px;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;">Submit Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div id="reviewModal" class="modal-bg" style="display:none;">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h3 style="font-size:17px;font-weight:900;color:#0f172a;">Write a Review</h3>
+      <button onclick="closeReviewModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1;">✕</button>
+    </div>
+    <!-- Star rating -->
+    <div style="display:flex;gap:6px;margin-bottom:8px;" id="starRow">
+      <button class="star-btn" onclick="setStarRating(1)" style="font-size:30px;background:none;border:none;cursor:pointer;color:#d1d5db;transition:all .15s;line-height:1;">★</button>
+      <button class="star-btn" onclick="setStarRating(2)" style="font-size:30px;background:none;border:none;cursor:pointer;color:#d1d5db;transition:all .15s;line-height:1;">★</button>
+      <button class="star-btn" onclick="setStarRating(3)" style="font-size:30px;background:none;border:none;cursor:pointer;color:#d1d5db;transition:all .15s;line-height:1;">★</button>
+      <button class="star-btn" onclick="setStarRating(4)" style="font-size:30px;background:none;border:none;cursor:pointer;color:#d1d5db;transition:all .15s;line-height:1;">★</button>
+      <button class="star-btn" onclick="setStarRating(5)" style="font-size:30px;background:none;border:none;cursor:pointer;color:#d1d5db;transition:all .15s;line-height:1;">★</button>
+    </div>
+    <div id="ratingLabel" style="font-size:13px;color:#64748b;font-weight:600;margin-bottom:12px;min-height:18px;"></div>
+    <textarea id="reviewText" rows="3" placeholder="Share your experience with this seller..."
+      style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;resize:none;margin-bottom:12px;font-family:inherit;"></textarea>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeReviewModal()" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:11px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>
+      <button id="submitReviewBtn" onclick="submitReview()" style="flex:1;background:#ec5b13;color:#fff;border:none;padding:11px;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;">Submit Review</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════ TOAST ═══════════ -->
+<div class="toast-wrap" id="toastContainer"></div>
+
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer style="background:#0f172a;padding:48px 20px 24px;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;margin-bottom:36px;" id="footerCols">
+      <!-- Brand col -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          <div style="background:#ec5b13;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <span class="material-symbols-outlined" style="color:#fff;font-size:18px;">sell</span>
+          </div>
+          <span style="font-size:17px;font-weight:900;color:#fff;">SomBazar</span>
+        </div>
+        <p style="font-size:13px;color:#64748b;line-height:1.7;margin-bottom:16px;">The leading marketplace in Somalia for buying, selling cars, property, and more.</p>
+        <div style="display:flex;gap:10px;">
+          <a href="#" style="width:34px;height:34px;background:#1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;" title="Twitter">
+            <svg width="14" height="14" fill="#94a3b8" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="#" style="width:34px;height:34px;background:#1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;" title="Share">
+            <svg width="14" height="14" fill="none" stroke="#94a3b8" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </a>
+        </div>
+      </div>
+      <!-- Quick Links -->
+      <div>
+        <h4 style="font-size:12px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;">Quick Links</h4>
+        <div style="display:flex;flex-direction:column;">
+          <a href="about.html" class="footer-link">About Us</a>
+          <a href="#" class="footer-link">Safety Tips</a>
+          <a href="#" class="footer-link">How it works</a>
+          <a href="contact.html" class="footer-link">Contact Support</a>
+        </div>
+      </div>
+      <!-- Categories -->
+      <div>
+        <h4 style="font-size:12px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;">Categories</h4>
+        <div style="display:flex;flex-direction:column;">
+          <a href="listings.html?category=car" class="footer-link">Vehicles</a>
+          <a href="listings.html?category=house" class="footer-link">Property</a>
+          <a href="listings.html?category=electronics" class="footer-link">Electronics</a>
+          <a href="listings.html?category=furniture" class="footer-link">Fashion</a>
+        </div>
+      </div>
+      <!-- Social -->
+      <div>
+        <h4 style="font-size:12px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;">Social</h4>
+        <div style="display:flex;gap:8px;">
+          <a href="#" style="width:34px;height:34px;background:#1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;" title="Twitter">
+            <svg width="14" height="14" fill="#94a3b8" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.213 5.567zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="#" style="width:34px;height:34px;background:#1e293b;border-radius:8px;display:flex;align-items:center;justify-content:center;" title="Share">
+            <svg width="14" height="14" fill="none" stroke="#94a3b8" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid #1e293b;padding-top:20px;text-align:center;">
+      <p style="font-size:12px;color:#475569;" id="footer-copy">© 2026 SomBazar Marketplace. All rights reserved.</p>
+    </div>
   </div>
 </footer>
 
 <!-- MOBILE BOTTOM NAV -->
-<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-50">
-  <div class="flex h-16">
-    <a href="index.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
-      <span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-semibold">Home</span>
+<nav class="mobile-nav" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;box-shadow:0 -4px 16px rgba(0,0,0,.08);z-index:50;height:60px;">
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);height:100%;">
+    <a href="index.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#64748b;">
+      <span class="material-symbols-outlined" style="font-size:22px;">home</span>
+      <span style="font-size:10px;font-weight:600;">Home</span>
     </a>
-    <a href="listings.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
-      <span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-semibold">Browse</span>
+    <a href="listings.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#64748b;">
+      <span class="material-symbols-outlined" style="font-size:22px;">search</span>
+      <span style="font-size:10px;font-weight:600;">Browse</span>
     </a>
-    <a href="post.html" class="flex-1 flex flex-col items-center justify-center gap-0.5">
-      <div class="w-11 h-11 bg-primary rounded-full flex items-center justify-center shadow-lg -mt-4">
-        <span class="material-symbols-outlined text-white text-2xl">add</span>
+    <a href="post.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      <div style="width:44px;height:44px;background:#ec5b13;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-16px;box-shadow:0 4px 14px rgba(236,91,19,.4);">
+        <span class="material-symbols-outlined" style="color:#fff;font-size:24px;">add</span>
       </div>
     </a>
-    <a href="messages.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
-      <span class="material-symbols-outlined text-2xl">chat_bubble</span><span class="text-[10px] font-semibold">Messages</span>
+    <a href="messages.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#64748b;">
+      <span class="material-symbols-outlined" style="font-size:22px;">chat_bubble</span>
+      <span style="font-size:10px;font-weight:600;">Messages</span>
     </a>
-    <a href="profile.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
-      <span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-semibold">Profile</span>
+    <a href="profile.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#64748b;">
+      <span class="material-symbols-outlined" style="font-size:22px;">person</span>
+      <span style="font-size:10px;font-weight:600;">Profile</span>
     </a>
   </div>
 </nav>
 
+
+<!-- ═══════════ SCRIPTS ═══════════ -->
 <script>
-// Fallback: app.js yüklenemezse Auth crash'i önle
 window.Auth = window.Auth || {
   getToken: () => localStorage.getItem('sb_token') || '',
-  getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
+  getUser: () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
   isLoggedIn: () => !!localStorage.getItem('sb_token'),
-  setSession: (token, user) => { localStorage.setItem("sb_token", token); localStorage.setItem("sb_user", JSON.stringify(user)); },
+  setSession: (t, u) => { localStorage.setItem('sb_token', t); localStorage.setItem('sb_user', JSON.stringify(u)); },
   clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
 };
 window.API = window.API || {};
 </script>
 <script src="assets/app.min.js"></script>
 <script>
-function getParam(name) {
-  return new URLSearchParams(window.location.search).get(name);
-}
+/* ════════════════════════════════════════════════
+   LISTING DETAIL — Full JS
+   ════════════════════════════════════════════════ */
+
+// ── City coords ──────────────────────────────
+const CITY_COORDS = {
+  hargeisa:    [9.5600, 44.0650],
+  berbera:     [10.4397, 45.0146],
+  burco:       [9.5228, 45.5338],
+  borama:      [9.9358, 43.1851],
+  gabiley:     [9.9761, 43.4631],
+  ceerigaavo:  [10.6270, 47.3684],
+  laascaanood: [8.4780, 47.3615],
+  sheikh:      [9.9292, 44.9024],
+  zeila:       [11.3583, 43.4706],
+};
+
+// ── State ──────────────────────────────────────
+function getParam(n) { return new URLSearchParams(window.location.search).get(n); }
 const listingId = getParam('id');
 if (!listingId) window.location.href = 'listings.html';
 
-let listing     = null;
-let selectedStar = 0;
+let listing       = null;
+let galIdx        = 0;
+let lbIdx         = 0;
+let _selectedStar = 0;
+let _activeOfferId = null;
+let _leafletMap   = null;
+let _leafletMark  = null;
 
-document.getElementById('headerSearchForm').addEventListener('submit', e => {
+// ── Init ──────────────────────────────────────
+loadListing();
+document.getElementById('headerSearchForm').onsubmit = doHeaderSearch;
+
+function doHeaderSearch(e) {
   e.preventDefault();
   const q = document.getElementById('headerSearchInput').value.trim();
   if (q) window.location.href = `listings.html?q=${encodeURIComponent(q)}`;
-});
+}
 
-// ── Load ───────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────
+function timeAgo(d) {
+  if (!d) return '';
+  const s = Math.floor((Date.now() - new Date(d)) / 1000);
+  if (s < 60)    return 'Just now';
+  if (s < 3600)  return `${Math.floor(s / 60)}m ago`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h ago`;
+  return `${Math.floor(s / 86400)}d ago`;
+}
+function maskPhone(p) {
+  if (!p) return '';
+  const c = p.replace(/\D/g, '');
+  return c.length < 6 ? p : c.slice(0, c.length - 4) + '••••';
+}
+function starsHTML(r, sz = 14) {
+  return [1,2,3,4,5].map(i =>
+    `<span style="color:${i <= Math.round(r) ? '#f59e0b' : '#d1d5db'};font-size:${sz}px;line-height:1;">★</span>`
+  ).join('');
+}
+function catEmoji(c) {
+  const m = { car:'🚗', vehicle:'🚗', house:'🏠', property:'🏠', land:'🌍', electronics:'📱', furniture:'🛋️', jobs:'💼', services:'🔧', fashion:'👗', hotel:'🏨', animals:'🐾', food:'🍔', other:'📦' };
+  return m[c?.toLowerCase()] || '📦';
+}
+function showToast(msg, type = '') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span class="material-symbols-outlined" style="font-size:16px;">${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}</span>${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ── Load listing ──────────────────────────────
 async function loadListing() {
   try {
     listing = await API.getListing(listingId);
     renderListing(listing);
-    loadReviews();
-  } catch(e) {
-    document.getElementById('loadingState').innerHTML =
-      `<div style="padding:60px 20px;text-align:center;color:var(--gray);grid-column:1/-1">
-        <div style="font-size:48px;margin-bottom:12px"></div>
-        <div style="font-size:16px;font-weight:700;margin-bottom:16px">Listing not found</div>
-        <a href="listings.html" class="btn btn-primary">Browse Listings</a>
+  } catch (e) {
+    document.getElementById('loadingState').innerHTML = `
+      <div style="text-align:center;padding:80px 24px;">
+        <div style="font-size:56px;margin-bottom:16px;">🔍</div>
+        <h2 style="font-size:22px;font-weight:800;margin-bottom:8px;">Listing not found</h2>
+        <p style="color:#64748b;margin-bottom:20px;">This listing may have been removed or expired.</p>
+        <a href="listings.html" style="background:#ec5b13;color:#fff;padding:12px 28px;border-radius:12px;font-weight:800;text-decoration:none;font-size:14px;">Browse Listings</a>
       </div>`;
   }
 }
 
+// ── Render listing ────────────────────────────
 function renderListing(l) {
   document.title = `${l.title} — SomBazar`;
-  // Structured data
-  const _schema = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": l.title,
-    "description": (l.description || '').substring(0, 200),
-    "image": l.images?.[0] || '',
-    "offers": {
-      "@type": "Offer",
-      "price": l.price || 0,
-      "priceCurrency": l.currency || 'USD',
-      "availability": l.status === 'active' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      "seller": { "@type": "Person", "name": l.sellerName || 'Seller' }
-    }
-  };
-  const _schemaEl = document.getElementById('listingSchema');
-  if (_schemaEl) _schemaEl.textContent = JSON.stringify(_schema);
   document.getElementById('loadingState').style.display = 'none';
   document.getElementById('mainContent').style.display = '';
 
-  const emoji  = catEmoji(l.category);
   const isRent = l.listingType === 'rent';
+  const isSold = l.status === 'sold';
 
   // Breadcrumb
-  document.getElementById('breadCat').textContent = l.category;
-  document.getElementById('breadTitle').textContent = l.title;
+  const CAT = { car:'Vehicles', house:'Property', land:'Land', electronics:'Electronics', furniture:'Home & Living', jobs:'Jobs', services:'Services' };
+  const catLabel = CAT[l.category] || l.category;
+  document.getElementById('bcCat').textContent  = catLabel;
+  document.getElementById('bcCat').href         = `listings.html?category=${l.category}`;
+  document.getElementById('bcSub').textContent  = catLabel;
+  document.getElementById('bcSub').href         = `listings.html?category=${l.category}`;
+  document.getElementById('bcTitle').textContent = l.title;
 
   // Gallery
-  const images = l.images || [];
-  if (images.length > 0) {
-    document.getElementById('galleryWrap').innerHTML =
-      `<img loading="lazy" src="${images[0]}" id="mainGalleryImg" class="gallery-main-img" alt="${l.title}" onclick="openLightbox(0)">
-       <span class="gallery-zoom-hint">Click to zoom</span>`;
-    if (images.length > 1) {
-      document.getElementById('thumbStrip').innerHTML = images.map((img, i) =>
-        `<img loading="lazy" src="${img}" class="${i===0?'active':''}" onclick="switchImg(${i},this)" alt="">`
+  const imgs = l.images || [];
+  const mImg = document.getElementById('mainGalleryImg');
+  const gPh  = document.getElementById('galleryPlaceholder');
+  if (imgs.length > 0) {
+    mImg.src = imgs[0];
+    mImg.alt = l.title;
+    mImg.style.display = '';
+    gPh.style.display = 'none';
+    mImg.onclick = () => openLightbox(0);
+    document.getElementById('photoCounter').textContent = `1 / ${imgs.length}`;
+    if (imgs.length > 1) {
+      document.getElementById('galPrev').style.display = 'flex';
+      document.getElementById('galNext').style.display = 'flex';
+      // Thumbnails
+      document.getElementById('thumbStrip').innerHTML = imgs.map((src, i) =>
+        `<img src="${src}" class="thumb-item${i === 0 ? ' active' : ''}" onclick="switchImg(${i}, this)" loading="lazy" alt="">`
       ).join('');
+    } else {
+      document.getElementById('photoCounter').style.display = 'none';
     }
   } else {
-    document.getElementById('galleryPlaceholder').textContent = emoji;
+    mImg.style.display = 'none';
+    gPh.style.display  = 'flex';
+    gPh.textContent    = catEmoji(l.category);
+    document.getElementById('photoCounter').style.display = 'none';
   }
 
   // Type badge
-  document.getElementById('typeBadge').innerHTML =
-    `<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;margin-bottom:10px;${isRent?'background:#dbeafe;color:#2563eb':'background:#dcfce7;color:#16a34a'}">${isRent?'For Rent':'For Sale'}</span>`;
+  const bdg = document.getElementById('typeBadge');
+  if (isSold)        bdg.innerHTML = '<span class="badge badge-sold">● SOLD</span>';
+  else if (isRent)   bdg.innerHTML = '<span class="badge badge-rent">🏠 For Rent</span>';
+  else               bdg.innerHTML = '<span class="badge badge-sale">✓ For Sale</span>';
+
+  // Title, city, time
+  document.getElementById('mainTitle').textContent   = l.title;
+  document.getElementById('listingCity').textContent = `${l.city || 'Hargeisa'}, Somaliland`;
+  document.getElementById('listingTime').textContent = timeAgo(l.createdAt);
 
   // Price
-  const priceStr = `${l.currency||'USD'} ${Number(l.price).toLocaleString()}`;
-  document.getElementById('mainPrice').textContent = priceStr;
-  document.getElementById('ctaPrice').textContent  = priceStr;
-
+  const prStr = `${l.currency || 'USD'} ${Number(l.price).toLocaleString()}`;
+  document.getElementById('mainPrice').textContent = prStr;
+  document.getElementById('sidePrice').textContent = prStr;
   if (isRent && l.rentalPeriod) {
-    ['perPeriod','ctaPeriod'].forEach(id => {
+    ['perPeriod','sidePeriod'].forEach(id => {
       const el = document.getElementById(id);
       el.textContent = `per ${l.rentalPeriod}`;
       el.style.display = '';
@@ -647,478 +809,397 @@ function renderListing(l) {
   }
   if (l.negotiable) {
     document.getElementById('negotiableTag').style.display  = '';
-    document.getElementById('ctaNegotiable').style.display  = '';
-  }
-  // Offer button — sadece satıcının kendi ilanında gizle
-  const _currentUser = Auth.getUser();
-  const _isOwnListing = _currentUser && parseInt(_currentUser.id) === parseInt(l.userId);
-  if (!_isOwnListing && l.status === 'active') {
-    document.getElementById('offerBtn').style.display = '';
+    document.getElementById('sideNegotiable').style.display = '';
   }
 
-  // Title & Tags
-  document.getElementById('mainTitle').textContent = l.title;
-  document.getElementById('mainTags').innerHTML = [
-    `<span class="listing-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${l.city||'Hargeisa'}</span>`,
-    `<span class="listing-tag">${emoji} ${l.category}</span>`,
-    l.condition ? `<span class="listing-tag">✓ ${l.condition}</span>` : '',
-    l.year       ? `<span class="listing-tag"> ${l.year}</span>`       : '',
-    `<span class="listing-tag"> ${l.views||0} views</span>`,
-    `<span class="listing-tag"> ${timeAgo(l.createdAt)}</span>`,
-  ].join('');
+  // Spec pills — category-specific
+  const specs = (l.specs && typeof l.specs === 'object') ? l.specs : {};
+  const pillDefs = {
+    car: [
+      { icon: 'speed',            label: 'MILEAGE',      val: specs.mileage  ? `${Number(specs.mileage).toLocaleString()} km` : null },
+      { icon: 'settings',         label: 'TRANSMISSION', val: specs.transmission || null },
+      { icon: 'local_gas_station',label: 'FUEL TYPE',    val: specs.fuel || null },
+      { icon: 'star',             label: 'CONDITION',    val: l.condition || null },
+    ],
+    house: [
+      { icon: 'bed',         label: 'BEDROOMS',   val: specs.rooms || specs.bedrooms || null },
+      { icon: 'bathtub',     label: 'BATHROOMS',  val: specs.bathrooms || null },
+      { icon: 'square_foot', label: 'AREA (m²)',  val: specs.area ? `${specs.area} m²` : null },
+      { icon: 'chair',       label: 'FURNISHED',  val: specs.furnished || null },
+    ],
+    electronics: [
+      { icon: 'business',  label: 'BRAND',    val: specs.brand || null },
+      { icon: 'devices',   label: 'MODEL',    val: specs.model || null },
+      { icon: 'storage',   label: 'STORAGE',  val: specs.storage || null },
+      { icon: 'star',      label: 'CONDITION',val: l.condition || null },
+    ],
+    furniture: [
+      { icon: 'business', label: 'BRAND',    val: specs.brand || null },
+      { icon: 'palette',  label: 'MATERIAL', val: specs.material || null },
+      { icon: 'star',     label: 'CONDITION',val: l.condition || null },
+      { icon: 'info',     label: 'TYPE',     val: specs.type || null },
+    ],
+  };
+  const pills = pillDefs[l.category] ||
+    Object.keys(specs).slice(0, 4).map(k => ({ icon:'info', label:k.toUpperCase().replace(/_/g,' '), val:specs[k] }));
+
+  const pillsEl = document.getElementById('specPillsGrid');
+  const validPills = pills.filter(p => p.val);
+  if (validPills.length) {
+    pillsEl.style.gridTemplateColumns = `repeat(${Math.min(validPills.length, 4)}, 1fr)`;
+    pillsEl.innerHTML = validPills.map(p => `
+      <div class="spec-pill">
+        <span class="material-symbols-outlined spec-icon">${p.icon}</span>
+        <span class="spec-label">${p.label}</span>
+        <span class="spec-value">${p.val}</span>
+      </div>`).join('');
+  } else {
+    pillsEl.style.display = 'none';
+  }
 
   // Description
   if (l.description) {
     document.getElementById('descCard').style.display = '';
-    document.getElementById('descText').textContent   = l.description;
-  }
-
-  // Specs
-  const specs = l.specs && typeof l.specs === 'object' ? l.specs : {};
-  const entries = Object.entries(specs).filter(([,v]) => v);
-  if (entries.length) {
-    document.getElementById('specsCard').style.display = '';
-    document.getElementById('specsTitle').textContent  = ` ${l.category.charAt(0).toUpperCase()+l.category.slice(1)} Details`;
-    document.getElementById('specsGrid').innerHTML     = entries.map(([k,v]) =>
-      `<div class="spec-item">
-         <div class="spec-key">${k.replace(/_/g,' ')}</div>
-         <div class="spec-val">${v}</div>
-       </div>`).join('');
+    document.getElementById('descText').textContent = l.description;
   }
 
   // Map
-  document.getElementById('openMapsBtn').style.display = '';
-  initListingMap(l.city || 'Hargeisa');
+  document.getElementById('openMapsBtn').style.display = 'flex';
+  document.getElementById('mapAddress').textContent =
+    [l.landmark, l.district, l.city || 'Hargeisa', 'Somaliland'].filter(Boolean).join(', ');
+  initMap(l.city || 'Hargeisa');
 
-  // Seller
-  const seller  = l.seller || {};
-  const initial = (seller.displayName||'S')[0].toUpperCase();
-  document.getElementById('sellerAvatar').innerHTML = seller.photoURL
-    ? `<img loading="lazy" src="${seller.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-    : initial;
-  const sellerNameEl = document.getElementById('sellerName');
-  sellerNameEl.innerHTML =
-    (seller.displayName||'Seller') +
-    (seller.verified ? ' <span style="background:#2563eb;color:white;font-size:9px;padding:2px 6px;border-radius:10px;font-weight:800">✓ VERIFIED</span>' : '');
-  if (l.userId) sellerNameEl.href = `user.html?id=${l.userId}`;
-  document.getElementById('sellerMeta').textContent =
-    `${seller.city||'Hargeisa'} · Member since ${seller.memberSince||'2024'}`;
-  // Satıcı puanını yükle
-  if (l.userId) loadSellerRating(l.userId);
+  // Seller card
+  renderSeller(l);
 
-  // Phone / WhatsApp — masked until "Tap to reveal"
+  // Buttons
+  const curUser    = Auth.getUser();
+  const isOwn      = curUser && parseInt(curUser.id) === parseInt(l.userId);
+  if (!isOwn && l.status === 'active') document.getElementById('offerBtn').style.display = 'flex';
+
+  // Phone
   if (l.phone) {
-    const cb = document.getElementById('callBtn');
-    const wb = document.getElementById('waBtn');
     const masked = maskPhone(l.phone);
-    
-    cb.innerHTML = ` ${masked} <span id="revealBtn" onclick="revealPhone(event)" style="font-size:11px;text-decoration:underline;cursor:pointer;opacity:.8"> — Tap to see</span>`;
-    cb.style.display = '';
-    cb.href = '#';
-    cb.onclick = (e) => { e.preventDefault(); revealPhone(e); };
-    
-    wb.href = '#';
-    wb.style.display = 'flex';
-    wb.onclick = (e) => { e.preventDefault(); revealPhone(e, true); };
-    
-    window._rawPhone = l.phone;
-    window._listingTitle = l.title;
+    document.getElementById('callBtnTxt').textContent = masked + ' — tap to reveal';
+    window._rawPhone      = l.phone;
+    window._listingTitle  = l.title;
+    if (l.whatsapp !== false) document.getElementById('waBtn').style.display = 'flex';
   }
-
-  // Offer modal subtitle
-  document.getElementById('offerSub').textContent = `Listed at ${priceStr} — enter your offer below`;
 
   // Fav check
-  if (Auth.isLoggedIn()) {
+  if (Auth.isLoggedIn() && API.checkFavorite) {
     API.checkFavorite(l.id).then(d => {
-      if (d.isFavorite) document.getElementById('favBtn').textContent = '♥️';
-    }).catch(()=>{});
+      if (d.isFavorite) {
+        document.getElementById('favIcon').textContent = 'favorite';
+        document.getElementById('favIcon').style.color = '#ef4444';
+      }
+    }).catch(() => {});
   }
 
-  loadSimilar(l.category, l.id);
-  renderMap(l.city);
+  // Reviews + similar + offers
   loadReviews();
   checkCanReview();
-  // SEO meta güncelle
-  const _desc = (l.description || '').substring(0, 160).replace(/<[^>]*>/g,'');
-  const _img  = (l.images && l.images[0]) ? l.images[0] : window.location.origin + '/assets/og-default.png';
-  const _url  = window.location.href;
-  const _price = l.price ? `${l.currency || 'USD'} ${Number(l.price).toLocaleString()}` : '';
-  const _fullDesc = _price
-    ? `${_price} — ${_desc || l.title} | ${l.city || 'Somaliland'} | SomBazar`
-    : _desc || `${l.category} listing in ${l.city || 'Somaliland'}`;
+  loadSimilar(l.category, l.id);
+  setTimeout(loadOfferStatus, 400);
 
-  document.title = `${l.title}${_price ? ' — ' + _price : ''} | SomBazar`;
-  document.getElementById('ogTitle')?.setAttribute('content', `${l.title}${_price ? ' — ' + _price : ''} | SomBazar`);
-  document.getElementById('ogDesc')?.setAttribute('content', _fullDesc);
-  document.getElementById('ogImage')?.setAttribute('content', _img);
-  document.getElementById('ogUrl')?.setAttribute('content', _url);
-  document.getElementById('canonicalTag')?.setAttribute('href', _url);
-  document.getElementById('hreflang-en')?.setAttribute('href', _url);
-  document.getElementById('hreflang-so')?.setAttribute('href', _url);
-  document.getElementById('hreflang-default')?.setAttribute('href', _url);
-  document.getElementById('metaDesc')?.setAttribute('content', _fullDesc);
+  // SEO meta
+  updateSEO(l);
+}
 
-  // JSON-LD Structured Data (Product schema + BreadcrumbList + AggregateRating)
-  const schemaEl = document.getElementById('listingSchema');
-  if (schemaEl) {
-    const CAT_LABELS = {
-      car:'Cars',house:'Houses',land:'Land',electronics:'Electronics',
-      furniture:'Furniture',jobs:'Jobs',services:'Services',hotel:'Hotels',
-      animals:'Animals',fashion:'Fashion',food:'Food',other:'Other'
-    };
-    const catLabel = CAT_LABELS[l.category] || l.category;
+function renderSeller(l) {
+  const seller = l.seller || {};
+  const name   = seller.displayName || l.sellerName || 'Seller';
+  const av     = document.getElementById('sellerAvatar');
+  if (seller.photoURL) {
+    av.innerHTML = `<img src="${seller.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="${name}">`;
+  } else {
+    av.textContent = name[0].toUpperCase();
+    av.style.background = '#ec5b13';
+  }
+  document.getElementById('sellerName').textContent = name;
+  if (seller.verified) document.getElementById('verifiedBadge').style.display = '';
+  document.getElementById('sellerMeta').textContent =
+    `${seller.city || l.city || 'Hargeisa'} · Member since ${seller.memberSince || new Date(l.createdAt || Date.now()).getFullYear()}`;
+  if (l.userId) loadSellerRating(l.userId);
+}
 
-    const productSchema = {
-      '@context': 'https://schema.org',
-      '@type': l.category === 'jobs' ? 'JobPosting' : 'Product',
-      name: l.title,
-      description: (l.description || '').replace(/<[^>]*>/g,'').substring(0, 500),
-      url: _url,
-      image: l.images && l.images.length ? l.images : undefined,
-      offers: l.price ? {
-        '@type': 'Offer',
-        price: l.price,
-        priceCurrency: l.currency || 'USD',
+function updateSEO(l) {
+  const desc = (l.description || '').slice(0, 160);
+  const img  = l.images?.[0] || '';
+  const url  = window.location.href;
+  document.getElementById('ogTitle')?.setAttribute('content', `${l.title} | SomBazar`);
+  document.getElementById('ogDesc')?.setAttribute('content', desc);
+  document.getElementById('ogImage')?.setAttribute('content', img);
+  document.getElementById('ogUrl')?.setAttribute('content', url);
+  document.getElementById('canonicalTag')?.setAttribute('href', url);
+  document.getElementById('metaDesc')?.setAttribute('content', desc);
+  try {
+    document.getElementById('listingSchema').textContent = JSON.stringify({
+      '@context':'https://schema.org', '@type':'Product',
+      name: l.title, description: desc, url, image: l.images || [],
+      offers: { '@type':'Offer', price: l.price, priceCurrency: l.currency || 'USD',
         availability: l.status === 'sold' ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
-        itemCondition: l.condition === 'New' ? 'https://schema.org/NewCondition' : 'https://schema.org/UsedCondition',
-        seller: { '@type': 'Person', name: l.seller_name || 'SomBazar Seller' },
-        areaServed: { '@type': 'Place', name: `${l.city || 'Hargeisa'}, Somaliland` }
-      } : undefined,
-      seller: { '@type': 'Person', name: l.seller_name || 'SomBazar Seller' },
-      aggregateRating: (l.sellerRating && l.sellerReviewCount > 0) ? {
-        '@type': 'AggregateRating',
-        ratingValue: l.sellerRating,
-        reviewCount: l.sellerReviewCount,
-        bestRating: 5,
-        worstRating: 1
-      } : undefined
-    };
-
-    const breadcrumbSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: window.location.origin + '/index.html' },
-        { '@type': 'ListItem', position: 2, name: catLabel, item: `${window.location.origin}/listings.html?category=${l.category}` },
-        { '@type': 'ListItem', position: 3, name: l.title, item: _url }
-      ]
-    };
-
-    // İki schema'yı @graph ile birleştir
-    schemaEl.textContent = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@graph': [productSchema, breadcrumbSchema]
+        seller: { '@type':'Person', name: l.sellerName || 'Seller' }
+      }
     });
-  }
-  // Load offer status after listing renders
-  setTimeout(loadOfferStatus, 300);
+  } catch(e) {}
 }
 
-function renderMap(city) {
-  const mapBox = document.getElementById('listingMapBox');
-  if (!mapBox || !city) return;
-
-  const cities = {
-    'Hargeisa':    {lat: 9.5600,  lng: 44.0650},
-    'Berbera':     {lat: 10.4397, lng: 45.0146},
-    'Burco':       {lat: 9.5228,  lng: 45.5338},
-    'Borama':      {lat: 9.9358,  lng: 43.1851},
-    'Gabiley':     {lat: 9.9761,  lng: 43.4631},
-    'Ceerigaavo':  {lat: 10.6270, lng: 47.3684},
-    'Laascaanood': {lat: 8.4780,  lng: 47.3615},
-  };
-
-  const coord = cities[city];
-  const mapsBtn = document.getElementById('openMapsBtn');
-
-  if (!coord) {
-    mapBox.innerHTML = `<div class="map-box-placeholder">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span style="font-size:13px;font-weight:600;color:#0369a1">${city}</span>
-    </div>`;
-    if (mapsBtn) { mapsBtn.style.display = ''; }
-    return;
-  }
-
-  // Google Maps button göster
-  if (mapsBtn) mapsBtn.style.display = '';
-
-  // OpenStreetMap iframe embed — onclick olmadan, iframe ile tam etkileşim
-  const zoom = 13;
-  const offset = 0.03;
-  const bbox   = [coord.lng - offset, coord.lat - offset, coord.lng + offset, coord.lat + offset].join(',');
-  const marker = `${coord.lat},${coord.lng}`;
-
-  mapBox.innerHTML = `<iframe
-    src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${marker}"
-    title="Location: ${city}, Somaliland"
-    loading="lazy"
-    allow="fullscreen"
-    style="width:100%;height:100%;border:none;border-radius:12px;display:block"
-  ></iframe>`;
-}
-
-function timeAgo(dateStr) {
-  if (!dateStr) return '';
-  const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
-  if (diff < 60)   return 'Just now';
-  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
-  if (diff < 86400)return `${Math.floor(diff/3600)}h ago`;
-  return `${Math.floor(diff/86400)}d ago`;
-}
-
+// ── Gallery ───────────────────────────────────
 function switchImg(i, el) {
-  const img = document.getElementById('mainGalleryImg');
-  if (img && listing.images[i]) img.src = listing.images[i];
-  document.querySelectorAll('.thumb-strip img').forEach(t => t.classList.remove('active'));
+  const imgs = listing?.images || [];
+  if (!imgs[i]) return;
+  galIdx = i;
+  document.getElementById('mainGalleryImg').src = imgs[i];
+  document.getElementById('photoCounter').textContent = `${i + 1} / ${imgs.length}`;
+  document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
 }
+function galNav(dir) {
+  const imgs = listing?.images || [];
+  if (!imgs.length) return;
+  galIdx = (galIdx + dir + imgs.length) % imgs.length;
+  switchImg(galIdx, document.querySelectorAll('.thumb-item')[galIdx]);
+}
 
-// ── Lightbox ──────────────────────────────────────────────────────────
-let lbIndex = 0;
-
-function openLightbox(startIndex) {
-  const imgs = listing?.images;
-  if (!imgs || imgs.length === 0) return;
-  lbIndex = startIndex ?? 0;
+// ── Lightbox ──────────────────────────────────
+function openLightbox(i) {
+  const imgs = listing?.images || [];
+  if (!imgs.length) return;
+  lbIdx = i;
   const lb = document.getElementById('lightbox');
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
-  renderLightbox();
-
-  // Thumbnail şeridini oluştur
-  const thumbsEl = document.getElementById('lightbox-thumbs');
+  renderLB();
+  const thumbsEl = document.getElementById('lb-thumbs');
   if (imgs.length > 1) {
-    thumbsEl.innerHTML = imgs.map((src, i) =>
-      `<img src="${src}" class="${i === lbIndex ? 'lb-active' : ''}" onclick="lbGoTo(${i})" alt="">`
+    thumbsEl.innerHTML = imgs.map((s, j) =>
+      `<img src="${s}" class="${j === lbIdx ? 'lb-active' : ''}" onclick="lbGoTo(${j})" alt="" loading="lazy">`
     ).join('');
     thumbsEl.style.display = 'flex';
-  } else {
-    thumbsEl.style.display = 'none';
-  }
-
-  // Prev/Next butonları tek fotoğrafta gizle
-  document.getElementById('lightbox-prev').style.display = imgs.length > 1 ? '' : 'none';
-  document.getElementById('lightbox-next').style.display = imgs.length > 1 ? '' : 'none';
+  } else thumbsEl.style.display = 'none';
+  document.getElementById('lb-prev').style.display = imgs.length > 1 ? 'flex' : 'none';
+  document.getElementById('lb-next').style.display = imgs.length > 1 ? 'flex' : 'none';
 }
-
-function renderLightbox() {
-  const imgs = listing?.images;
-  if (!imgs) return;
-  const imgEl    = document.getElementById('lightbox-img');
-  const counter  = document.getElementById('lightbox-counter');
+function renderLB() {
+  const imgs = listing?.images || [];
+  const imgEl = document.getElementById('lb-img');
   imgEl.style.opacity = '0';
-  setTimeout(() => {
-    imgEl.src = imgs[lbIndex];
-    imgEl.style.opacity = '1';
-  }, 100);
-  counter.textContent = imgs.length > 1 ? `${lbIndex + 1} / ${imgs.length}` : '';
-  // Thumbnail aktifini güncelle
-  document.querySelectorAll('#lightbox-thumbs img').forEach((t, i) =>
-    t.classList.toggle('lb-active', i === lbIndex)
-  );
-  // Thumb'ı görünüre kaydır
-  const activThumb = document.querySelector('#lightbox-thumbs img.lb-active');
-  if (activThumb) activThumb.scrollIntoView({ inline: 'center', behavior: 'smooth' });
+  setTimeout(() => { imgEl.src = imgs[lbIdx]; imgEl.style.opacity = '1'; }, 120);
+  document.getElementById('lb-counter').textContent = imgs.length > 1 ? `${lbIdx + 1} / ${imgs.length}` : '';
+  document.querySelectorAll('#lb-thumbs img').forEach((t, j) => t.classList.toggle('lb-active', j === lbIdx));
+  document.querySelector('#lb-thumbs img.lb-active')?.scrollIntoView({ inline:'center', behavior:'smooth' });
 }
-
 function lbNav(dir) {
-  const imgs = listing?.images;
-  if (!imgs) return;
-  lbIndex = (lbIndex + dir + imgs.length) % imgs.length;
-  renderLightbox();
+  const imgs = listing?.images || [];
+  if (!imgs.length) return;
+  lbIdx = (lbIdx + dir + imgs.length) % imgs.length;
+  renderLB();
 }
-
-function lbGoTo(i) {
-  lbIndex = i;
-  renderLightbox();
-}
-
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-// Klavye navigasyonu
+function lbGoTo(i) { lbIdx = i; renderLB(); }
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+// Keyboard
 document.addEventListener('keydown', e => {
-  const lb = document.getElementById('lightbox');
-  if (!lb || !lb.classList.contains('open')) return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') lbNav(1);
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   lbNav(-1);
-  if (e.key === 'Escape') closeLightbox();
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') lbNav(1);
+  else if (e.key === 'ArrowLeft') lbNav(-1);
+  else if (e.key === 'Escape') closeLightbox();
 });
-
-// Swipe desteği (mobil)
-let lbTouchX = null;
-document.getElementById('lightbox')?.addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; }, { passive: true });
-document.getElementById('lightbox')?.addEventListener('touchend', e => {
-  if (lbTouchX === null) return;
-  const diff = lbTouchX - e.changedTouches[0].clientX;
+// Swipe
+let _lbTX = null;
+document.getElementById('lightbox').addEventListener('touchstart', e => { _lbTX = e.touches[0].clientX; }, { passive:true });
+document.getElementById('lightbox').addEventListener('touchend', e => {
+  if (_lbTX === null) return;
+  const diff = _lbTX - e.changedTouches[0].clientX;
   if (Math.abs(diff) > 50) lbNav(diff > 0 ? 1 : -1);
-  lbTouchX = null;
+  _lbTX = null;
 });
 
-async function loadSimilar(category, currentId) {
-  try {
-    const list = await API.getListings({ category, pageSize:6 });
-    const filtered = list.filter(l => l.id != currentId).slice(0, 4);
-    if (filtered.length) {
-      document.getElementById('similarSection').style.display = '';
-      document.getElementById('similarGrid').innerHTML = filtered.map(listingCardHTML).join('');
-      document.getElementById('similarSeeAll').href = `listings.html?category=${category}`;
-    }
-  } catch(e){}
-}
-
-// ── Favorites ──────────────────────────────────────────────────
-async function toggleFav() {
-  if (!Auth.isLoggedIn()) { window.location.href='auth.html'; return; }
-  const btn = document.getElementById('favBtn');
-  const isFav = btn.textContent === '♥️';
-  try {
-    if (isFav) { await API.removeFavorite(listing.id); btn.textContent='♡'; showToast('Removed from saved'); }
-    else        { await API.addFavorite(listing.id);    btn.textContent='♥️'; showToast('Saved to favorites!','success'); }
-  } catch(e) { showToast('Error saving listing','error'); }
-}
-
-// ── Share ──────────────────────────────────────────────────────
-function toggleSharePanel() {
-  // Mobil cihazlarda Web Share API kullan
-  if (navigator.share && listing) {
-    navigator.share({
-      title: listing.title,
-      text:  `${listing.title} — ${listing.price ? (listing.currency || 'USD') + ' ' + listing.price : ''} on SomBazar`,
-      url:   window.location.href,
-    }).catch(() => {});
+// ── Map ────────────────────────────────────────
+function initMap(city) {
+  const key    = (city || 'hargeisa').toLowerCase().trim();
+  const coords = CITY_COORDS[key] || CITY_COORDS.hargeisa;
+  if (_leafletMap) {
+    _leafletMap.setView(coords, 13);
+    _leafletMark?.setLatLng(coords);
     return;
   }
-  // Masaüstü: panel göster
-  const p = document.getElementById('sharePanel');
-  p.style.display = p.style.display === 'none' ? '' : 'none';
+  const el = document.getElementById('leafletMap');
+  if (!el) return;
+  _leafletMap = L.map('leafletMap', { zoomControl:true, scrollWheelZoom:false }).setView(coords, 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© <a href="https://openstreetmap.org">OpenStreetMap</a>', maxZoom:19
+  }).addTo(_leafletMap);
+  const icon = L.divIcon({
+    html: '<div style="width:28px;height:28px;background:#ec5b13;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);"></div>',
+    iconSize:[28,28], iconAnchor:[14,28], className:''
+  });
+  _leafletMark = L.marker(coords, { icon }).addTo(_leafletMap);
+  _leafletMark.bindPopup(`<b>${city || 'Hargeisa'}</b>, Somaliland`).openPopup();
+  _leafletMap.on('click', openInMaps);
 }
-function shareWhatsApp() { window.open(`https://wa.me/?text=${encodeURIComponent(listing.title+' — '+window.location.href)}`,'_blank'); }
-function shareFacebook() { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`,'_blank'); }
-function shareTwitter()  { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(listing.title)}&url=${encodeURIComponent(window.location.href)}`,'_blank'); }
-function copyLink() { navigator.clipboard.writeText(window.location.href).then(()=>showToast('Link copied!','success')); }
-
-// ── Map ────────────────────────────────────────────────────────
 function openInMaps() {
-  const city = listing?.city || 'Hargeisa';
-  window.open(`https://www.google.com/maps/search/${encodeURIComponent(city+', Somaliland')}`,'_blank');
+  window.open(`https://www.google.com/maps/search/${encodeURIComponent((listing?.city || 'Hargeisa') + ', Somaliland')}`, '_blank');
 }
 
-// ── Offer ──────────────────────────────────────────────────────
-// ── OFFER SYSTEM ─────────────────────────────────────────────
-// Her listing+buyer için TEK satır. Status: pending→countered→accepted/rejected
-let activeOfferId = null;
+// ── Similar listings ───────────────────────────
+async function loadSimilar(cat, curId) {
+  try {
+    const list = await API.getListings({ category: cat, pageSize: 6 });
+    const filtered = list.filter(l => l.id != curId).slice(0, 4);
+    if (!filtered.length) return;
+    document.getElementById('similarSection').style.display = '';
+    document.getElementById('similarGrid').innerHTML = filtered.map(l => {
+      const img = l.images?.[0]
+        ? `<img src="${l.images[0]}" class="sim-card-img" loading="lazy" alt="${l.title}">`
+        : `<div class="sim-card-img" style="display:flex;align-items:center;justify-content:center;background:#f1f5f9;font-size:32px;">${catEmoji(l.category)}</div>`;
+      return `<div class="sim-card" onclick="window.location='listing.html?id=${l.id}'">
+        ${img}
+        <button class="sim-fav" onclick="event.stopPropagation();toggleFavCard&&toggleFavCard(this,${l.id})">♡</button>
+        <div class="sim-card-body">
+          <div style="font-size:12px;font-weight:800;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px;">${l.title}</div>
+          <div style="font-size:13px;font-weight:900;color:#ec5b13;">${l.currency || 'USD'} ${Number(l.price).toLocaleString()}</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${l.city || 'Hargeisa'}</div>
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('similarSeeAll').href = `listings.html?category=${cat}`;
+  } catch(e) {}
+}
 
-// ── TEKLIF MODAL (Alıcı) ──────────────────────────────────────
+// ── Favourites ─────────────────────────────────
+async function toggleFav() {
+  if (!Auth.isLoggedIn()) { window.location.href = 'auth.html'; return; }
+  const icon = document.getElementById('favIcon');
+  const isFav = icon.textContent === 'favorite';
+  try {
+    if (isFav) {
+      await API.removeFavorite(listing.id);
+      icon.textContent = 'favorite_border';
+      icon.style.color = '';
+      showToast('Removed from saved');
+    } else {
+      await API.addFavorite(listing.id);
+      icon.textContent = 'favorite';
+      icon.style.color = '#ef4444';
+      showToast('Saved to favorites!', 'success');
+    }
+  } catch(e) { showToast('Error saving listing', 'error'); }
+}
+
+// ── Share ──────────────────────────────────────
+function doShare() {
+  if (navigator.share && listing) {
+    navigator.share({ title:listing.title, text:`${listing.title} — SomBazar`, url:window.location.href }).catch(() => {});
+    return;
+  }
+  const p = document.getElementById('sharePanel');
+  p.style.display = p.style.display === 'none' ? 'flex' : 'none';
+}
+function shareWhatsApp() { window.open(`https://wa.me/?text=${encodeURIComponent((listing?.title || '') + ' — ' + window.location.href)}`, '_blank'); }
+function copyLink()       { navigator.clipboard.writeText(window.location.href).then(() => showToast('Link copied!', 'success')); }
+
+// ── Phone reveal ───────────────────────────────
+function revealPhone(e, wa = false) {
+  e.preventDefault();
+  const ph = window._rawPhone;
+  if (!ph) return false;
+  const cb = document.getElementById('callBtn');
+  document.getElementById('callBtnTxt').textContent = ph;
+  cb.href    = `tel:${ph}`;
+  cb.onclick = null;
+  const wb = document.getElementById('waBtn');
+  wb.href    = `https://wa.me/${ph.replace(/\D/g,'')}?text=${encodeURIComponent('Hi! Interested in: ' + (window._listingTitle || ''))}`;
+  wb.onclick = null;
+  if (wa) window.open(wb.href, '_blank');
+  return false;
+}
+
+// ── Chat ───────────────────────────────────────
+function startChat() {
+  if (!Auth.isLoggedIn()) { window.location.href = 'auth.html'; return; }
+  if (!listing) return;
+  window.location.href = `messages.html?with=${listing.userId}&listing=${listing.id}`;
+}
+
+// ── Offer ──────────────────────────────────────
 function showOfferModal() {
   if (!Auth.isLoggedIn()) { window.location.href = 'auth.html'; return; }
-  const modal = document.getElementById('offerModal');
-  document.getElementById('offerAmount').value = '';
-  document.getElementById('offerNote').value   = '';
-  document.getElementById('offerError').style.display  = 'none';
-  document.getElementById('offerRoundInfo').style.display = 'none';
-  document.getElementById('offerHistory').style.display   = 'none';
-  const btn = document.getElementById('offerSubmitBtn');
-  btn.disabled    = false;
-  btn.textContent = 'Send Offer';
-
-  const priceStr = listing && listing.price
-    ? `${listing.currency||'USD'} ${Number(listing.price).toLocaleString()}` : '';
-  document.getElementById('offerSub').textContent = priceStr ? `Listed at ${priceStr}` : 'Enter your offer below';
-
-  // Aktif teklif varsa bilgi göster
+  const el = id => document.getElementById(id);
+  el('offerAmount').value = '';
+  el('offerNote').value   = '';
+  el('offerError').style.display     = 'none';
+  el('offerHistory').style.display   = 'none';
+  el('offerRoundInfo').style.display = 'none';
+  el('offerSubmitBtn').disabled    = false;
+  el('offerSubmitBtn').textContent = 'Send Offer';
   loadActiveOfferInfo();
-  modal.style.display = 'flex';
+  el('offerModal').style.display = 'flex';
 }
+function closeOfferModal() { document.getElementById('offerModal').style.display = 'none'; }
 
 async function loadActiveOfferInfo() {
   if (!Auth.isLoggedIn()) return;
   try {
-    const r = await fetch('api/offers.php?action=my_offers&type=sent', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
+    const r = await fetch('api/offers.php?action=my_offers&type=sent', { headers:{ Authorization:'Bearer '+Auth.getToken() } });
     if (!r.ok) return;
-    const _bt = await r.text();
-    let d; try { d = JSON.parse(_bt); } catch(e) { return; }
+    const d = await r.json();
     if (!d.success) return;
-
-    const myOffer = (d.data.offers || []).find(o => parseInt(o.listingId) === parseInt(listing.id));
-    if (!myOffer) return;
-
-    const roundInfo = document.getElementById('offerRoundInfo');
-    const dots      = document.getElementById('offerRoundDots');
-    const txt       = document.getElementById('offerRoundText');
-    roundInfo.style.display = 'block';
-
-    dots.innerHTML = [1,2,3,4,5].map(i =>
-      `<div style="width:10px;height:10px;border-radius:50%;background:${i<=myOffer.round?'#f97316':'#e2e8f0'}"></div>`
+    const o = (d.data.offers || []).find(x => parseInt(x.listingId) === parseInt(listing.id));
+    if (!o) return;
+    const ri = document.getElementById('offerRoundInfo');
+    ri.style.display = '';
+    document.getElementById('offerRoundText').textContent = `Round ${o.round}/5`;
+    document.getElementById('offerRoundDots').innerHTML = [1,2,3,4,5].map(i =>
+      `<div style="width:8px;height:8px;border-radius:50%;background:${i<=o.round?'#ec5b13':'#e2e8f0'};"></div>`
     ).join('');
-    txt.textContent = `Round ${myOffer.round}/5`;
-
-    if (myOffer.status === 'countered' && myOffer.counterAmount) {
-      const hist = document.getElementById('offerHistory');
-      hist.style.display = 'block';
-      hist.innerHTML = `<b>Seller's counter offer:</b> ${myOffer.currency} ${Number(myOffer.counterAmount).toLocaleString()}
-        ${myOffer.counterNote ? '<br><span style="color:#64748b;font-style:italic">'+myOffer.counterNote+'</span>' : ''}
-        <br><button onclick="acceptCounter(${myOffer.id})" style="margin-top:8px;background:#10b981;color:white;border:none;border-radius:7px;padding:6px 14px;font-family:DM Sans;font-size:12px;font-weight:700;cursor:pointer">✓ Accept Counter (${myOffer.currency} ${Number(myOffer.counterAmount).toLocaleString()})</button>`;
-      document.getElementById('offerAmount').value = myOffer.counterAmount;
+    if (o.status === 'countered' && o.counterAmount) {
+      const h = document.getElementById('offerHistory');
+      h.style.display = '';
+      h.innerHTML = `<b>Seller's counter:</b> ${o.currency} ${Number(o.counterAmount).toLocaleString()}
+        ${o.counterNote ? `<br><em style="color:#64748b;">"${o.counterNote}"</em>` : ''}
+        <br><button onclick="acceptCounter(${o.id})" style="margin-top:8px;background:#10b981;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">✓ Accept Counter</button>`;
+      document.getElementById('offerAmount').value = o.counterAmount;
       document.getElementById('offerSubmitBtn').textContent = 'Send New Offer Instead';
     }
-
-    if (myOffer.status === 'pending') {
+    if (o.status === 'pending') {
       document.getElementById('offerSubmitBtn').disabled    = true;
-      document.getElementById('offerSubmitBtn').textContent = '⏳ Waiting for seller response…';
+      document.getElementById('offerSubmitBtn').textContent = '⏳ Waiting for seller…';
     }
-
-    if (myOffer.round >= 5 && myOffer.status !== 'countered') {
+    if (o.round >= 5 && o.status !== 'countered') {
       document.getElementById('offerSubmitBtn').disabled    = true;
       document.getElementById('offerSubmitBtn').textContent = 'Max 5 rounds reached';
     }
   } catch(e) {}
 }
 
-// Alıcı counter'ı kabul eder
-async function acceptCounter(offerId) {
+async function acceptCounter(oid) {
   try {
     const r = await fetch('api/offers.php?action=accept_counter', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', Authorization:'Bearer '+Auth.getToken() },
-      body: JSON.stringify({ offer_id: offerId })
+      method:'POST', headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+Auth.getToken() },
+      body: JSON.stringify({ offer_id:oid })
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error);
     closeOfferModal();
-    showToast('✓ Counter offer accepted!', 'success');
+    showToast('Counter offer accepted!', 'success');
     loadBuyerOfferStatus();
-  } catch(e) {
-    showToast(e.message, 'error');
-  }
+  } catch(e) { showToast(e.message, 'error'); }
 }
 
-function closeOfferModal() { document.getElementById('offerModal').style.display = 'none'; }
-
 async function submitOffer() {
-  const amount   = parseFloat(document.getElementById('offerAmount').value);
-  const currency = document.getElementById('offerCurrency').value;
-  const note     = document.getElementById('offerNote').value.trim();
-  const errEl    = document.getElementById('offerError');
-  const btn      = document.getElementById('offerSubmitBtn');
-
+  const amt  = parseFloat(document.getElementById('offerAmount').value);
+  const cur  = document.getElementById('offerCurrency').value;
+  const note = document.getElementById('offerNote').value.trim();
+  const errEl = document.getElementById('offerError');
+  const btn   = document.getElementById('offerSubmitBtn');
   errEl.style.display = 'none';
-  if (!amount || amount <= 0) { errEl.textContent = 'Enter a valid amount'; errEl.style.display = 'block'; return; }
-
-  btn.disabled    = true;
-  btn.textContent = 'Sending…';
-
+  if (!amt || amt <= 0) { errEl.textContent = 'Enter a valid amount'; errEl.style.display = ''; return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
   try {
     const r = await fetch('api/offers.php?action=make', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', Authorization:'Bearer '+Auth.getToken() },
-      body: JSON.stringify({ listing_id: listing.id, amount, currency, note })
+      method:'POST', headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+Auth.getToken() },
+      body: JSON.stringify({ listing_id:listing.id, amount:amt, currency:cur, note })
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error);
@@ -1126,112 +1207,75 @@ async function submitOffer() {
     showToast(`✓ ${d.data.message}`, 'success');
     loadOfferStatus();
   } catch(e) {
-    errEl.textContent = e.message;
-    errEl.style.display = 'block';
-    btn.disabled    = false;
-    btn.textContent = 'Send Offer';
+    errEl.textContent = e.message; errEl.style.display = '';
+    btn.disabled = false; btn.textContent = 'Send Offer';
   }
 }
 
-// ── OFFER STATUS (sayfa yüklenince) ──────────────────────────
 async function loadOfferStatus() {
   if (!Auth.isLoggedIn() || !listing) return;
-  const user     = Auth.getUser();
-  const isSeller = user && parseInt(user.id) === parseInt(listing.userId);
-  if (isSeller) {
-    loadSellerOffers();
-  } else {
-    loadBuyerOfferStatus();
-  }
+  const u = Auth.getUser();
+  if (u && parseInt(u.id) === parseInt(listing.userId)) loadSellerOffers();
+  else loadBuyerOfferStatus();
 }
 
 async function loadBuyerOfferStatus() {
   try {
-    const r = await fetch('api/offers.php?action=my_offers&type=sent', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    if (!r.ok) return;
-    const _bt = await r.text();
-    let d; try { d = JSON.parse(_bt); } catch(e) { return; }
+    const r = await fetch('api/offers.php?action=my_offers&type=sent', { headers:{ Authorization:'Bearer '+Auth.getToken() } });
+    const d = await r.json();
     if (!d.success) return;
-
-    const myOffer = (d.data.offers || []).find(o => parseInt(o.listingId) === parseInt(listing.id));
+    const o = (d.data.offers || []).find(x => parseInt(x.listingId) === parseInt(listing.id));
     const btn = document.getElementById('offerBtn');
     if (!btn) return;
-
-    if (!myOffer || ['rejected','cancelled','expired','accepted'].includes(myOffer.status)) {
-      // Normal teklif butonu
-      btn.textContent   = ' Make an Offer';
-      btn.style.background   = '#eff6ff';
-      btn.style.borderColor  = '#bfdbfe';
-      btn.style.color        = '#2563eb';
+    if (!o || ['rejected','cancelled','expired','accepted'].includes(o.status)) {
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px;">local_offer</span> Make an Offer';
+      btn.style.background = '#eff6ff'; btn.style.color = '#2563eb'; btn.style.borderColor = '#bfdbfe';
       return;
     }
-
-    if (myOffer.status === 'pending') {
-      btn.textContent        = `⏳ Offer pending — Round ${myOffer.round}/5`;
-      btn.style.background   = '#f0fdf4';
-      btn.style.borderColor  = '#10b981';
-      btn.style.color        = '#10b981';
-    } else if (myOffer.status === 'countered') {
-      btn.textContent        = `↩ Counter received — Round ${myOffer.round}/5 — tap to respond`;
-      btn.style.background   = '#fff7ed';
-      btn.style.borderColor  = '#f97316';
-      btn.style.color        = '#f97316';
+    if (o.status === 'pending') {
+      btn.innerHTML = `⏳ Offer pending — Round ${o.round}/5`;
+      btn.style.background = '#f0fdf4'; btn.style.color = '#10b981'; btn.style.borderColor = '#10b981';
+    } else if (o.status === 'countered') {
+      btn.innerHTML = `↩ Counter received — tap to respond`;
+      btn.style.background = '#fff7ed'; btn.style.color = '#ec5b13'; btn.style.borderColor = '#ec5b13';
     }
   } catch(e) {}
 }
 
 async function loadSellerOffers() {
   try {
-    const r = await fetch(`api/offers.php?action=listing_offers&listing_id=${listing.id}`, {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    if (!r.ok) return;
-    const _st = await r.text();
-    let d; try { d = JSON.parse(_st); } catch(e) { return; }
+    const r = await fetch(`api/offers.php?action=listing_offers&listing_id=${listing.id}`, { headers:{ Authorization:'Bearer '+Auth.getToken() } });
+    const d = await r.json();
     if (!d.success) return;
-
     const active = (d.data.offers || []).filter(o => ['pending','countered'].includes(o.status));
     const panel  = document.getElementById('offersPanel');
     if (!panel) return;
-
-    if (active.length === 0) { panel.style.display = 'none'; return; }
-    panel.style.display = 'block';
+    if (!active.length) { panel.style.display = 'none'; return; }
+    panel.style.display = '';
     panel.innerHTML = `
-      <div style="background:white;border:1px solid #e2e8f0;border-radius:16px;padding:20px;margin:16px 0">
-        <div style="font-size:14px;font-weight:800;color:#1e293b;margin-bottom:14px">
-           Incoming Offers (${active.length})
-        </div>
+      <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:14px;padding:16px;">
+        <div style="font-size:13px;font-weight:800;color:#92400e;margin-bottom:12px;">📬 Incoming Offers (${active.length})</div>
         ${active.map(o => `
-          <div style="border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
-            <div style="min-width:0">
-              <div style="font-weight:800;font-size:16px;color:#f97316">${o.currency} ${Number(o.amount).toLocaleString()}</div>
-              <div style="font-size:12px;color:#64748b;margin-top:3px">
-                from <b>${o.buyerName||'Buyer'}</b> · Round ${o.round}/5
-                ${o.status === 'countered' ? ' · <span style="color:#f97316">Awaiting buyer response</span>' : ''}
-              </div>
-              ${o.note ? `<div style="font-size:12px;color:#374151;margin-top:4px;font-style:italic">"${o.note}"</div>` : ''}
-              ${o.expiresIn ? `<div style="font-size:11px;color:#94a3b8;margin-top:2px">⏱ ${o.expiresIn}</div>` : ''}
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div>
+              <div style="font-size:16px;font-weight:900;color:#ec5b13;">${o.currency} ${Number(o.amount).toLocaleString()}</div>
+              <div style="font-size:11px;color:#64748b;margin-top:2px;">from <b>${o.buyerName || 'Buyer'}</b> · Round ${o.round}/5
+                ${o.status === 'countered' ? ' · <span style="color:#ec5b13">Awaiting response</span>' : ''}</div>
+              ${o.note ? `<div style="font-size:11px;font-style:italic;color:#374151;margin-top:3px;">"${o.note}"</div>` : ''}
             </div>
-            <div style="display:flex;gap:8px;flex-shrink:0">
-              ${o.status === 'pending' ? `
-                <button onclick="openRespondModal(${o.id},${o.amount},'${o.currency}','${(o.buyerName||'').replace(/'/g,"\'")}',${o.round})"
-                  style="background:#f97316;color:white;border:none;border-radius:8px;padding:8px 16px;font-family:'DM Sans';font-size:12px;font-weight:700;cursor:pointer">
-                  Respond
-                </button>` : `<span style="font-size:12px;color:#f97316;font-weight:700">Awaiting buyer</span>`}
-            </div>
+            ${o.status === 'pending'
+              ? `<button onclick="openRespondModal(${o.id},${o.amount},'${o.currency}','${(o.buyerName||'').replace(/'/g,"\\'")}',${o.round})" style="background:#ec5b13;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">Respond</button>`
+              : `<span style="font-size:11px;color:#ec5b13;font-weight:700;">Awaiting buyer</span>`}
           </div>`).join('')}
       </div>`;
   } catch(e) {}
 }
 
-// ── RESPOND MODAL (Satıcı) ────────────────────────────────────
-function openRespondModal(offerId, amount, currency, buyerName, round) {
-  activeOfferId = offerId;
+function openRespondModal(oid, amt, cur, buyer, round) {
+  _activeOfferId = oid;
   document.getElementById('respondOfferDetails').innerHTML = `
-    <div style="font-size:12px;color:#64748b;margin-bottom:4px">From <b>${buyerName}</b> · Round ${round}/5</div>
-    <div style="font-size:24px;font-weight:800;color:#f97316">${currency} ${Number(amount).toLocaleString()}</div>`;
+    <div style="font-size:11px;color:#64748b;margin-bottom:4px;">From <b>${buyer}</b> · Round ${round}/5</div>
+    <div style="font-size:22px;font-weight:900;color:#ec5b13;">${cur} ${Number(amt).toLocaleString()}</div>`;
   document.getElementById('respondCounterFields').style.display = 'none';
   document.getElementById('counterSubmitWrap').style.display    = 'none';
   document.getElementById('respondError').style.display         = 'none';
@@ -1239,308 +1283,187 @@ function openRespondModal(offerId, amount, currency, buyerName, round) {
   document.getElementById('counterNote').value   = '';
   document.getElementById('offerRespondModal').style.display = 'flex';
 }
-
-function closeRespondModal() {
-  document.getElementById('offerRespondModal').style.display = 'none';
-  activeOfferId = null;
-}
-
-function toggleCounter() {
+function toggleCounterFields() {
   const open = document.getElementById('respondCounterFields').style.display !== 'none';
-  document.getElementById('respondCounterFields').style.display = open ? 'none' : 'block';
-  document.getElementById('counterSubmitWrap').style.display    = open ? 'none' : 'block';
-  document.getElementById('counterToggleBtn').style.background  = open ? '#eff6ff' : '#dbeafe';
+  document.getElementById('respondCounterFields').style.display = open ? 'none' : '';
+  document.getElementById('counterSubmitWrap').style.display    = open ? 'none' : '';
 }
-
 async function respondOffer(action) {
-  if (!activeOfferId) return;
+  if (!_activeOfferId) return;
   const errEl = document.getElementById('respondError');
   errEl.style.display = 'none';
-
-  const body = { offer_id: activeOfferId, action };
+  const body = { offer_id:_activeOfferId, action };
   if (action === 'counter') {
     const ca = parseFloat(document.getElementById('counterAmount').value);
-    const cn = document.getElementById('counterNote').value.trim();
-    if (!ca || ca <= 0) { errEl.textContent = 'Enter a counter amount'; errEl.style.display = 'block'; return; }
+    if (!ca || ca <= 0) { errEl.textContent = 'Enter a counter amount'; errEl.style.display = ''; return; }
     body.counter_amount = ca;
-    body.counter_note   = cn;
+    body.counter_note   = document.getElementById('counterNote').value.trim();
   }
-
   try {
     const r = await fetch('api/offers.php?action=respond', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json', Authorization:'Bearer '+Auth.getToken() },
+      method:'POST', headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+Auth.getToken() },
       body: JSON.stringify(body)
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error);
-    closeRespondModal();
+    document.getElementById('offerRespondModal').style.display = 'none';
     showToast(d.data.message, 'success');
     loadSellerOffers();
-  } catch(e) {
-    errEl.textContent = e.message;
-    errEl.style.display = 'block';
-  }
+  } catch(e) { errEl.textContent = e.message; errEl.style.display = ''; }
 }
 
-// ── Report ─────────────────────────────────────────────────────
-function showReportModal()  { document.getElementById('reportModal').style.display='flex'; }
-function closeReportModal() { document.getElementById('reportModal').style.display='none'; }
+// ── Report ─────────────────────────────────────
+function showReportModal()  { document.getElementById('reportModal').style.display  = 'flex'; }
+function closeReportModal() { document.getElementById('reportModal').style.display  = 'none'; }
 function submitReport() {
-  const reason = document.querySelector('input[name="reportReason"]:checked')?.value;
-  if (!reason) { showToast('Please select a reason','error'); return; }
-  showToast('Report submitted. Thank you!','success');
+  const r = document.querySelector('input[name="reportReason"]:checked');
+  if (!r) { showToast('Please select a reason', 'error'); return; }
+  showToast('Report submitted. Thank you!', 'success');
   closeReportModal();
 }
 
-// ── Reviews ────────────────────────────────────────────────────
-// ── Reviews (API) ────────────────────────────────────────────
+// ── Reviews ────────────────────────────────────
 async function loadReviews() {
   const container = document.getElementById('reviewsContainer');
   if (!container || !listing?.id) return;
-
   try {
     const r = await fetch(`api/reviews.php?action=get_listing&listing_id=${listing.id}`);
     const d = await r.json();
     if (!d.success) return;
     renderReviews(d.data.reviews || [], d.data.avg_rating, d.data.total);
+    document.getElementById('reviewCount').textContent = d.data.total || 0;
   } catch(e) {
-    container.innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:16px">Could not load reviews.</div>';
+    container.innerHTML = '<div style="color:#94a3b8;font-size:13px;padding:12px;">Could not load reviews.</div>';
   }
 }
 
-function starsHTML(rating, size = 16) {
-  return [1,2,3,4,5].map(i =>
-    `<span style="color:${i<=rating?'#f59e0b':'#e2e8f0'};font-size:${size}px">★</span>`
-  ).join('');
-}
-
-function renderReviews(reviews, avgRating, total) {
-  const container = document.getElementById('reviewsContainer');
-  if (!container) return;
-
-  // Özet bar
-  const summaryHTML = total > 0 ? `
-    <div style="display:flex;align-items:center;gap:16px;padding:16px;background:#fffbeb;border-radius:12px;margin-bottom:16px">
-      <div style="text-align:center">
-        <div style="font-size:36px;font-weight:900;color:#f59e0b;line-height:1">${avgRating}</div>
-        <div style="font-size:11px;color:#64748b;margin-top:2px">${total} review${total!==1?'s':''}</div>
+function renderReviews(reviews, avg, total) {
+  const c = document.getElementById('reviewsContainer');
+  if (!c) return;
+  const summary = total > 0 ? `
+    <div style="display:flex;align-items:center;gap:16px;padding:14px;background:#fffbeb;border-radius:12px;margin-bottom:14px;">
+      <div style="text-align:center;">
+        <div style="font-size:32px;font-weight:900;color:#f59e0b;line-height:1;">${avg}</div>
+        <div style="font-size:11px;color:#64748b;margin-top:2px;">${total} review${total !== 1 ? 's' : ''}</div>
       </div>
-      <div style="flex:1">
-        ${starsHTML(Math.round(avgRating), 20)}
-        <div style="font-size:12px;color:#64748b;margin-top:4px">
-          ${avgRating >= 4.5 ? ' Excellent Seller' : avgRating >= 3.5 ? ' Good Seller' : avgRating >= 2.5 ? ' Average' : '!️ Below Average'}
-        </div>
-      </div>
+      <div>${starsHTML(Math.round(avg), 18)}<div style="font-size:12px;color:#64748b;margin-top:3px;">${avg >= 4.5 ? '🌟 Excellent Seller' : avg >= 3.5 ? '👍 Good Seller' : '📊 Average'}</div></div>
     </div>` : '';
 
   if (!reviews.length) {
-    container.innerHTML = summaryHTML + `
-      <div style="text-align:center;padding:28px 0;color:var(--gray)">
-        <div style="font-size:36px;margin-bottom:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-        <div style="font-size:13px;font-weight:600">No reviews yet. Be the first!</div>
-      </div>`;
+    c.innerHTML = summary + '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;"><div style="font-size:32px;margin-bottom:8px;">💬</div>No reviews yet. Be the first!</div>';
     return;
   }
-
-  container.innerHTML = summaryHTML + reviews.map(r => {
-    const avatar = r.reviewerAvatar
-      ? `<img loading="lazy" src="${r.reviewerAvatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`
-      : `<div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">${(r.reviewerName||'?')[0].toUpperCase()}</div>`;
-    const date = new Date(r.createdAt).toLocaleDateString('en', {year:'numeric',month:'short',day:'numeric'});
-    return `
-      <div style="border-bottom:1px solid #f1f5f9;padding:14px 0;display:flex;gap:12px">
-        ${avatar}
-        <div style="flex:1">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start">
-            <div>
-              <div style="font-weight:700;font-size:13px;color:#1e293b">${r.reviewerName}</div>
-              <div style="margin-top:2px">${starsHTML(r.rating, 14)}</div>
-            </div>
-            <div style="font-size:11px;color:#94a3b8">${date}</div>
+  c.innerHTML = summary + reviews.map(rv => {
+    const av = rv.reviewerAvatar
+      ? `<img src="${rv.reviewerAvatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="">`
+      : `<div style="width:36px;height:36px;border-radius:50%;background:#ec5b13;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;">${(rv.reviewerName||'?')[0].toUpperCase()}</div>`;
+    const dt = new Date(rv.createdAt).toLocaleDateString('en', { year:'numeric', month:'short', day:'numeric' });
+    return `<div class="review-row">
+      ${av}
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#0f172a;">${rv.reviewerName}</div>
+            <div>${starsHTML(rv.rating, 13)}</div>
           </div>
-          ${r.comment ? `<p style="font-size:13px;color:#475569;margin:6px 0 0;line-height:1.5">${r.comment}</p>` : ''}
-          ${r.listingTitle ? `<div style="font-size:11px;color:#94a3b8;margin-top:4px"> ${r.listingTitle}</div>` : ''}
+          <div style="font-size:11px;color:#94a3b8;">${dt}</div>
         </div>
-      </div>`;
+        ${rv.comment ? `<p style="font-size:13px;color:#475569;margin:6px 0 0;line-height:1.6;">${rv.comment}</p>` : ''}
+      </div>
+    </div>`;
   }).join('');
 }
 
-// Satıcı puan gösterimi
-async function loadSellerRating(userId) {
-  const el = document.getElementById('sellerRating');
-  if (!el || !userId) return;
+async function loadSellerRating(uid) {
   try {
-    const r = await fetch(`api/reviews.php?action=get_seller&seller_id=${userId}`);
+    const r = await fetch(`api/reviews.php?action=get_seller&seller_id=${uid}`);
     const d = await r.json();
     if (!d.success || !d.data.total) return;
-    const avg = d.data.avg_rating;
-    const total = d.data.total;
-    const stars = [1,2,3,4,5].map(i =>
-      `<span style="color:${i<=Math.round(avg)?'#f59e0b':'#d1d5db'};font-size:13px">★</span>`
-    ).join('');
-    el.style.display = '';
-    el.innerHTML = `${stars} <span style="font-size:12px;font-weight:700;color:#1e293b">${avg}</span> <span style="font-size:11px;color:#94a3b8">(${total})</span>`;
+    const { avg_rating: avg, total } = d.data;
+    document.getElementById('sellerStars').innerHTML = starsHTML(Math.round(avg), 13);
+    document.getElementById('sellerRatingVal').textContent = avg;
+    document.getElementById('sellerSalesCount').textContent = `(${total} Sales)`;
   } catch(e) {}
 }
 
-// Değerlendirme yazabilir mi kontrol
 async function checkCanReview() {
   if (!Auth.isLoggedIn() || !listing?.id) return;
   try {
-    const r = await fetch(`api/reviews.php?action=can_review&listing_id=${listing.id}`, {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
+    const r = await fetch(`api/reviews.php?action=can_review&listing_id=${listing.id}`, { headers:{ Authorization:'Bearer '+Auth.getToken() } });
     const d = await r.json();
     if (!d.success) return;
     const btn = document.getElementById('writeReviewBtn');
     if (!btn) return;
-    if (d.data.can_review) {
-      btn.style.display = '';
-      if (d.data.show_reminder) {
-        btn.style.background = '#f97316';
-        btn.style.color = 'white';
-        btn.textContent = ' Leave a Review';
-      }
-    } else {
-      if (d.data.reason === 'already_reviewed') {
-        btn.textContent = '✓ Reviewed';
-        btn.disabled = true;
-        btn.style.opacity = '0.6';
-      } else if (d.data.reason === 'own_listing') {
-        btn.style.display = 'none';
-      }
-    }
+    if (d.data.can_review) btn.style.display = '';
+    else if (d.data.reason === 'already_reviewed') {
+      btn.textContent = '✓ Reviewed'; btn.disabled = true; btn.style.display = '';
+    } else btn.style.display = 'none';
   } catch(e) {}
 }
 
 function openReviewModal() {
   if (!Auth.isLoggedIn()) { window.location.href = 'auth.html'; return; }
   document.getElementById('reviewModal').style.display = 'flex';
-  // Yıldız sıfırla
   setStarRating(0);
   document.getElementById('reviewText').value = '';
 }
+function closeReviewModal() { document.getElementById('reviewModal').style.display = 'none'; }
 
-function closeReviewModal() {
-  document.getElementById('reviewModal').style.display = 'none';
-}
-
-let _selectedRating = 0;
-function setStarRating(rating) {
-  _selectedRating = rating;
-  const labels = ['','Poor','Fair','Good','Very Good',' Excellent'];
+function setStarRating(n) {
+  _selectedStar = n;
+  const labels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent ⭐'];
   document.querySelectorAll('.star-btn').forEach((s, i) => {
-    s.style.color = i < rating ? '#f59e0b' : '#d1d5db';
-    s.style.transform = i < rating ? 'scale(1.15)' : 'scale(1)';
+    s.style.color     = i < n ? '#f59e0b' : '#d1d5db';
+    s.style.transform = i < n ? 'scale(1.15)' : 'scale(1)';
   });
-  const lbl = document.getElementById('ratingLabel');
-  if (lbl) lbl.textContent = labels[rating] || '';
+  document.getElementById('ratingLabel').textContent = labels[n] || '';
 }
 
 async function submitReview() {
-  if (_selectedRating === 0) { showToast('Please select a star rating', 'error'); return; }
+  if (!_selectedStar) { showToast('Please select a star rating', 'error'); return; }
   const comment = document.getElementById('reviewText').value.trim();
-  const btn = document.getElementById('submitReviewBtn');
+  const btn     = document.getElementById('submitReviewBtn');
   btn.disabled = true; btn.textContent = 'Submitting…';
-
   try {
     const r = await fetch('api/reviews.php?action=submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ listing_id: listing.id, rating: _selectedRating, comment })
+      method:'POST', headers:{ 'Content-Type':'application/json', Authorization:'Bearer '+Auth.getToken() },
+      body: JSON.stringify({ listing_id:listing.id, rating:_selectedStar, comment })
     });
-    const txt = await r.text();
-    let d; try { d = JSON.parse(txt); } catch(e) { throw new Error('Server error'); }
+    const d = await r.json();
     if (!d.success) throw new Error(d.error || 'Failed');
-    showToast('Review submitted! Thank you ', 'success');
+    showToast('Review submitted! Thank you 🌟', 'success');
     closeReviewModal();
     loadReviews();
     checkCanReview();
-  } catch(e) {
-    showToast(e.message, 'error');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Submit Review';
+  } catch(e) { showToast(e.message, 'error'); }
+  finally { btn.disabled = false; btn.textContent = 'Submit Review'; }
+}
+
+// ── Notify dropdown close on outside click ──────
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('notifBellWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    const dd = document.getElementById('notifDropdown');
+    if (dd) dd.style.display = 'none';
   }
+});
+
+// ── Responsive footer grid ──────────────────────
+function adjustFooter() {
+  const fc = document.getElementById('footerCols');
+  if (!fc) return;
+  if (window.innerWidth < 600) fc.style.gridTemplateColumns = '1fr 1fr';
+  else if (window.innerWidth < 900) fc.style.gridTemplateColumns = '1fr 1fr 1fr';
+  else fc.style.gridTemplateColumns = '2fr 1fr 1fr 1fr';
 }
-
-
-// ── Chat ───────────────────────────────────────────────────────
-function startChat() {
-  if (!Auth.isLoggedIn()) { window.location.href='auth.html'; return; }
-  if (!listing) return;
-  window.location.href = `messages.html?with=${listing.userId}&listing=${listing.id}`;
-}
-
-function revealPhone(e, whatsapp = false) {
-  const phone = window._rawPhone;
-  if (!phone) return;
-  const cb = document.getElementById('callBtn');
-  const wb = document.getElementById('waBtn');
-  // Update call button
-  cb.innerHTML = ` ${phone}`;
-  cb.href = `tel:${phone}`;
-  cb.onclick = null;
-  // Update WhatsApp
-  wb.href = `https://wa.me/${phone.replace(/\D/g,'')}?text=Hi! I'm interested in: ${encodeURIComponent(window._listingTitle||'')}`;
-  wb.onclick = null;
-  if (whatsapp) window.open(wb.href, '_blank');
-}
-
-loadListing();
+adjustFooter();
+window.addEventListener('resize', adjustFooter);
 </script>
+
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
-
-// ── City coordinates for Somaliland ──────────────────────────────────────
-const CITY_COORDS = {
-  'hargeisa':    [9.5600, 44.0650],
-  'berbera':     [10.4396, 45.0145],
-  'burco':       [9.5240, 45.5337],
-  'borama':      [9.9360, 43.1826],
-  'gabiley':     [9.9767, 43.4605],
-  'ceerigaavo':  [10.6157, 47.3696],
-  'laascaanood': [8.4682, 47.3551],
-  'sheikh':      [9.9292, 44.9024],
-  'zeila':       [11.3583, 43.4706],
-};
-
-let _leafletMap = null;
-let _leafletMarker = null;
-
-function initListingMap(cityName) {
-  const key = (cityName || 'hargeisa').toLowerCase().trim();
-  const coords = CITY_COORDS[key] || CITY_COORDS['hargeisa'];
-
-  if (!document.getElementById('leafletMap')) return;
-
-  if (_leafletMap) {
-    _leafletMap.setView(coords, 13);
-    if (_leafletMarker) _leafletMarker.setLatLng(coords);
-    return;
-  }
-
-  _leafletMap = L.map('leafletMap', { zoomControl: true, scrollWheelZoom: false }).setView(coords, 13);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-    maxZoom: 19
-  }).addTo(_leafletMap);
-
-  // Custom orange marker
-  const icon = L.divIcon({
-    html: '<div style="width:32px;height:32px;background:#f97316;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',
-    iconSize: [32, 32], iconAnchor: [16, 32], className: ''
-  });
-  _leafletMarker = L.marker(coords, { icon }).addTo(_leafletMap);
-  _leafletMarker.bindPopup(`<b>${cityName || 'Hargeisa'}</b>, Somaliland`).openPopup();
-
-  // Haritaya tıklayınca Google Maps aç
-  _leafletMap.on('click', openInMaps);
-}
-
 </script>
 </body>
 </html>
