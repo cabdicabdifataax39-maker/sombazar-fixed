@@ -397,25 +397,23 @@
   </div>
 </nav>
 
-YPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="csrf-token" content="" id="csrfMeta">
-  <link rel="icon" href="assets/favicon.png" type="image/png">
-    <!-- Apple PWA Meta -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="SomBazar">
-  <link rel="apple-touch-icon" href="assets/icon-192.png">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f97316">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Profile — SomBazar</title>
-  <link rel="stylesheet" href="assets/style.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
-  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
-  <script>
+<div id="deleteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:20px;padding:28px;width:100%;max-width:400px">
+    <div style="font-size:36px;text-align:center;margin-bottom:12px">️</div>
+    <div style="font-size:18px;font-weight:800;color:#ef4444;text-align:center;margin-bottom:8px">Delete Account?</div>
+    <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px;line-height:1.6">This will permanently delete your account, all listings, messages and data. <strong>This cannot be undone.</strong></p>
+    <div class="form-group">
+      <label class="form-label">Enter your password to confirm</label>
+      <input class="form-input" type="password" id="deletePassInput" placeholder="Your password">
+    </div>
+    <div id="deleteError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:#b91c1c"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline" onclick="hideDeleteModal()" style="flex:1">Cancel</button>
+      <button class="btn btn-danger" onclick="deleteAccount()" style="flex:1" id="deleteConfirmBtn">Delete Forever</button>
+    </div>
+  </div>
+</div>
+<script>
     (function(){
       var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
       if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
@@ -435,7 +433,7 @@ YPE html>
       });
     })();
   </script>
-  <script>
+<script>
     // Dark mode FOUC prevention — must run before DOM
     (function(){
       var t=localStorage.getItem('sb_theme')||
@@ -443,9 +441,8 @@ YPE html>
       document.documentElement.setAttribute('data-theme',t);
     })();
   </script>
-  <!-- Google Analytics GA4 -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
-  <script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
+<script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
@@ -454,350 +451,6 @@ YPE html>
       'cookie_flags': 'SameSite=None;Secure'
     });
   </script>
-  <!-- Google Search Console Verification -->
-  <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
-</head>
-<body>
-<a href="#main-content" class="skip-link">Skip to main content</a>
-
-
-<header class="header">
-  <nav class="nav-container">
-    <a href="index.html" class="logo">SomBazar</a>
-    <div class="header-actions">
-      <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
-      <div id="header-user" style="display:none;align-items:center;gap:8px">
-        <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
-        </a>
-        <a href="profile.html?tab=offers" class="icon-btn" aria-label="Offers" style="position:relative" id="offerNavBtn" title="My Offers">
-          
-          <span id="offerNavBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#f97316;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
-        </a>
-        <!-- Notification Bell -->
-        <div style="position:relative" id="notifBellWrap">
-          <button id="notifBell" onclick="toggleNotifDropdown()" class="icon-btn" aria-label="Notifications" style="position:relative;background:none;border:none;cursor:pointer;padding:6px;border-radius:50%;display:flex;align-items:center;justify-content:center">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;min-width:16px;height:16px;line-height:16px;text-align:center;padding:0 3px"></span>
-          </button>
-          <!-- Dropdown -->
-          <div id="notifDropdown" class="notif-dropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:320px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;overflow:hidden;max-height:480px;overflow-y:auto">
-            <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
-              <span style="font-weight:800;font-size:14px;color:#1e293b"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</span>
-              <button onclick="Notif.requestPushPermission()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;font-family:DM Sans" title="Enable push notifications">Enable push</button>
-            </div>
-            <div id="notifDropdown"></div>
-          </div>
-        </div>
-        <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px;color:var(--primary-color)"></a>
-      </div>
-      <a href="admin.html" id="admin-btn" style="display:none;background:#1e293b;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;align-items:center;gap:5px">Admin</a>
-      <button id="langBtn" onclick="toggleLang()" style="background:var(--light-gray);border:1px solid var(--border-color);border-radius:20px;padding:5px 12px;cursor:pointer;font-family:DM Sans;font-size:12px;font-weight:700;color:var(--dark);display:flex;align-items:center;gap:5px;transition:all .2s" title="Switch Language">
-          <span style="font-size:14px">&#x1F1F8;&#x1F1F4;</span> Somali
-        </button>
-      <button class="dark-mode-btn" onclick="toggleDarkMode()" aria-label="Toggle dark mode" title="Toggle dark mode">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-      <a href="post.html" class="btn-post-ad">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        Post Ad
-      </a>
-    </div>
-  </nav>
-</header>
-
-<!-- NOT LOGGED IN -->
-<div id="notLoggedIn" style="display:none;padding:80px 24px;text-align:center">
-  <div style="font-size:52px;margin-bottom:16px"></div>
-  <div style="font-size:18px;font-weight:700;margin-bottom:8px;color:var(--dark)">Sign in to view your profile</div>
-  <a href="auth.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">Sign In / Register</a>
-</div>
-
-<div class="profile-layout" id="profileContent">
-
-  <!-- LEFT COLUMN -->
-  <div>
-    <div class="profile-card">
-      <div class="profile-avatar-wrap">
-        <div class="profile-avatar" id="profileAvatarWrap">
-          <span id="profileAvatarText" style="font-size:36px"></span>
-        </div>
-        <button class="profile-edit-avatar" onclick="document.getElementById('avatarInput').click()" aria-label="Change avatar"></button>
-        <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(event)">
-      </div>
-      <div class="profile-name" id="profileName">Your Name</div>
-      <div class="profile-meta" id="profileMeta"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Hargeisa</div>
-      <div id="verifyBadgeWrap" style="margin-top:8px"></div>
-      <div class="profile-stats-row">
-        <div class="profile-stat-chip"><div class="num" id="statListings">0</div><div class="lbl">Listings</div></div>
-        <div class="profile-stat-chip"><div class="num" id="statReviews">0</div><div class="lbl">Reviews</div></div>
-        <div class="profile-stat-chip"><div class="num" id="statRating">—</div><div class="lbl">Rating</div></div>
-      </div>
-      <button class="btn btn-sm btn-full" onclick="switchTab('settings')"
-        style="background:rgba(255,255,255,.15);color:white;margin-top:16px;border:1px solid rgba(255,255,255,.3)">
-        ️ Edit Profile
-      </button>
-      <a href="verify.html" id="verifyBtn" class="btn btn-sm btn-full"
-        style="background:rgba(255,255,255,.15);color:white;margin-top:8px;border:1px solid rgba(255,255,255,.3);text-decoration:none;display:flex;justify-content:center">
-         Get Verified
-      </a>
-      <!-- Profil tamamlanma -->
-      <div id="profileCompletion" style="display:none;margin-top:12px;background:rgba(0,0,0,.15);border-radius:10px;padding:10px 14px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-size:11px;color:rgba(255,255,255,.8);font-weight:600">Profile Complete</span>
-          <span style="font-size:12px;font-weight:800;color:white" id="completionPct">0%</span>
-        </div>
-        <div style="background:rgba(255,255,255,.2);border-radius:4px;height:6px;overflow:hidden">
-          <div id="completionBar" style="height:6px;border-radius:4px;transition:width .4s ease;width:0%"></div>
-        </div>
-        <div style="font-size:10px;color:rgba(255,255,255,.6);margin-top:5px">
-          <a href="#" onclick="switchTab('settings');return false;" style="color:rgba(255,255,255,.8);text-decoration:underline">Complete your profile →</a>
-        </div>
-      </div>
-      <div id="planBadgeWrap" style="margin-top:10px"></div>
-    </div>
-  </div>
-
-  <!-- RIGHT COLUMN -->
-  <div>
-    <!-- Tabs -->
-    <div class="auth-tabs" style="margin-bottom:20px">
-      <button class="auth-tab active" id="tabListings" onclick="switchTab('listings')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> My Listings</button>
-      <button class="auth-tab" id="tabFavorites" onclick="switchTab('favorites')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg> Favorites</button>
-      <button class="auth-tab" id="tabSettings" onclick="switchTab('settings')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg> Settings</button>
-      <button class="auth-tab" id="tabPayments" onclick="switchTab('payments')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> Payments</button>
-      <button class="auth-tab" id="tabOffers" onclick="switchTab('offers')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> Offers</button>
-      <button class="auth-tab" id="tabReviews" onclick="switchTab('reviews')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Reviews</button>
-      <button class="auth-tab" id="tabNotifications" onclick="switchTab('notifications')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</button>
-    </div>
-
-    <!-- ── My Listings Tab ── -->
-    <div id="tabContentListings">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <span style="font-size:14px;font-weight:700;color:var(--dark)">Your Active Listings</span>
-        <a href="post.html" class="btn btn-primary btn-sm">+ Post New Ad</a>
-      </div>
-      <div id="myListingsGrid" class="listings-grid" style="padding:0"></div>
-      <div id="myListingsEmpty" class="section-block" style="display:none">
-        <div class="empty-state">
-          <div class="empty-state-icon"></div>
-          <div class="empty-state-title">No listings yet</div>
-          <p class="empty-state-desc">Post your first ad and start selling today!</p>
-          <a href="post.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">+ Post Free Ad</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Offers Tab ── -->
-    <!-- Reviews Tab -->
-    <div id="tabContentReviews" style="display:none">
-      <div id="pendingReviewsReminder" style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:14px;padding:14px 16px;margin-bottom:16px">
-        <div style="font-weight:700;font-size:13px;color:#c2410c;margin-bottom:8px"> You have pending reviews!</div>
-        <div id="pendingReviewsList"></div>
-      </div>
-      <div id="myRatingSummary" style="display:none;background:white;border:1px solid #e2e8f0;border-radius:14px;padding:16px;margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:16px">
-          <div style="text-align:center">
-            <div style="font-size:40px;font-weight:900;color:#f59e0b;line-height:1" id="myAvgRating">—</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px" id="myTotalReviews">0 reviews</div>
-          </div>
-          <div id="myStarsDisplay" style="font-size:22px"></div>
-        </div>
-      </div>
-      <div id="myReviewsList">
-        <div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">Loading reviews…</div>
-      </div>
-    </div>
-
-    <!-- Notifications Tab -->
-    <div id="tabContentNotifications" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div style="font-weight:700;font-size:15px;color:#1e293b"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</div>
-        <button onclick="markAllNotifRead()" style="background:none;border:none;color:#f97316;font-size:12px;font-weight:700;cursor:pointer;font-family:DM Sans">Mark all read</button>
-      </div>
-      <div id="notifHistoryList">
-        <div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">Loading…</div>
-      </div>
-    </div>
-
-    <div id="tabContentOffers" style="display:none">
-      <div style="display:flex;gap:8px;margin-bottom:16px">
-        <button id="offersSentBtn"     onclick="switchOffersTab('sent')"     style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #f97316;background:#fff7ed;color:#f97316;font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer"> Sent</button>
-        <button id="offersReceivedBtn" onclick="switchOffersTab('received')" style="flex:1;padding:9px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;color:#64748b;font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer"> Received</button>
-      </div>
-      <div id="offersListWrap"></div>
-    </div>
-
-    <!-- ── Payments Tab ── -->
-    <div id="tabContentPayments" style="display:none">
-      <div style="margin-bottom:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <span style="font-size:14px;font-weight:700;color:var(--dark)">Payment History</span>
-          <a href="packages.html" class="btn btn-primary btn-sm">↑ Upgrade Plan</a>
-        </div>
-        <div id="planStatusCard" style="background:linear-gradient(135deg,#1e293b,#0f172a);color:white;border-radius:14px;padding:20px;margin-bottom:16px">
-          <div style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Current Plan</div>
-          <div id="planStatusText" style="font-size:22px;font-weight:800">Loading…</div>
-        </div>
-        <div id="paymentHistoryList"></div>
-      </div>
-    </div>
-
-    <!-- ── Favorites Tab ── -->
-    <div id="tabContentFavorites" style="display:none">
-      <div id="favoritesGrid" class="listings-grid" style="padding:0"></div>
-      <div id="favoritesEmpty" style="display:none">
-        <div class="empty-state">
-          <div class="empty-state-icon"></div>
-          <div class="empty-state-title">No favorites yet</div>
-          <p class="empty-state-desc">Tap the heart on any listing to save it here.</p>
-          <a href="listings.html" class="btn btn-primary" style="margin-top:16px;display:inline-flex">Browse Listings</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Settings Tab ── -->
-    <div id="tabContentSettings" style="display:none">
-      <div id="settingsSaved" style="display:none;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#065f46"></div>
-      <div id="settingsError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#b91c1c"></div>
-
-      <!-- Personal info -->
-      <div class="profile-section">
-        <div class="profile-section-header"> Personal Information</div>
-        <div class="profile-section-body">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Full Name</label>
-              <input class="form-input" type="text" id="editName" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">City</label>
-              <select class="form-select" id="editCity">
-                <option>Hargeisa</option><option>Berbera</option><option>Burco</option>
-                <option>Borama</option><option>Gabiley</option><option>Ceerigaavo</option><option>Laascaanood</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Phone Number</label>
-            <input class="form-input" type="tel" id="editPhone" placeholder="+252 63 XXXXXXX">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Bio</label>
-            <textarea class="form-textarea" id="editBio" rows="3" placeholder="Tell buyers about yourself…" maxlength="300"></textarea>
-            <div style="font-size:11px;color:var(--gray);margin-top:4px" id="bioCount">0/300</div>
-          </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Email Address</label>
-            <input class="form-input" type="email" id="editEmail" disabled style="opacity:.6">
-            <div style="font-size:11px;color:var(--gray);margin-top:4px">Email cannot be changed here.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Notifications -->
-      <div class="profile-section">
-        <div class="profile-section-header"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg> Notifications</div>
-        <div class="profile-section-body">
-          <div class="setting-row">
-            <div><div class="setting-label">Email Notifications</div><div class="setting-meta">Receive messages via email</div></div>
-            <label class="toggle"><input type="checkbox" id="notifEmail"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="setting-row">
-            <div><div class="setting-label">Push Notifications</div><div class="setting-meta">Browser / app notifications</div></div>
-            <label class="toggle"><input type="checkbox" id="notifPush"><span class="toggle-slider"></span></label>
-          </div>
-          <div class="setting-row">
-            <div><div class="setting-label">SMS Alerts</div><div class="setting-meta">Text message alerts</div></div>
-            <label class="toggle"><input type="checkbox" id="notifSms"><span class="toggle-slider"></span></label>
-          </div>
-        </div>
-      </div>
-
-      <div style="display:flex;justify-content:flex-end;gap:10px;margin-bottom:16px">
-        <button type="button" class="btn btn-ghost" onclick="switchTab('listings')">Cancel</button>
-        <button type="button" class="btn btn-primary" id="saveBtn" onclick="saveProfile()"> Save Changes</button>
-      </div>
-
-      <!-- Change Password -->
-      <div class="profile-section">
-        <div class="profile-section-header"> Change Password</div>
-        <div class="profile-section-body">
-          <div id="passChangeError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:#b91c1c"></div>
-          <div id="passChangeSuccess" style="display:none;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:#065f46"></div>
-          <div class="form-group">
-            <label class="form-label">Current Password</label>
-            <div style="position:relative">
-              <input class="form-input" type="password" id="currentPass" placeholder="Your current password" style="padding-right:44px">
-              <button type="button" onclick="togglePassField('currentPass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray)">️</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">New Password</label>
-            <div style="position:relative">
-              <input class="form-input" type="password" id="newPass" placeholder="Min. 6 characters" style="padding-right:44px">
-              <button type="button" onclick="togglePassField('newPass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray)">️</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Confirm New Password</label>
-            <div style="position:relative">
-              <input class="form-input" type="password" id="confirmNewPass" placeholder="Repeat new password" style="padding-right:44px">
-              <button type="button" onclick="togglePassField('confirmNewPass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:var(--gray)">️</button>
-            </div>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="changePassword()">Update Password</button>
-        </div>
-      </div>
-
-      <!-- Danger zone -->
-      <div class="profile-section">
-        <div class="profile-section-header" style="color:#ef4444">️ Account</div>
-        <div class="profile-section-body">
-          <div class="setting-row">
-            <div><div class="setting-label">Sign Out</div><div class="setting-meta">Log out of your SomBazar account</div></div>
-            <button type="button" class="btn btn-ghost btn-sm" onclick="Auth.logout()">Sign Out</button>
-          </div>
-          <div class="setting-row">
-            <div><div class="setting-label" style="color:#ef4444">Delete Account</div><div class="setting-meta">Permanently delete your account and all data</div></div>
-            <button type="button" class="btn btn-danger btn-sm" onclick="showDeleteModal()">Delete</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<nav class="mobile-bottom-nav">
-  <ul>
-    <li><a href="index.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a></li>
-    <li><a href="listings.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Listings</span></a></li>
-    <li><a href="post.html" class="mob-nav-btn"><span class="mob-icon">+</span><span>Post</span></a></li>
-    <li><a href="messages.html" class="mob-nav-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></a></li>
-    <li><a href="profile.html" class="mob-nav-btn active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></a></li>
-  </ul>
-</nav>
-
-<!-- Delete Account Modal -->
-<div id="deleteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:white;border-radius:20px;padding:28px;width:100%;max-width:400px">
-    <div style="font-size:36px;text-align:center;margin-bottom:12px">️</div>
-    <div style="font-size:18px;font-weight:800;color:#ef4444;text-align:center;margin-bottom:8px">Delete Account?</div>
-    <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px;line-height:1.6">This will permanently delete your account, all listings, messages and data. <strong>This cannot be undone.</strong></p>
-    <div class="form-group">
-      <label class="form-label">Enter your password to confirm</label>
-      <input class="form-input" type="password" id="deletePassInput" placeholder="Your password">
-    </div>
-    <div id="deleteError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:#b91c1c"></div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-outline" onclick="hideDeleteModal()" style="flex:1">Cancel</button>
-      <button class="btn btn-danger" onclick="deleteAccount()" style="flex:1" id="deleteConfirmBtn">Delete Forever</button>
-    </div>
-  </div>
-</div>
-
 <script>
 // Fallback: app.js yüklenemezse Auth crash'i önle
 window.Auth = window.Auth || {
@@ -809,7 +462,7 @@ window.Auth = window.Auth || {
 };
 window.API = window.API || {};
 </script>
-  <script src="assets/app.min.js"></script>
+<script src="assets/app.min.js"></script>
 <script>
 var profileData = null;
 function escHTML(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
@@ -1668,6 +1321,5 @@ async function loadVerifyStatus() {
   }
 }
 </script>
-
 </body>
 </html>
