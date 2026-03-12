@@ -238,6 +238,7 @@
         </button>
         <a href="auth.html" id="header-signin" class="text-sm font-bold text-slate-700 hover:text-primary transition-colors px-2 py-1.5">Sign In</a>
         <div id="header-user" style="display:none" class="flex items-center gap-1.5">
+          <a href="profile.html" class="header-avatar w-8 h-8 rounded-full bg-primary/90 text-white flex items-center justify-center font-black text-xs overflow-hidden flex-shrink-0" id="headerAvatarLink"></a>
           <a href="messages.html" class="relative p-2 rounded-full hover:bg-slate-100 text-slate-600">
             <span class="material-symbols-outlined text-xl">chat_bubble</span>
             <span id="msgBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
@@ -252,7 +253,7 @@
               <div id="notifList"></div>
             </div>
           </div>
-          <a href="profile.html" id="headerAvatarLink" class="header-avatar w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-xs"></a>
+          <a href="profile.html" data-visual-avatar="1" class="header-avatar w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-xs"></a>
         </div>
         <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
         <a href="post.html" class="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg shadow-primary/20">
@@ -291,8 +292,9 @@
         <span class="material-symbols-outlined text-base">search</span> Search
       </h3>
       <div class="search-wrap">
-        <input id="searchInput" type="text" placeholder="Keywords..."
+        <input id="searchInput" type="text" placeholder="Keywords..." autocomplete="off"
           class="w-full text-sm rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+        <div id="sidebarAcDrop" class="autocomplete-dropdown" style="display:none"></div>
       </div>
     </div>
 
@@ -342,11 +344,11 @@
         <input id="priceMax" type="number" placeholder="Max" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
       </div>
       <div class="flex flex-wrap gap-1.5">
-        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="0" data-max="100">Under $100</button>
-        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="100" data-max="500">$100–$500</button>
-        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="500" data-max="2000">$500–$2K</button>
-        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="2000" data-max="10000">$2K–$10K</button>
-        <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="10000" data-max="">$10K+</button>
+        <button class="price-chip sb-price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="0" data-max="100" onclick="setPrice(0,100)">Under $100</button>
+        <button class="price-chip sb-price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="100" data-max="500" onclick="setPrice(100,500)">$100–$500</button>
+        <button class="price-chip sb-price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="500" data-max="2000" onclick="setPrice(500,2000)">$500–$2K</button>
+        <button class="price-chip sb-price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="2000" data-max="10000" onclick="setPrice(2000,10000)">$2K–$10K</button>
+        <button class="price-chip sb-price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="10000" data-max="" onclick="setPrice(10000,'')">$10K+</button>
       </div>
     </div>
 
@@ -828,7 +830,30 @@ function selectSuggestion(val, el) {
   }
 }
 
-document.addEventListener("DOMContentLoaded",()=>{ initAutocomplete("searchInput","sidebarAcDrop"); initAutocomplete("headerSearchInput","headerAcDrop"); });
+document.addEventListener("DOMContentLoaded",()=>{ 
+  initAutocomplete("searchInput","sidebarAcDrop"); 
+  initAutocomplete("headerSearchInput","headerAcDrop");
+  // catFilter and cityFilter select listeners
+  const catSel = document.getElementById("catFilter");
+  if (catSel) catSel.addEventListener("change", () => { activeCat = catSel.value || "all"; loadListings(true); });
+  const citySel = document.getElementById("cityFilter");
+  if (citySel) citySel.addEventListener("change", () => { activeCity = citySel.value || "All"; loadListings(true); });
+  // emptyReset btn
+  const er = document.getElementById("emptyReset");
+  if (er) er.addEventListener("click", () => document.getElementById("resetFilters")?.click());
+  // price chips active style
+  document.querySelectorAll(".sb-price-chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".sb-price-chip").forEach(b => b.classList.remove("active","bg-primary","text-white","border-primary"));
+      btn.classList.add("active","bg-primary","text-white","border-primary");
+    });
+  });
+  // Set initial catFilter from URL
+  if (activeCat !== "all") { const cs = document.getElementById("catFilter"); if (cs) cs.value = activeCat; }
+  if (activeCity !== "All") { const ci = document.getElementById("cityFilter"); if (ci) ci.value = activeCity; }
+  // listingCount update
+  const origLoad = loadListings;
+});
 </script>
 </body>
 </html>

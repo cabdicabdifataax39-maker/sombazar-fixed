@@ -115,19 +115,21 @@
             <span class="material-symbols-outlined">chat_bubble</span>
           </a>
           <div class="ml-1 w-9 h-9 rounded-full bg-primary/10 border-2 border-slate-100 overflow-hidden cursor-pointer" id="headerAvatarWrap">
-            <div id="headerAvatarLink" class="w-full h-full flex items-center justify-center font-black text-primary text-sm"></div>
+            <div id="headerAvatarLink" class="header-avatar w-full h-full flex items-center justify-center font-black text-primary text-sm"></div>
           </div>
         </div>
         <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
         <a href="auth.html" id="header-signin" class="text-sm font-bold text-slate-700 hover:text-primary px-2">Sign In</a>
-        <div id="header-user" style="display:none"></div>
+        <div id="header-user" style="display:none">
+          <a href="profile.html" class="header-avatar w-8 h-8 rounded-full bg-primary/90 text-white flex items-center justify-center font-black text-xs overflow-hidden flex-shrink-0" data-visual-avatar="1"></a></div>
       </div>
     </div>
   </div>
 </header>
 
 <main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <div id="notLoggedIn" style="display:none" class="text-center py-20"><span class="material-symbols-outlined text-6xl text-slate-300">lock</span><p class="text-lg font-bold text-slate-700 mt-4">Sign in to view your profile</p><a href="auth.html" class="mt-4 inline-block bg-primary text-white px-6 py-3 rounded-xl font-bold">Sign In</a></div>
+  <div id="profileContent" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
     <!-- LEFT: Profile + Navigation -->
     <aside class="lg:col-span-4 space-y-5">
@@ -147,8 +149,10 @@
           <h2 class="text-xl font-bold text-slate-900 mb-1" id="profileName">Loading...</h2>
           <div class="flex items-center gap-1 text-slate-500 text-sm mb-4">
             <span class="material-symbols-outlined text-base">location_on</span>
-            <span id="profileLocation">Hargeisa, Somaliland</span>
+            <span id="profileLocation" class="flex items-center gap-1"><span class="material-symbols-outlined text-base">location_on</span><span id="profileMeta">Hargeisa, Somaliland</span></span>
           </div>
+          <div id="verifyBadgeWrap" class="mb-3"></div>
+          <button id="verifyBtn" style="display:none" class="mb-3 text-xs bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-full border border-blue-200 hover:bg-blue-100">Get Verified</button>
           <div class="grid grid-cols-3 w-full gap-2 pt-4 border-t border-slate-100">
             <div class="flex flex-col items-center">
               <span class="text-xl font-bold text-slate-900" id="statListings">0</span>
@@ -162,6 +166,10 @@
               <span class="text-xl font-bold text-slate-900" id="statRating">4.9</span>
               <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Rating</span>
             </div>
+          </div>
+          <div id="profileCompletion" style="display:none" class="mt-4 pt-3 border-t border-slate-100">
+            <div class="flex items-center justify-between text-xs mb-1"><span class="font-semibold text-slate-600">Profile Completion</span><span id="completionPct" class="font-bold text-primary">0%</span></div>
+            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div id="completionBar" class="h-full bg-primary rounded-full transition-all" style="width:0%"></div></div>
           </div>
         </div>
       </div>
@@ -180,6 +188,7 @@
             <span id="planBtnText">Upgrade Plan</span>
             <span class="material-symbols-outlined text-lg">arrow_forward</span>
           </a>
+          <div id="cancelPlanWrap" style="display:none" class="mt-2"><button class="w-full text-xs text-slate-400 hover:text-red-400 py-1">Cancel subscription</button></div>
         </div>
       </div>
 
@@ -239,6 +248,7 @@
           <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
           <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
         </div>
+        <div id="myListingsEmpty" style="display:none" class="text-center py-12 text-slate-400 col-span-2"><span class="material-symbols-outlined text-5xl">inventory_2</span><p class="mt-3 font-semibold">No listings yet</p></div>
 
         <!-- Post new placeholder -->
         <a href="post.html" class="mt-4 flex flex-col items-center justify-center p-8 bg-slate-100/50 rounded-3xl border-2 border-dashed border-slate-300 hover:border-primary transition-colors cursor-pointer group min-h-[160px]">
@@ -260,10 +270,15 @@
             <a href="listings.html" class="mt-3 inline-block text-primary font-bold text-sm hover:underline">Browse listings</a>
           </div>
         </div>
+        <div id="favoritesEmpty" style="display:none" class="text-center py-12 text-slate-400 col-span-2"><span class="material-symbols-outlined text-5xl">favorite_border</span><p class="mt-3 font-semibold">No favorites yet</p></div>
       </div>
 
       <!-- OFFERS TAB -->
       <div id="tabContentOffers" data-tabcontent="offers" style="display:none">
+        <div class="flex gap-2 mb-4">
+          <button id="offersReceivedBtn" onclick="switchOffersTab('received')" class="flex-1 py-2 rounded-xl bg-primary text-white text-sm font-bold">Received</button>
+          <button id="offersSentBtn" onclick="switchOffersTab('sent')" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200">Sent</button>
+        </div>
         <h2 class="text-2xl font-bold text-slate-900 mb-4">Offers Received</h2>
         <div id="offersListWrap" class="space-y-3">
           <div class="text-center py-12 text-slate-400">
@@ -276,6 +291,19 @@
       <!-- REVIEWS TAB -->
       <div id="tabContentReviews" data-tabcontent="reviews" style="display:none">
         <h2 class="text-2xl font-bold text-slate-900 mb-4">My Reviews</h2>
+        <div id="myRatingSummary" style="display:none" class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm mb-4">
+          <div class="flex items-center gap-4">
+            <div class="text-4xl font-black text-slate-900" id="myAvgRating">—</div>
+            <div>
+              <div id="myStarsDisplay" class="text-2xl"></div>
+              <div id="myTotalReviews" class="text-xs text-slate-500">0 reviews</div>
+            </div>
+          </div>
+        </div>
+        <div id="pendingReviewsReminder" style="display:none" class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+          <p class="text-amber-800 font-bold text-sm">You have pending reviews to submit</p>
+          <div id="pendingReviewsList" class="mt-2 space-y-2"></div>
+        </div>
         <div id="myReviewsList" class="space-y-3">
           <div class="text-center py-12 text-slate-400">
             <span class="material-symbols-outlined text-5xl">reviews</span>
@@ -320,12 +348,55 @@
           <div>
             <label class="block text-sm font-bold text-slate-700 mb-1.5">Bio</label>
             <textarea id="editBio" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none resize-none"></textarea>
+            <div class="text-right text-xs text-slate-400 mt-1"><span id="bioCount">0</span>/300</div>
           </div>
+          <div id="settingsError" style="display:none" class="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm mb-3"></div>
+          <div id="settingsSaved" style="display:none" class="p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm mb-3">✓ Saved!</div>
           <div class="flex gap-3">
-            <button onclick="saveProfile()" class="flex-1 bg-primary text-white py-2.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">Save Changes</button>
+            <button id="saveBtn" onclick="saveProfile()" class="flex-1 bg-primary text-white py-2.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">Save Changes</button>
             <button onclick="Auth.clearSession();location.href='index.html'" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-sm hover:bg-red-50 hover:text-red-600 transition-colors">Sign Out</button>
           </div>
         </div>
+        
+        <!-- Change Password -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4 mt-5">
+          <h3 class="text-lg font-bold text-slate-900">Change Password</h3>
+          <div id="passChangeError" style="display:none" class="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"></div>
+          <div id="passChangeSuccess" style="display:none" class="p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">✓ Password updated!</div>
+          <input id="currentPass" type="password" placeholder="Current password" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 outline-none">
+          <input id="newPass" type="password" placeholder="New password (min 6 chars)" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 outline-none">
+          <input id="confirmNewPass" type="password" placeholder="Confirm new password" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 outline-none">
+          <button onclick="changePassword()" class="bg-slate-800 text-white py-2.5 px-6 rounded-xl font-bold text-sm hover:bg-slate-900 transition-colors">Update Password</button>
+        </div>
+        
+        <!-- Notification Settings -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm mt-5">
+          <h3 class="text-lg font-bold text-slate-900 mb-4">Notification Preferences</h3>
+          <div class="space-y-4">
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-sm text-slate-700 font-medium">Email notifications</span>
+              <input type="checkbox" id="notifEmail" class="w-4 h-4 accent-primary">
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-sm text-slate-700 font-medium">Push notifications</span>
+              <input type="checkbox" id="notifPush" class="w-4 h-4 accent-primary">
+            </label>
+            <label class="flex items-center justify-between cursor-pointer">
+              <span class="text-sm text-slate-700 font-medium">SMS notifications</span>
+              <input type="checkbox" id="notifSms" class="w-4 h-4 accent-primary">
+            </label>
+          </div>
+          <div class="mt-4 border-t border-slate-100 pt-4">
+            <h4 class="text-sm font-bold text-slate-700 mb-2">Recent Notifications</h4>
+            <div id="notifHistoryList" class="space-y-2 text-sm text-slate-500">No notifications yet.</div>
+          </div>
+        </div>
+        
+        <!-- Danger Zone -->
+        <div id="pendingDeletionBanner" style="display:none" class="bg-red-50 border border-red-200 rounded-2xl p-5 mt-5">
+          <p class="text-red-700 font-bold">Your account is scheduled for deletion.</p>
+        </div>
+        <div id="deletionCountdown" style="display:none" class="text-sm text-red-500 font-bold mt-3 text-center"></div>
       </div>
 
       <!-- PERFORMANCE STATS -->

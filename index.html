@@ -185,6 +185,7 @@
         </button>
         <a href="auth.html" id="header-signin" class="hidden sm:block text-sm font-bold text-slate-700 hover:text-primary transition-colors px-3 py-1.5">Sign In</a>
         <div id="header-user" style="display:none" class="flex items-center gap-2">
+          <a href="profile.html" class="header-avatar w-8 h-8 rounded-full bg-primary/90 text-white flex items-center justify-center font-black text-xs overflow-hidden flex-shrink-0" id="headerAvatarLink"></a>
           <a href="messages.html" class="relative p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
             <span class="material-symbols-outlined text-xl">chat_bubble</span>
             <span id="msgBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
@@ -206,7 +207,7 @@
               <div id="notifList"></div>
             </div>
           </div>
-          <a href="profile.html" class="header-avatar w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm" id="headerAvatarLink"></a>
+          <a href="profile.html" class="header-avatar w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm" data-visual-avatar="1"></a>
         </div>
         <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
         <button class="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors" onclick="toggleDarkMode()" title="Dark mode">
@@ -271,9 +272,11 @@
         <div class="hidden sm:block w-px bg-slate-200 self-stretch my-2"></div>
         <div class="flex items-center px-4 gap-2 min-w-[150px]">
           <span class="material-symbols-outlined text-slate-400 text-lg">location_on</span>
-          <select class="w-full border-none bg-transparent py-3.5 text-slate-700 focus:ring-0 outline-none text-sm cursor-pointer">
-            <option>Hargeisa</option><option>Berbera</option><option>Burco</option>
-            <option>Borama</option><option>Gabiley</option>
+          <select id="cityFilter" class="w-full border-none bg-transparent py-3.5 text-slate-700 focus:ring-0 outline-none text-sm cursor-pointer">
+            <option value="">All Cities</option>
+            <option value="Hargeisa">Hargeisa</option><option value="Berbera">Berbera</option>
+            <option value="Burco">Burco</option><option value="Borama">Borama</option>
+            <option value="Gabiley">Gabiley</option>
           </select>
         </div>
         <button type="submit" class="bg-primary text-white font-bold py-3.5 px-8 hover:bg-primary/90 transition-colors text-sm">Search</button>
