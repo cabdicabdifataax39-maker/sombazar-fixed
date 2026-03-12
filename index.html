@@ -546,8 +546,12 @@ document.getElementById('categoryPills').addEventListener('click', e => {
 // Search
 document.getElementById('heroSearchForm').addEventListener('submit', e => {
   e.preventDefault();
-  const q = document.getElementById('heroSearchInput').value.trim();
-  if (q) window.location.href = `listings.html?q=${encodeURIComponent(q)}`;
+  const q    = document.getElementById('heroSearchInput').value.trim();
+  const city = document.getElementById('cityFilter')?.value || '';
+  const params = new URLSearchParams();
+  if (q)    params.set('q', q);
+  if (city && city !== 'all') params.set('city', city);
+  window.location.href = 'listings.html?' + params.toString();
 });
 document.getElementById('headerSearchForm').addEventListener('submit', e => {
   e.preventDefault();
@@ -627,6 +631,50 @@ if (_sentinel) _scrollObserver.observe(_sentinel);
 
 loadFeatured();
 loadListings();
+
+// Autocomplete init
+if (typeof initSearchAutocomplete === 'function') {
+  initSearchAutocomplete('heroSearchInput', 'heroAcDrop');
+  initSearchAutocomplete('headerSearchInput', 'headerAcDrop');
+} else {
+  // fallback: basit autocomplete
+  ['heroSearchInput','headerSearchInput'].forEach((inputId, i) => {
+    const dropId = i === 0 ? 'heroAcDrop' : 'headerAcDrop';
+    const inp = document.getElementById(inputId);
+    const drop = document.getElementById(dropId);
+    if (!inp || !drop) return;
+    let _t;
+    inp.addEventListener('input', () => {
+      clearTimeout(_t);
+      const q = inp.value.trim();
+      if (q.length < 2) { drop.style.display='none'; return; }
+      _t = setTimeout(async () => {
+        try {
+          const res = await fetch('api/listings.php?action=suggest&q='+encodeURIComponent(q));
+          const data = await res.json();
+          const items = data.suggestions || [];
+          if (!items.length) { drop.style.display='none'; return; }
+          drop.innerHTML = items.map(s => {
+            const txt = typeof s === 'string' ? s : s.text;
+            return `<div class="autocomplete-item" onclick="document.getElementById('${inputId}').value='${txt.replace(/'/g,"\'")}';document.getElementById('${dropId}').style.display='none';document.getElementById('${i===0?'heroSearchForm':'headerSearchForm'}').dispatchEvent(new Event('submit'))">${txt}</div>`;
+          }).join('');
+          drop.style.display='block';
+        } catch(e) {}
+      }, 250);
+    });
+    document.addEventListener('click', e => { if(e.target!==inp) drop.style.display='none'; });
+  });
+}
+
+// statCities - API'den şehir sayısını çek
+(async () => {
+  try {
+    const r = await API.getListings({ pageSize: 1 });
+    // Gerçek şehir sayısı için ayrı endpoint yok - sabit değer kullan
+  } catch(e) {}
+  const el = document.getElementById('statCities');
+  if (el && el.textContent === '0') el.textContent = '7';
+})();
 </script>
 </body>
 </html>

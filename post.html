@@ -62,7 +62,12 @@
     .image-slot.filled { border-style:solid; border-color:#ec5b13; }
     .image-slot.filled img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
     [data-theme="dark"] body { background:#1e293b;color:#f1f5f9; }
-  </style>
+  
+    .autocomplete-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:9999;max-height:320px;overflow-y:auto;}
+    .autocomplete-item{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;cursor:pointer;transition:background .15s;}
+    .autocomplete-item:hover,.autocomplete-item.ac-active{background:#f8f9fa;}
+    .search-wrap{position:relative;}
+</style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
 
@@ -174,7 +179,7 @@
       </div><!-- /stepper -->
 
       <!-- STEP 1: Category -->
-      <section id="step1" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <section id="step0" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100">
           <h3 class="text-xl font-bold text-slate-900">Step 1: Choose a Category</h3>
           <p class="text-sm text-slate-500 mt-1">Select the type of item you are listing to help buyers find it easier.</p>
@@ -240,7 +245,7 @@
       </section>
 
       <!-- STEP 2: Details -->
-      <section id="step2" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <section id="step0" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100">
           <h3 class="text-xl font-bold text-slate-900">Step 2: Listing Details</h3>
           <p class="text-sm text-slate-500 mt-1">Tell buyers what you're selling.</p>
@@ -308,7 +313,7 @@
       </section>
 
       <!-- STEP 3: Photos -->
-      <section id="step3" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <section id="step0" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100">
           <h3 class="text-xl font-bold text-slate-900">Step 3: Add Photos</h3>
           <p class="text-sm text-slate-500 mt-1">Add up to 10 photos. First photo will be the main image.</p>
@@ -330,7 +335,7 @@
       </section>
 
       <!-- STEP 4: Location -->
-      <section id="step4" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <section id="step0" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100">
           <h3 class="text-xl font-bold text-slate-900">Step 4: Location</h3>
           <p class="text-sm text-slate-500 mt-1">Help buyers find your listing.</p>
@@ -366,7 +371,7 @@
       </section>
 
       <!-- STEP 5: Review -->
-      <section id="step5" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <section id="step0" style="display:none" class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-100">
           <h3 class="text-xl font-bold text-slate-900">Step 5: Review &amp; Submit</h3>
           <p class="text-sm text-slate-500 mt-1">Check your listing before publishing.</p>

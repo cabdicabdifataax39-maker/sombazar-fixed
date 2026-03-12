@@ -78,7 +78,12 @@
     .toast.success{background:#10b981;} .toast.error{background:#ef4444;}
     .tab-btn.active{ background:#ec5b13 !important; color:white !important; }
     [data-theme="dark"] body { background:#1e293b;color:#f1f5f9; }
-  </style>
+  
+    .autocomplete-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:9999;max-height:320px;overflow-y:auto;}
+    .autocomplete-item{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;cursor:pointer;transition:background .15s;}
+    .autocomplete-item:hover,.autocomplete-item.ac-active{background:#f8f9fa;}
+    .search-wrap{position:relative;}
+</style>
 </head>
 <body class="bg-slate-100 text-slate-900 min-h-screen">
 
@@ -206,6 +211,9 @@
         <button id="tabReviews" onclick="switchTab('reviews')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="reviews">
           <span class="material-symbols-outlined">reviews</span> My Reviews
         </button>
+        <button id="tabNotifications" onclick="switchTab('notifications')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="notifications">
+          <span class="material-symbols-outlined">notifications</span> Notifications
+        </button>
         <button id="tabPayments" onclick="switchTab('billing')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="billing">
           <span class="material-symbols-outlined">payments</span> Payments &amp; Billing
         </button>
@@ -308,6 +316,22 @@
           <div class="text-center py-12 text-slate-400">
             <span class="material-symbols-outlined text-5xl">reviews</span>
             <p class="mt-3 font-semibold">No reviews yet</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS TAB -->
+      <div id="tabContentNotifications" style="display:none">
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-bold text-slate-900 flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">notifications</span>
+              Notifications
+            </h3>
+            <button onclick="markAllNotifRead()" class="text-xs font-bold text-primary hover:underline">Mark all read</button>
+          </div>
+          <div id="notifHistoryList" class="divide-y divide-slate-100">
+            <div class="py-12 text-center text-slate-400 text-sm">Loading…</div>
           </div>
         </div>
       </div>
@@ -1330,7 +1354,109 @@ async function deleteAccount() {
     if (errEl) { errEl.textContent = e.message; errEl.style.display = ''; }
   }
 }
-</script>
+
+
+async async function loadVerifyStatus() {
+  const wrap = document.getElementById('verifyBadgeWrap');
+  if (!wrap) return;
+  try {
+    const d = await apiFetch('api/verify.php?action=status');
+    const status = d.status || 'none';
+    const badge  = d.badge  || 'basic';
+
+    const map = {
+      none:     { bg:'#f1f5f9', color:'#64748b', icon:'', label:'Not Verified' },
+      pending:  { bg:'#fef9c3', color:'#854d0e', icon:'⏳', label:'Verification Pending' },
+      approved: { bg:'#dcfce7', color:'#166534', icon:'✓', label:'Verified' },
+      rejected: { bg:'#fee2e2', color:'#991b1b', icon:'✕', label:'Verification Rejected' },
+    };
+    const cfg = map[status] || map.none;
+
+    wrap.innerHTML = `
+      <span style="display:inline-flex;align-items:center;gap:5px;background:${cfg.bg};color:${cfg.color};
+        border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;cursor:${status !== 'approved' ? 'pointer' : 'default'}"
+        onclick="${status !== 'approved' ? "window.location.href='verify.html'" : ''}">
+        ${cfg.icon} ${cfg.label}
+      </span>`;
+
+    // Profil başlığındaki rozet
+    const nameEl = document.getElementById('profileName');
+    if (nameEl && status === 'approved') {
+      if (!nameEl.querySelector('.verified-tick')) {
+        nameEl.insertAdjacentHTML('beforeend', '<span class="verified-tick" style="color:#16a34a;font-size:18px;margin-left:6px" title="Verified">✓</span>');
+      }
+    }
+
+    // Get Verified butonunu gizle/güncelle
+    const btn = document.getElementById('verifyBtn');
+    if (btn) {
+      btn.style.display = 'flex'; // önce göster
+      if (status === 'approved') {
+        btn.style.display = 'none';
+      } else if (status === 'pending') {
+        btn.textContent = '⏳ Verification Pending';
+        btn.style.background = '#fef9c3';
+        btn.style.color = '#854d0e';
+        btn.style.border = '1px solid #fde68a';
+        btn.removeAttribute('href');
+        btn.style.cursor = 'default';
+      } else if (status === 'rejected') {
+        btn.textContent = '✕ Rejected — Resubmit';
+        btn.style.background = '#fee2e2';
+        btn.style.color = '#991b1b';
+      }
+    }
+  } catch(e) {
+    // Giriş yapılmamışsa badge gösterme
+  }
+}
+
+async async function loadPendingReviews() {
+  if (!Auth.isLoggedIn()) return;
+  try {
+    const r = await fetch('api/reviews.php?action=pending', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success || !d.data.pending?.length) return;
+    const pending = d.data.pending;
+    const reminder = document.getElementById('pendingReviewsReminder');
+    const list     = document.getElementById('pendingReviewsList');
+    if (!reminder || !list) return;
+    reminder.style.display = '';
+    list.innerHTML = pending.map(p => {
+      const img = p.listingImage
+        ? `<img loading="lazy" src="${p.listingImage}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;flex-shrink:0">`
+        : `<div style="width:40px;height:40px;background:#fed7aa;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"></div>`;
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        ${img}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.listingTitle}</div>
+          <div style="font-size:11px;color:#64748b">${p.sellerName} · ${p.daysSince}d ago</div>
+        </div>
+        <a href="listing.html?id=${p.listingId}#reviews" style="background:#f97316;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">Rate</a>
+      </div>`;
+    }).join('');
+    // Reviews tab'ında da göster
+    const tabReminder = document.getElementById('pendingReviewsReminder');
+    if (tabReminder) tabReminder.style.display = '';
+  } catch(e) {}
+}
+
+async async function loadDeletionStatus() {
+  if (!Auth.isLoggedIn()) return;
+  try {
+    const r = await fetch('api/auth.php?action=check_deletion', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+    if (!d.success || !d.data.scheduled) return;
+    const banner = document.getElementById('pendingDeletionBanner');
+    const countdown = document.getElementById('deletionCountdown');
+    if (banner) banner.style.display = '';
+    if (countdown) countdown.textContent = `Your account will be permanently deleted in ${d.data.days_left} days. Tap below to recover it.`;
+  } catch(e) {}
+}</script>
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
