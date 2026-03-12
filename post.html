@@ -124,18 +124,18 @@
       </div>
     </div>
     <div class="flex gap-2">
-      <button id="restoreDraft" class="text-xs font-bold bg-amber-500 text-white px-4 py-2 rounded-xl hover:bg-amber-600 transition-colors">Restore</button>
-      <button id="clearDraft" class="text-xs font-bold text-slate-500 hover:text-red-500 px-3 py-2">Clear</button>
+      <button id="restoreDraft" onclick="restoreDraft()" class="text-xs font-bold bg-amber-500 text-white px-4 py-2 rounded-xl hover:bg-amber-600 transition-colors">Restore</button>
+      <button id="clearDraft" onclick="discardDraft()" class="text-xs font-bold text-slate-500 hover:text-red-500 px-3 py-2">Clear</button>
     </div>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
     <!-- LEFT: Form -->
-    <div class="lg:col-span-8 space-y-6">
+    <div class="lg:col-span-8 space-y-6" id="formContent">
 
       <!-- STEP PROGRESS BAR -->
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm" id="stepper">
         <div class="relative">
           <div class="absolute top-5 left-0 w-full h-0.5 bg-slate-100 -z-0"></div>
           <div class="absolute top-5 left-0 h-0.5 bg-primary -z-0 transition-all" id="progressBar" style="width:20%"></div>
@@ -170,57 +170,57 @@
           <h3 class="text-xl font-bold text-slate-900">Step 1: Choose a Category</h3>
           <p class="text-sm text-slate-500 mt-1">Select the type of item you are listing to help buyers find it easier.</p>
         </div>
-        <div class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-4" id="categoryGrid">
-          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="car">
+        <div class="p-6 grid grid-cols-2 sm:grid-cols-4 gap-4" id="catGrid">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" onclick="selectCat(this.dataset.cat)" data-cat="car">
             <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
               <span class="material-symbols-outlined text-2xl">directions_car</span>
             </div>
             <span class="font-bold text-slate-900 text-sm block mb-0.5">Cars</span>
             <span class="text-[11px] text-slate-400">Vehicles &amp; Parts</span>
           </button>
-          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="house">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" onclick="selectCat(this.dataset.cat)" data-cat="house">
             <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
               <span class="material-symbols-outlined text-2xl">home</span>
             </div>
             <span class="font-bold text-slate-900 text-sm block mb-0.5">Houses</span>
             <span class="text-[11px] text-slate-400">Rent or Buy</span>
           </button>
-          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="land">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" onclick="selectCat(this.dataset.cat)" data-cat="land">
             <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
               <span class="material-symbols-outlined text-2xl">landscape</span>
             </div>
             <span class="font-bold text-slate-900 text-sm block mb-0.5">Land</span>
             <span class="text-[11px] text-slate-400">Plots &amp; Farms</span>
           </button>
-          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="electronics">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" onclick="selectCat(this.dataset.cat)" data-cat="electronics">
             <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
               <span class="material-symbols-outlined text-2xl">devices</span>
             </div>
             <span class="font-bold text-slate-900 text-sm block mb-0.5">Electronics</span>
             <span class="text-[11px] text-slate-400">Gadgets &amp; Phones</span>
           </button>
-          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="furniture">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" onclick="selectCat(this.dataset.cat)" data-cat="furniture">
             <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
               <span class="material-symbols-outlined text-2xl">chair</span>
             </div>
             <span class="font-bold text-slate-900 text-sm block mb-0.5">Furniture</span>
             <span class="text-[11px] text-slate-400">Home Decor</span>
           </button>
-          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="jobs">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" onclick="selectCat(this.dataset.cat)" data-cat="jobs">
             <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
               <span class="material-symbols-outlined text-2xl">work</span>
             </div>
             <span class="font-bold text-slate-900 text-sm block mb-0.5">Jobs</span>
             <span class="text-[11px] text-slate-400">Hiring &amp; CVs</span>
           </button>
-          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="services">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" onclick="selectCat(this.dataset.cat)" data-cat="services">
             <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
               <span class="material-symbols-outlined text-2xl">construction</span>
             </div>
             <span class="font-bold text-slate-900 text-sm block mb-0.5">Services</span>
             <span class="text-[11px] text-slate-400">Professional Help</span>
           </button>
-          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" data-cat="hotel">
+          <button class="cat-card group flex flex-col items-center p-5 rounded-xl border border-slate-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-center" onclick="selectCat(this.dataset.cat)" data-cat="hotel">
             <div class="cat-icon w-12 h-12 mb-3 rounded-full bg-slate-50 text-slate-600 group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-colors">
               <span class="material-symbols-outlined text-2xl">apartment</span>
             </div>
@@ -239,14 +239,14 @@
         <div class="p-6 space-y-5">
           <div>
             <label class="block text-sm font-bold text-slate-700 mb-1.5">Ad Title *</label>
-            <input id="adTitle" type="text" placeholder="e.g. Toyota Vitz 2018 - Clean Condition" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+            <input id="titleInput" type="text" placeholder="e.g. Toyota Vitz 2018 - Clean Condition" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-bold text-slate-700 mb-1.5">Price (USD) *</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-sm">$</span>
-                <input id="adPrice" type="number" placeholder="0" class="w-full pl-8 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+                <input id="priceInput" type="number" placeholder="0" class="w-full pl-8 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
               </div>
             </div>
             <div>
@@ -270,7 +270,7 @@
           </div>
           <div>
             <label class="block text-sm font-bold text-slate-700 mb-1.5">Description *</label>
-            <textarea id="adDesc" rows="5" placeholder="Describe your item in detail — condition, features, reason for selling..." class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none resize-none"></textarea>
+            <textarea id="descInput" rows="5" placeholder="Describe your item in detail — condition, features, reason for selling..." class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none resize-none"></textarea>
           </div>
           <div id="specFields" class="space-y-4"></div>
         </div>
@@ -288,9 +288,9 @@
             <p class="font-bold text-slate-700 mb-1">Drag &amp; drop photos here</p>
             <p class="text-sm text-slate-400 mb-4">or click to browse — JPG, PNG up to 8MB each</p>
             <button type="button" class="bg-primary text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">Select Photos</button>
-            <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
+            <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
           </div>
-          <div class="grid grid-cols-3 sm:grid-cols-5 gap-3" id="photoPreviewGrid"></div>
+          <div class="grid grid-cols-3 sm:grid-cols-5 gap-3" id="imageGrid"></div>
         </div>
       </section>
 
@@ -304,7 +304,7 @@
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-bold text-slate-700 mb-1.5">City *</label>
-              <select id="adCity" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+              <select id="citySelect" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
                 <option value="Hargeisa">Hargeisa</option>
                 <option value="Berbera">Berbera</option>
                 <option value="Burco">Burco</option>
@@ -316,7 +316,7 @@
             </div>
             <div>
               <label class="block text-sm font-bold text-slate-700 mb-1.5">Phone Number *</label>
-              <input id="adPhone" type="tel" placeholder="+252 63 456 789" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+              <input id="phoneInput" type="tel" placeholder="+252 63 456 789" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
             </div>
           </div>
           <div>
@@ -336,15 +336,15 @@
           <h3 class="text-xl font-bold text-slate-900">Step 5: Review &amp; Submit</h3>
           <p class="text-sm text-slate-500 mt-1">Check your listing before publishing.</p>
         </div>
-        <div class="p-6" id="reviewPreview"></div>
+        <div class="p-6" id="reviewBody"></div>
       </section>
 
       <!-- NAVIGATION BUTTONS -->
       <div class="flex items-center justify-between py-4">
-        <button id="backBtn" onclick="prevStep()" class="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-slate-300 font-bold text-slate-700 hover:bg-slate-50 transition-colors">
+        <button id="backBtn" onclick="goBack()" class="flex items-center gap-2 px-6 py-2.5 rounded-xl border border-slate-300 font-bold text-slate-700 hover:bg-slate-50 transition-colors">
           <span class="material-symbols-outlined text-lg">arrow_back</span> Back
         </button>
-        <button id="nextBtn" onclick="nextStep()" class="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/25">
+        <button id="nextBtn" onclick="goNext()" class="flex items-center gap-2 px-8 py-2.5 rounded-xl bg-primary text-white font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/25">
           Next Step <span class="material-symbols-outlined text-lg">arrow_forward</span>
         </button>
       </div>

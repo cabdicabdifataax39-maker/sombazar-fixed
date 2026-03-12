@@ -291,7 +291,7 @@
         <span class="material-symbols-outlined text-base">search</span> Search
       </h3>
       <div class="search-wrap">
-        <input id="keywordInput" type="text" placeholder="Keywords..."
+        <input id="searchInput" type="text" placeholder="Keywords..."
           class="w-full text-sm rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
       </div>
     </div>
@@ -337,9 +337,9 @@
         <span class="material-symbols-outlined text-base">payments</span> Price Range (USD)
       </h3>
       <div class="flex gap-2 mb-3">
-        <input id="minPrice" type="number" placeholder="Min" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+        <input id="priceMin" type="number" placeholder="Min" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
         <span class="text-slate-300 self-center">—</span>
-        <input id="maxPrice" type="number" placeholder="Max" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
+        <input id="priceMax" type="number" placeholder="Max" class="w-full text-xs rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
       </div>
       <div class="flex flex-wrap gap-1.5">
         <button class="price-chip text-[10px] px-2.5 py-1 bg-slate-100 hover:bg-primary/10 border border-slate-200 rounded-full font-medium" data-min="0" data-max="100">Under $100</button>
@@ -355,7 +355,7 @@
       <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
         <span class="material-symbols-outlined text-base">verified</span> Condition
       </h3>
-      <select id="condFilter" class="w-full text-sm rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
+      <select id="conditionSelect" class="w-full text-sm rounded-xl border border-slate-200 px-3 py-2 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
         <option value="">All</option>
         <option value="new">New</option>
         <option value="like_new">Like New</option>
@@ -374,7 +374,7 @@
     <!-- Sort & Count Bar -->
     <div class="flex items-center justify-between mb-5 bg-white rounded-2xl px-5 py-3 shadow-sm border border-slate-100">
       <h2 class="text-base font-bold text-slate-800" id="pageTitle">
-        All Listings <span class="text-slate-400 font-normal text-sm ml-1">(<span id="listingCount">...</span> items)</span>
+        All Listings <span class="text-slate-400 font-normal text-sm ml-1">(<span id="countBadge">...</span> items)</span>
       </h2>
       <select id="sortSelect" class="text-sm border border-slate-200 rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
         <option value="newest">Newest First</option>
