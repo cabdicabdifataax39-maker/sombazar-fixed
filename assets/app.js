@@ -240,41 +240,77 @@ function verifiedBadgeHTML(verified, badge) {
 function listingCardHTML(l) {
   const img     = (l.images && l.images.length > 0) ? l.images[0] : null;
   const emoji   = catEmoji(l.category);
-  const typeTag = l.listingType === 'rent'
-    ? `<span style="position:absolute;top:10px;left:10px;background:#2563eb;color:white;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px">FOR RENT</span>`
-    : `<span style="position:absolute;top:10px;left:10px;background:#16a34a;color:white;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px">FOR SALE</span>`;
-  
-  // NEW badge: posted within last 24 hours
   const isNew = l.createdAt && (Date.now() - new Date(l.createdAt)) < 86400000;
-  const newBadge = isNew ? `<span style="position:absolute;top:10px;right:10px;background:#f59e0b;color:white;font-size:9px;font-weight:900;padding:3px 8px;border-radius:20px;letter-spacing:.5px">NEW</span>` : '';
 
-  // Build quick-detail chips (year, rooms, rental period, condition)
+  const rentBadge = l.listingType === 'rent'
+    ? `<div style="position:absolute;bottom:12px;left:12px;background:#2563eb;color:white;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase">For Rent</div>`
+    : `<div style="position:absolute;bottom:12px;left:12px;background:#16a34a;color:white;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase">For Sale</div>`;
+
+  const featuredBadge = l.featured
+    ? `<div style="position:absolute;bottom:12px;right:12px;background:#f59e0b;color:white;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px">⭐ Featured</div>`
+    : (isNew ? `<div style="position:absolute;bottom:12px;right:12px;background:#ec5b13;color:white;font-size:9px;font-weight:900;padding:4px 10px;border-radius:20px">NEW</div>` : '');
+
   const chips = [];
-  if (l.year)         chips.push(`<span style="background:var(--light-gray);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--dark)"> ${l.year}</span>`);
-  if (l.specs && l.specs.rooms) chips.push(`<span style="background:var(--light-gray);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--dark)"> ${l.specs.rooms}</span>`);
-  if (l.specs && l.specs.area)  chips.push(`<span style="background:var(--light-gray);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--dark)"> ${l.specs.area}</span>`);
-  if (l.listingType === 'rent' && l.rentalPeriod) chips.push(`<span style="background:#eff6ff;border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:#2563eb">/${l.rentalPeriod}</span>`);
-  if (l.negotiable)   chips.push(`<span style="background:#f0fdf4;border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:#16a34a">Negotiable</span>`);
+  if (l.year) chips.push(l.year);
+  if (l.specs && l.specs.rooms) chips.push(l.specs.rooms + ' rooms');
+  if (l.negotiable) chips.push('Negotiable');
+
+  const catLabel = {car:'Automotive',house:'Real Estate',land:'Real Estate',electronics:'Electronics',furniture:'Furniture',jobs:'Jobs',services:'Services',hotel:'Hotels'}[l.category] || l.category;
+  const timeAgo = l.createdAt ? timeSince(new Date(l.createdAt)) : '';
+  const sellerInitial = l.sellerName ? l.sellerName[0].toUpperCase() : '?';
+  const sellerDisplay = l.sellerName || 'Seller';
 
   return `
-    <a href="listing.html?id=${l.id}" class="listing-card" style="text-decoration:none;display:block">
-      <div style="position:relative;width:100%;height:180px;background:#f3f4f6;border-radius:12px 12px 0 0;overflow:hidden">
+    <a href="listing.html?id=${l.id}" class="listing-card group" style="text-decoration:none;display:block;background:white;border-radius:16px;overflow:hidden;border:1px solid #f1f5f9;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+      <div style="position:relative;width:100%;height:200px;background:#f3f4f6;overflow:hidden">
         ${img
-          ? `<img loading="lazy" src="${img}" alt="${l.title}" style="width:100%;height:100%;object-fit:cover;transition:opacity .3s;opacity:0" onload="this.style.opacity=1" onerror="this.src='assets/icon-192.png';this.style.opacity=1">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px">${emoji}</div>`
+          ? `<img loading="lazy" src="${img}" alt="${l.title}" style="width:100%;height:100%;object-fit:cover;transition:transform .5s,opacity .3s;opacity:0" onload="this.style.opacity=1" onerror="this.src='assets/icon-192.png';this.style.opacity=1" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#f8fafc,#e2e8f0)">${emoji}</div>`
         }
-        ${typeTag}
-        ${l.featured ? `<span style="position:absolute;top:10px;right:10px;background:#f59e0b;color:white;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px"> FEATURED</span>` : newBadge}
+        <button onclick="event.preventDefault();toggleFavCard(this,${l.id})" style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,.92);border:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#64748b;transition:all .15s" title="Save">
+          <span class="material-symbols-outlined" style="font-size:18px">favorite_border</span>
+        </button>
+        ${rentBadge}
+        ${featuredBadge}
       </div>
-      <div style="padding:12px">
-        <div style="font-size:13px;font-weight:800;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.title}</div>
-        <div style="font-size:16px;font-weight:800;color:var(--primary-color);margin:4px 0">${l.currency} ${Number(l.price).toLocaleString()}</div>
-        ${chips.length ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px">${chips.join('')}</div>` : ''}
-        <div style="font-size:11px;color:var(--gray);display:flex;align-items:center;gap:4px">
-           ${l.city} &nbsp;&nbsp;  ${l.views || 0}
+      <div style="padding:14px 16px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <span style="font-size:11px;font-weight:700;color:#ec5b13;text-transform:uppercase;letter-spacing:.5px">${catLabel}</span>
+          <span style="font-size:16px;font-weight:900;color:#0f172a">${l.currency} ${Number(l.price).toLocaleString()}</span>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px">${l.title}</div>
+        <div style="font-size:12px;color:#64748b;display:flex;align-items:center;gap:4px;margin-bottom:10px">
+          <span class="material-symbols-outlined" style="font-size:13px">location_on</span>
+          ${l.city || 'Hargeisa'}${chips.length ? ' · ' + chips.join(' · ') : ''}
+        </div>
+        <div style="padding-top:10px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:28px;height:28px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:800;flex-shrink:0">${sellerInitial}</div>
+            <span style="font-size:12px;font-weight:700;color:#374151">${sellerDisplay}</span>
+          </div>
+          <span style="font-size:11px;color:#94a3b8">${timeAgo}</span>
         </div>
       </div>
     </a>`;
+}
+
+function toggleFavCard(btn, id) {
+  const icon = btn.querySelector('.material-symbols-outlined');
+  if (!Auth.isLoggedIn()) { window.location.href='auth.html'; return; }
+  const isFaved = icon.textContent === 'favorite';
+  icon.textContent = isFaved ? 'favorite_border' : 'favorite';
+  icon.style.color = isFaved ? '#64748b' : '#ef4444';
+  btn.style.background = isFaved ? 'rgba(255,255,255,.92)' : 'rgba(254,226,226,.95)';
+  API.post('api/favorites.php', { listing_id: id, action: isFaved ? 'remove' : 'add' }).catch(()=>{});
+}
+
+function timeSince(date) {
+  const s = Math.floor((Date.now() - date) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s/60) + ' min ago';
+  if (s < 86400) return Math.floor(s/3600) + ' hr ago';
+  if (s < 604800) return Math.floor(s/86400) + ' days ago';
+  return date.toLocaleDateString();
 }
 
 // Category emoji helper  used in listing.html and elsewhere

@@ -286,70 +286,61 @@
         <div class="flex flex-col"><span class="text-3xl font-black text-slate-900">12K+</span><span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Active Listings</span></div>
         <div class="flex flex-col"><span class="text-3xl font-black text-slate-900">8K+</span><span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Verified Sellers</span></div>
         <div class="flex flex-col"><span class="text-3xl font-black text-slate-900" id="statCities">7</span><span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Cities</span></div>
+        <div class="hidden sm:flex flex-col"><span class="text-3xl font-black text-slate-900">24h</span><span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Support Response</span></div>
       </div>
     </div>
   </section>
 
   <!-- EXPLORE CATEGORIES -->
   <section class="py-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="mb-8">
-      <h2 class="text-2xl font-bold text-slate-900">Explore Categories</h2>
-      <p class="text-slate-500 mt-1 text-sm">Find exactly what you need in our curated sections</p>
+    <div class="flex items-end justify-between mb-10">
+      <div>
+        <h2 class="text-3xl font-bold text-slate-900">Explore Categories</h2>
+        <p class="text-slate-500 mt-2 text-sm">Find exactly what you need in our curated sections</p>
+      </div>
     </div>
-    <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-3">
-      <a href="listings.html?category=car" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 lg:gap-6">
+      <a href="listings.html?category=car" class="group bg-white p-6 lg:p-8 rounded-2xl border border-slate-100 text-center hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all cursor-pointer">
+        <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
           <span class="material-symbols-outlined text-2xl">directions_car</span>
         </div>
-        <span class="font-bold text-slate-800 text-xs">Cars</span>
+        <h3 class="font-bold text-slate-900 text-sm">Cars</h3>
+        <p class="text-xs text-slate-400 mt-1" data-cat-count="car">2.4k Listings</p>
       </a>
-      <a href="listings.html?category=house" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
+      <a href="listings.html?category=house" class="group bg-white p-6 lg:p-8 rounded-2xl border border-slate-100 text-center hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all cursor-pointer">
+        <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
           <span class="material-symbols-outlined text-2xl">home</span>
         </div>
-        <span class="font-bold text-slate-800 text-xs">Houses</span>
+        <h3 class="font-bold text-slate-900 text-sm">Houses</h3>
+        <p class="text-xs text-slate-400 mt-1" data-cat-count="house">1.8k Listings</p>
       </a>
-      <a href="listings.html?category=land" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
+      <a href="listings.html?category=land" class="group bg-white p-6 lg:p-8 rounded-2xl border border-slate-100 text-center hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all cursor-pointer">
+        <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
           <span class="material-symbols-outlined text-2xl">landscape</span>
         </div>
-        <span class="font-bold text-slate-800 text-xs">Land</span>
+        <h3 class="font-bold text-slate-900 text-sm">Land</h3>
+        <p class="text-xs text-slate-400 mt-1" data-cat-count="land">940 Listings</p>
       </a>
-      <a href="listings.html?category=electronics" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
+      <a href="listings.html?category=electronics" class="group bg-white p-6 lg:p-8 rounded-2xl border border-slate-100 text-center hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all cursor-pointer">
+        <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
           <span class="material-symbols-outlined text-2xl">devices</span>
         </div>
-        <span class="font-bold text-slate-800 text-xs">Electronics</span>
+        <h3 class="font-bold text-slate-900 text-sm">Electronics</h3>
+        <p class="text-xs text-slate-400 mt-1" data-cat-count="electronics">4.2k Listings</p>
       </a>
-      <a href="listings.html?category=furniture" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
-          <span class="material-symbols-outlined text-2xl">chair</span>
-        </div>
-        <span class="font-bold text-slate-800 text-xs">Furniture</span>
-      </a>
-      <a href="listings.html?category=jobs" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
+      <a href="listings.html?category=jobs" class="group bg-white p-6 lg:p-8 rounded-2xl border border-slate-100 text-center hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all cursor-pointer">
+        <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
           <span class="material-symbols-outlined text-2xl">work</span>
         </div>
-        <span class="font-bold text-slate-800 text-xs">Jobs</span>
+        <h3 class="font-bold text-slate-900 text-sm">Jobs</h3>
+        <p class="text-xs text-slate-400 mt-1" data-cat-count="jobs">560 Listings</p>
       </a>
-      <a href="listings.html?category=services" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
-          <span class="material-symbols-outlined text-2xl">construction</span>
-        </div>
-        <span class="font-bold text-slate-800 text-xs">Services</span>
-      </a>
-      <a href="listings.html?category=hotel" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
-          <span class="material-symbols-outlined text-2xl">apartment</span>
-        </div>
-        <span class="font-bold text-slate-800 text-xs">Hotels</span>
-      </a>
-      <a href="listings.html" class="group flex flex-col items-center p-4 bg-white rounded-2xl border border-slate-100 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all text-center cursor-pointer">
-        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
+      <a href="listings.html" class="group bg-white p-6 lg:p-8 rounded-2xl border border-slate-100 text-center hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all cursor-pointer">
+        <div class="w-14 h-14 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-white transition-colors text-slate-500">
           <span class="material-symbols-outlined text-2xl">more_horiz</span>
         </div>
-        <span class="font-bold text-slate-800 text-xs">More</span>
+        <h3 class="font-bold text-slate-900 text-sm">Others</h3>
+        <p class="text-xs text-slate-400 mt-1">1.1k Listings</p>
       </a>
     </div>
   </section>
@@ -367,7 +358,7 @@
   <section class="py-10 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold text-slate-900" id="catSectionTitle">Recent Listings</h2>
+        <h2 class="text-3xl font-bold text-slate-900" id="catSectionTitle">Recent Listings</h2>
         <a href="listings.html" class="text-primary font-bold text-sm hover:underline flex items-center gap-1" id="catSeeAll">See All Listings <span class="material-symbols-outlined text-lg">chevron_right</span></a>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="listingsGrid">
