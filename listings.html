@@ -538,11 +538,14 @@ function skeletonCards(n) {
 
 // ── Filter parametreleri ──────────────────────────────────────────────
 function getFilterParams() {
+  const sortRaw = document.getElementById('sortSelect')?.value || 'newest';
+  const sortMap = { newest: 'createdAt', price_asc: 'price', price_desc: 'price' };
   const p = {
     pageSize: 18,
-    sortBy:   document.getElementById('sortSelect')?.value || 'createdAt',
+    sortBy:   sortMap[sortRaw] || 'createdAt',
     offset:   (listPage - 1) * 18,
   };
+  if (sortRaw === 'price_desc') p.order = 'desc';
   if (activeCat !== 'all') p.category = activeCat;
   if (activeCity !== 'All') p.city = activeCity;
   const cond = document.getElementById('conditionSelect')?.value;

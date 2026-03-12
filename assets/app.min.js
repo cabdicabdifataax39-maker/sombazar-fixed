@@ -259,6 +259,9 @@ function listingCardHTML(l) {
   const timeAgo = l.createdAt ? timeSince(new Date(l.createdAt)) : '';
   const sellerInitial = l.sellerName ? l.sellerName[0].toUpperCase() : '?';
   const sellerDisplay = l.sellerName || 'Seller';
+  const sellerAvatarEl = l.sellerPhoto
+    ? `<img src="${l.sellerPhoto}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0" onerror="this.outerHTML='<div style=\\'width:28px;height:28px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:800;flex-shrink:0\\'>${sellerInitial}</div>'">`
+    : `<div style="width:28px;height:28px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:800;flex-shrink:0">${sellerInitial}</div>`;
 
   return `
     <a href="listing.html?id=${l.id}" class="listing-card group" style="text-decoration:none;display:block;background:white;border-radius:16px;overflow:hidden;border:1px solid #f1f5f9;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.05)">
@@ -285,8 +288,8 @@ function listingCardHTML(l) {
         </div>
         <div style="padding-top:10px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between">
           <div style="display:flex;align-items:center;gap:8px">
-            <div style="width:28px;height:28px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:800;flex-shrink:0">${sellerInitial}</div>
-            <span style="font-size:12px;font-weight:700;color:#374151">${sellerDisplay}</span>
+            ${sellerAvatarEl}
+            <span style="font-size:12px;font-weight:700;color:#374151;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px">${sellerDisplay}</span>
           </div>
           <span style="font-size:11px;color:#94a3b8">${timeAgo}</span>
         </div>

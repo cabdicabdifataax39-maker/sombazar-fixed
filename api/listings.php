@@ -525,6 +525,12 @@ function formatListing(array $r, bool $detail = false): array {
         'status'       => $r['status'],
         'createdAt'    => $r['created_at'],
         'year'         => $r['year'] ? (int)$r['year'] : null,
+        'sellerName'   => $esc($r['seller_name'] ?? null),
+        'sellerPhoto'  => (function() use ($r) {
+            $p = $r['seller_photo'] ?? $r['avatar_url'] ?? null;
+            if (!$p) return null;
+            return str_starts_with($p, 'http') ? $p : UPLOAD_URL . $p;
+        })(),
     ];
 
     if ($detail) {

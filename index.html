@@ -622,6 +622,24 @@ if (_sentinel) _scrollObserver.observe(_sentinel);
 
 loadFeatured();
 loadListings();
+loadCategoryCounts();
+
+async function loadCategoryCounts() {
+  const cats = ['car','house','land','electronics','jobs'];
+  try {
+    const counts = await Promise.all(cats.map(c =>
+      fetch(`api/listings.php?action=list&category=${c}&pageSize=1`)
+        .then(r => r.json())
+        .then(d => ({ cat: c, count: Array.isArray(d.data) ? d.data.length : 0 }))
+        .catch(() => ({ cat: c, count: 0 }))
+    ));
+    counts.forEach(({ cat, count }) => {
+      const el = document.querySelector(`[data-cat-count="${cat}"]`);
+      if (el && count > 0) el.textContent = count + '+ Listings';
+    });
+  } catch(e) {}
+}
+
 
 // Autocomplete init
 if (typeof initSearchAutocomplete === 'function') {
