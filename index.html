@@ -207,7 +207,22 @@
               <div id="notifList"></div>
             </div>
           </div>
-          <a href="profile.html" class="header-avatar w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm" data-visual-avatar="1"></a>
+          <!-- Avatar + dropdown -->
+          <div style="position:relative" id="avatarMenuWrap">
+            <button onclick="toggleAvatarMenu()" class="header-avatar w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm focus:outline-none" data-visual-avatar="1" aria-label="Account menu"></button>
+            <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:180px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid #e2e8f0;z-index:1001;overflow:hidden;">
+              <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;transition:background .15s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">person</span> My Profile
+              </a>
+              <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;transition:background .15s" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">list_alt</span> My Listings
+              </a>
+              <div style="border-top:1px solid #f1f5f9;margin:2px 0"></div>
+              <button onclick="doLogout()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:700;color:#ef4444;background:none;border:none;cursor:pointer;width:100%;text-align:left;transition:background .15s;font-family:inherit" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">
+                <span class="material-symbols-outlined" style="font-size:18px">logout</span> Sign Out
+              </button>
+            </div>
+          </div>
         </div>
         <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
         <button class="p-2 rounded-full hover:bg-slate-100 text-slate-500 transition-colors" onclick="toggleDarkMode()" title="Dark mode">
@@ -434,7 +449,7 @@
         <ul class="space-y-3 text-sm">
           <li><a href="about.html" class="hover:text-primary transition-colors" id="footer-about">About Us</a></li>
           <li><a href="#" class="hover:text-primary transition-colors">Safety Tips</a></li>
-          <li><a href="plans.html" class="hover:text-primary transition-colors">Premium Membership</a></li>
+          <li><a href="packages.html" class="hover:text-primary transition-colors">Premium Membership</a></li>
           <li><a href="contact.html" class="hover:text-primary transition-colors" id="footer-contact">Contact Support</a></li>
         </ul>
       </div>
@@ -684,6 +699,29 @@ if (typeof initSearchAutocomplete === 'function') {
   const el = document.getElementById('statCities');
   if (el && el.textContent === '0') el.textContent = '7';
 })();
+
+// ── Avatar dropdown & logout ─────────────────────────────
+function toggleAvatarMenu() {
+  const d = document.getElementById('avatarDropdown');
+  if (!d) return;
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('avatarMenuWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    const d = document.getElementById('avatarDropdown');
+    if (d) d.style.display = 'none';
+  }
+});
+function doLogout() {
+  if (typeof Auth !== 'undefined' && Auth.logout) {
+    Auth.logout();
+  } else {
+    localStorage.removeItem('sb_token');
+    localStorage.removeItem('sb_user');
+    window.location.href = 'auth.html';
+  }
+}
 </script>
 </body>
 </html>

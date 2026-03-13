@@ -543,7 +543,7 @@
               <span class="material-symbols-outlined" style="font-size:18px;color:#64748b;">credit_card</span> Billing
             </button>
             <div style="margin-top:8px;border-top:1px solid #f1f5f9;padding-top:8px;">
-              <button onclick="Auth.clearSession();location.href='index.html'" class="settings-nav-item signout">
+              <button onclick="doLogout()" class="settings-nav-item signout">
                 <span class="material-symbols-outlined" style="font-size:18px;">logout</span> Sign Out
               </button>
             </div>
@@ -1563,6 +1563,11 @@ document.addEventListener('click',e=>{
   const w=document.getElementById('notifBellWrap');
   if(w&&!w.contains(e.target)){const dd=document.getElementById('notifDropdown');if(dd)dd.style.display='none';}
 });
+
+function doLogout() {
+  if (typeof Auth !== 'undefined' && Auth.logout) { Auth.logout(); }
+  else { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); window.location.href = 'auth.html'; }
+}
 </script>
 <script>
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}

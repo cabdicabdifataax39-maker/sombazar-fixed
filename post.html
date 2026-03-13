@@ -80,6 +80,22 @@
   </a>
   <div style="display:flex;align-items:center;gap:12px;">
     <span id="headerCrumb" style="font-size:13px;color:#94a3b8;font-weight:600;"></span>
+    <!-- Avatar dropdown -->
+    <div style="position:relative" id="avatarMenuWrap">
+      <button onclick="toggleAvatarMenu()" data-visual-avatar="1" style="width:32px;height:32px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:12px;border:none;cursor:pointer;overflow:hidden;" aria-label="Account"></button>
+      <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:175px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid #e2e8f0;z-index:1001;overflow:hidden;">
+        <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">person</span> My Profile
+        </a>
+        <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">list_alt</span> My Listings
+        </a>
+        <div style="border-top:1px solid #f1f5f9;margin:2px 0"></div>
+        <button onclick="doLogout()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:700;color:#ef4444;background:none;border:none;cursor:pointer;width:100%;text-align:left;font-family:inherit" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">
+          <span class="material-symbols-outlined" style="font-size:18px">logout</span> Sign Out
+        </button>
+      </div>
+    </div>
     <a href="index.html" style="width:32px;height:32px;border-radius:50%;background:#f1f5f9;display:flex;align-items:center;justify-content:center;text-decoration:none;color:#64748b;" title="Close">
       <span class="material-symbols-outlined" style="font-size:18px;">close</span>
     </a>
@@ -737,6 +753,23 @@ function restoreDraft(){
   showToast('Draft restored!','success');
 }
 function discardDraft(){clearDraft();document.getElementById('draftBanner').style.display='none';}
+
+// ── Avatar dropdown & logout ──────────────────────────────
+function toggleAvatarMenu() {
+  const d = document.getElementById('avatarDropdown');
+  if (d) d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('avatarMenuWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    const d = document.getElementById('avatarDropdown');
+    if (d) d.style.display = 'none';
+  }
+});
+function doLogout() {
+  if (typeof Auth !== 'undefined' && Auth.logout) { Auth.logout(); }
+  else { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); window.location.href = 'auth.html'; }
+}
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}</script>
 </body>
