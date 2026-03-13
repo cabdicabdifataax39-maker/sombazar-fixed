@@ -2,316 +2,527 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="csrf-token" content="" id="csrfMeta">
   <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f97316">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ec5b13">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Sign In — SomBazar</title>
-  <link rel="stylesheet" href="assets/style.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
-  <style>
-    .auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--gray);font-size:12px;font-weight:600}
-    .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border-color)}
-    .google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;border:1.5px solid var(--border-color);border-radius:12px;background:white;font-family:'DM Sans';font-size:14px;font-weight:600;color:var(--dark);cursor:pointer;transition:all .2s}
-    .google-btn:hover{background:#f8f9fa;border-color:#aaa;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-    .strength-bar{height:4px;border-radius:2px;margin-top:6px;transition:all .3s;background:#e5e7eb}
-    .strength-bar-fill{height:100%;border-radius:2px;transition:all .3s;width:0}
-    .strength-label{font-size:11px;margin-top:4px;font-weight:600}
-    .input-wrap{position:relative}
-    .input-wrap .eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:var(--gray);padding:0}
-    .check-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray);margin-top:4px;transition:color .2s}
-    .check-item.pass{color:#10b981}
-    .check-item.pass::before{content:'✓';font-size:11px}
-    .check-item:not(.pass)::before{content:'○';font-size:11px}
-  </style>
-  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
-  <script>
-    (function(){
-      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
-      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(s);
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', GA_ID, {
-        page_title: document.title,
-        page_location: window.location.href,
-        anonymize_ip: true,
-        cookie_flags: 'SameSite=None;Secure'
-      });
-    })();
-  </script>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- Google Analytics GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M', {
-      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
-      'cookie_flags': 'SameSite=None;Secure'
-    });
+    gtag('config', 'G-6H7F8Y980M', { cookie_domain: 'sombazar-fixed-production.up.railway.app', cookie_flags: 'SameSite=None;Secure' });
   </script>
-  <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: "#ec5b13" }, fontFamily: { sans: ["Public Sans","sans-serif"] } } }
+    }
+  </script>
+  <style>
+    body { font-family: "Public Sans", sans-serif; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
+
+    /* Left decorative panel */
+    .left-panel {
+      background: linear-gradient(150deg, #1c0903 0%, #3d1508 45%, #c44a0e 100%);
+      position: relative; overflow: hidden;
+    }
+    .left-panel::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 15% 85%, rgba(236,91,19,.4) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 15%, rgba(255,150,70,.25) 0%, transparent 45%),
+        radial-gradient(ellipse at 55% 55%, rgba(200,70,10,.15) 0%, transparent 60%);
+    }
+    .left-panel::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Ccircle cx='40' cy='40' r='2'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Tabs */
+    .tab-btn { position: relative; transition: color .2s; }
+    .tab-btn::after {
+      content: ''; position: absolute; bottom: -1px; left: 0; right: 0;
+      height: 2.5px; background: #ec5b13; border-radius: 2px;
+      transform: scaleX(0); transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+    }
+    .tab-btn.active { color: #ec5b13; font-weight: 700; }
+    .tab-btn.active::after { transform: scaleX(1); }
+
+    /* Input */
+    .sb-input {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid #e2e8f0; border-radius: 10px;
+      font-family: "Public Sans", sans-serif; font-size: 14px; color: #0f172a;
+      outline: none; transition: border-color .2s, box-shadow .2s; background: white;
+    }
+    .sb-input:focus { border-color: #ec5b13; box-shadow: 0 0 0 3px rgba(236,91,19,.12); }
+    .sb-input::placeholder { color: #94a3b8; }
+    .sb-input.has-icon-left { padding-left: 40px; }
+    .sb-input.has-icon-right { padding-right: 44px; }
+    input[type=checkbox] { accent-color: #ec5b13; }
+
+    /* Strength bar */
+    .sf { height: 100%; border-radius: 2px; width: 0; transition: width .3s, background .3s; }
+
+    /* Check items */
+    .check-item { color: #cbd5e1; transition: color .2s; font-size: 11px; display:flex; align-items:center; gap:4px; }
+    .check-item.pass { color: #22c55e; }
+
+    /* Float animation for stat cards */
+    @keyframes floatUp { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .stat-card { animation: floatUp 3.5s ease-in-out infinite; }
+    .stat-card:nth-child(2) { animation-delay:.6s; }
+    .stat-card:nth-child(3) { animation-delay:1.2s; }
+
+    /* Spinner */
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .spinner {
+      display:inline-block; width:17px; height:17px;
+      border:2.5px solid rgba(255,255,255,.35); border-top-color:#fff;
+      border-radius:50%; animation:spin .65s linear infinite; vertical-align:middle;
+    }
+
+    @media (max-width:1023px) { .left-panel { display:none; } }
+  </style>
 </head>
+<body class="bg-white min-h-screen">
+
+<!-- Google One Tap -->
 <div id="g_id_onload"
      data-client_id="918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com"
      data-callback="handleGoogleCredential"
      data-auto_select="false"
      data-cancel_on_tap_outside="true">
 </div>
-<body>
-<a href="#main-content" class="skip-link">Skip to main content</a>
 
+<div class="min-h-screen flex">
 
-<div class="auth-wrapper">
-  <div class="auth-card animate-slide-up">
+  <!-- ═══════════════════════════════
+       LEFT PANEL
+  ═══════════════════════════════ -->
+  <aside class="left-panel hidden lg:flex lg:w-[52%] xl:w-[54%] flex-col justify-between p-12 xl:p-16">
 
-    <div class="auth-header">
-      <a href="index.html" class="auth-logo" style="text-decoration:none">SomBazar</a>
-      <p class="auth-tagline">Somaliland's Largest Marketplace</p>
+    <!-- Logo -->
+    <div class="relative z-10">
+      <a href="index.html" class="inline-flex items-center gap-2.5">
+        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-xl border border-white/20">
+          <span class="material-symbols-outlined text-white block" style="font-size:22px">storefront</span>
+        </div>
+        <span class="text-2xl font-black text-white tracking-tight">Som<span class="text-orange-300">Bazar</span></span>
+      </a>
     </div>
 
-    <div class="auth-body">
-      <!-- Tabs -->
-      <div class="auth-tabs" id="authTabs">
-        <button class="auth-tab active" data-tab="login">Sign In</button>
-        <button class="auth-tab" data-tab="register">Register</button>
-      </div>
+    <!-- Hero copy -->
+    <div class="relative z-10 flex-1 flex flex-col justify-center py-14">
+      <div class="max-w-[440px]">
 
-      <!-- Reset header -->
-      <div id="resetHeader" style="display:none;margin-bottom:20px">
-        <button onclick="setMode('login')" style="background:none;border:none;cursor:pointer;color:var(--primary-color);font-weight:700;font-size:14px;font-family:DM Sans;display:flex;align-items:center;gap:6px">
-          ← Back to Sign In
-        </button>
-        <h2 style="font-size:18px;font-weight:800;margin-top:12px;color:var(--dark)">Reset Password</h2>
-        <p style="font-size:13px;color:var(--gray);margin-top:4px">Enter your email and we'll send reset instructions.</p>
-      </div>
-
-      <!-- Messages -->
-      <div id="msgError" role="alert" aria-live="assertive" aria-atomic="true" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#b91c1c"></div>
-      <div id="msgSuccess" role="status" aria-live="polite" aria-atomic="true" style="display:none;background:#f0fdf4;border:1px solid #a7f3d0;border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#065f46"></div>
-
-      <!-- Google button (hidden in reset mode) -->
-      <div id="googleSection">
-        <!-- Google Identity Services rendered button -->
-        <div id="googleBtnContainer" style="width:100%;display:flex;justify-content:center;margin-bottom:4px"></div>
-        <button class="google-btn" onclick="googleSignIn()" id="googleFallbackBtn" style="display:none">
-          <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.6-7.7 19.6-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12 24 12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.5 35.5 26.9 36 24 36c-5.3 0-9.6-2.9-11.3-7.1l-6.6 4.9C9.7 39.8 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.4 4.2-4.5 5.4l6.2 5.2C40.9 35.6 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
-          Continue with Google
-        </button>
-        <div class="auth-divider">or</div>
-      </div>
-
-      <!-- Form -->
-      <form id="authForm" onsubmit="handleSubmit(event)" novalidate aria-label="Sign in or create account">
-
-        <!-- Name (register only) -->
-        <div class="form-group" id="nameGroup" style="display:none">
-          <label class="form-label" for="nameInput">Full Name <span style="color:#ef4444">*</span></label>
-          <input class="form-input" type="text" id="nameInput" placeholder="Ahmed Mohamed" data-i18n="auth-name" autocomplete="name" maxlength="60">
+        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-3 py-1.5 mb-6">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+          </span>
+          <span class="text-[11px] font-black text-white/75 uppercase tracking-widest">Live in Somaliland</span>
         </div>
 
-        <!-- Email -->
-        <div class="form-group">
-          <label class="form-label" for="emailInput">Email Address <span style="color:#ef4444">*</span></label>
-          <input class="form-input" type="email" id="emailInput" placeholder="you@example.com" data-i18n="auth-email" autocomplete="email" required>
-        </div>
+        <h1 class="text-[42px] xl:text-5xl font-black text-white leading-[1.1] mb-4">
+          Buy &amp; Sell<br>with <span class="text-orange-300">Confidence</span>
+        </h1>
+        <p class="text-white/55 text-[15px] leading-relaxed mb-10 max-w-sm">
+          Join thousands of buyers and sellers across Hargeisa, Berbera, Burco and beyond on Somaliland's most trusted marketplace.
+        </p>
 
-        <!-- Password -->
-        <div class="form-group" id="passGroup">
-          <label class="form-label" for="passInput">Password <span style="color:#ef4444">*</span></label>
-          <div class="input-wrap">
-            <input class="form-input" type="password" id="passInput" placeholder="Min. 6 characters" data-i18n="auth-password" style="padding-right:44px" autocomplete="current-password">
-            <button type="button" class="eye-btn" onclick="togglePass('passInput', this)">️</button>
+        <!-- Stat cards -->
+        <div class="flex gap-3 flex-wrap">
+          <div class="stat-card bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-5 py-4 min-w-[100px]">
+            <div class="text-2xl font-black text-white">12K+</div>
+            <div class="text-[11px] text-white/55 font-semibold mt-0.5">Active Listings</div>
           </div>
-          <!-- Strength meter (register only) -->
-          <div id="strengthMeter" style="display:none;margin-top:6px">
-            <div class="strength-bar"><div class="strength-bar-fill" id="strengthFill"></div></div>
-            <div class="strength-label" id="strengthLabel"></div>
-            <div style="margin-top:6px">
-              <div class="check-item" id="chkLen">At least 6 characters</div>
-              <div class="check-item" id="chkNum">Contains a number</div>
-              <div class="check-item" id="chkUpper">Contains uppercase letter</div>
-            </div>
+          <div class="stat-card bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-5 py-4 min-w-[100px]">
+            <div class="text-2xl font-black text-white">8K+</div>
+            <div class="text-[11px] text-white/55 font-semibold mt-0.5">Verified Sellers</div>
+          </div>
+          <div class="stat-card bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-5 py-4 min-w-[80px]">
+            <div class="text-2xl font-black text-white">7</div>
+            <div class="text-[11px] text-white/55 font-semibold mt-0.5">Cities</div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Confirm password (register only) -->
-        <div class="form-group" id="confirmGroup" style="display:none">
-          <label class="form-label" for="confirmInput">Confirm Password <span style="color:#ef4444">*</span></label>
-          <div class="input-wrap">
-            <input class="form-input" type="password" id="confirmInput" placeholder="Repeat password" data-i18n="auth-confirm-pass" style="padding-right:44px" autocomplete="new-password">
-            <button type="button" class="eye-btn" onclick="togglePass('confirmInput', this)">️</button>
-          </div>
-          <div id="matchMsg" style="font-size:12px;margin-top:4px"></div>
+    <!-- Trust badges -->
+    <div class="relative z-10 flex items-center gap-6">
+      <div class="flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-green-400" style="font-size:15px;font-variation-settings:'FILL' 1">verified_user</span>
+        <span class="text-[11px] text-white/55 font-semibold">Verified Sellers</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-green-400" style="font-size:15px;font-variation-settings:'FILL' 1">lock</span>
+        <span class="text-[11px] text-white/55 font-semibold">Secure Payments</span>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-green-400" style="font-size:15px;font-variation-settings:'FILL' 1">support_agent</span>
+        <span class="text-[11px] text-white/55 font-semibold">24h Support</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════
+       RIGHT PANEL — form
+  ═══════════════════════════════ -->
+  <main class="flex-1 flex flex-col bg-white">
+
+    <!-- Mobile header -->
+    <div class="lg:hidden flex items-center justify-between px-5 py-4 border-b border-slate-100">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="bg-primary p-1.5 rounded-lg text-white">
+          <span class="material-symbols-outlined block" style="font-size:16px">storefront</span>
+        </div>
+        <span class="text-lg font-black">Som<span class="text-primary">Bazar</span></span>
+      </a>
+      <a href="index.html" class="text-sm font-bold text-slate-400 hover:text-primary transition-colors flex items-center gap-1">
+        <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span> Back
+      </a>
+    </div>
+
+    <!-- Form area -->
+    <div class="flex-1 flex items-center justify-center px-6 sm:px-10 py-10">
+      <div class="w-full max-w-[420px]">
+
+        <!-- Desktop back link -->
+        <a href="index.html" class="hidden lg:inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-primary transition-colors mb-8">
+          <span class="material-symbols-outlined" style="font-size:15px">arrow_back</span>
+          Back to SomBazar
+        </a>
+
+        <!-- Dynamic heading -->
+        <div class="mb-6">
+          <h2 class="text-2xl font-black text-slate-900 leading-tight" id="headingTitle">Welcome back</h2>
+          <p class="text-sm text-slate-500 mt-1" id="headingSubtitle">Sign in to your SomBazar account</p>
         </div>
 
-        <!-- Forgot password link -->
-        <div id="forgotLink" style="text-align:right;margin-top:-4px;margin-bottom:16px">
-          <button type="button" onclick="setMode('reset')" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:13px;font-family:DM Sans;text-decoration:underline">
-            Forgot password?
+        <!-- Tabs -->
+        <div class="flex gap-6 border-b border-slate-200 mb-6" id="authTabs">
+          <button class="tab-btn active pb-3 text-sm text-slate-500 hover:text-slate-700" data-tab="login" onclick="setMode('login')">Sign In</button>
+          <button class="tab-btn pb-3 text-sm text-slate-500 hover:text-slate-700" data-tab="register" onclick="setMode('register')">Create Account</button>
+        </div>
+
+        <!-- Reset back -->
+        <div class="hidden mb-5" id="resetBackBtn">
+          <button onclick="setMode('login')" class="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:underline">
+            <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
+            Back to Sign In
           </button>
         </div>
 
-        <!-- Terms (register) -->
-        <div id="termsGroup" style="display:none;margin-bottom:16px">
-          <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:var(--gray);line-height:1.5">
-            <input type="checkbox" id="termsCheck" style="margin-top:2px;accent-color:var(--primary-color)">
-            I agree to the <a href="#" style="color:var(--primary-color)">Terms of Service</a> and <a href="#" style="color:var(--primary-color)">Privacy Policy</a>
-          </label>
+        <!-- Error alert -->
+        <div id="msgError" class="hidden mb-4 flex items-start gap-2.5 bg-red-50 border border-red-200 rounded-xl px-4 py-3.5">
+          <span class="material-symbols-outlined text-red-500 flex-shrink-0" style="font-size:18px;font-variation-settings:'FILL' 1">error</span>
+          <span class="text-sm text-red-700 font-medium leading-snug" id="msgErrorText"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-full" id="submitBtn">Sign In</button>
-      </form>
+        <!-- Success alert -->
+        <div id="msgSuccess" class="hidden mb-4 flex items-start gap-2.5 bg-green-50 border border-green-200 rounded-xl px-4 py-3.5">
+          <span class="material-symbols-outlined text-green-500 flex-shrink-0" style="font-size:18px;font-variation-settings:'FILL' 1">check_circle</span>
+          <span class="text-sm text-green-700 font-medium leading-snug" id="msgSuccessText"></span>
+        </div>
 
-      <p style="text-align:center;font-size:12px;color:var(--gray);margin-top:16px">
-        <span id="switchText">Don't have an account?</span>
-        <button id="switchBtn" onclick="toggleTab()" style="background:none;border:none;cursor:pointer;color:var(--primary-color);font-weight:700;font-size:12px;font-family:DM Sans;margin-left:4px">Register</button>
-      </p>
+        <!-- Recovery banner -->
+        <div id="recoveryBanner" class="hidden mb-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <div class="flex items-start gap-2 mb-3">
+            <span class="material-symbols-outlined text-amber-500 flex-shrink-0" style="font-size:18px;font-variation-settings:'FILL' 1">warning</span>
+            <div>
+              <div class="text-sm font-bold text-amber-800">Account Scheduled for Deletion</div>
+              <div class="text-xs text-amber-700 mt-0.5 leading-relaxed">Your account will be permanently deleted in <strong id="recoveryDays">?</strong> day(s).</div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="doRecoverAccount()" class="flex-1 bg-primary text-white py-2 rounded-lg text-xs font-bold hover:bg-primary/90 transition-colors">Recover Account</button>
+            <button onclick="document.getElementById('recoveryBanner').classList.add('hidden')" class="border border-amber-300 text-amber-800 py-2 px-3 rounded-lg text-xs font-bold hover:bg-amber-100 transition-colors">Dismiss</button>
+          </div>
+        </div>
+
+        <!-- Google Sign In -->
+        <div id="googleSection" class="mb-5">
+          <div id="googleBtnContainer" class="w-full flex justify-center"></div>
+          <button id="googleFallbackBtn" onclick="googleSignIn()"
+            class="hidden w-full flex items-center justify-center gap-3 border-2 border-slate-200 rounded-xl py-3 text-sm font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all mt-1">
+            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.6-7.7 19.6-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12 24 12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.5 35.5 26.9 36 24 36c-5.3 0-9.6-2.9-11.3-7.1l-6.6 4.9C9.7 39.8 16.3 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.4 4.2-4.5 5.4l6.2 5.2C40.9 35.6 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+            Continue with Google
+          </button>
+          <!-- Divider -->
+          <div class="flex items-center gap-3 mt-4">
+            <div class="flex-1 h-px bg-slate-200"></div>
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wide">or</span>
+            <div class="flex-1 h-px bg-slate-200"></div>
+          </div>
+        </div>
+
+        <!-- ─── FORM ─── -->
+        <form id="authForm" onsubmit="handleSubmit(event)" novalidate autocomplete="on" class="space-y-4">
+
+          <!-- Full Name (register) -->
+          <div class="hidden" id="nameGroup">
+            <label class="block text-sm font-bold text-slate-700 mb-1.5" for="nameInput">
+              Full Name <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size:18px">person</span>
+              <input class="sb-input has-icon-left" type="text" id="nameInput" name="name"
+                placeholder="Ahmed Mohamed Ali" autocomplete="name" maxlength="60">
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5" for="emailInput">
+              Email Address <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size:18px">mail</span>
+              <input class="sb-input has-icon-left" type="email" id="emailInput" name="email"
+                placeholder="you@example.com" autocomplete="email" required>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div id="passGroup">
+            <label class="block text-sm font-bold text-slate-700 mb-1.5" for="passInput">
+              Password <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size:18px">lock</span>
+              <input class="sb-input has-icon-left has-icon-right" type="password" id="passInput" name="password"
+                placeholder="Min. 6 characters" autocomplete="current-password">
+              <button type="button" onclick="togglePass('passInput', this)"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors p-0.5">
+                <span class="material-symbols-outlined eye-icon" style="font-size:19px">visibility</span>
+              </button>
+            </div>
+
+            <!-- Strength meter (register only) -->
+            <div id="strengthMeter" class="hidden mt-3">
+              <div class="flex gap-1 mb-2">
+                <div class="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden"><div class="sf" id="sf1"></div></div>
+                <div class="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden"><div class="sf" id="sf2"></div></div>
+                <div class="flex-1 h-1 bg-slate-200 rounded-full overflow-hidden"><div class="sf" id="sf3"></div></div>
+              </div>
+              <div class="flex items-center justify-between">
+                <div class="flex gap-3">
+                  <span class="check-item" id="chkLen">
+                    <span class="material-symbols-outlined" style="font-size:13px">circle</span>6+ chars
+                  </span>
+                  <span class="check-item" id="chkNum">
+                    <span class="material-symbols-outlined" style="font-size:13px">circle</span>Number
+                  </span>
+                  <span class="check-item" id="chkUpper">
+                    <span class="material-symbols-outlined" style="font-size:13px">circle</span>A–Z
+                  </span>
+                </div>
+                <span class="text-xs font-bold" id="strengthLabel"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirm Password (register) -->
+          <div class="hidden" id="confirmGroup">
+            <label class="block text-sm font-bold text-slate-700 mb-1.5" for="confirmInput">
+              Confirm Password <span class="text-red-500">*</span>
+            </label>
+            <div class="relative">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="font-size:18px">lock</span>
+              <input class="sb-input has-icon-left has-icon-right" type="password" id="confirmInput" name="confirmPassword"
+                placeholder="Repeat your password" autocomplete="new-password">
+              <button type="button" onclick="togglePass('confirmInput', this)"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors p-0.5">
+                <span class="material-symbols-outlined eye-icon" style="font-size:19px">visibility</span>
+              </button>
+            </div>
+            <p class="text-xs mt-1.5 font-semibold hidden" id="matchMsg"></p>
+          </div>
+
+          <!-- Forgot password link -->
+          <div class="flex justify-end !mt-1" id="forgotLink">
+            <button type="button" onclick="setMode('reset')" class="text-xs font-bold text-slate-500 hover:text-primary transition-colors">
+              Forgot password?
+            </button>
+          </div>
+
+          <!-- Terms (register) -->
+          <div class="hidden !mt-2" id="termsGroup">
+            <label class="flex items-start gap-2.5 cursor-pointer">
+              <input type="checkbox" id="termsCheck" class="mt-0.5 w-4 h-4 rounded flex-shrink-0">
+              <span class="text-xs text-slate-500 leading-relaxed">
+                I agree to the <a href="terms.html" class="text-primary font-bold hover:underline" target="_blank">Terms of Service</a>
+                and <a href="privacy.html" class="text-primary font-bold hover:underline" target="_blank">Privacy Policy</a>
+              </span>
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" id="submitBtn"
+            class="!mt-6 w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 rounded-xl font-bold text-sm hover:bg-primary/90 active:scale-[.98] transition-all shadow-lg shadow-primary/25">
+            <span id="submitBtnInner" class="flex items-center gap-2">
+              <span class="material-symbols-outlined" style="font-size:18px">login</span>
+              Sign In
+            </span>
+          </button>
+
+        </form>
+
+        <!-- Switch mode -->
+        <p class="text-center text-sm text-slate-500 mt-5" id="switchRow">
+          Don't have an account?
+          <button onclick="setMode('register')" class="text-primary font-bold hover:underline ml-1">Create one free</button>
+        </p>
+
+        <p class="text-center text-xs text-slate-400 mt-8">
+          © 2026 SomBazar ·
+          <a href="privacy.html" class="hover:text-primary transition-colors">Privacy</a> ·
+          <a href="terms.html"   class="hover:text-primary transition-colors">Terms</a>
+        </p>
+
+      </div>
     </div>
-  </div>
+  </main>
 </div>
 
 <script>
-// Fallback: app.js yüklenemezse Auth crash'i önle
 window.Auth = window.Auth || {
   getToken: () => localStorage.getItem('sb_token') || '',
   getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
   isLoggedIn: () => !!localStorage.getItem('sb_token'),
-  setSession: (token, user) => { localStorage.setItem("sb_token", token); localStorage.setItem("sb_user", JSON.stringify(user)); },
+  setSession: (t, u) => { localStorage.setItem("sb_token", t); localStorage.setItem("sb_user", JSON.stringify(u)); },
   clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
 };
 window.API = window.API || {};
 </script>
-  <script src="assets/app.min.js"></script>
+<script src="assets/app.min.js"></script>
 <script>
-if (Auth.isLoggedIn()) window.location.href = 'index.html';
+// ── Redirect if already logged in ──────────────────────────
+if (Auth.isLoggedIn()) {
+  const rd = new URLSearchParams(location.search).get('redirect') || 'index.html';
+  window.location.href = rd;
+}
 
-let mode = 'login'; // login | register | reset
+// ── State ───────────────────────────────────────────────────
+let mode = 'login';
+let _recoveryEmail = '', _recoveryPass = '';
 
-// Check URL param
+// URL param
 if (new URLSearchParams(location.search).get('tab') === 'register') setMode('register');
 
+// ── Mode switcher ───────────────────────────────────────────
 function setMode(m) {
   mode = m;
-  const isReset    = m === 'reset';
-  const isRegister = m === 'register';
-  const isLogin    = m === 'login';
+  const isReset = m === 'reset', isReg = m === 'register', isLogin = m === 'login';
 
-  document.getElementById('authTabs').style.display    = isReset ? 'none' : '';
-  document.getElementById('resetHeader').style.display = isReset ? '' : 'none';
-  document.getElementById('googleSection').style.display = isReset ? 'none' : '';
-  document.getElementById('nameGroup').style.display    = isRegister ? '' : 'none';
-  document.getElementById('confirmGroup').style.display = isRegister ? '' : 'none';
-  document.getElementById('termsGroup').style.display   = isRegister ? '' : 'none';
-  document.getElementById('passGroup').style.display    = isReset ? 'none' : '';
-  document.getElementById('forgotLink').style.display   = isLogin ? '' : 'none';
-  document.getElementById('strengthMeter').style.display = isRegister ? '' : 'none';
-  document.getElementById('switchText').textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
-  document.getElementById('switchBtn').textContent  = isLogin ? 'Register' : 'Sign In';
+  // Tabs
+  const tabs = document.getElementById('authTabs');
+  tabs.classList.toggle('hidden', isReset);
+  document.querySelectorAll('.tab-btn').forEach(t => t.classList.toggle('active', t.dataset.tab === m));
 
-  document.querySelectorAll('.auth-tab').forEach(t =>
-    t.classList.toggle('active', t.dataset.tab === m));
+  // Reset back btn
+  document.getElementById('resetBackBtn').classList.toggle('hidden', !isReset);
+  // Google section
+  document.getElementById('googleSection').classList.toggle('hidden', isReset);
 
-  document.getElementById('submitBtn').textContent =
-    isReset ? 'Send Reset Email' : isLogin ? 'Sign In' : 'Create Account';
+  // Field visibility
+  toggleEl('nameGroup',     isReg);
+  toggleEl('confirmGroup',  isReg);
+  toggleEl('termsGroup',    isReg);
+  toggleEl('passGroup',     !isReset);
+  toggleEl('forgotLink',    isLogin);
+  toggleEl('strengthMeter', isReg);
+
+  // Headings
+  const h = { login:['Welcome back','Sign in to your SomBazar account'], register:['Create your account',"Join Somaliland's largest marketplace"], reset:['Reset your password',"We'll send reset instructions to your email"] };
+  document.getElementById('headingTitle').textContent    = h[m][0];
+  document.getElementById('headingSubtitle').textContent = h[m][1];
+
+  // Submit button
+  const icons = { login:'login', register:'person_add', reset:'send' };
+  const texts = { login:'Sign In', register:'Create Account', reset:'Send Reset Email' };
+  document.getElementById('submitBtnInner').innerHTML =
+    `<span class="material-symbols-outlined" style="font-size:18px">${icons[m]}</span>${texts[m]}`;
+
+  // Switch row
+  const sw = document.getElementById('switchRow');
+  if (isReset) { sw.classList.add('hidden'); return; }
+  sw.classList.remove('hidden');
+  sw.innerHTML = isLogin
+    ? `Don't have an account? <button onclick="setMode('register')" class="text-primary font-bold hover:underline ml-1">Create one free</button>`
+    : `Already have an account? <button onclick="setMode('login')" class="text-primary font-bold hover:underline ml-1">Sign In</button>`;
 
   clearMessages();
-  document.getElementById('emailInput').value = '';
 }
 
-function toggleTab() { setMode(mode === 'login' ? 'register' : 'login'); }
-
-document.getElementById('authTabs').addEventListener('click', e => {
-  if (e.target.matches('.auth-tab')) setMode(e.target.dataset.tab);
-});
-
-// Password strength
-document.getElementById('passInput').addEventListener('input', function() {
-  if (mode !== 'register') return;
-  const v = this.value;
-  const len   = v.length >= 6;
-  const num   = /\d/.test(v);
-  const upper = /[A-Z]/.test(v);
-
-  setCheck('chkLen',   len);
-  setCheck('chkNum',   num);
-  setCheck('chkUpper', upper);
-
-  const score = [len, num, upper].filter(Boolean).length;
-  const fill  = document.getElementById('strengthFill');
-  const label = document.getElementById('strengthLabel');
-  const colors = ['#ef4444','#f59e0b','#10b981'];
-  const labels = ['Weak','Fair','Strong'];
-  fill.style.width = (score / 3 * 100) + '%';
-  fill.style.background = colors[score - 1] || '#e5e7eb';
-  label.textContent = v ? labels[score - 1] || '' : '';
-  label.style.color = colors[score - 1] || 'var(--gray)';
-});
-
-// Confirm match
-document.getElementById('confirmInput').addEventListener('input', function() {
-  const pass  = document.getElementById('passInput').value;
-  const msg   = document.getElementById('matchMsg');
-  if (!this.value) { msg.textContent = ''; return; }
-  if (this.value === pass) { msg.textContent = '✓ Passwords match'; msg.style.color = '#10b981'; }
-  else { msg.textContent = 'Passwords do not match'; msg.style.color = '#ef4444'; }
-});
-
-function setCheck(id, pass) {
-  document.getElementById(id).classList.toggle('pass', pass);
+function toggleEl(id, show) {
+  document.getElementById(id)?.classList.toggle('hidden', !show);
 }
 
-function togglePass(inputId, btn) {
-  const inp = document.getElementById(inputId);
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  btn.textContent = inp.type === 'password' ? '●' : '○';
-}
-
+// ── Alerts ──────────────────────────────────────────────────
 function clearMessages() {
-  document.getElementById('msgError').style.display   = 'none';
-  document.getElementById('msgSuccess').style.display = 'none';
+  document.getElementById('msgError').classList.add('hidden');
+  document.getElementById('msgSuccess').classList.add('hidden');
 }
-function showError(msg)   { const el = document.getElementById('msgError');   el.textContent = msg; el.style.display = ''; }
-function showSuccess(msg) { const el = document.getElementById('msgSuccess'); el.textContent = '✓ ' + msg; el.style.display = ''; }
+function showError(msg) {
+  const el = document.getElementById('msgError');
+  document.getElementById('msgErrorText').textContent = msg;
+  el.classList.remove('hidden');
+  el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+function showSuccess(msg) {
+  document.getElementById('msgSuccessText').textContent = msg;
+  document.getElementById('msgSuccess').classList.remove('hidden');
+}
 
+// ── Loading ─────────────────────────────────────────────────
 function setLoading(on) {
   const btn = document.getElementById('submitBtn');
   btn.disabled = on;
-  btn.innerHTML = on
-    ? '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle"></span>'
-    : (mode === 'reset' ? 'Send Reset Email' : mode === 'login' ? 'Sign In' : 'Create Account');
+  if (on) {
+    btn.innerHTML = '<span class="spinner"></span>';
+  } else {
+    const icons = { login:'login', register:'person_add', reset:'send' };
+    const texts = { login:'Sign In', register:'Create Account', reset:'Send Reset Email' };
+    btn.innerHTML = `<span id="submitBtnInner" class="flex items-center gap-2">
+      <span class="material-symbols-outlined" style="font-size:18px">${icons[mode]}</span>${texts[mode]}
+    </span>`;
+  }
 }
 
+// ── Form submit ─────────────────────────────────────────────
 async function handleSubmit(e) {
   e.preventDefault();
   clearMessages();
   const email = document.getElementById('emailInput').value.trim();
 
   if (mode === 'reset') {
-    if (!email) { showError('Enter your email address'); return; }
+    if (!email) { showError('Please enter your email address.'); return; }
     setLoading(true);
     try {
       const res = await API.forgotPassword(email);
-      showSuccess(res.message || 'Reset instructions sent!');
-      // Dev mode: show token
-      if (res.dev_url) {
-        showSuccess(`Reset link (DEV MODE): ${res.dev_url}`);
-      }
-    } catch(err) { showError(err.message || 'Failed to send reset email'); }
+      showSuccess(res.message || 'Reset instructions sent! Check your inbox.');
+      if (res.dev_url) showSuccess('Dev link: ' + res.dev_url);
+    } catch(err) { showError(err.message || 'Failed to send reset email.'); }
     finally { setLoading(false); }
     return;
   }
 
   const pass = document.getElementById('passInput').value;
-  if (!email || !pass) { showError('Email and password are required'); return; }
+  if (!email) { showError('Email address is required.'); return; }
+  if (!pass)  { showError('Password is required.'); return; }
 
   setLoading(true);
   try {
@@ -319,127 +530,136 @@ async function handleSubmit(e) {
       const name    = document.getElementById('nameInput').value.trim();
       const confirm = document.getElementById('confirmInput').value;
       const terms   = document.getElementById('termsCheck').checked;
-      if (!name)         { showError('Full name is required');          setLoading(false); return; }
-      if (pass.length < 6){ showError('Password must be at least 6 characters'); setLoading(false); return; }
-      if (pass !== confirm){ showError('Passwords do not match');       setLoading(false); return; }
-      if (!terms)        { showError('Please accept the Terms of Service'); setLoading(false); return; }
-      const result = await API.register(name, email, pass);
-      Auth.setSession(result.token, result.user);
+      if (!name)            { showError('Full name is required.');                    setLoading(false); return; }
+      if (pass.length < 6)  { showError('Password must be at least 6 characters.');  setLoading(false); return; }
+      if (pass !== confirm)  { showError('Passwords do not match.');                  setLoading(false); return; }
+      if (!terms)            { showError('Please accept the Terms of Service.');      setLoading(false); return; }
+      const r = await API.register(name, email, pass);
+      Auth.setSession(r.token, r.user);
       showSuccess('Account created! Redirecting…');
     } else {
-      const result = await API.login(email, pass);
-      Auth.setSession(result.token, result.user);
+      const r = await API.login(email, pass);
+      Auth.setSession(r.token, r.user);
       showSuccess('Welcome back! Redirecting…');
     }
-    const redirect = new URLSearchParams(location.search).get('redirect') || 'index.html';
-    setTimeout(() => window.location.href = redirect, 800);
+    const rd = new URLSearchParams(location.search).get('redirect') || 'index.html';
+    setTimeout(() => window.location.href = rd, 900);
   } catch(err) {
-    // Silinmek üzere hesap kontrolü
-    if (err.account_status === 'pending_deletion' || (err.message && err.message.includes('scheduled for deletion'))) {
-      const daysLeft = err.days_left || '?';
-      showRecoveryBanner(daysLeft, email, pass);
+    setLoading(false);
+    if (err.account_status === 'pending_deletion' || String(err.message).includes('scheduled for deletion')) {
+      _recoveryEmail = email;
+      _recoveryPass  = pass;
+      document.getElementById('recoveryDays').textContent = err.days_left || '?';
+      document.getElementById('recoveryBanner').classList.remove('hidden');
     } else {
       showError(err.message || 'Something went wrong. Please try again.');
     }
-    setLoading(false);
   }
 }
 
-function showRecoveryBanner(daysLeft, email, pass) {
-  const msgError = document.getElementById('msgError');
-  if (msgError) {
-    msgError.innerHTML = `
-      <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:14px;text-align:left">
-        <div style="font-weight:700;color:#92400e;margin-bottom:6px">!️ Account Scheduled for Deletion</div>
-        <div style="font-size:13px;color:#78350f;margin-bottom:10px">
-          Your account will be permanently deleted in <b>${daysLeft} day(s)</b>. Would you like to recover it?
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="recoverAccount('${email.replace("'","\'")}','${pass.replace("'","\'")}');return false"
-            style="flex:1;background:#f97316;color:white;border:none;border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:13px;font-family:'DM Sans'">
-            Recover Account
-          </button>
-          <button onclick="document.getElementById('msgError').innerHTML=''"
-            style="background:none;border:1px solid #d97706;border-radius:8px;padding:8px 12px;color:#92400e;cursor:pointer;font-size:13px;font-family:'DM Sans'">
-            Cancel
-          </button>
-        </div>
-      </div>`;
-    msgError.style.display = '';
-  }
-}
-
-async function recoverAccount(email, pass) {
+// ── Account recovery ────────────────────────────────────────
+async function doRecoverAccount() {
   try {
     const r = await fetch('api/auth.php?action=recover_account', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password: pass })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ email: _recoveryEmail, password: _recoveryPass })
     });
-    const txt = await r.text();
-    let d; try { d = JSON.parse(txt); } catch(e) { throw new Error('Server error'); }
+    const d = await r.json();
     if (!d.success) throw new Error(d.error || 'Recovery failed');
     Auth.setSession(d.token, d.user);
-    showSuccess('✓ Account recovered! Welcome back!');
+    showSuccess('Account recovered! Welcome back!');
     setTimeout(() => window.location.href = 'index.html', 1200);
-  } catch(e) {
-    showError(e.message);
+  } catch(e) { showError(e.message); }
+}
+
+// ── Password strength ───────────────────────────────────────
+document.getElementById('passInput').addEventListener('input', function() {
+  if (mode !== 'register') return;
+  const v = this.value;
+  const len = v.length >= 6, num = /\d/.test(v), upper = /[A-Z]/.test(v);
+  const score = [len,num,upper].filter(Boolean).length;
+  const colors = ['#ef4444','#f59e0b','#22c55e'];
+  const labels = ['Weak','Fair','Strong'];
+
+  setCheck('chkLen', len); setCheck('chkNum', num); setCheck('chkUpper', upper);
+  [1,2,3].forEach(i => {
+    const bar = document.getElementById(`sf${i}`);
+    bar.style.width      = score >= i ? '100%' : '0';
+    bar.style.background = score > 0 ? colors[score-1] : '#e2e8f0';
+  });
+  const lbl = document.getElementById('strengthLabel');
+  lbl.textContent = v ? (labels[score-1]||'') : '';
+  lbl.style.color = score > 0 ? colors[score-1] : '#94a3b8';
+});
+
+// ── Confirm match ───────────────────────────────────────────
+document.getElementById('confirmInput').addEventListener('input', function() {
+  const msg = document.getElementById('matchMsg');
+  if (!this.value) { msg.classList.add('hidden'); return; }
+  const match = this.value === document.getElementById('passInput').value;
+  msg.classList.remove('hidden');
+  msg.textContent = match ? '✓ Passwords match' : 'Passwords do not match';
+  msg.className   = `text-xs mt-1.5 font-semibold ${match ? 'text-green-600' : 'text-red-500'}`;
+});
+
+// ── Check helper ────────────────────────────────────────────
+function setCheck(id, pass) {
+  const el = document.getElementById(id);
+  el.classList.toggle('pass', pass);
+  const icon = el.querySelector('.material-symbols-outlined');
+  if (icon) {
+    icon.textContent = pass ? 'check_circle' : 'circle';
+    icon.style.fontVariationSettings = pass ? "'FILL' 1" : "'FILL' 0";
   }
 }
 
-// Google Sign In (simulated - requires real OAuth in production)
-// Google credential callback (One Tap + button)
+// ── Eye toggle ──────────────────────────────────────────────
+function togglePass(id, btn) {
+  const inp  = document.getElementById(id);
+  const icon = btn.querySelector('.eye-icon');
+  inp.type   = inp.type === 'password' ? 'text' : 'password';
+  if (icon) icon.textContent = inp.type === 'password' ? 'visibility' : 'visibility_off';
+}
+
+// ── Google ──────────────────────────────────────────────────
 async function handleGoogleCredential(response) {
   if (!response?.credential) return;
   try {
-    const res = await fetch('api/auth.php?action=google', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res  = await fetch('api/auth.php?action=google', {
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ credential: response.credential })
     });
     const data = await res.json();
-    const d = data.data || data;
+    const d    = data.data || data;
     if (data.success && d.token) {
       Auth.setSession(d.token, d.user);
-      window.location.href = 'index.html';
-    } else {
-      showError(data.error || d.error || 'Google sign in failed');
-    }
-  } catch (e) {
-    showError('Network error. Please try again.');
-  }
+      window.location.href = new URLSearchParams(location.search).get('redirect') || 'index.html';
+    } else { showError(data.error || 'Google sign in failed.'); }
+  } catch { showError('Network error. Please try again.'); }
 }
 
-async function googleSignIn() {
-  // Fallback: redirect to Google OAuth
+function googleSignIn() {
   const clientId = '918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com';
-  const redirect  = encodeURIComponent(window.location.origin + '/auth.html?google=1');
+  const redirect = encodeURIComponent(window.location.origin + '/auth.html?google=1');
   window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirect}&response_type=code&scope=email%20profile`;
 }
 
-// Render Google button when GSI loads
 window.addEventListener('load', () => {
   if (typeof google !== 'undefined' && google.accounts) {
     google.accounts.id.initialize({
       client_id: '918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com',
-      callback: handleGoogleCredential,
-      auto_select: false,
+      callback: handleGoogleCredential, auto_select: false,
     });
     google.accounts.id.renderButton(
       document.getElementById('googleBtnContainer'),
-      { theme: 'outline', size: 'large', width: 400, text: 'continue_with', shape: 'rectangular' }
+      { theme:'outline', size:'large', width:420, text:'continue_with', shape:'rectangular' }
     );
   } else {
-    // GSI yüklenmediyse fallback butonu göster
-    const fb = document.getElementById('googleFallbackBtn');
-    if (fb) fb.style.display = '';
+    document.getElementById('googleFallbackBtn').classList.remove('hidden');
   }
 });
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
 </body>
 </html>
