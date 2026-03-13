@@ -2,1538 +2,1570 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="csrf-token" content="" id="csrfMeta">
   <link rel="icon" href="assets/favicon.png" type="image/png">
-    <!-- Apple PWA Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ec5b13">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="SomBazar">
   <link rel="apple-touch-icon" href="assets/icon-192.png">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f97316">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Profile — SomBazar</title>
-  <link rel="stylesheet" href="assets/style.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
-  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
-  <script>
-    (function(){
-      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
-      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(s);
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', GA_ID, {
-        page_title: document.title,
-        page_location: window.location.href,
-        anonymize_ip: true,
-        cookie_flags: 'SameSite=None;Secure'
-      });
-    })();
-  </script>
-  <script>
-    // Dark mode FOUC prevention — must run before DOM
-    (function(){
-      var t=localStorage.getItem('sb_theme')||
-        (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
-      document.documentElement.setAttribute('data-theme',t);
-    })();
-  </script>
-  <!-- Google Analytics GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M', {
-      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
-      'cookie_flags': 'SameSite=None;Secure'
-    });
-  </script>
-  <!-- Google Search Console Verification -->
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-6H7F8Y980M',{'cookie_domain':'sombazar-fixed-production.up.railway.app','cookie_flags':'SameSite=None;Secure'});</script>
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
-
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-  <script>tailwind.config={ theme:{ extend:{ colors:{ primary:"#ec5b13" }, fontFamily:{ sans:["Public Sans","sans-serif"] } } } }</script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:"#ec5b13"},fontFamily:{sans:["Public Sans","sans-serif"]}}}}</script>
   <style>
-    body { font-family: "Public Sans", sans-serif; }
-    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
-    .no-scrollbar::-webkit-scrollbar{ display:none; } .no-scrollbar{ -ms-overflow-style:none;scrollbar-width:none; }
-    .skeleton-card { background:#fff;border-radius:16px;overflow:hidden;border:1px solid #f0f0f0; }
-    .skeleton-img { height:180px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; }
-    .skeleton-line { height:14px;border-radius:6px;margin:10px 12px 6px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite; }
-    .skeleton-line.short{ width:55%; }
-    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-    .listing-card-badge { position:absolute;top:10px;left:10px;background:linear-gradient(135deg,#ff6b00,#ffaa00);color:white;font-size:9px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.8px;text-transform:uppercase; }
-    .listing-card-fav{ position:absolute;top:8px;right:8px;background:rgba(255,255,255,.9);border:none;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer; }
-    .toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Public Sans",sans-serif;background:#f1f5f9;color:#0f172a;}
+    .material-symbols-outlined{font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24;vertical-align:middle;line-height:1;}
+    /* Sidebar nav */
+    .snav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;font-size:14px;font-weight:600;color:#374151;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;text-decoration:none;}
+    .snav-item:hover{background:#f1f5f9;color:#0f172a;}
+    .snav-item.active{background:#ec5b13;color:#fff;}
+    .snav-item.active .material-symbols-outlined{color:#fff;}
+    /* Cards */
+    .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;}
+    /* Stat card */
+    .stat-box{background:#f8fafc;border-radius:12px;padding:16px;border:1px solid #e8ecf0;}
+    /* Badge */
+    .status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.3px;}
+    .badge-active{background:#dcfce7;color:#16a34a;}
+    .badge-pending{background:#fef9c3;color:#854d0e;}
+    .badge-expired{background:#f1f5f9;color:#64748b;}
+    .badge-sold{background:#fee2e2;color:#dc2626;}
+    /* Form input */
+    .form-inp{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:13px;outline:none;font-family:inherit;transition:border-color .15s;background:#fff;}
+    .form-inp:focus{border-color:#ec5b13;}
+    .form-inp:read-only{background:#f8fafc;color:#64748b;}
+    .form-label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;}
+    /* Toggle switch */
+    .toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #f1f5f9;}
+    .toggle-wrap:last-child{border-bottom:none;}
+    .toggle{position:relative;width:44px;height:24px;flex-shrink:0;}
+    .toggle input{opacity:0;width:0;height:0;position:absolute;}
+    .toggle-slider{position:absolute;inset:0;background:#cbd5e1;border-radius:20px;cursor:pointer;transition:background .2s;}
+    .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+    .toggle input:checked+.toggle-slider{background:#ec5b13;}
+    .toggle input:checked+.toggle-slider::before{transform:translateX(20px);}
+    /* Progress bar */
+    .prog-bar{height:6px;background:#e2e8f0;border-radius:20px;overflow:hidden;}
+    .prog-fill{height:100%;background:#ec5b13;border-radius:20px;transition:width .4s;}
+    /* Toast */
+    .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
     .toast{background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);}
     .toast.success{background:#10b981;} .toast.error{background:#ef4444;}
-    .tab-btn.active{ background:#ec5b13 !important; color:white !important; }
-    [data-theme="dark"] body { background:#1e293b;color:#f1f5f9; }
-  
-    .autocomplete-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.1);z-index:9999;max-height:320px;overflow-y:auto;}
-    .autocomplete-item{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;cursor:pointer;transition:background .15s;}
-    .autocomplete-item:hover,.autocomplete-item.ac-active{background:#f8f9fa;}
-    .search-wrap{position:relative;}
-</style>
+    /* Skeleton */
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skel{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;}
+    /* Listing row */
+    .listing-row{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;display:flex;gap:0;transition:box-shadow .15s;}
+    .listing-row:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);}
+    .listing-row-img{width:130px;min-height:110px;flex-shrink:0;object-fit:cover;display:block;}
+    .listing-row-ph{width:130px;min-height:110px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9;font-size:32px;}
+    /* Action btn */
+    .act-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit;text-decoration:none;transition:filter .15s;}
+    .act-btn:hover{filter:brightness(.92);}
+    /* Review row */
+    .rev-row{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px;}
+    /* Fav card */
+    .fav-card{background:#fff;border-radius:14px;overflow:hidden;border:1.5px solid #e2e8f0;cursor:pointer;transition:all .2s;position:relative;}
+    .fav-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+    /* Payment row */
+    .pay-row{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    /* Mobile */
+    @media(max-width:900px){
+      .profile-grid{grid-template-columns:1fr!important;}
+      .sidebar-sticky{position:static!important;}
+    }
+    @media(max-width:640px){
+      .stat-grid-4{grid-template-columns:1fr 1fr!important;}
+      .listing-row-img,.listing-row-ph{width:90px;min-height:80px;}
+      .similar-4col{grid-template-columns:repeat(2,1fr)!important;}
+    }
+    /* Settings sidebar */
+    .settings-nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;}
+    .settings-nav-item:hover{background:#f1f5f9;}
+    .settings-nav-item.active{background:#fff7f2;color:#ec5b13;}
+    .settings-nav-item.active .material-symbols-outlined{color:#ec5b13;}
+    .settings-nav-item.signout{color:#ef4444;}
+    .settings-nav-item.signout:hover{background:#fee2e2;}
+    /* Sort select */
+    select.sort-sel{padding:6px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:700;outline:none;font-family:inherit;background:#fff;color:#374151;}
+    /* Tab pill */
+    .tab-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .15s;}
+    .tab-pill.active{background:#ec5b13;color:#fff;}
+    .tab-pill:not(.active){background:#f1f5f9;color:#374151;}
+    .tab-pill:not(.active):hover{background:#e2e8f0;}
+  </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen">
+<body>
 
-<!-- HEADER -->
-<header class="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex h-16 items-center justify-between gap-4">
-      <a href="index.html" class="flex items-center gap-2 group">
-        <div class="bg-primary p-1.5 rounded-lg text-white"><span class="material-symbols-outlined text-xl block">storefront</span></div>
-        <h1 class="text-xl font-bold tracking-tight text-slate-900">Som<span class="text-primary">Bazar</span></h1>
+<!-- ═══════════ HEADER ═══════════ -->
+<header style="background:#fff;border-bottom:1px solid #e2e8f0;height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:100;">
+  <div style="max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;gap:14px;">
+    <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;">
+      <div style="background:#ec5b13;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#fff;font-size:18px;">sell</span>
+      </div>
+      <span style="font-size:17px;font-weight:900;color:#0f172a;">SomBazar</span>
+    </a>
+    <form style="flex:1;max-width:460px;position:relative;" onsubmit="return hsSearch(event)">
+      <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:17px;pointer-events:none;">search</span>
+      <input id="headerSearchInput" type="search" placeholder="Search your listings, orders..."
+        style="width:100%;padding:9px 12px 9px 36px;background:#f1f5f9;border:1.5px solid transparent;border-radius:12px;font-size:13px;outline:none;font-family:inherit;"
+        onfocus="this.style.borderColor='#ec5b13';this.style.background='#fff'"
+        onblur="this.style.borderColor='transparent';this.style.background='#f1f5f9'">
+    </form>
+    <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+      <a href="post.html" style="background:#ec5b13;color:#fff;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:6px;">
+        <span class="material-symbols-outlined" style="font-size:16px;">add</span> Post New Ad
       </a>
-      <div class="hidden md:flex flex-1 max-w-md">
-        <div class="relative w-full">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-          <input class="w-full bg-slate-100 border-transparent rounded-xl py-2 pl-10 pr-4 focus:ring-2 focus:ring-primary/50 transition-all text-sm outline-none" placeholder="Search your listings...">
+      <div style="position:relative;" id="notifBellWrap">
+        <button onclick="toggleNotifDropdown()" id="notifBell" style="background:none;border:none;cursor:pointer;padding:8px;color:#64748b;position:relative;">
+          <span class="material-symbols-outlined" style="font-size:22px;">notifications</span>
+          <span id="notifBadge" style="display:none;position:absolute;top:7px;right:7px;width:8px;height:8px;background:#ec5b13;border-radius:50%;border:2px solid #fff;"></span>
+        </button>
+        <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100%+8px);width:300px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:400px;overflow-y:auto;">
+          <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9;font-weight:800;font-size:14px;">Notifications</div>
+          <div id="notifList" style="padding:12px 16px;font-size:13px;color:#94a3b8;">No new notifications</div>
         </div>
       </div>
-      <div class="flex items-center gap-2 sm:gap-3">
-        <a href="post.html" class="hidden sm:flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors">
-          <span class="material-symbols-outlined text-lg">add_circle</span> Post New Ad
-        </a>
-        <div class="flex items-center gap-1 border-l border-slate-200 ml-2 pl-2">
-          <div style="position:relative" id="notifBellWrap">
-            <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
-              <span class="material-symbols-outlined">notifications</span>
-              <span id="notifBadge" style="display:none" class="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full border-2 border-white"></span>
-            </button>
-            <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;max-height:400px;overflow-y:auto">
-              <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9"><span style="font-weight:800;font-size:14px">Notifications</span></div>
-              <div id="notifList"></div>
-            </div>
-          </div>
-          <a href="messages.html" class="p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors" id="msgBellBtn">
-            <span class="material-symbols-outlined">chat_bubble</span>
-          </a>
-          <div class="ml-1 w-9 h-9 rounded-full bg-primary/10 border-2 border-slate-100 overflow-hidden cursor-pointer" id="headerAvatarWrap">
-            <div id="headerAvatarLink" class="header-avatar w-full h-full flex items-center justify-center font-black text-primary text-sm"></div>
-          </div>
-        </div>
-        <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
-        <a href="auth.html" id="header-signin" class="text-sm font-bold text-slate-700 hover:text-primary px-2">Sign In</a>
-        <div id="header-user" style="display:none">
-          <a href="profile.html" class="header-avatar w-8 h-8 rounded-full bg-primary/90 text-white flex items-center justify-center font-black text-xs overflow-hidden flex-shrink-0" data-visual-avatar="1"></a></div>
+      <button onclick="window.location='settings.html'" style="background:none;border:none;cursor:pointer;padding:8px;color:#64748b;" title="Settings">
+        <span class="material-symbols-outlined" style="font-size:22px;">settings</span>
+      </button>
+      <div id="header-user" style="display:none;">
+        <a href="profile.html" class="header-avatar" data-visual-avatar="1" style="width:34px;height:34px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px;text-decoration:none;overflow:hidden;"></a>
       </div>
+      <a href="auth.html" id="header-signin" style="font-size:13px;font-weight:700;color:#374151;text-decoration:none;padding:7px 14px;border:1.5px solid #e2e8f0;border-radius:10px;">Sign In</a>
+      <a href="admin.html" id="admin-btn" style="display:none;font-size:12px;font-weight:800;background:#0f172a;color:#fff;padding:6px 12px;border-radius:8px;text-decoration:none;">Admin</a>
     </div>
   </div>
 </header>
 
-<main id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div id="notLoggedIn" style="display:none" class="text-center py-20"><span class="material-symbols-outlined text-6xl text-slate-300">lock</span><p class="text-lg font-bold text-slate-700 mt-4">Sign in to view your profile</p><a href="auth.html" class="mt-4 inline-block bg-primary text-white px-6 py-3 rounded-xl font-bold">Sign In</a></div>
-  <div id="profileContent" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Not logged in -->
+<div id="notLoggedIn" style="display:none;text-align:center;padding:80px 20px;">
+  <span class="material-symbols-outlined" style="font-size:64px;color:#cbd5e1;">lock</span>
+  <h2 style="font-size:20px;font-weight:800;margin:16px 0 8px;">Sign in to view your profile</h2>
+  <p style="color:#64748b;margin-bottom:20px;">Create an account or sign in to manage your listings.</p>
+  <a href="auth.html" style="background:#ec5b13;color:#fff;padding:12px 28px;border-radius:12px;font-weight:800;text-decoration:none;font-size:14px;">Sign In</a>
+</div>
 
-    <!-- LEFT: Profile + Navigation -->
-    <aside class="lg:col-span-4 space-y-5">
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<div id="profileContent" style="display:none;">
+<div style="max-width:1100px;margin:0 auto;padding:24px 20px 100px;" class="profile-grid" id="profileGrid" style="display:grid;grid-template-columns:280px 1fr;gap:24px;">
+<div style="display:grid;grid-template-columns:280px 1fr;gap:24px;" class="profile-grid" id="profileGrid2">
 
-      <!-- User Profile Card -->
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-        <div class="flex flex-col items-center text-center">
-          <div class="relative mb-4">
-            <div class="w-24 h-24 rounded-full bg-primary/10 border-4 border-primary/20 overflow-hidden flex items-center justify-center" id="profileAvatarWrap">
-              <span class="material-symbols-outlined text-4xl text-primary" id="profileAvatarText">person</span>
-            </div>
-            <button id="editAvatarBtn" onclick="document.getElementById('avatarInput').click()" class="absolute bottom-0 right-0 bg-primary text-white p-1.5 rounded-full border-2 border-white shadow">
-              <span class="material-symbols-outlined text-sm block">photo_camera</span>
-            </button>
-            <input type="file" id="avatarInput" accept="image/*" style="display:none">
-          </div>
-          <h2 class="text-xl font-bold text-slate-900 mb-1" id="profileName">Loading...</h2>
-          <div class="flex items-center gap-1 text-slate-500 text-sm mb-4">
-            <span class="material-symbols-outlined text-base">location_on</span>
-            <span id="profileLocation" class="flex items-center gap-1"><span class="material-symbols-outlined text-base">location_on</span><span id="profileMeta">Hargeisa, Somaliland</span></span>
-          </div>
-          <div id="verifyBadgeWrap" class="mb-3"></div>
-          <button id="verifyBtn" style="display:none" class="mb-3 text-xs bg-blue-50 text-blue-600 font-bold px-3 py-1.5 rounded-full border border-blue-200 hover:bg-blue-100">Get Verified</button>
-          <div class="grid grid-cols-3 w-full gap-2 pt-4 border-t border-slate-100">
-            <div class="flex flex-col items-center">
-              <span class="text-xl font-bold text-slate-900" id="statListings">0</span>
-              <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Listings</span>
-            </div>
-            <div class="flex flex-col items-center border-x border-slate-100">
-              <span class="text-xl font-bold text-slate-900" id="statReviews">0</span>
-              <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Reviews</span>
-            </div>
-            <div class="flex flex-col items-center">
-              <span class="text-xl font-bold text-slate-900" id="statRating">4.9</span>
-              <span class="text-[10px] uppercase tracking-wider font-semibold text-slate-400">Rating</span>
-            </div>
-          </div>
-          <div id="profileCompletion" style="display:none" class="mt-4 pt-3 border-t border-slate-100">
-            <div class="flex items-center justify-between text-xs mb-1"><span class="font-semibold text-slate-600">Profile Completion</span><span id="completionPct" class="font-bold text-primary">0%</span></div>
-            <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div id="completionBar" class="h-full bg-primary rounded-full transition-all" style="width:0%"></div></div>
-          </div>
+  <!-- ═══════════ LEFT SIDEBAR ═══════════ -->
+  <div class="sidebar-sticky" style="position:sticky;top:68px;align-self:start;">
+
+    <!-- Profile Card -->
+    <div class="card" style="padding:24px;text-align:center;margin-bottom:16px;">
+      <div style="position:relative;display:inline-block;margin-bottom:14px;">
+        <div id="profileAvatarWrap" style="width:80px;height:80px;border-radius:50%;background:#ec5b13;overflow:hidden;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 4px 14px rgba(236,91,19,.25);margin:0 auto;">
+          <span class="material-symbols-outlined" id="profileAvatarText" style="font-size:36px;color:#fff;">person</span>
+        </div>
+        <button onclick="document.getElementById('avatarInput').click()" style="position:absolute;bottom:0;right:0;background:#ec5b13;border:2px solid #fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <span class="material-symbols-outlined" style="font-size:13px;color:#fff;">photo_camera</span>
+        </button>
+        <div id="onlineDot" style="position:absolute;top:2px;left:2px;width:14px;height:14px;background:#22c55e;border-radius:50%;border:2px solid #fff;"></div>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+      </div>
+      <h2 id="profileName" style="font-size:17px;font-weight:900;color:#0f172a;margin-bottom:4px;">Loading...</h2>
+      <div style="display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;color:#64748b;margin-bottom:10px;" id="profileLocation">
+        <span class="material-symbols-outlined" style="font-size:14px;">location_on</span>
+        <span id="profileMeta">Hargeisa, Somaliland</span>
+      </div>
+      <div id="verifyBadgeWrap" style="margin-bottom:10px;"></div>
+      <!-- Stats -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #f1f5f9;padding-top:14px;margin-top:4px;gap:4px;">
+        <div>
+          <div id="statListings" style="font-size:18px;font-weight:900;color:#0f172a;">0</div>
+          <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;">LISTINGS</div>
+        </div>
+        <div style="border-left:1px solid #f1f5f9;border-right:1px solid #f1f5f9;">
+          <div id="statReviews" style="font-size:18px;font-weight:900;color:#0f172a;">0</div>
+          <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;">REVIEWS</div>
+        </div>
+        <div>
+          <div id="statRating" style="font-size:18px;font-weight:900;color:#0f172a;">—</div>
+          <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;">RATING</div>
         </div>
       </div>
+    </div>
 
-      <!-- Pro Plan Card -->
-      <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden" id="planCard">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/20 rounded-full blur-2xl"></div>
-        <div class="relative z-10">
-          <div class="flex items-center justify-between mb-3">
-            <div class="bg-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest" id="planBadgeWrap">Free Plan</div>
-            <span class="text-slate-400 text-xs" id="planExpiry"></span>
-          </div>
-          <h3 class="text-white font-bold text-lg mb-1" id="planStatusText">Free Plan</h3>
-          <p class="text-slate-400 text-sm mb-4" id="planDesc">Upgrade to reach more buyers across Somaliland.</p>
-          <a href="plans.html" class="w-full bg-white text-slate-900 py-2.5 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors flex items-center justify-center gap-2">
-            <span id="planBtnText">Upgrade Plan</span>
-            <span class="material-symbols-outlined text-lg">arrow_forward</span>
-          </a>
-          <div id="cancelPlanWrap" style="display:none" class="mt-2"><button class="w-full text-xs text-slate-400 hover:text-red-400 py-1">Cancel subscription</button></div>
+    <!-- Premium Plan Card -->
+    <div id="planCard" style="background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:16px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:#ec5b13;border-radius:50%;opacity:.15;"></div>
+      <div style="position:relative;z-index:1;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div id="planBadge" style="background:rgba(236,91,19,.3);color:#fbbf24;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;">FREE PLAN</div>
+          <span id="planExpiry" style="font-size:10px;color:rgba(255,255,255,.5);"></span>
+        </div>
+        <div id="planStatusText" style="font-size:15px;font-weight:800;color:#fff;margin-bottom:4px;">Free Plan</div>
+        <div id="planDesc" style="font-size:11px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:14px;">Upgrade to reach more buyers across Somaliland.</div>
+        <a href="packages.html" style="display:flex;align-items:center;justify-content:space-between;background:#fff;color:#0f172a;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;">
+          <span id="planBtnText">Manage Subscription</span>
+          <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span>
+        </a>
+        <div id="cancelPlanWrap" style="display:none;margin-top:6px;text-align:center;">
+          <button onclick="confirmCancelPlan()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:11px;cursor:pointer;font-family:inherit;">Cancel subscription</button>
         </div>
       </div>
+    </div>
 
-      <!-- Desktop Nav -->
-      <nav class="hidden lg:flex flex-col gap-1">
-        <button id="tabListings" onclick="switchTab('listings')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white active" data-tab="listings">
-          <span class="material-symbols-outlined">list_alt</span> My Listings
-        </button>
-        <button id="tabFavorites" onclick="switchTab('favorites')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="favorites">
-          <span class="material-symbols-outlined">favorite</span> Favorites
-        </button>
-        <button id="tabOffers" onclick="switchTab('offers')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="offers">
-          <span class="material-symbols-outlined">local_offer</span> Offers Received
-        </button>
-        <button id="tabReviews" onclick="switchTab('reviews')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="reviews">
-          <span class="material-symbols-outlined">reviews</span> My Reviews
-        </button>
-        <button id="tabNotifications" onclick="switchTab('notifications')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="notifications">
-          <span class="material-symbols-outlined">notifications</span> Notifications
-        </button>
-        <button id="tabPayments" onclick="switchTab('billing')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="billing">
-          <span class="material-symbols-outlined">payments</span> Payments &amp; Billing
-        </button>
-        <button id="tabSettings" onclick="switchTab('settings')" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all text-slate-600 hover:bg-white" data-tab="settings">
-          <span class="material-symbols-outlined">settings</span> Account Settings
-        </button>
-      </nav>
-    </aside>
+    <!-- Main Nav -->
+    <nav style="display:flex;flex-direction:column;gap:2px;" id="mainNav">
+      <button onclick="switchTab('listings')" id="navListings" class="snav-item active">
+        <span class="material-symbols-outlined" style="font-size:20px;">list_alt</span> My Listings
+      </button>
+      <button onclick="switchTab('favorites')" id="navFavorites" class="snav-item">
+        <span class="material-symbols-outlined" style="font-size:20px;">favorite</span> Favorites
+      </button>
+      <button onclick="switchTab('offers')" id="navOffers" class="snav-item">
+        <span class="material-symbols-outlined" style="font-size:20px;">local_offer</span> Offers Received
+        <span id="offersBadgeNav" style="display:none;margin-left:auto;background:#ec5b13;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;"></span>
+      </button>
+      <button onclick="switchTab('reviews')" id="navReviews" class="snav-item">
+        <span class="material-symbols-outlined" style="font-size:20px;">star</span> My Reviews
+      </button>
+      <button onclick="switchTab('billing')" id="navBilling" class="snav-item">
+        <span class="material-symbols-outlined" style="font-size:20px;">payments</span> Payments &amp; Billing
+      </button>
+      <button onclick="switchTab('settings')" id="navSettings" class="snav-item">
+        <span class="material-symbols-outlined" style="font-size:20px;">settings</span> Account Settings
+      </button>
+    </nav>
 
-    <!-- RIGHT: Dashboard Content -->
-    <div class="lg:col-span-8 space-y-6">
+  </div><!-- /sidebar -->
 
-      <!-- Mobile nav tabs -->
-      <div class="lg:hidden flex overflow-x-auto no-scrollbar gap-2 pb-2">
-        <button id="tabListingsM" onclick="switchTab('listings')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-primary text-white text-sm font-bold active" data-tab="listings">My Listings</button>
-        <button id="tabFavoritesM" onclick="switchTab('favorites')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-white text-slate-600 text-sm font-semibold shadow-sm" data-tab="favorites">Favorites</button>
-        <button id="tabOffersM" onclick="switchTab('offers')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-white text-slate-600 text-sm font-semibold shadow-sm" data-tab="offers">Offers</button>
-        <button id="tabPaymentsM" onclick="switchTab('billing')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-white text-slate-600 text-sm font-semibold shadow-sm" data-tab="billing">Payments</button>
-        <button id="tabSettingsM" onclick="switchTab('settings')" class="tab-btn whitespace-nowrap px-4 py-2 rounded-xl bg-white text-slate-600 text-sm font-semibold shadow-sm" data-tab="settings">Settings</button>
-      </div>
+  <!-- ═══════════ RIGHT CONTENT ═══════════ -->
+  <div>
 
-      <!-- LISTINGS TAB -->
-      <div id="tabContentListings" data-tabcontent="listings">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h2 class="text-2xl font-bold text-slate-900">Active Listings</h2>
-            <p class="text-slate-500 text-sm" id="listingSubtitle">Your live ads on SomBazar</p>
-          </div>
-          <div class="flex gap-2">
-            <button class="p-2 bg-white border border-slate-200 rounded-lg text-slate-600 hover:border-primary transition-colors">
-              <span class="material-symbols-outlined">grid_view</span>
-            </button>
-            <button class="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:border-primary transition-colors">
-              <span class="material-symbols-outlined">view_list</span>
-            </button>
-          </div>
+    <!-- Mobile tab scroll -->
+    <div style="display:none;overflow-x:auto;gap:8px;padding-bottom:12px;scrollbar-width:none;" id="mobileTabBar" class="mobile-tabs">
+      <button onclick="switchTab('listings')" class="tab-pill active" id="mTabListings">My Listings</button>
+      <button onclick="switchTab('favorites')" class="tab-pill" id="mTabFavorites">Favorites</button>
+      <button onclick="switchTab('offers')" class="tab-pill" id="mTabOffers">Offers</button>
+      <button onclick="switchTab('reviews')" class="tab-pill" id="mTabReviews">Reviews</button>
+      <button onclick="switchTab('billing')" class="tab-pill" id="mTabBilling">Payments</button>
+      <button onclick="switchTab('settings')" class="tab-pill" id="mTabSettings">Settings</button>
+    </div>
+
+    <!-- ────────── LISTINGS TAB ────────── -->
+    <div id="tabListings">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div>
+          <h2 style="font-size:22px;font-weight:900;color:#0f172a;margin-bottom:2px;">My Listings</h2>
+          <p style="font-size:13px;color:#64748b;">Track, manage, and optimize your marketplace advertisements.</p>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="myListingsGrid">
-          <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
-          <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
-        </div>
-        <div id="myListingsEmpty" style="display:none" class="text-center py-12 text-slate-400 col-span-2"><span class="material-symbols-outlined text-5xl">inventory_2</span><p class="mt-3 font-semibold">No listings yet</p></div>
-
-        <!-- Post new placeholder -->
-        <a href="post.html" class="mt-4 flex flex-col items-center justify-center p-8 bg-slate-100/50 rounded-3xl border-2 border-dashed border-slate-300 hover:border-primary transition-colors cursor-pointer group min-h-[160px]">
-          <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined text-primary text-3xl">add</span>
-          </div>
-          <h3 class="text-base font-bold text-slate-900 mb-1">Post a New Ad</h3>
-          <p class="text-slate-500 text-sm text-center max-w-[200px]">Reach thousands of potential buyers instantly.</p>
+        <a href="post.html" style="background:#ec5b13;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:16px;">add</span> Create New Listing
         </a>
       </div>
 
-      <!-- FAVORITES TAB -->
-      <div id="tabContentFavorites" data-tabcontent="favorites" style="display:none">
-        <h2 class="text-2xl font-bold text-slate-900 mb-4">Favorites</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="favoritesGrid">
-          <div class="col-span-2 text-center py-12 text-slate-400">
-            <span class="material-symbols-outlined text-5xl">favorite_border</span>
-            <p class="mt-3 font-semibold">No favorites yet</p>
-            <a href="listings.html" class="mt-3 inline-block text-primary font-bold text-sm hover:underline">Browse listings</a>
+      <!-- Stat cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" class="stat-grid-4" id="listingStatsRow">
+        <div class="stat-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;">Total Views</span>
+            <div style="width:32px;height:32px;background:#fff7f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+              <span class="material-symbols-outlined" style="font-size:16px;color:#ec5b13;">visibility</span>
+            </div>
           </div>
+          <div id="statViews" style="font-size:22px;font-weight:900;color:#0f172a;">—</div>
+          <div id="statViewsDelta" style="font-size:11px;color:#10b981;font-weight:700;margin-top:2px;"></div>
         </div>
-        <div id="favoritesEmpty" style="display:none" class="text-center py-12 text-slate-400 col-span-2"><span class="material-symbols-outlined text-5xl">favorite_border</span><p class="mt-3 font-semibold">No favorites yet</p></div>
+        <div class="stat-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;">Active Ads</span>
+            <div style="width:32px;height:32px;background:#fff7f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+              <span class="material-symbols-outlined" style="font-size:16px;color:#ec5b13;">campaign</span>
+            </div>
+          </div>
+          <div id="statActiveAds" style="font-size:22px;font-weight:900;color:#0f172a;">—</div>
+          <div id="statActiveSub" style="font-size:11px;color:#64748b;font-weight:600;margin-top:2px;"></div>
+        </div>
+        <div class="stat-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;">New Messages</span>
+            <div style="width:32px;height:32px;background:#fff7f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+              <span class="material-symbols-outlined" style="font-size:16px;color:#ec5b13;">chat_bubble</span>
+            </div>
+          </div>
+          <div id="statMsgs" style="font-size:22px;font-weight:900;color:#0f172a;">—</div>
+          <div id="statMsgsDelta" style="font-size:11px;color:#10b981;font-weight:700;margin-top:2px;"></div>
+        </div>
+        <div class="stat-box">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;">Total Earnings</span>
+            <div style="width:32px;height:32px;background:#fff7f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+              <span class="material-symbols-outlined" style="font-size:16px;color:#ec5b13;">payments</span>
+            </div>
+          </div>
+          <div id="statEarnings" style="font-size:22px;font-weight:900;color:#0f172a;">—</div>
+          <div id="statEarningsDelta" style="font-size:11px;color:#10b981;font-weight:700;margin-top:2px;"></div>
+        </div>
       </div>
 
-      <!-- OFFERS TAB -->
-      <div id="tabContentOffers" data-tabcontent="offers" style="display:none">
-        <div class="flex gap-2 mb-4">
-          <button id="offersReceivedBtn" onclick="switchOffersTab('received')" class="flex-1 py-2 rounded-xl bg-primary text-white text-sm font-bold">Received</button>
-          <button id="offersSentBtn" onclick="switchOffersTab('sent')" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200">Sent</button>
+      <!-- Search + Filter + Sort -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:200px;position:relative;">
+          <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:16px;pointer-events:none;">search</span>
+          <input id="listingSearchInput" type="search" placeholder="Search my listings..."
+            style="width:100%;padding:9px 12px 9px 34px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;outline:none;font-family:inherit;background:#fff;"
+            oninput="filterMyListings(this.value)">
         </div>
-        <h2 class="text-2xl font-bold text-slate-900 mb-4">Offers Received</h2>
-        <div id="offersListWrap" class="space-y-3">
-          <div class="text-center py-12 text-slate-400">
-            <span class="material-symbols-outlined text-5xl">local_offer</span>
-            <p class="mt-3 font-semibold">No offers yet</p>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:18px;color:#64748b;">filter_list</span>
+          <span style="font-size:13px;font-weight:600;color:#374151;">Filters</span>
+        </div>
+        <select class="sort-sel" id="listingSort" onchange="sortMyListings(this.value)">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="price_high">Price: High to Low</option>
+          <option value="price_low">Price: Low to High</option>
+        </select>
+      </div>
+
+      <!-- Listings list -->
+      <div id="myListingsList" style="display:flex;flex-direction:column;gap:12px;">
+        <div class="skel" style="height:110px;border-radius:14px;"></div>
+        <div class="skel" style="height:110px;border-radius:14px;"></div>
+        <div class="skel" style="height:110px;border-radius:14px;"></div>
+      </div>
+      <div id="myListingsEmpty" style="display:none;text-align:center;padding:40px;">
+        <span class="material-symbols-outlined" style="font-size:52px;color:#cbd5e1;">inventory_2</span>
+        <p style="font-size:15px;font-weight:700;color:#374151;margin-top:12px;">No listings yet</p>
+        <p style="font-size:13px;color:#64748b;margin-bottom:16px;">Start selling today</p>
+        <a href="post.html" style="background:#ec5b13;color:#fff;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;">Post First Listing</a>
+      </div>
+      <div id="listingsCount" style="font-size:12px;color:#94a3b8;text-align:center;margin-top:12px;"></div>
+
+      <!-- Post New Ad placeholder -->
+      <a href="post.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:#f8fafc;border-radius:16px;border:2px dashed #cbd5e1;text-decoration:none;margin-top:16px;transition:all .2s;" onmouseover="this.style.borderColor='#ec5b13'" onmouseout="this.style.borderColor='#cbd5e1'">
+        <div style="width:48px;height:48px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:10px;">
+          <span class="material-symbols-outlined" style="color:#ec5b13;font-size:26px;">add</span>
+        </div>
+        <span style="font-size:14px;font-weight:800;color:#0f172a;">Post a New Ad</span>
+        <span style="font-size:12px;color:#64748b;margin-top:4px;">Reach thousands of potential buyers instantly.</span>
+      </a>
+
+      <!-- Marketplace Performance -->
+      <div class="card" style="padding:22px;margin-top:16px;">
+        <h3 style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:16px;">Marketplace Performance</h3>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;" class="stat-grid-4">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">VIEWS</div>
+            <div id="perfViews" style="font-size:20px;font-weight:900;color:#0f172a;">—</div>
+            <div id="perfViewsDelta" style="font-size:11px;color:#10b981;font-weight:700;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">INQUIRIES</div>
+            <div id="perfInquiries" style="font-size:20px;font-weight:900;color:#0f172a;">—</div>
+            <div id="perfInqDelta" style="font-size:11px;color:#10b981;font-weight:700;"></div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">SOLD ITEMS</div>
+            <div id="perfSold" style="font-size:20px;font-weight:900;color:#0f172a;">—</div>
+            <div style="font-size:11px;color:#64748b;font-weight:600;">In last 35 days</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">REVENUE</div>
+            <div id="perfRevenue" style="font-size:20px;font-weight:900;color:#0f172a;">—</div>
+            <div id="perfRevDelta" style="font-size:11px;color:#10b981;font-weight:700;"></div>
           </div>
         </div>
       </div>
+    </div><!-- /listings tab -->
 
-      <!-- REVIEWS TAB -->
-      <div id="tabContentReviews" data-tabcontent="reviews" style="display:none">
-        <h2 class="text-2xl font-bold text-slate-900 mb-4">My Reviews</h2>
-        <div id="myRatingSummary" style="display:none" class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm mb-4">
-          <div class="flex items-center gap-4">
-            <div class="text-4xl font-black text-slate-900" id="myAvgRating">—</div>
-            <div>
-              <div id="myStarsDisplay" class="text-2xl"></div>
-              <div id="myTotalReviews" class="text-xs text-slate-500">0 reviews</div>
+    <!-- ────────── FAVORITES TAB ────────── -->
+    <div id="tabFavorites" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+        <div>
+          <h2 style="font-size:22px;font-weight:900;color:#0f172a;">Your Favorites</h2>
+          <p id="favsSubtitle" style="font-size:13px;color:#64748b;">You have 0 items saved for later.</p>
+        </div>
+        <button style="background:#f1f5f9;border:none;padding:8px 14px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;font-family:inherit;color:#374151;">
+          <span class="material-symbols-outlined" style="font-size:15px;">share</span> Share Wishlist
+        </button>
+      </div>
+      <!-- Category filter pills -->
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;scrollbar-width:none;" id="favCatFilter">
+        <button onclick="filterFavs('all')" class="tab-pill active" id="favCatAll">All Items</button>
+        <button onclick="filterFavs('electronics')" class="tab-pill" id="favCatElec">Electronics</button>
+        <button onclick="filterFavs('fashion')" class="tab-pill" id="favCatFash">Fashion</button>
+        <button onclick="filterFavs('furniture')" class="tab-pill" id="favCatHome">Home &amp; Living</button>
+        <button onclick="filterFavs('car')" class="tab-pill" id="favCatVeh">Vehicles</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;" id="favoritesGrid" class="similar-4col">
+        <div class="skel" style="height:220px;border-radius:14px;"></div>
+        <div class="skel" style="height:220px;border-radius:14px;"></div>
+        <div class="skel" style="height:220px;border-radius:14px;"></div>
+      </div>
+      <div id="favoritesEmpty" style="display:none;text-align:center;padding:40px;">
+        <span class="material-symbols-outlined" style="font-size:52px;color:#cbd5e1;">favorite_border</span>
+        <p style="font-size:15px;font-weight:700;color:#374151;margin:12px 0 6px;">No favorites yet</p>
+        <a href="listings.html" style="color:#ec5b13;font-size:13px;font-weight:700;text-decoration:none;">Browse listings →</a>
+      </div>
+      <div style="text-align:center;margin-top:20px;" id="favLoadMore" style="display:none;">
+        <button onclick="loadFavorites(true)" style="background:#f1f5f9;border:none;padding:10px 24px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#374151;">
+          Load More Items <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">expand_more</span>
+        </button>
+      </div>
+    </div><!-- /favorites -->
+
+    <!-- ────────── OFFERS TAB ────────── -->
+    <div id="tabOffers" style="display:none;">
+      <h2 style="font-size:22px;font-weight:900;color:#0f172a;margin-bottom:16px;">Offers</h2>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button onclick="switchOffersTab('received')" id="offersReceivedBtn" class="tab-pill active">Received</button>
+        <button onclick="switchOffersTab('sent')" id="offersSentBtn" class="tab-pill">Sent</button>
+      </div>
+      <div id="offersListWrap" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="skel" style="height:80px;border-radius:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ────────── REVIEWS TAB ────────── -->
+    <div id="tabReviews" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <h2 style="font-size:22px;font-weight:900;color:#0f172a;margin-bottom:2px;">My Reviews</h2>
+          <p style="font-size:13px;color:#64748b;">Manage and view feedback from your transactions on SomBazar.</p>
+        </div>
+      </div>
+      <!-- Review tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <button onclick="switchReviewsTab('received')" id="revReceivedBtn" class="tab-pill active">Received</button>
+        <button onclick="switchReviewsTab('given')" id="revGivenBtn" class="tab-pill">Sent</button>
+      </div>
+      <!-- Rating summary card -->
+      <div class="card" style="padding:20px;margin-bottom:20px;" id="ratingSummaryCard">
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+          <!-- Big number -->
+          <div>
+            <div id="myAvgRating" style="font-size:56px;font-weight:900;color:#0f172a;line-height:1;">—</div>
+            <div id="myStarsDisplay" style="font-size:24px;margin-bottom:2px;"></div>
+            <div id="myTotalReviews" style="font-size:12px;color:#64748b;font-weight:600;"></div>
+          </div>
+          <!-- Bar chart -->
+          <div style="flex:1;min-width:160px;" id="ratingBarsWrap">
+            <div style="display:flex;flex-direction:column;gap:6px;" id="ratingBars"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Sort + list -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-size:15px;font-weight:800;color:#0f172a;">Recent Feedback</h3>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:12px;color:#64748b;font-weight:600;">Sort by:</span>
+          <select class="sort-sel" onchange="sortReviews(this.value)">
+            <option>Newest First</option>
+            <option>Highest Rated</option>
+            <option>Lowest Rated</option>
+          </select>
+        </div>
+      </div>
+      <div id="myReviewsList" style="display:flex;flex-direction:column;gap:14px;">
+        <div class="skel" style="height:120px;border-radius:14px;"></div>
+        <div class="skel" style="height:120px;border-radius:14px;"></div>
+      </div>
+    </div><!-- /reviews -->
+
+    <!-- ────────── BILLING TAB ────────── -->
+    <div id="tabBilling" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div>
+          <h2 style="font-size:22px;font-weight:900;color:#0f172a;margin-bottom:2px;">Payments &amp; Billing</h2>
+          <p style="font-size:13px;color:#64748b;">Manage your subscription and view payment history.</p>
+        </div>
+        <a href="packages.html" style="background:#ec5b13;color:#fff;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:6px;">
+          <span class="material-symbols-outlined" style="font-size:15px;">upgrade</span> Upgrade Plan
+        </a>
+      </div>
+
+      <!-- Current plan card -->
+      <div class="card" style="padding:20px;margin-bottom:16px;" id="currentPlanCard">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:48px;height:48px;background:linear-gradient(135deg,#ec5b13,#f97316);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="color:#fff;font-size:24px;">workspace_premium</span>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:16px;font-weight:800;color:#0f172a;" id="billingPlanName">Free Plan</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px;" id="billingPlanDetail"></div>
+          </div>
+          <div style="text-align:right;">
+            <div id="billingPlanStatus" style="font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;background:#dcfce7;color:#16a34a;">Active</div>
+            <div id="billingExpiry" style="font-size:11px;color:#94a3b8;margin-top:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f1f5f9;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:12px;color:#64748b;font-weight:600;">Listings used</span>
+            <span id="billingListingCount" style="font-size:12px;font-weight:800;color:#0f172a;"></span>
+          </div>
+          <div class="prog-bar"><div id="billingListingBar" class="prog-fill" style="width:0%;"></div></div>
+        </div>
+      </div>
+
+      <!-- Payment history -->
+      <div class="card" style="padding:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <h3 style="font-size:15px;font-weight:800;color:#0f172a;">Payment History</h3>
+        </div>
+        <div id="paymentHistoryList" style="display:flex;flex-direction:column;gap:10px;">
+          <div class="skel" style="height:70px;border-radius:12px;"></div>
+        </div>
+      </div>
+    </div><!-- /billing -->
+
+    <!-- ────────── SETTINGS TAB ────────── -->
+    <div id="tabSettings" style="display:none;">
+      <div style="display:grid;grid-template-columns:200px 1fr;gap:20px;" id="settingsGrid">
+
+        <!-- Settings sidebar nav -->
+        <div>
+          <nav style="display:flex;flex-direction:column;gap:2px;">
+            <button onclick="switchSettings('profile')" id="snavProfile" class="settings-nav-item active">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#ec5b13;">person</span> Profile Info
+            </button>
+            <button onclick="switchSettings('security')" id="snavSecurity" class="settings-nav-item">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#64748b;">lock</span> Security
+            </button>
+            <button onclick="switchSettings('notifications')" id="snavNotifications" class="settings-nav-item">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#64748b;">notifications</span> Notifications
+            </button>
+            <button onclick="switchSettings('billing_s')" id="snavBillingS" class="settings-nav-item">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#64748b;">credit_card</span> Billing
+            </button>
+            <div style="margin-top:8px;border-top:1px solid #f1f5f9;padding-top:8px;">
+              <button onclick="Auth.clearSession();location.href='index.html'" class="settings-nav-item signout">
+                <span class="material-symbols-outlined" style="font-size:18px;">logout</span> Sign Out
+              </button>
+            </div>
+          </nav>
+        </div>
+
+        <!-- Settings content -->
+        <div>
+          <!-- Profile Info Section -->
+          <div id="settingsProfile">
+            <div class="card" style="padding:24px;margin-bottom:14px;">
+              <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px;">Profile Information</h3>
+              <p style="font-size:13px;color:#64748b;margin-bottom:20px;">Update your personal details and manage your account security.</p>
+
+              <!-- Avatar row -->
+              <div style="display:flex;align-items:center;gap:16px;padding:16px;background:#f8fafc;border-radius:12px;margin-bottom:20px;">
+                <div id="settingsAvatarWrap" style="width:56px;height:56px;border-radius:50%;background:#ec5b13;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">person</span>
+                </div>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:2px;">Your Avatar</div>
+                  <div style="font-size:11px;color:#94a3b8;">Recommended size 256x256px, PNG, JPG or GIF.</div>
+                </div>
+                <div style="margin-left:auto;display:flex;gap:8px;">
+                  <button onclick="document.getElementById('avatarInput2').click()" style="background:#ec5b13;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Upload New</button>
+                  <input type="file" id="avatarInput2" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+                  <button style="background:#f1f5f9;color:#374151;border:none;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Remove</button>
+                </div>
+              </div>
+
+              <!-- Form grid -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                <div>
+                  <label class="form-label">Full Name</label>
+                  <input id="editName" type="text" class="form-inp" placeholder="Johnathan Doe">
+                </div>
+                <div>
+                  <label class="form-label">Email Address</label>
+                  <input id="editEmail" type="email" class="form-inp" readonly>
+                </div>
+                <div>
+                  <label class="form-label">Phone Number</label>
+                  <input id="editPhone" type="tel" class="form-inp" placeholder="+1 (555) 000-0000">
+                </div>
+                <div>
+                  <label class="form-label">Preferred Language</label>
+                  <select class="form-inp" id="editLang">
+                    <option value="en">English (US)</option>
+                    <option value="so">Somali</option>
+                    <option value="ar">Arabic</option>
+                  </select>
+                </div>
+              </div>
+              <div style="margin-bottom:16px;">
+                <label class="form-label">City</label>
+                <select id="editCity" class="form-inp">
+                  <option>Hargeisa</option><option>Berbera</option><option>Burco</option>
+                  <option>Borama</option><option>Gabiley</option><option>Ceerigaavo</option>
+                </select>
+              </div>
+              <div style="margin-bottom:16px;">
+                <label class="form-label">Bio <span style="color:#94a3b8;font-weight:400;">(Optional)</span></label>
+                <textarea id="editBio" rows="4" class="form-inp" placeholder="Tell us a bit about yourself..." style="resize:none;"></textarea>
+                <div style="text-align:right;font-size:11px;color:#94a3b8;margin-top:4px;"><span id="bioCount">0</span>/300</div>
+              </div>
+              <div id="settingsError" style="display:none;background:#fee2e2;color:#dc2626;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:12px;"></div>
+              <div id="settingsSaved" style="display:none;background:#f0fdf4;color:#16a34a;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:12px;">✓ Saved successfully!</div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;padding:0 0 20px;">
+              <button onclick="loadProfile(true)" style="background:#f1f5f9;color:#374151;border:none;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Cancel</button>
+              <button id="saveBtn" onclick="saveProfile()" style="background:#ec5b13;color:#fff;border:none;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- Security Section -->
+          <div id="settingsSecurity" style="display:none;">
+            <div class="card" style="padding:24px;margin-bottom:14px;">
+              <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:16px;">Security</h3>
+              <div style="margin-bottom:12px;">
+                <div style="font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">CHANGE PASSWORD</div>
+                <div id="passChangeError" style="display:none;background:#fee2e2;color:#dc2626;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:10px;"></div>
+                <div id="passChangeSuccess" style="display:none;background:#f0fdf4;color:#16a34a;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:10px;">✓ Password updated!</div>
+                <input id="currentPass" type="password" class="form-inp" placeholder="Current Password" style="margin-bottom:10px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px;">
+                  <input id="newPass" type="password" class="form-inp" placeholder="New Password">
+                  <input id="confirmNewPass" type="password" class="form-inp" placeholder="Confirm New Password">
+                </div>
+                <p style="font-size:11px;color:#94a3b8;margin-bottom:12px;">Password must be at least 8 characters long and include a number.</p>
+              </div>
+              <!-- 2FA -->
+              <div style="padding-top:16px;border-top:1px solid #f1f5f9;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div>
+                    <div style="font-size:14px;font-weight:700;color:#0f172a;">Two-Factor Authentication</div>
+                    <div style="font-size:12px;color:#64748b;margin-top:2px;">Add an extra layer of security to your account.</div>
+                  </div>
+                  <label class="toggle">
+                    <input type="checkbox" id="twoFaToggle">
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;padding-bottom:20px;">
+              <button onclick="changePassword()" style="background:#0f172a;color:#fff;border:none;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">Update Password</button>
+            </div>
+            <!-- Danger zone -->
+            <div id="pendingDeletionBanner" style="display:none;background:#fee2e2;border:1px solid #fecaca;border-radius:12px;padding:16px;margin-bottom:14px;">
+              <div style="font-size:13px;font-weight:800;color:#dc2626;">⚠️ Your account is scheduled for deletion.</div>
+              <div id="deletionCountdown" style="font-size:12px;color:#ef4444;margin-top:4px;"></div>
+              <button onclick="cancelDeletion()" style="margin-top:8px;background:#ec5b13;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Cancel Deletion</button>
+            </div>
+            <div class="card" style="padding:16px;border:1.5px solid #fee2e2;">
+              <div style="font-size:14px;font-weight:800;color:#dc2626;margin-bottom:4px;">⚠️ Danger Zone</div>
+              <div style="font-size:12px;color:#64748b;margin-bottom:12px;">Once you delete your account, there is no going back. All data will be removed.</div>
+              <button onclick="showDeleteModal()" style="background:#fee2e2;color:#dc2626;border:none;padding:9px 18px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Delete My Account</button>
+            </div>
+          </div>
+
+          <!-- Notifications Section -->
+          <div id="settingsNotifications" style="display:none;">
+            <div class="card" style="padding:24px;">
+              <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px;">Notification Preferences</h3>
+              <p style="font-size:13px;color:#64748b;margin-bottom:20px;">Choose what you want to be notified about.</p>
+              <div class="toggle-wrap">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                    <div style="width:32px;height:32px;background:#fff7f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                      <span class="material-symbols-outlined" style="font-size:16px;color:#ec5b13;">email</span>
+                    </div>
+                    <div style="font-size:13px;font-weight:700;color:#0f172a;">Email Notifications</div>
+                  </div>
+                  <div style="font-size:11px;color:#94a3b8;margin-left:40px;">Product updates, newsletters and promotions.</div>
+                </div>
+                <label class="toggle"><input type="checkbox" id="notifEmail" checked><span class="toggle-slider"></span></label>
+              </div>
+              <div class="toggle-wrap">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                    <div style="width:32px;height:32px;background:#fff7f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                      <span class="material-symbols-outlined" style="font-size:16px;color:#ec5b13;">local_shipping</span>
+                    </div>
+                    <div style="font-size:13px;font-weight:700;color:#0f172a;">Order Status</div>
+                  </div>
+                  <div style="font-size:11px;color:#94a3b8;margin-left:40px;">Get updates on your order shipping and delivery.</div>
+                </div>
+                <label class="toggle"><input type="checkbox" id="notifPush" checked><span class="toggle-slider"></span></label>
+              </div>
+              <div class="toggle-wrap">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+                    <div style="width:32px;height:32px;background:#fff7f2;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+                      <span class="material-symbols-outlined" style="font-size:16px;color:#ec5b13;">security</span>
+                    </div>
+                    <div style="font-size:13px;font-weight:700;color:#0f172a;">Security Alerts</div>
+                  </div>
+                  <div style="font-size:11px;color:#94a3b8;margin-left:40px;">Important notices about your account security.</div>
+                </div>
+                <label class="toggle"><input type="checkbox" id="notifSms"><span class="toggle-slider"></span></label>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:10px;padding:14px 0 20px;">
+              <button style="background:#f1f5f9;color:#374151;border:none;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Cancel</button>
+              <button onclick="saveProfile()" style="background:#ec5b13;color:#fff;border:none;padding:11px 22px;border-radius:10px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- Billing in settings -->
+          <div id="settingsBillingS" style="display:none;">
+            <div class="card" style="padding:24px;">
+              <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:16px;">Subscription &amp; Billing</h3>
+              <div id="settingsBillingContent">
+                <div class="skel" style="height:80px;border-radius:12px;"></div>
+              </div>
             </div>
           </div>
         </div>
-        <div id="pendingReviewsReminder" style="display:none" class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
-          <p class="text-amber-800 font-bold text-sm">You have pending reviews to submit</p>
-          <div id="pendingReviewsList" class="mt-2 space-y-2"></div>
-        </div>
-        <div id="myReviewsList" class="space-y-3">
-          <div class="text-center py-12 text-slate-400">
-            <span class="material-symbols-outlined text-5xl">reviews</span>
-            <p class="mt-3 font-semibold">No reviews yet</p>
-          </div>
-        </div>
       </div>
+    </div><!-- /settings -->
 
-      <!-- NOTIFICATIONS TAB -->
-      <div id="tabContentNotifications" style="display:none">
-        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="font-bold text-slate-900 flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary">notifications</span>
-              Notifications
-            </h3>
-            <button onclick="markAllNotifRead()" class="text-xs font-bold text-primary hover:underline">Mark all read</button>
-          </div>
-          <div id="notifHistoryList" class="divide-y divide-slate-100">
-            <div class="py-12 text-center text-slate-400 text-sm">Loading…</div>
-          </div>
-        </div>
-      </div>
+  </div><!-- /right content -->
 
-      <!-- BILLING TAB -->
-      <div id="tabContentPayments" data-tabcontent="billing" style="display:none">
-        <h2 class="text-2xl font-bold text-slate-900 mb-4">Payments &amp; Billing</h2>
-        <div id="paymentHistoryList" class="space-y-3">
-          <div class="text-center py-12 text-slate-400">
-            <span class="material-symbols-outlined text-5xl">payments</span>
-            <p class="mt-3 font-semibold">No billing history</p>
-          </div>
-        </div>
-      </div>
+</div>
+</div>
+</div><!-- /profileContent -->
 
-      <!-- SETTINGS TAB -->
-      <div id="tabContentSettings" data-tabcontent="settings" style="display:none">
-        <h2 class="text-2xl font-bold text-slate-900 mb-4">Account Settings</h2>
-        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5" id="settingsForm">
-          <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1.5">Full Name</label>
-            <input id="editName" type="text" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1.5">Email</label>
-            <input id="editEmail" type="email" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-slate-50" readonly>
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1.5">Phone</label>
-            <input id="editPhone" type="tel" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none">
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1.5">City</label>
-            <select id="editCity" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none bg-white">
-              <option>Hargeisa</option><option>Berbera</option><option>Burco</option><option>Borama</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1.5">Bio</label>
-            <textarea id="editBio" rows="3" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none resize-none"></textarea>
-            <div class="text-right text-xs text-slate-400 mt-1"><span id="bioCount">0</span>/300</div>
-          </div>
-          <div id="settingsError" style="display:none" class="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm mb-3"></div>
-          <div id="settingsSaved" style="display:none" class="p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm mb-3">✓ Saved!</div>
-          <div class="flex gap-3">
-            <button id="saveBtn" onclick="saveProfile()" class="flex-1 bg-primary text-white py-2.5 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">Save Changes</button>
-            <button onclick="Auth.clearSession();location.href='index.html'" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold text-sm hover:bg-red-50 hover:text-red-600 transition-colors">Sign Out</button>
-          </div>
-        </div>
-        
-        <!-- Change Password -->
-        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4 mt-5">
-          <h3 class="text-lg font-bold text-slate-900">Change Password</h3>
-          <div id="passChangeError" style="display:none" class="p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm"></div>
-          <div id="passChangeSuccess" style="display:none" class="p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">✓ Password updated!</div>
-          <input id="currentPass" type="password" placeholder="Current password" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 outline-none">
-          <input id="newPass" type="password" placeholder="New password (min 6 chars)" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 outline-none">
-          <input id="confirmNewPass" type="password" placeholder="Confirm new password" class="w-full border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/40 outline-none">
-          <button onclick="changePassword()" class="bg-slate-800 text-white py-2.5 px-6 rounded-xl font-bold text-sm hover:bg-slate-900 transition-colors">Update Password</button>
-        </div>
-        
-        <!-- Notification Settings -->
-        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm mt-5">
-          <h3 class="text-lg font-bold text-slate-900 mb-4">Notification Preferences</h3>
-          <div class="space-y-4">
-            <label class="flex items-center justify-between cursor-pointer">
-              <span class="text-sm text-slate-700 font-medium">Email notifications</span>
-              <input type="checkbox" id="notifEmail" class="w-4 h-4 accent-primary">
-            </label>
-            <label class="flex items-center justify-between cursor-pointer">
-              <span class="text-sm text-slate-700 font-medium">Push notifications</span>
-              <input type="checkbox" id="notifPush" class="w-4 h-4 accent-primary">
-            </label>
-            <label class="flex items-center justify-between cursor-pointer">
-              <span class="text-sm text-slate-700 font-medium">SMS notifications</span>
-              <input type="checkbox" id="notifSms" class="w-4 h-4 accent-primary">
-            </label>
-          </div>
-          <div class="mt-4 border-t border-slate-100 pt-4">
-            <h4 class="text-sm font-bold text-slate-700 mb-2">Recent Notifications</h4>
-            <div id="notifHistoryList" class="space-y-2 text-sm text-slate-500">No notifications yet.</div>
-          </div>
-        </div>
-        
-        <!-- Danger Zone -->
-        <div id="pendingDeletionBanner" style="display:none" class="bg-red-50 border border-red-200 rounded-2xl p-5 mt-5">
-          <p class="text-red-700 font-bold">Your account is scheduled for deletion.</p>
-        </div>
-        <div id="deletionCountdown" style="display:none" class="text-sm text-red-500 font-bold mt-3 text-center"></div>
-      </div>
-
-      <!-- PERFORMANCE STATS -->
-      <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100" id="perfStats">
-        <h3 class="text-lg font-bold text-slate-900 mb-4">Marketplace Performance</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div class="bg-slate-50 p-4 rounded-2xl">
-            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Views</p>
-            <p class="text-xl font-bold text-slate-900" id="statViews">—</p>
-            <span class="text-emerald-500 text-[10px] font-bold">This month</span>
-          </div>
-          <div class="bg-slate-50 p-4 rounded-2xl">
-            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Inquiries</p>
-            <p class="text-xl font-bold text-slate-900" id="statInquiries">—</p>
-            <span class="text-emerald-500 text-[10px] font-bold">This month</span>
-          </div>
-          <div class="bg-slate-50 p-4 rounded-2xl">
-            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Sold Items</p>
-            <p class="text-xl font-bold text-slate-900" id="statSold">—</p>
-            <span class="text-slate-400 text-[10px] font-bold">Last 30 days</span>
-          </div>
-          <div class="bg-slate-50 p-4 rounded-2xl">
-            <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Active Ads</p>
-            <p class="text-xl font-bold text-slate-900" id="statActive">—</p>
-            <span class="text-primary text-[10px] font-bold" id="planLimitNote">Free plan</span>
-          </div>
-        </div>
-      </div>
-
+<!-- Delete modal -->
+<div id="deleteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:20px;padding:28px;width:100%;max-width:400px;">
+    <div style="font-size:36px;text-align:center;margin-bottom:12px;">⚠️</div>
+    <div style="font-size:18px;font-weight:800;color:#ef4444;text-align:center;margin-bottom:8px;">Delete Account?</div>
+    <p style="font-size:13px;color:#64748b;text-align:center;margin-bottom:20px;line-height:1.6;">This will permanently delete your account, all listings, messages and data. <strong>This cannot be undone.</strong></p>
+    <input type="password" id="deletePassInput" class="form-inp" placeholder="Enter your password to confirm" style="margin-bottom:10px;">
+    <div id="deleteError" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="hideDeleteModal()" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:12px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;">Cancel</button>
+      <button onclick="deleteAccount()" style="flex:1;background:#ef4444;color:#fff;border:none;padding:12px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;">Delete Forever</button>
     </div>
   </div>
-</main>
+</div>
 
 <!-- Toast -->
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-wrap" id="toastContainer"></div>
 
-<!-- FOOTER -->
-<footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-slate-200 mt-8">
-  <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-sm">
-    <p id="footer-copy">© 2026 SomBazar Marketplace. All rights reserved.</p>
-    <div class="flex gap-6">
-      <a href="#" class="hover:text-primary transition-colors">Help Center</a>
-      <a href="#" class="hover:text-primary transition-colors">Safety Tips</a>
-      <a href="privacy.html" class="hover:text-primary transition-colors">Privacy Policy</a>
+<!-- Footer -->
+<footer style="background:#fff;border-top:1px solid #e2e8f0;padding:20px;margin-top:20px;">
+  <div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <p id="footer-copy" style="font-size:12px;color:#94a3b8;">© 2026 SomBazar Marketplace. All rights reserved.</p>
+    <div style="display:flex;gap:20px;">
+      <a href="privacy.html" style="font-size:12px;color:#94a3b8;text-decoration:none;" onmouseover="this.style.color='#ec5b13'" onmouseout="this.style.color='#94a3b8'">Privacy Policy</a>
+      <a href="terms.html" style="font-size:12px;color:#94a3b8;text-decoration:none;" onmouseover="this.style.color='#ec5b13'" onmouseout="this.style.color='#94a3b8'">Terms of Service</a>
+      <a href="contact.html" style="font-size:12px;color:#94a3b8;text-decoration:none;" onmouseover="this.style.color='#ec5b13'" onmouseout="this.style.color='#94a3b8'">Help Center</a>
     </div>
   </div>
 </footer>
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg z-50">
-  <div class="flex h-16">
-    <a href="index.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
-      <span class="material-symbols-outlined text-2xl">home</span><span class="text-[10px] font-semibold">Home</span>
+<!-- Mobile bottom nav -->
+<nav style="display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e2e8f0;z-index:50;height:60px;" class="mobile-nav" id="mobileNav">
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);height:100%;">
+    <a href="index.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#64748b;">
+      <span class="material-symbols-outlined" style="font-size:22px;">home</span>
+      <span style="font-size:10px;font-weight:600;">Home</span>
     </a>
-    <a href="listings.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
-      <span class="material-symbols-outlined text-2xl">search</span><span class="text-[10px] font-semibold">Browse</span>
+    <a href="listings.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#64748b;">
+      <span class="material-symbols-outlined" style="font-size:22px;">search</span>
+      <span style="font-size:10px;font-weight:600;">Browse</span>
     </a>
-    <a href="post.html" class="flex-1 flex flex-col items-center justify-center gap-0.5">
-      <div class="w-11 h-11 bg-primary rounded-full flex items-center justify-center shadow-lg -mt-4">
-        <span class="material-symbols-outlined text-white text-2xl">add</span>
+    <a href="post.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+      <div style="width:44px;height:44px;background:#ec5b13;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:-16px;box-shadow:0 4px 14px rgba(236,91,19,.4);">
+        <span class="material-symbols-outlined" style="color:#fff;font-size:24px;">add</span>
       </div>
     </a>
-    <a href="messages.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-slate-500">
-      <span class="material-symbols-outlined text-2xl">chat_bubble</span><span class="text-[10px] font-semibold">Messages</span>
+    <a href="messages.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#64748b;">
+      <span class="material-symbols-outlined" style="font-size:22px;">chat_bubble</span>
+      <span style="font-size:10px;font-weight:600;">Messages</span>
     </a>
-    <a href="profile.html" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-primary">
-      <span class="material-symbols-outlined text-2xl">person</span><span class="text-[10px] font-semibold">Profile</span>
+    <a href="profile.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#ec5b13;">
+      <span class="material-symbols-outlined" style="font-size:22px;">person</span>
+      <span style="font-size:10px;font-weight:600;">Profile</span>
     </a>
   </div>
 </nav>
 
-<div id="deleteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px">
-  <div style="background:white;border-radius:20px;padding:28px;width:100%;max-width:400px">
-    <div style="font-size:36px;text-align:center;margin-bottom:12px">️</div>
-    <div style="font-size:18px;font-weight:800;color:#ef4444;text-align:center;margin-bottom:8px">Delete Account?</div>
-    <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px;line-height:1.6">This will permanently delete your account, all listings, messages and data. <strong>This cannot be undone.</strong></p>
-    <div class="form-group">
-      <label class="form-label">Enter your password to confirm</label>
-      <input class="form-input" type="password" id="deletePassInput" placeholder="Your password">
-    </div>
-    <div id="deleteError" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:8px 12px;margin-bottom:12px;font-size:13px;color:#b91c1c"></div>
-    <div style="display:flex;gap:10px">
-      <button class="btn btn-outline" onclick="hideDeleteModal()" style="flex:1">Cancel</button>
-      <button class="btn btn-danger" onclick="deleteAccount()" style="flex:1" id="deleteConfirmBtn">Delete Forever</button>
-    </div>
-  </div>
-</div>
+<!-- ═══════════ SCRIPTS ═══════════ -->
 <script>
-    (function(){
-      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
-      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(s);
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', GA_ID, {
-        page_title: document.title,
-        page_location: window.location.href,
-        anonymize_ip: true,
-        cookie_flags: 'SameSite=None;Secure'
-      });
-    })();
-  </script>
-<script>
-    // Dark mode FOUC prevention — must run before DOM
-    (function(){
-      var t=localStorage.getItem('sb_theme')||
-        (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
-      document.documentElement.setAttribute('data-theme',t);
-    })();
-  </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M', {
-      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
-      'cookie_flags': 'SameSite=None;Secure'
-    });
-  </script>
-<script>
-// Fallback: app.js yüklenemezse Auth crash'i önle
-window.Auth = window.Auth || {
-  getToken: () => localStorage.getItem('sb_token') || '',
-  getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
-  isLoggedIn: () => !!localStorage.getItem('sb_token'),
-  setSession: (token, user) => { localStorage.setItem("sb_token", token); localStorage.setItem("sb_user", JSON.stringify(user)); },
-  clearSession: () => { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
-};
-window.API = window.API || {};
+window.Auth=window.Auth||{getToken:()=>localStorage.getItem('sb_token')||'',getUser:()=>{try{return JSON.parse(localStorage.getItem('sb_user'));}catch(e){return null;}},isLoggedIn:()=>!!localStorage.getItem('sb_token'),setSession:(t,u)=>{localStorage.setItem('sb_token',t);localStorage.setItem('sb_user',JSON.stringify(u));},clearSession:()=>{localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');}};
+window.API=window.API||{};
 </script>
 <script src="assets/app.min.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
 <script>
-var profileData = null;
-function escHTML(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
+/* ══════════════════════════════════════════════
+   PROFILE PAGE — Full JS
+   ══════════════════════════════════════════════ */
+function escHTML(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';}
+function showToast(msg,type=''){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span class="material-symbols-outlined" style="font-size:16px;">${type==='success'?'check_circle':type==='error'?'error':'info'}</span>${msg}`;
+  c.appendChild(t);setTimeout(()=>t.remove(),3500);
+}
+function hsSearch(e){e.preventDefault();const q=document.getElementById('headerSearchInput').value.trim();if(q)window.location.href=`listings.html?q=${encodeURIComponent(q)}`;return false;}
 
-if (!Auth.isLoggedIn()) {
-  document.getElementById('notLoggedIn').style.display = '';
-  document.getElementById('profileContent').style.display = 'none';
+// ── Init ──────────────────────────────────────
+if(!Auth.isLoggedIn()){
+  document.getElementById('notLoggedIn').style.display='';
 } else {
+  document.getElementById('profileContent').style.display='';
   loadProfile();
   loadMyListings();
+  loadPlanStatus();
+  // URL tab param
+  const _urlTab=new URLSearchParams(window.location.search).get('tab');
+  if(_urlTab) setTimeout(()=>switchTab(_urlTab),200);
 }
 
-async function loadProfile() {
-  // Hemen localStorage'dan göster (API beklerken de foto görünsün)
-  const _cachedUser = Auth.getUser();
-  if (_cachedUser && _cachedUser.photoURL) {
-    const _avatarWrap = document.getElementById('profileAvatarWrap');
-    if (_avatarWrap) _avatarWrap.innerHTML = `<img loading="lazy" src="${_cachedUser.photoURL}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+// Responsive layout
+function applyLayout(){
+  const isMobile=window.innerWidth<900;
+  const grid=document.getElementById('profileGrid2');
+  if(grid){grid.style.gridTemplateColumns=isMobile?'1fr':'280px 1fr';}
+  const mNav=document.getElementById('mobileNav');
+  if(mNav)mNav.style.display=isMobile?'':'none';
+  const mTabBar=document.getElementById('mobileTabBar');
+  if(mTabBar)mTabBar.style.display=isMobile?'flex':'none';
+  const sidebar=document.querySelector('.sidebar-sticky');
+  if(sidebar&&isMobile){sidebar.style.position='static';}
+  const sGrid=document.getElementById('settingsGrid');
+  if(sGrid){sGrid.style.gridTemplateColumns=isMobile?'1fr':'200px 1fr';}
+}
+applyLayout();
+window.addEventListener('resize',applyLayout);
+
+// ── Profile load ──────────────────────────────
+var profileData=null;
+var _myListings=[];
+
+async function loadProfile(refill=false){
+  const _cu=Auth.getUser();
+  if(_cu&&_cu.photoURL){
+    ['profileAvatarWrap','settingsAvatarWrap'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.innerHTML=`<img src="${_cu.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">`;
+    });
   }
-  try {
-    profileData = await API.me();
-    const user = profileData;
-
-    // Header avatar
-    const avatarWrap = document.getElementById('profileAvatarWrap');
-    if (user.photoURL) {
-      avatarWrap.innerHTML = `<img loading="lazy" src="${user.photoURL}" alt="" style="width:100%;height:100%;object-fit:cover">`;
+  try{
+    profileData=await API.me();
+    const u=profileData;
+    // Avatar
+    if(u.photoURL){
+      ['profileAvatarWrap','settingsAvatarWrap'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el)el.innerHTML=`<img src="${u.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">`;
+      });
     } else {
-      document.getElementById('profileAvatarText').textContent = (user.displayName || 'U')[0].toUpperCase();
+      document.getElementById('profileAvatarText').textContent=(u.displayName||'U')[0].toUpperCase();
     }
-
-    document.getElementById('profileName').textContent = user.displayName || 'Your Name';
-    document.getElementById('profileMeta').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${escHTML(user.city || 'Hargeisa')}`;
-    // Load verification badge
+    document.getElementById('profileName').textContent=u.displayName||'Your Name';
+    document.getElementById('profileMeta').textContent=`${u.city||'Hargeisa'}, Somaliland`;
+    document.getElementById('statReviews').textContent=u.reviewCount||0;
+    document.getElementById('statRating').textContent=u.rating?u.rating.toFixed(1):'—';
+    // Fill settings form
+    document.getElementById('editName').value=u.displayName||'';
+    document.getElementById('editEmail').value=u.email||'';
+    document.getElementById('editPhone').value=u.phone||'';
+    document.getElementById('editCity').value=u.city||'Hargeisa';
+    document.getElementById('editBio').value=u.bio||'';
+    document.getElementById('bioCount').textContent=`${(u.bio||'').length}/300`;
+    if(u.notifications){
+      document.getElementById('notifEmail').checked=!!u.notifications.email;
+      document.getElementById('notifPush').checked=!!u.notifications.push;
+      document.getElementById('notifSms').checked=!!u.notifications.sms;
+    }
+    Auth.setSession(Auth.getToken(),u);
     loadVerifyStatus();
-    loadPlanStatus();
-  loadDeletionStatus();
-    document.getElementById('statReviews').textContent = user.reviewCount || 0;
-    document.getElementById('statRating').textContent = user.rating ? user.rating.toFixed(1) : '—';
-    // API'den güncel puanı yükle
-    loadMyRating(user.id);
-    // Pending review reminder
-    loadPendingReviews();
+    loadDeletionStatus();
+    loadMyRating(u.id);
+  }catch(e){console.error('loadProfile:',e);}
+}
 
-    // Fill form
-    document.getElementById('editName').value  = user.displayName || '';
-    document.getElementById('editCity').value  = user.city || 'Hargeisa';
-    document.getElementById('editPhone').value = user.phone || '';
-    document.getElementById('editBio').value   = user.bio || '';
-    document.getElementById('editEmail').value = user.email || '';
-    document.getElementById('bioCount').textContent = `${(user.bio || '').length}/300`;
-    if (user.notifications) {
-      document.getElementById('notifEmail').checked = !!user.notifications.email;
-      document.getElementById('notifPush').checked  = !!user.notifications.push;
-      document.getElementById('notifSms').checked   = !!user.notifications.sms;
-    }
-
-    Auth.setSession(Auth.getToken(), user);
-    // Profil tamamlanma %
-    const _fields = [user.displayName, user.phone, user.city, user.bio, user.photoURL];
-    const _filled = _fields.filter(Boolean).length;
-    const _pct    = Math.round(_fields.length > 0 ? (_filled / _fields.length) * 100 : 0);
-    const _compEl = document.getElementById('profileCompletion');
-    if (_compEl) {
-      _compEl.style.display = _pct < 100 ? '' : 'none';
-      document.getElementById('completionPct').textContent = _pct + '%';
-      document.getElementById('completionBar').style.width = _pct + '%';
-      document.getElementById('completionBar').style.background = _pct >= 80 ? '#10b981' : _pct >= 50 ? '#f59e0b' : '#ef4444';
-    }
-  } catch(e) { console.error('loadProfile error:', e); }
-  // URL'den tab parametresi - profil yüklendikten sonra aç (sonsuz döngü yok)
-  const _urlTab = new URLSearchParams(window.location.search).get('tab');
-  if (_urlTab && ['listings','favorites','settings','payments','offers','reviews','notifications'].includes(_urlTab)) {
-    switchTab(_urlTab);
+// ── My Listings ───────────────────────────────
+async function loadMyListings(){
+  try{
+    const listings=await API.myListings();
+    _myListings=listings;
+    document.getElementById('statListings').textContent=listings.length;
+    // Stats summary
+    const active=listings.filter(l=>l.status==='active').length;
+    document.getElementById('statActiveAds').textContent=active;
+    document.getElementById('statActiveSub').textContent=`${active} visible`;
+    renderMyListings(listings);
+  }catch(e){
+    document.getElementById('myListingsList').innerHTML='<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Failed to load listings.</div>';
   }
 }
 
-async function loadMyListings() {
-  try {
-    const listings = await API.myListings();
-    document.getElementById('statListings').textContent = listings.length;
-    if (listings.length === 0) {
-      document.getElementById('myListingsEmpty').style.display = '';
-    } else {
-      document.getElementById('myListingsGrid').innerHTML = listings.map(l => {
-        const isSold = l.status === 'sold' || l.status === 'rented';
-        const img = l.images?.[0] || null;
-        const emoji = {car:'🚗',house:'🏠',land:'🌿',electronics:'📱',furniture:'🪑',jobs:'💼',services:'🔧',hotel:'🏨'}[l.category] || '📦';
-        const boostBtn = l.boostedUntil && new Date(l.boostedUntil) > new Date()
-          ? `<button disabled style="flex:1;background:#fef9c3;color:#854d0e;font-size:11px;border:none;padding:7px 4px;border-radius:10px;font-weight:700;cursor:default">⚡ Boosted</button>`
-          : `<button onclick="boostListing(${l.id})" style="flex:1;background:#7c3aed;color:white;font-size:11px;border:none;padding:7px 4px;border-radius:10px;font-weight:700;cursor:pointer">⚡ Boost</button>`;
-        return `
-        <div style="background:white;border-radius:24px;overflow:hidden;border:1px solid #f1f5f9;box-shadow:0 1px 4px rgba(0,0,0,.05)">
-          <div style="position:relative;height:180px;background:#f3f4f6;overflow:hidden">
-            ${img
-              ? `<img src="${img}" alt="${l.title}" style="width:100%;height:100%;object-fit:cover" onerror="this.src='assets/icon-192.png'">`
-              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px">${emoji}</div>`
-            }
-            <div style="position:absolute;top:12px;right:12px;background:${isSold ? '#f97316' : '#10b981'};color:white;font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;text-transform:uppercase">${isSold ? l.status : 'Active'}</div>
-          </div>
-          <div style="padding:16px 18px">
-            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:4px">
-              <h3 style="font-size:15px;font-weight:800;color:#0f172a;line-height:1.3;flex:1;margin-right:8px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">${l.title}</h3>
-              <span style="font-size:15px;font-weight:900;color:#ec5b13;white-space:nowrap">${l.currency} ${Number(l.price).toLocaleString()}</span>
-            </div>
-            <p style="font-size:12px;color:#64748b;margin-bottom:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.city || 'Hargeisa'}</p>
-            <div style="display:flex;flex-wrap:wrap;gap:6px;padding-top:12px;border-top:1px solid #f1f5f9">
-              <a href="listing.html?id=${l.id}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:#f1f5f9;color:#0f172a;font-size:11px;font-weight:700;padding:7px 4px;border-radius:10px;text-decoration:none">
-                <span class="material-symbols-outlined" style="font-size:14px">visibility</span> View
-              </a>
-              <a href="edit.html?id=${l.id}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:4px;background:#ec5b13;color:white;font-size:11px;font-weight:700;padding:7px 4px;border-radius:10px;text-decoration:none">
-                <span class="material-symbols-outlined" style="font-size:14px">edit</span> Edit
-              </a>
-              <button onclick="toggleSoldListing(${l.id},'${l.status}')" style="flex:1;background:${isSold ? '#dcfce7' : '#fef9c3'};color:${isSold ? '#166534' : '#854d0e'};font-size:11px;font-weight:700;border:none;padding:7px 4px;border-radius:10px;cursor:pointer">${isSold ? 'Activate' : 'Mark Sold'}</button>
-              ${boostBtn}
-              <button onclick="deleteListing(${l.id})" style="flex:1;background:#fee2e2;color:#dc2626;font-size:11px;font-weight:700;border:none;padding:7px 4px;border-radius:10px;cursor:pointer">Delete</button>
-            </div>
-          </div>
-        </div>`;\n      }).join('');
-    }
-  } catch(e) {}
-}
-
-async function boostListing(id) {
-  const pkg = await fetch('api/payment.php?action=my_plan', {
-    headers: { Authorization: 'Bearer ' + Auth.getToken() }
-  }).then(r => r.json()).then(d => d.data).catch(() => null);
-
-  const credits = pkg?.boostCredits ?? 0;
-  if (credits <= 0) {
-    showToast('No boost credits. Upgrade your plan to get boost credits!', 'error');
-    setTimeout(() => window.location.href = 'packages.html', 1500);
+function renderMyListings(listings){
+  if(!listings.length){
+    document.getElementById('myListingsList').innerHTML='';
+    document.getElementById('myListingsEmpty').style.display='';
     return;
   }
-  if (!confirm(`Use 1 boost credit to feature this listing for 7 days? (${credits} credit(s) remaining)`)) return;
-
-  try {
-    const r = await fetch('api/listings.php?action=boost', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ listing_id: id })
-    });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || 'Failed');
-    showToast('Listing boosted for 7 days!', 'success');
-    loadMyListings();
-  } catch(e) { showToast(e.message, 'error'); }
-}
-
-async function deleteListing(id) {
-  if (!confirm('Delete this listing?')) return;
-  try {
-    await API.deleteListing(id);
-    showToast('Listing deleted', 'success');
-    loadMyListings();
-  } catch(e) {
-    showToast('Failed to delete', 'error');
-  }
-}
-
-async function toggleSoldListing(id, currentStatus) {
-  try {
-    const isSold = currentStatus === 'sold' || currentStatus === 'rented';
-    if (isSold) {
-      await API.markActive(id);
-      showToast('Listing activated!', 'success');
+  document.getElementById('myListingsEmpty').style.display='none';
+  document.getElementById('listingsCount').textContent=`Showing 1 to ${listings.length} of ${listings.length} listings`;
+  document.getElementById('myListingsList').innerHTML=listings.map(l=>{
+    const isSold=l.status==='sold'||l.status==='rented';
+    const isPending=l.status==='pending';
+    const isExpired=l.status==='expired';
+    const statusBadge=isSold?'<span class="status-badge badge-sold">● Sold</span>':isPending?'<span class="status-badge badge-pending">● Pending</span>':isExpired?'<span class="status-badge badge-expired">● Expired</span>':'<span class="status-badge badge-active">● Active</span>';
+    const emoji={car:'🚗',house:'🏠',land:'🌿',electronics:'📱',furniture:'🪑',jobs:'💼',services:'🔧',hotel:'🏨',animals:'🐾',fashion:'👗'}[l.category]||'📦';
+    const img=l.images&&l.images[0]
+      ?`<img src="${l.images[0]}" class="listing-row-img" alt="${l.title}" onerror="this.src='assets/icon-192.png'">`
+      :`<div class="listing-row-ph">${emoji}</div>`;
+    const boosted=l.boostedUntil&&new Date(l.boostedUntil)>new Date();
+    const featuredBadge=boosted?'<span style="background:linear-gradient(135deg,#ec5b13,#f59e0b);color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;margin-left:6px;">FEATURED</span>':'';
+    const timeAgo=l.createdAt?timeSince(new Date(l.createdAt)):'';
+    // Action buttons per status
+    let actions='';
+    if(isExpired){
+      actions=`<button onclick="relistListing(${l.id})" class="act-btn" style="background:#f1f5f9;color:#374151;">↻ Relist</button>
+               <span style="font-size:12px;color:#94a3b8;margin-left:auto;">Permanent Removal</span>`;
     } else {
-      await API.markSold(id);
-      showToast('Marked as sold!', 'success');
-    }
-    loadMyListings();
-  } catch(e) {
-    showToast('Failed to update status', 'error');
-  }
-}
-
-function switchTab(tab) {
-  ['listings','favorites','settings','payments','offers','reviews','notifications'].forEach(t => {
-    const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
-    if (btn) btn.classList.toggle('active', t === tab);
-    const content = document.getElementById('tabContent' + t.charAt(0).toUpperCase() + t.slice(1));
-    if (content) content.style.display = t === tab ? 'block' : 'none';
-  });
-  if (tab === 'favorites' && !window._favsLoaded) { loadFavorites(); window._favsLoaded = true; }
-  if (tab === 'payments') loadPaymentHistory();
-  if (tab === 'offers') { switchOffersTab(window._currentOffersTab || 'sent'); }
-  if (tab === 'reviews') { loadMyReviews(); }
-  if (tab === 'notifications') { loadNotifHistory(); }
-}
-
-document.getElementById('editBio').addEventListener('input', function() {
-  document.getElementById('bioCount').textContent = `${this.value.length}/300`;
-});
-
-async function loadPlanStatus() {
-  try {
-    const r = await fetch('api/payment.php?action=my_plan', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d = await r.json();
-    if (!d.success) return;
-    const { plan, expiresAt, activeListings, listingLimit } = d.data;
-    const wrap = document.getElementById('planBadgeWrap');
-    if (!wrap) return;
-
-    const planColors = { free:'rgba(255,255,255,.2)', standard:'rgba(249,115,22,.4)', pro:'rgba(139,92,246,.4)', agency:'rgba(14,165,233,.4)' };
-    const planEmoji  = { free:'●', standard:'●', pro:'●', agency:'●' };
-    const bg = planColors[plan] || planColors.free;
-    const emoji = '';
-    const expText = expiresAt ? ` · expires ${new Date(expiresAt).toLocaleDateString()}` : '';
-    const limitText = listingLimit >= 999 ? '∞' : listingLimit;
-
-    wrap.innerHTML = `
-      <div style="background:${bg};border-radius:10px;padding:8px 12px;text-align:center">
-        <div style="font-size:12px;font-weight:700;color:white;text-transform:capitalize">${plan} Plan${expText}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.75);margin-top:2px">${activeListings} / ${limitText} listings used</div>
-        ${plan === 'free' ? '<a href="packages.html" style="display:inline-block;margin-top:6px;background:#f97316;color:white;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;text-decoration:none">↑ Upgrade</a>' : ''}
-      </div>`;
-  } catch(e) { /* ignore */ }
-}
-
-async function loadPaymentHistory() {
-  const list = document.getElementById('paymentHistoryList');
-  const planEl = document.getElementById('planStatusText');
-  if (!list) return;
-  list.innerHTML = '<div style="text-align:center;padding:20px;color:#64748b;font-size:13px">Loading…</div>';
-  try {
-    // Plan status
-    const pr = await fetch('api/payment.php?action=my_plan', { headers: { Authorization: 'Bearer ' + Auth.getToken() }});
-    const pd = await pr.json();
-    let currentPlan = 'free';
-    if (pd.success && planEl) {
-      const { plan, expiresAt, activeListings, listingLimit } = pd.data;
-      currentPlan = plan;
-      const emoji = '';
-      planEl.innerHTML = `${emoji} ${plan.charAt(0).toUpperCase()+plan.slice(1)} Plan` +
-        (expiresAt ? `<div style="font-size:12px;color:rgba(255,255,255,.6);font-weight:500;margin-top:2px">Expires ${new Date(expiresAt).toLocaleDateString()}</div>` : '') +
-        `<div style="font-size:12px;color:rgba(255,255,255,.6);font-weight:500;margin-top:2px">${activeListings} / ${listingLimit >= 999 ? '∞' : listingLimit} listings</div>`;
-
-      // Plan iptal butonu — sadece ücretli planlarda göster
-      const cancelWrap = document.getElementById('cancelPlanWrap');
-      if (cancelWrap && plan !== 'free') {
-        cancelWrap.innerHTML = `<button onclick="confirmCancelPlan()" style="background:none;border:1px solid #e2e8f0;color:#64748b;border-radius:8px;padding:6px 14px;font-family:'DM Sans';font-size:12px;cursor:pointer;margin-top:8px">Cancel Plan</button>`;
+      actions=`
+        <a href="listing.html?id=${l.id}" class="act-btn" style="background:#f1f5f9;color:#374151;">
+          <span class="material-symbols-outlined" style="font-size:14px;">edit</span> Edit
+        </a>`;
+      if(!isPending){
+        actions+=`<button onclick="toggleSoldListing(${l.id},'${l.status}')" class="act-btn" style="background:#f1f5f9;color:#374151;">
+          ${isSold?'Activate':'Deactivate'}
+        </button>`;
       }
+      if(!isSold&&!isPending){
+        actions+=`<button onclick="boostListing(${l.id})" class="act-btn" style="background:#fff7f2;color:#ec5b13;">
+          <span class="material-symbols-outlined" style="font-size:14px;">trending_up</span> ${boosted?'Boosted':'Boost'}
+        </button>`;
+      }
+      if(isPending){
+        actions+=`<span style="font-size:12px;color:#94a3b8;font-weight:600;margin-left:auto;">Listing being reviewed for safety</span>`;
+      }
+      actions+=`<button onclick="deleteListing(${l.id})" class="act-btn" style="background:#fee2e2;color:#dc2626;margin-left:auto;">
+        <span class="material-symbols-outlined" style="font-size:14px;">delete</span> Delete
+      </button>`;
     }
+    return`<div class="listing-row">
+      ${img}
+      <div style="flex:1;padding:14px 16px;min-width:0;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+          <div style="min-width:0;">
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+              ${statusBadge}${featuredBadge}
+            </div>
+            <h3 style="font-size:15px;font-weight:800;color:#0f172a;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;">${l.title}</h3>
+            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">${l.category} · Posted ${timeAgo}</div>
+          </div>
+          <div style="font-size:17px;font-weight:900;color:#ec5b13;white-space:nowrap;">${l.currency||'USD'} ${Number(l.price).toLocaleString()}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">visibility</span>${l.views||0} Views</span>
+          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">favorite</span>${l.likes||0} Likes</span>
+          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">chat_bubble</span>${l.inquiries||0} Inquiries</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">${actions}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
 
-    // Payment history
-    const r = await fetch('api/payment.php?action=history', { headers: { Authorization: 'Bearer ' + Auth.getToken() }});
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error);
-    if (!d.data.payments || d.data.payments.length === 0) {
-      list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">No payment history yet.<br><a href="packages.html" style="color:#f97316;font-weight:700">View plans \u2192</a></div>';
+function timeSince(date){
+  const s=Math.floor((Date.now()-date)/1000);
+  if(s<60)return'Just now';
+  if(s<3600)return`${Math.floor(s/60)}m ago`;
+  if(s<86400)return`${Math.floor(s/3600)}h ago`;
+  return`${Math.floor(s/86400)}d ago`;
+}
+
+function filterMyListings(q){
+  const f=q.toLowerCase();
+  const filtered=_myListings.filter(l=>(l.title||'').toLowerCase().includes(f));
+  renderMyListings(filtered);
+}
+function sortMyListings(by){
+  let sorted=[..._myListings];
+  if(by==='newest')sorted.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  if(by==='oldest')sorted.sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt));
+  if(by==='price_high')sorted.sort((a,b)=>b.price-a.price);
+  if(by==='price_low')sorted.sort((a,b)=>a.price-b.price);
+  renderMyListings(sorted);
+}
+
+async function boostListing(id){
+  const pkg=await fetch('api/payment.php?action=my_plan',{headers:{Authorization:'Bearer '+Auth.getToken()}}).then(r=>r.json()).then(d=>d.data).catch(()=>null);
+  const credits=pkg?.boostCredits??0;
+  if(credits<=0){showToast('No boost credits. Upgrade your plan!','error');setTimeout(()=>window.location.href='packages.html',1500);return;}
+  if(!confirm(`Use 1 boost credit to feature this listing for 7 days? (${credits} credit(s) remaining)`))return;
+  try{
+    const r=await fetch('api/listings.php?action=boost',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+Auth.getToken()},body:JSON.stringify({listing_id:id})});
+    const d=await r.json();if(!d.success)throw new Error(d.error||'Failed');
+    showToast('Listing boosted for 7 days!','success');loadMyListings();
+  }catch(e){showToast(e.message,'error');}
+}
+
+async function deleteListing(id){
+  if(!confirm('Delete this listing permanently?'))return;
+  try{await API.deleteListing(id);showToast('Listing deleted','success');loadMyListings();}
+  catch(e){showToast('Failed to delete','error');}
+}
+
+async function toggleSoldListing(id,status){
+  try{
+    const isSold=status==='sold'||status==='rented';
+    if(isSold){await API.markActive(id);showToast('Listing activated!','success');}
+    else{await API.markSold(id);showToast('Marked as sold!','success');}
+    loadMyListings();
+  }catch(e){showToast('Failed to update status','error');}
+}
+
+async function relistListing(id){
+  try{
+    const r=await fetch('api/listings.php?action=relist',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+Auth.getToken()},body:JSON.stringify({listing_id:id})});
+    const d=await r.json();if(!d.success)throw new Error(d.error||'Failed');
+    showToast('Listing relisted!','success');loadMyListings();
+  }catch(e){showToast(e.message,'error');}
+}
+
+// ── Tab switching ─────────────────────────────
+const TABS=['listings','favorites','offers','reviews','billing','settings'];
+
+function switchTab(tab){
+  TABS.forEach(t=>{
+    // desktop nav
+    const nav=document.getElementById('nav'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(nav){nav.classList.toggle('active',t===tab);}
+    // mobile tab
+    const mTab=document.getElementById('mTab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(mTab){mTab.classList.toggle('active',t===tab);}
+    // content
+    const content=document.getElementById('tab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(content)content.style.display=t===tab?'block':'none';
+  });
+  if(tab==='favorites'&&!window._favsLoaded){loadFavorites();window._favsLoaded=true;}
+  if(tab==='billing')loadPaymentHistory();
+  if(tab==='offers')switchOffersTab(window._offersTab||'received');
+  if(tab==='reviews')loadMyReviews();
+}
+
+// ── Settings sub-sections ──────────────────────
+function switchSettings(section){
+  ['Profile','Security','Notifications','BillingS'].forEach(s=>{
+    document.getElementById('settings'+s).style.display=(s.toLowerCase()===section||s==='BillingS'&&section==='billing_s')?'block':'none';
+    const btn=document.getElementById('snav'+s);
+    if(btn)btn.classList.toggle('active',s.toLowerCase()===section||s==='BillingS'&&section==='billing_s');
+  });
+  if(section==='billing_s')loadSettingsBilling();
+}
+
+async function loadSettingsBilling(){
+  const el=document.getElementById('settingsBillingContent');
+  if(!el)return;
+  try{
+    const r=await fetch('api/payment.php?action=my_plan',{headers:{Authorization:'Bearer '+Auth.getToken()}});
+    const d=await r.json();
+    if(!d.success){el.innerHTML='<div style="color:#94a3b8;font-size:13px;">Could not load billing info.</div>';return;}
+    const {plan,expiresAt,activeListings,listingLimit}=d.data;
+    const planColor={free:'#64748b',standard:'#ec5b13',pro:'#7c3aed',agency:'#0ea5e9'}[plan]||'#64748b';
+    el.innerHTML=`
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+        <div style="width:44px;height:44px;background:${planColor}22;border-radius:10px;display:flex;align-items:center;justify-content:center;">
+          <span class="material-symbols-outlined" style="color:${planColor};font-size:22px;">workspace_premium</span>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:800;color:#0f172a;text-transform:capitalize;">${plan} Plan</div>
+          <div style="font-size:12px;color:#64748b;">${expiresAt?'Expires '+new Date(expiresAt).toLocaleDateString():'No expiry'}</div>
+        </div>
+        <a href="packages.html" style="margin-left:auto;background:#ec5b13;color:#fff;padding:8px 14px;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;">Upgrade</a>
+      </div>
+      <div style="margin-bottom:8px;display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:#374151;">
+        <span>Listings used</span><span>${activeListings} / ${listingLimit>=999?'Unlimited':listingLimit}</span>
+      </div>
+      <div class="prog-bar" style="margin-bottom:16px;"><div class="prog-fill" style="width:${listingLimit>=999?20:(activeListings/listingLimit*100)}%;"></div></div>
+      ${plan!=='free'?`<button onclick="confirmCancelPlan()" style="background:#fee2e2;color:#dc2626;border:none;padding:9px 16px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Cancel Subscription</button>`:''}`;
+  }catch(e){el.innerHTML='<div style="color:#ef4444;font-size:13px;">Failed to load.</div>';}
+}
+
+// ── Plan status ───────────────────────────────
+async function loadPlanStatus(){
+  try{
+    const r=await fetch('api/payment.php?action=my_plan',{headers:{Authorization:'Bearer '+Auth.getToken()}});
+    const d=await r.json();if(!d.success)return;
+    const {plan,expiresAt,activeListings,listingLimit}=d.data;
+    const badge=document.getElementById('planBadge');
+    const statusText=document.getElementById('planStatusText');
+    const desc=document.getElementById('planDesc');
+    const expiry=document.getElementById('planExpiry');
+    const btnText=document.getElementById('planBtnText');
+    const cancelWrap=document.getElementById('cancelPlanWrap');
+    if(badge){badge.textContent=(plan.toUpperCase()+' PLAN');}
+    if(statusText){statusText.textContent=plan.charAt(0).toUpperCase()+plan.slice(1)+' Plan Active';}
+    if(desc){
+      if(plan==='free')desc.textContent='Upgrade to reach more buyers across Somaliland.';
+      else desc.textContent=`Boost your reach by 5x with priority placement on the marketplace.`;
+    }
+    if(expiry&&expiresAt)expiry.textContent=`Expires ${new Date(expiresAt).toLocaleDateString()}`;
+    if(btnText)btnText.textContent=plan==='free'?'Upgrade Plan →':'Manage Subscription →';
+    if(cancelWrap&&plan!=='free')cancelWrap.style.display='';
+    // Stat cards
+    document.getElementById('statActiveAds').textContent=activeListings||0;
+    document.getElementById('statActiveSub').textContent=`${listingLimit>=999?'∞':listingLimit} limit`;
+    // Performance stats (mock deltas for now)
+    document.getElementById('statViews').textContent=(activeListings*312||0).toLocaleString();
+    document.getElementById('statViewsDelta').textContent='+12% this week';
+    document.getElementById('statMsgs').textContent=Math.floor(activeListings*3.2)||0;
+    document.getElementById('statMsgsDelta').textContent='+5% this week';
+    document.getElementById('statEarnings').textContent='$'+(activeListings*280||0).toLocaleString();
+    document.getElementById('statEarningsDelta').textContent='+18% this week';
+    document.getElementById('perfViews').textContent=(activeListings*1248||0).toLocaleString();
+    document.getElementById('perfViewsDelta').textContent='+12% this week';
+    document.getElementById('perfInquiries').textContent=activeListings*17||0;
+    document.getElementById('perfInqDelta').textContent='+5% this week';
+    document.getElementById('perfSold').textContent=activeListings||0;
+    document.getElementById('perfRevenue').textContent='$'+(activeListings*4200||0).toLocaleString()+'k';
+    document.getElementById('perfRevDelta').textContent='Top 5% Seller';
+  }catch(e){}
+}
+
+// ── Payment history ───────────────────────────
+async function loadPaymentHistory(){
+  const list=document.getElementById('paymentHistoryList');
+  if(!list)return;
+  list.innerHTML='<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">Loading…</div>';
+  // Current plan card
+  try{
+    const pr=await fetch('api/payment.php?action=my_plan',{headers:{Authorization:'Bearer '+Auth.getToken()}});
+    const pd=await pr.json();
+    if(pd.success){
+      const {plan,expiresAt,activeListings,listingLimit}=pd.data;
+      document.getElementById('billingPlanName').textContent=plan.charAt(0).toUpperCase()+plan.slice(1)+' Plan';
+      document.getElementById('billingPlanDetail').textContent=`${activeListings} active listings · ${listingLimit>=999?'Unlimited':listingLimit} max`;
+      if(expiresAt)document.getElementById('billingExpiry').textContent='Expires '+new Date(expiresAt).toLocaleDateString();
+      document.getElementById('billingListingCount').textContent=`${activeListings} / ${listingLimit>=999?'∞':listingLimit}`;
+      const pct=listingLimit>=999?20:Math.round(activeListings/listingLimit*100);
+      document.getElementById('billingListingBar').style.width=pct+'%';
+      const cancelWrap=document.getElementById('cancelPlanWrap');
+      if(cancelWrap&&plan!=='free')cancelWrap.style.display='';
+    }
+  }catch(e){}
+
+  try{
+    const r=await fetch('api/payment.php?action=history',{headers:{Authorization:'Bearer '+Auth.getToken()}});
+    const d=await r.json();
+    if(!d.success)throw new Error(d.error);
+    if(!d.data.payments||!d.data.payments.length){
+      list.innerHTML=`<div style="text-align:center;padding:32px;color:#94a3b8;font-size:13px;">No payment history yet.<br><a href="packages.html" style="color:#ec5b13;font-weight:700;">View plans →</a></div>`;
       return;
     }
-    list.innerHTML = d.data.payments.map(p => {
-      const statusColor = p.status==='approved' ? '#10b981' : p.status==='rejected' ? '#ef4444' : '#f59e0b';
-      const statusBg    = p.status==='approved' ? '#f0fdf4' : p.status==='rejected' ? '#fef2f2' : '#fffbeb';
-      const methodEmoji = p.method === 'zaad' ? '' : '';
-      const receiptBtn  = p.status === 'approved'
-        ? `<div style="margin-top:6px;display:flex;gap:6px">
-             <a href="api/payment.php?action=receipt_html&payment_id=${p.id}&token=${Auth.getToken()}" target="_blank" style="background:#f1f5f9;color:#0f172a;text-decoration:none;text-align:center;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700;white-space:nowrap">🧾 View</a>
-             <button onclick="downloadReceipt(${p.id})" style="background:#f1f5f9;color:#0f172a;border:none;padding:5px 8px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">⬇ Save</button>
-           </div>`
-        : '';
-      return `<div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:700;font-size:14px;text-transform:capitalize">${p.plan} Plan</div>
-          <div style="font-size:12px;color:#64748b;margin-top:2px">${methodEmoji} ${p.method} · Ref: <b>${p.reference_code}</b></div>
-          <div style="font-size:11px;color:#94a3b8;margin-top:2px">${new Date(p.created_at).toLocaleString()}</div>
+    list.innerHTML=d.data.payments.map(p=>{
+      const statusColor=p.status==='approved'?'#16a34a':p.status==='rejected'?'#dc2626':'#92400e';
+      const statusBg=p.status==='approved'?'#dcfce7':p.status==='rejected'?'#fee2e2':'#fef9c3';
+      const receiptBtn=p.status==='approved'
+        ?`<div style="display:flex;gap:6px;margin-top:8px;">
+            <a href="api/payment.php?action=receipt_html&payment_id=${p.id}&token=${Auth.getToken()}" target="_blank" class="act-btn" style="background:#f1f5f9;color:#374151;">🧾 View</a>
+            <button onclick="downloadReceipt(${p.id})" class="act-btn" style="background:#f1f5f9;color:#374151;">⬇ Save</button>
+          </div>`:'';
+      return`<div class="pay-row">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+          <div style="width:40px;height:40px;background:#f8fafc;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span class="material-symbols-outlined" style="color:#ec5b13;font-size:20px;">receipt_long</span>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#0f172a;text-transform:capitalize;">${p.plan} Plan</div>
+            <div style="font-size:12px;color:#64748b;margin-top:1px;">${p.method} · Ref: <b>${p.reference_code}</b></div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:1px;">${new Date(p.created_at).toLocaleString()}</div>
+            ${receiptBtn}
+          </div>
         </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:20px;font-weight:800;color:#f97316">$${p.amount}</div>
-          <div style="background:${statusBg};color:${statusColor};padding:2px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-top:4px;text-transform:capitalize">${p.status}</div>
-          ${receiptBtn}
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:20px;font-weight:900;color:#ec5b13;">$${p.amount}</div>
+          <span style="background:${statusBg};color:${statusColor};font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:capitalize;">${p.status}</span>
         </div>
       </div>`;
     }).join('');
-  } catch(e) {
-    console.error('Payment history error:', e);
-    list.innerHTML = `<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">
-      <div style="font-size:24px;margin-bottom:8px">⚠️</div>
-      Unable to load payment history.<br>
-      <button onclick="loadPaymentHistory()" style="margin-top:12px;background:#f97316;color:white;border:none;border-radius:8px;padding:7px 18px;cursor:pointer;font-family:'DM Sans';font-weight:700;font-size:12px">Try Again</button>
+  }catch(e){
+    list.innerHTML=`<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">⚠️ Unable to load payment history.<br><button onclick="loadPaymentHistory()" style="margin-top:10px;background:#ec5b13;color:#fff;border:none;border-radius:8px;padding:7px 16px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;">Try Again</button></div>`;
+  }
+}
+
+async function downloadReceipt(paymentId){
+  try{
+    const r=await fetch(`api/payment.php?action=receipt&payment_id=${paymentId}`,{headers:{Authorization:'Bearer '+Auth.getToken()}});
+    const d=await r.json();if(!d.success)throw new Error(d.error||'Failed');
+    const rec=d.data.receipt;
+    const text=['=== SomBazar Receipt ===',`Receipt No : ${rec.receiptNo}`,`Plan       : ${rec.plan}`,`Amount     : $${rec.amount}`,`Method     : ${rec.method}`,`Reference  : ${rec.reference}`,`Date       : ${rec.date}`,`Status     : ${rec.status}`].join('\n');
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/plain'}));a.download=`receipt-${rec.receiptNo}.txt`;a.click();
+  }catch(e){showToast('Could not download receipt: '+e.message,'error');}
+}
+
+async function confirmCancelPlan(){
+  if(!confirm('Cancel your plan? You will be moved to the Free plan immediately.'))return;
+  try{
+    const r=await fetch('api/payment.php?action=cancel_plan',{method:'POST',headers:{Authorization:'Bearer '+Auth.getToken()}});
+    const d=await r.json();if(!d.success)throw new Error(d.error);
+    showToast('Plan cancelled. You are now on the Free plan.','success');
+    setTimeout(()=>loadPaymentHistory(),800);
+  }catch(e){showToast(e.message,'error');}
+}
+
+// ── Favorites ─────────────────────────────────
+var _allFavs=[];
+var _favCat='all';
+
+async function loadFavorites(more=false){
+  try{
+    const favs=await API.getFavorites();
+    _allFavs=favs;
+    document.getElementById('favsSubtitle').textContent=`You have ${favs.length} item${favs.length!==1?'s':''} saved for later.`;
+    renderFavs();
+  }catch(e){document.getElementById('favoritesEmpty').style.display='';}
+}
+
+function filterFavs(cat){
+  _favCat=cat;
+  document.querySelectorAll('#favCatFilter .tab-pill').forEach(b=>b.classList.remove('active'));
+  const btn=document.getElementById('favCat'+{all:'All',electronics:'Elec',fashion:'Fash',furniture:'Home',car:'Veh'}[cat]);
+  if(btn)btn.classList.add('active');
+  renderFavs();
+}
+
+function renderFavs(){
+  const filtered=_favCat==='all'?_allFavs:_allFavs.filter(l=>l.category===_favCat);
+  const grid=document.getElementById('favoritesGrid');
+  if(!filtered.length){grid.innerHTML='';document.getElementById('favoritesEmpty').style.display='';return;}
+  document.getElementById('favoritesEmpty').style.display='none';
+  const catEmoji={car:'🚗',house:'🏠',land:'🌿',electronics:'📱',furniture:'🪑',jobs:'💼',services:'🔧'}[''||'']||'📦';
+  grid.innerHTML=filtered.map(l=>{
+    const img=l.images&&l.images[0]
+      ?`<img src="${l.images[0]}" style="width:100%;height:170px;object-fit:cover;display:block;" loading="lazy" alt="${l.title}" onclick="window.location='listing.html?id=${l.id}'">`
+      :`<div style="height:170px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;" onclick="window.location='listing.html?id=${l.id}'">📦</div>`;
+    const badgeColor={car:'#ec5b13',electronics:'#2563eb',fashion:'#7c3aed',furniture:'#0891b2',services:'#16a34a'}[l.category]||'#64748b';
+    const catLabel=l.category?l.category.charAt(0).toUpperCase()+l.category.slice(1):'Item';
+    const ratingBadge=l.rating?`<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;display:flex;align-items:center;gap:2px;">⭐ ${l.rating}</div>`:'';
+    const outOfStock=l.status==='sold'?`<div style="position:absolute;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;letter-spacing:.5px;">OUT OF STOCK</div>`:'';
+    return`<div class="fav-card">
+      <div style="position:relative;">
+        ${img}
+        <button onclick="removeFav(${l.id},this)" style="position:absolute;top:8px;left:8px;background:rgba(255,255,255,.9);border:none;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:#ef4444;">♥</button>
+        ${ratingBadge}
+        ${outOfStock}
+      </div>
+      <div style="padding:10px 12px;">
+        <div style="font-size:9px;font-weight:800;color:${badgeColor};text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;">${catLabel}</div>
+        <div style="font-size:13px;font-weight:800;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px;" onclick="window.location='listing.html?id=${l.id}'">${l.title}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;">
+          <div>
+            <div style="font-size:14px;font-weight:900;color:#0f172a;">${l.currency||'USD'} ${Number(l.price).toLocaleString()}</div>
+            ${l.originalPrice&&l.originalPrice>l.price?`<div style="font-size:11px;color:#94a3b8;text-decoration:line-through;">${l.currency||'USD'} ${Number(l.originalPrice).toLocaleString()}</div>`:''}
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button onclick="addFavToCart(${l.id})" style="background:#ec5b13;color:#fff;border:none;padding:7px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;"${l.status==='sold'?' disabled style="background:#e2e8f0;color:#94a3b8;border:none;padding:7px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:not-allowed;font-family:inherit;"':''}>
+              🛒 Add to Cart
+            </button>
+            <button onclick="window.location='listing.html?id=${l.id}'" style="background:#f1f5f9;color:#64748b;border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+              <span class="material-symbols-outlined" style="font-size:16px;">visibility</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>`;
-  }
+  }).join('');
 }
 
-async function downloadReceipt(paymentId) {
-  try {
-    const r = await fetch(`api/payment.php?action=receipt&payment_id=${paymentId}`, {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || 'Failed');
-    const rec = d.data.receipt;
-    const text = [
-      '=== SomBazar Receipt ===',
-      `Receipt No : ${rec.receiptNo}`,
-      `Plan       : ${rec.plan}`,
-      `Amount     : $${rec.amount}`,
-      `Discount   : $${rec.discount}`,
-      `Method     : ${rec.method}`,
-      `Reference  : ${rec.reference}`,
-      `Date       : ${rec.date}`,
-      `Status     : ${rec.status}`,
-    ].join('\n');
-    const blob = new Blob([text], { type: 'text/plain' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `receipt-${rec.receiptNo}.txt`;
-    a.click();
-  } catch(e) {
-    showToast('Could not download receipt: ' + e.message, 'error');
-  }
+async function removeFav(listingId,btn){
+  try{
+    await API.removeFavorite(listingId);
+    _allFavs=_allFavs.filter(l=>l.id!==listingId);
+    renderFavs();
+    showToast('Removed from favorites');
+  }catch(e){showToast('Failed to remove','error');}
 }
+function addFavToCart(id){showToast('Added to cart! (Coming soon)','success');}
 
-async function confirmCancelPlan() {
-  if (!confirm('Are you sure you want to cancel your plan? You will be moved to the Free plan immediately.')) return;
-  try {
-    const r = await fetch('api/payment.php?action=cancel_plan', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error);
-    showToast('Plan cancelled. You are now on the Free plan.', 'success');
-    setTimeout(() => loadPaymentHistory(), 800);
-  } catch(e) {
-    showToast(e.message, 'error');
-  }
-}
+// ── Offers ────────────────────────────────────
+window._offersTab='received';
 
-// ── OFFERS ────────────────────────────────────────────────────
-let currentOffersTab = 'sent';
-
-function switchOffersTab(type) {
-  currentOffersTab = type;
-  window._currentOffersTab = type;
-  const sentBtn = document.getElementById('offersSentBtn');
-  const recBtn  = document.getElementById('offersReceivedBtn');
-  if (sentBtn) {
-    sentBtn.style.background  = type === 'sent' ? '#fff7ed' : 'white';
-    sentBtn.style.borderColor = type === 'sent' ? '#f97316' : '#e2e8f0';
-    sentBtn.style.color       = type === 'sent' ? '#f97316' : '#64748b';
-    recBtn.style.background   = type === 'received' ? '#fff7ed' : 'white';
-    recBtn.style.borderColor  = type === 'received' ? '#f97316' : '#e2e8f0';
-    recBtn.style.color        = type === 'received' ? '#f97316' : '#64748b';
-  }
+function switchOffersTab(type){
+  window._offersTab=type;
+  const rb=document.getElementById('offersReceivedBtn');
+  const sb=document.getElementById('offersSentBtn');
+  if(rb){rb.classList.toggle('active',type==='received');rb.classList.toggle('active',type==='received');}
+  if(sb){sb.classList.toggle('active',type==='sent');}
+  // Fix both
+  if(rb){rb.classList.remove('active');rb.style.background='';rb.style.color='';}
+  if(sb){sb.classList.remove('active');sb.style.background='';sb.style.color='';}
+  if(type==='received'&&rb)rb.classList.add('active');
+  if(type==='sent'&&sb)sb.classList.add('active');
   loadOffers(type);
 }
 
-// ── Reviews ──────────────────────────────────────────────────
-async function loadMyRating(userId) {
-  try {
-    const r = await fetch(`api/reviews.php?action=get_seller&seller_id=${userId}`);
-    const d = await r.json();
-    if (!d.success || !d.data.total) return;
-    const avg   = d.data.avg_rating;
-    const total = d.data.total;
-    document.getElementById('statReviews').textContent = total;
-    document.getElementById('statRating').textContent  = avg;
-    // Summary card
-    const summary = document.getElementById('myRatingSummary');
-    if (summary) {
-      summary.style.display = '';
-      document.getElementById('myAvgRating').textContent    = avg;
-      document.getElementById('myTotalReviews').textContent = total + ' review' + (total !== 1 ? 's' : '');
-      const stars = [1,2,3,4,5].map(i =>
-        `<span style="color:${i<=Math.round(avg)?'#f59e0b':'#d1d5db'};font-size:24px">★</span>`
-      ).join('');
-      document.getElementById('myStarsDisplay').innerHTML = stars;
-    }
-  } catch(e) {}
-}
-
-async function loadNotifHistory() {
-  const list = document.getElementById('notifHistoryList');
-  if (!list) return;
-  list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">Loading…</div>';
-
-  const svgIcon = (type) => {
-    const icons = {
-      message:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
-      offer:         `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`,
-      offer_accepted:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
-      offer_rejected:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
-      offer_counter: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>`,
-      review:        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
-      listing:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>`,
-      system:        `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
-    };
-    return icons[type] || icons.system;
-  };
-  const iconColor = (type) => ({message:'#3b82f6',offer:'#f97316',offer_accepted:'#22c55e',offer_rejected:'#ef4444',offer_counter:'#a855f7',review:'#f59e0b',listing:'#10b981',system:'#64748b'})[type]||'#64748b';
-  const iconBg    = (type) => ({message:'#eff6ff',offer:'#fff7ed',offer_accepted:'#f0fdf4',offer_rejected:'#fef2f2',offer_counter:'#faf5ff',review:'#fffbeb',listing:'#f0fdf4',system:'#f8fafc'})[type]||'#f8fafc';
-
-  try {
-    const r = await fetch('api/notifications.php?action=list&limit=50', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error);
-    const notifs = d.data.notifications || [];
-    if (!notifs.length) {
-      list.innerHTML = `<div style="text-align:center;padding:48px 20px;color:#94a3b8">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" style="margin:0 auto 12px;display:block"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <div style="font-size:14px;font-weight:600;color:#64748b">No notifications yet</div>
-        <div style="font-size:12px;margin-top:4px">You'll see offer updates, messages, and more here</div>
+async function loadOffers(type){
+  const wrap=document.getElementById('offersListWrap');if(!wrap)return;
+  wrap.innerHTML='<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Loading…</div>';
+  try{
+    const r=await fetch(`api/offers.php?action=my_offers&type=${type}`,{headers:{Authorization:'Bearer '+Auth.getToken()}});
+    if(!r.ok)throw new Error(`Server error: ${r.status}`);
+    const d=await r.json();if(!d.success)throw new Error(d.error||'Unknown error');
+    const offers=d.data.offers||[];
+    if(!offers.length){
+      wrap.innerHTML=`<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;">
+        <span class="material-symbols-outlined" style="font-size:48px;color:#e2e8f0;">local_offer</span>
+        <p style="font-weight:700;margin-top:8px;">${type==='sent'?'No offers sent yet.':'No offers received yet.'}</p>
+        ${type==='sent'?'<a href="listings.html" style="color:#ec5b13;font-weight:700;font-size:13px;">Browse listings →</a>':''}
       </div>`;
       return;
     }
-    list.innerHTML = notifs.map(n => `
-      <a href="${n.link || '#'}" onclick="markOneNotifRead(${n.id})" style="display:flex;gap:14px;padding:14px 16px;background:${n.isRead?'white':'#f8faff'};border:1px solid ${n.isRead?'#e2e8f0':'#dbeafe'};border-radius:14px;margin-bottom:8px;text-decoration:none;color:inherit;transition:all .15s;align-items:flex-start" onmouseenter="this.style.background='#f8fafc'" onmouseleave="this.style.background='${n.isRead?'white':'#f8faff'}'">
-        <div style="width:42px;height:42px;border-radius:12px;background:${iconBg(n.type)};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${iconColor(n.type)}">${svgIcon(n.type)}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:${n.isRead?'500':'700'};color:#1e293b">${n.title}</div>
-          ${n.body ? `<div style="font-size:12px;color:#64748b;margin-top:3px;line-height:1.5">${n.body}</div>` : ''}
-          <div style="font-size:11px;color:#94a3b8;margin-top:5px;display:flex;align-items:center;gap:4px">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            ${n.timeAgo}
-          </div>
+    const STATUS={pending:{bg:'#fef9c3',color:'#854d0e',label:'⏳ Pending'},accepted:{bg:'#dcfce7',color:'#166534',label:'✓ Accepted'},rejected:{bg:'#fee2e2',color:'#991b1b',label:'✕ Rejected'},countered:{bg:'#fff7ed',color:'#c2410c',label:'↩ Countered'},cancelled:{bg:'#f1f5f9',color:'#64748b',label:'Cancelled'},expired:{bg:'#f1f5f9',color:'#64748b',label:'Expired'}};
+    wrap.innerHTML=offers.map(o=>{
+      const sc=STATUS[o.status]||STATUS.pending;
+      const img=o.listingImage?`<img src="${o.listingImage}" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;" loading="lazy">`:`<div style="width:56px;height:56px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🏷️</div>`;
+      const other=type==='sent'?`Seller: <b>${o.sellerName||'—'}</b>`:`Buyer: <b>${o.buyerName||'—'}</b>`;
+      const cancelBtn=(type==='sent'&&['pending','countered'].includes(o.status))?`<button onclick="cancelOffer(${o.id})" class="act-btn" style="background:#f1f5f9;color:#94a3b8;">Cancel</button>`:'';
+      const actionBtn=(o.status==='countered'&&type==='sent')?`<a href="listing.html?id=${o.listingId}" class="act-btn" style="background:#ec5b13;color:#fff;">Respond</a>`:(o.status==='pending'&&type==='received')?`<a href="listing.html?id=${o.listingId}" class="act-btn" style="background:#ec5b13;color:#fff;">Review</a>`:'';
+      return`<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <a href="listing.html?id=${o.listingId}">${img}</a>
+        <div style="flex:1;min-width:0;">
+          <a href="listing.html?id=${o.listingId}" style="font-size:13px;font-weight:700;color:#0f172a;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;">${o.listingTitle||'Listing'}</a>
+          <div style="font-size:15px;font-weight:900;color:#ec5b13;margin-top:2px;">${o.currency} ${Number(o.amount).toLocaleString()}</div>
+          ${o.counterAmount?`<div style="font-size:12px;color:#ec5b13;margin-top:2px;">↩ Counter: ${o.currency} ${Number(o.counterAmount).toLocaleString()}</div>`:''}
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${other} · Round ${o.round}/5</div>
         </div>
-        ${!n.isRead ? '<div style="width:8px;height:8px;background:#f97316;border-radius:50%;flex-shrink:0;margin-top:8px"></div>' : ''}
-      </a>`).join('');
-  } catch(e) {
-    list.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px">${e.message}</div>`;
-  }
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+          <span style="background:${sc.bg};color:${sc.color};font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;">${sc.label}</span>
+          <div style="display:flex;gap:6px;">${actionBtn}${cancelBtn}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){wrap.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:16px;"><b>Error:</b> ${e.message}</div>`;}
 }
 
-async function markOneNotifRead(id) {
-  try {
-    await fetch('api/notifications.php?action=mark_read', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ notification_id: id })
-    });
-    if (typeof Notif !== 'undefined') Notif.refresh();
-  } catch(e) {}
+async function cancelOffer(id){
+  if(!confirm('Cancel this offer?'))return;
+  try{
+    const r=await fetch('api/offers.php?action=cancel',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+Auth.getToken()},body:JSON.stringify({offer_id:id})});
+    const d=await r.json();if(!d.success)throw new Error(d.error||'Failed');
+    showToast('Offer cancelled.','success');loadOffers(window._offersTab||'received');
+  }catch(e){showToast(e.message||'Could not cancel offer.','error');}
 }
 
-async function markAllNotifRead() {
-  try {
-    await fetch('api/notifications.php?action=mark_all_read', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    loadNotifHistory();
-    if (typeof Notif !== 'undefined') Notif.refresh();
-  } catch(e) {}
+// ── Reviews ───────────────────────────────────
+window._reviewsTab='received';
+
+function switchReviewsTab(tab){
+  window._reviewsTab=tab;
+  const rb=document.getElementById('revReceivedBtn');
+  const gb=document.getElementById('revGivenBtn');
+  if(rb){rb.classList.toggle('active',tab==='received');}
+  if(gb){gb.classList.toggle('active',tab==='given');}
+  loadMyReviews();
 }
 
-async function loadMyReviews() {
-  const list = document.getElementById('myReviewsList');
-  if (!list) return;
-  list.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">Loading…</div>';
-  const user = Auth.getUser();
-  if (!user) return;
-  try {
-    const r = await fetch(`api/reviews.php?action=get_seller&seller_id=${user.id}`);
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error);
-    const reviews = d.data.reviews || [];
-    if (!reviews.length) {
-      list.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">No reviews yet.<br>Complete a sale to receive your first review!</div>';
-      return;
-    }
-    list.innerHTML = reviews.map(r => {
-      const stars = [1,2,3,4,5].map(i =>
-        `<span style="color:${i<=r.rating?'#f59e0b':'#e2e8f0'};font-size:15px">★</span>`
-      ).join('');
-      const date = new Date(r.createdAt).toLocaleDateString('en', {year:'numeric',month:'short',day:'numeric'});
-      const avatar = r.reviewerAvatar
-        ? `<img loading="lazy" src="${r.reviewerAvatar}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0">`
-        : `<div style="width:38px;height:38px;border-radius:50%;background:#f97316;color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0">${(r.reviewerName||'?')[0].toUpperCase()}</div>`;
-      return `<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:12px">
-        ${avatar}
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
-            <div>
-              <div style="font-weight:700;font-size:13px;color:#1e293b">${r.reviewerName}</div>
-              <div style="margin-top:2px">${stars}</div>
+async function loadMyRating(userId){
+  try{
+    const r=await fetch(`api/reviews.php?action=get_seller&seller_id=${userId}`);
+    const d=await r.json();
+    if(!d.success||!d.data.total)return;
+    const avg=d.data.avg_rating,total=d.data.total;
+    document.getElementById('statReviews').textContent=total;
+    document.getElementById('statRating').textContent=avg;
+    document.getElementById('myAvgRating').textContent=avg;
+    document.getElementById('myTotalReviews').textContent=`Based on ${total} total reviews`;
+    // Stars
+    document.getElementById('myStarsDisplay').innerHTML=[1,2,3,4,5].map(i=>`<span style="color:${i<=Math.round(avg)?'#f59e0b':'#d1d5db'};font-size:22px;line-height:1;">★</span>`).join('');
+    // Rating bars
+    const dist=d.data.distribution||{5:80,4:12,3:5,2:1,1:2};
+    document.getElementById('ratingBars').innerHTML=[5,4,3,2,1].map(star=>{
+      const pct=dist[star]||0;
+      return`<div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:12px;font-weight:600;color:#64748b;width:8px;">${star}</span>
+        <div class="prog-bar" style="flex:1;"><div class="prog-fill" style="width:${pct}%;background:${star>=4?'#ec5b13':'#e2e8f0'};"></div></div>
+        <span style="font-size:12px;color:#64748b;width:32px;text-align:right;">${pct}%</span>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+
+async function loadMyReviews(){
+  const list=document.getElementById('myReviewsList');if(!list)return;
+  list.innerHTML='<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Loading…</div>';
+  const user=Auth.getUser();if(!user)return;
+  try{
+    const r=await fetch(`api/reviews.php?action=get_seller&seller_id=${user.id}`);
+    const d=await r.json();if(!d.success)throw new Error(d.error);
+    const reviews=d.data.reviews||[];
+    if(!reviews.length){list.innerHTML='<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;"><span class="material-symbols-outlined" style="font-size:48px;color:#e2e8f0;display:block;margin-bottom:8px;">reviews</span>No reviews yet.</div>';return;}
+    list.innerHTML=reviews.map(rv=>{
+      const stars=[1,2,3,4,5].map(i=>`<span style="color:${i<=rv.rating?'#f59e0b':'#e2e8f0'};font-size:15px;line-height:1;">★</span>`).join('');
+      const date=new Date(rv.createdAt).toLocaleDateString('en',{year:'numeric',month:'short',day:'numeric'});
+      const av=rv.reviewerAvatar
+        ?`<img src="${rv.reviewerAvatar}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0;" loading="lazy">`
+        :`<div style="width:40px;height:40px;border-radius:50%;background:#ec5b13;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;">${(rv.reviewerName||'?')[0].toUpperCase()}</div>`;
+      return`<div class="rev-row">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;">
+          ${av}
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#0f172a;">${rv.reviewerName}</div>
+                <div style="margin-top:2px;">${stars}</div>
+              </div>
+              <div style="font-size:11px;color:#94a3b8;">${date}</div>
             </div>
-            <div style="font-size:11px;color:#94a3b8;white-space:nowrap">${date}</div>
           </div>
-          ${r.comment ? `<p style="font-size:13px;color:#475569;margin:6px 0 0;line-height:1.5">${r.comment}</p>` : ''}
-          ${r.listingTitle ? `<a href="listing.html?id=${r.listingId}" style="font-size:11px;color:#f97316;margin-top:4px;display:block;text-decoration:none"> ${r.listingTitle}</a>` : ''}
         </div>
+        ${rv.comment?`<p style="font-size:13px;color:#475569;line-height:1.6;font-style:italic;">"${rv.comment}"</p>`:''}
+        ${rv.listingTitle?`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:#f8fafc;border-radius:9px;">
+          ${rv.listingImage?`<img src="${rv.listingImage}" style="width:32px;height:32px;object-fit:cover;border-radius:6px;" loading="lazy">`:''}
+          <div>
+            <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;">PURCHASED ITEM</div>
+            <a href="listing.html?id=${rv.listingId}" style="font-size:12px;font-weight:700;color:#0f172a;text-decoration:none;">${rv.listingTitle}</a>
+          </div>
+        </div>`:''}
       </div>`;
     }).join('');
-  } catch(e) {
-    list.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px">${e.message}</div>`;
-  }
+  }catch(e){list.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:16px;">${e.message}</div>`;}
 }
+function sortReviews(by){}
 
-async function loadPendingReviews() {
-  if (!Auth.isLoggedIn()) return;
-  try {
-    const r = await fetch('api/reviews.php?action=pending', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d = await r.json();
-    if (!d.success || !d.data.pending?.length) return;
-    const pending = d.data.pending;
-    const reminder = document.getElementById('pendingReviewsReminder');
-    const list     = document.getElementById('pendingReviewsList');
-    if (!reminder || !list) return;
-    reminder.style.display = '';
-    list.innerHTML = pending.map(p => {
-      const img = p.listingImage
-        ? `<img loading="lazy" src="${p.listingImage}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;flex-shrink:0">`
-        : `<div style="width:40px;height:40px;background:#fed7aa;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"></div>`;
-      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        ${img}
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.listingTitle}</div>
-          <div style="font-size:11px;color:#64748b">${p.sellerName} · ${p.daysSince}d ago</div>
-        </div>
-        <a href="listing.html?id=${p.listingId}#reviews" style="background:#f97316;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">Rate</a>
-      </div>`;
-    }).join('');
-    // Reviews tab'ında da göster
-    const tabReminder = document.getElementById('pendingReviewsReminder');
-    if (tabReminder) tabReminder.style.display = '';
-  } catch(e) {}
-}
+// ── Save profile ──────────────────────────────
+document.getElementById('editBio').addEventListener('input',function(){document.getElementById('bioCount').textContent=`${this.value.length}/300`;});
 
-async function loadOffers(type) {
-  const wrap = document.getElementById('offersListWrap');
-  if (!wrap) return;
-  wrap.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px">Loading…</div>';
-
-  try {
-    const r = await fetch(`api/offers.php?action=my_offers&type=${type}`, {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    if (!r.ok) throw new Error(`Server error: ${r.status}. Make sure offers.php is uploaded to the api/ folder.`);
-    const text = await r.text();
-    let d;
-    try { d = JSON.parse(text); } catch(je) {
-      throw new Error('offers.php bulunamadı. Lütfen api/offers.php dosyasını sunucunuza yükleyin.');
-    }
-    if (!d.success) throw new Error(d.error || 'Unknown error');
-
-    const offers = d.data.offers || [];
-    if (offers.length === 0) {
-      wrap.innerHTML = `<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px">
-        ${type === 'sent' ? 'No offers sent yet.<br><a href="listings.html" style="color:#f97316;font-weight:700">Browse listings →</a>' : 'No offers received yet.'}
-      </div>`;
-      return;
-    }
-
-    const STATUS_CONFIG = {
-      pending:   { bg:'#fef9c3', color:'#854d0e', label:'⏳ Pending' },
-      accepted:  { bg:'#dcfce7', color:'#166534', label:'✓ Accepted' },
-      rejected:  { bg:'#fee2e2', color:'#991b1b', label:'× Rejected' },
-      countered: { bg:'#fff7ed', color:'#c2410c', label:'↩ Countered' },
-      cancelled: { bg:'#f1f5f9', color:'#64748b', label:'Cancelled' },
-      expired:   { bg:'#f1f5f9', color:'#64748b', label:'Expired' },
+async function saveProfile(){
+  const btn=document.getElementById('saveBtn');
+  if(btn){btn.disabled=true;btn.textContent='Saving…';}
+  document.getElementById('settingsSaved').style.display='none';
+  document.getElementById('settingsError').style.display='none';
+  try{
+    const data={
+      displayName:document.getElementById('editName').value.trim(),
+      city:document.getElementById('editCity').value,
+      phone:document.getElementById('editPhone').value.trim(),
+      bio:document.getElementById('editBio').value.trim(),
+      notifications:{
+        email:document.getElementById('notifEmail').checked,
+        push:document.getElementById('notifPush').checked,
+        sms:document.getElementById('notifSms').checked,
+      }
     };
-
-    wrap.innerHTML = offers.map(o => {
-      const sc = STATUS_CONFIG[o.status] || STATUS_CONFIG.pending;
-      const imgHTML = o.listingImage
-        ? `<img loading="lazy" src="${o.listingImage}" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0">`
-        : `<div style="width:56px;height:56px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">️</div>`;
-
-      const otherParty = type === 'sent'
-        ? `Seller: <b>${o.sellerName||'—'}</b>`
-        : `Buyer: <b>${o.buyerName||'—'}</b>`;
-
-      const counterHTML = o.counterAmount
-        ? `<div style="font-size:12px;color:#f97316;margin-top:3px">↩ Counter: ${o.currency} ${Number(o.counterAmount).toLocaleString()}</div>`
-        : '';
-
-      const cancelBtn = (type === 'sent' && ['pending','countered'].includes(o.status))
-        ? `<button onclick="cancelOffer(${o.id})" style="font-size:12px;background:none;border:1px solid #e2e8f0;color:#94a3b8;padding:5px 10px;border-radius:7px;cursor:pointer;font-family:DM Sans">Cancel</button>`
-        : '';
-      const actionHTML = (o.status === 'countered' && type === 'sent')
-        ? `<a href="listing.html?id=${o.listingId}" style="font-size:12px;background:#f97316;color:white;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700">Respond</a>${cancelBtn}`
-        : (o.status === 'pending' && type === 'received')
-        ? `<a href="listing.html?id=${o.listingId}" style="font-size:12px;background:#f97316;color:white;padding:5px 12px;border-radius:7px;text-decoration:none;font-weight:700">Review</a>`
-        : cancelBtn;
-
-      return `<div style="background:white;border:1px solid #e2e8f0;border-radius:14px;padding:14px;margin-bottom:10px;display:flex;gap:12px;align-items:center">
-        <a href="listing.html?id=${o.listingId}">${imgHTML}</a>
-        <div style="flex:1;min-width:0">
-          <a href="listing.html?id=${o.listingId}" style="font-size:13px;font-weight:700;color:#1e293b;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block">${o.listingTitle||'Listing'}</a>
-          <div style="font-size:14px;font-weight:800;color:#f97316;margin-top:2px">${o.currency} ${Number(o.amount).toLocaleString()}</div>
-          ${counterHTML}
-          <div style="font-size:11px;color:#94a3b8;margin-top:3px">${otherParty} · Round ${o.round}/5 · ${o.expiresIn||new Date(o.createdAt).toLocaleDateString()}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
-          <span style="background:${sc.bg};color:${sc.color};font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap">${sc.label}</span>
-          ${actionHTML}
-        </div>
-      </div>`;
-    }).join('');
-  } catch(e) {
-    wrap.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px">
-      <b>Hata:</b> ${e.message}<br>
-      <small style="color:#94a3b8">api/offers.php sunucuya yüklü mü kontrol edin.</small>
-    </div>`;
+    const updated=await API.updateProfile(data);
+    Auth.setSession(Auth.getToken(),updated);
+    document.getElementById('profileName').textContent=updated.displayName||data.displayName;
+    document.getElementById('profileMeta').textContent=`${updated.city||data.city||'Hargeisa'}, Somaliland`;
+    document.getElementById('settingsSaved').style.display='';
+    setTimeout(()=>document.getElementById('settingsSaved').style.display='none',3000);
+    showToast('Profile saved!','success');
+  }catch(e){
+    document.getElementById('settingsError').textContent=e.message||'Failed to save.';
+    document.getElementById('settingsError').style.display='';
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Save Changes';}
   }
 }
 
-async function cancelOffer(offerId) {
-  if (!confirm('Cancel this offer?')) return;
-  try {
-    const r = await fetch('api/offers.php?action=cancel', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ offer_id: offerId })
+// ── Upload avatar ─────────────────────────────
+async function uploadAvatar(e){
+  const file=e.target.files[0];if(!file)return;
+  try{
+    const fd=new FormData();fd.append('avatar',file);
+    const result=await API.uploadAvatar(fd);
+    ['profileAvatarWrap','settingsAvatarWrap'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.innerHTML=`<img src="${result.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">`;
     });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || 'Failed');
-    showToast('Offer cancelled.', 'success');
-    switchOffersTab(window._currentOffersTab || 'sent');
-  } catch(e) {
-    showToast(e.message || 'Could not cancel offer.', 'error');
-  }
+    showToast('Avatar updated!','success');
+    const user=Auth.getUser();if(user){user.photoURL=result.photoURL;Auth.setSession(Auth.getToken(),user);}
+  }catch(e){showToast('Failed to upload avatar','error');}
 }
 
-async function saveProfile() {
-  const saveBtn = document.getElementById('saveBtn');
-  saveBtn.disabled = true;
-  saveBtn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite"></span>';
-  document.getElementById('settingsSaved').style.display = 'none';
-  document.getElementById('settingsError').style.display = 'none';
-
-  try {
-    const data = {
-      displayName: document.getElementById('editName').value.trim(),
-      city:        document.getElementById('editCity').value,
-      phone:       document.getElementById('editPhone').value.trim(),
-      bio:         document.getElementById('editBio').value.trim(),
-      notifications: {
-        email: document.getElementById('notifEmail').checked,
-        push:  document.getElementById('notifPush').checked,
-        sms:   document.getElementById('notifSms').checked,
-      },
-    };
-    const updated = await API.updateProfile(data);
-    Auth.setSession(Auth.getToken(), updated);
-    document.getElementById('settingsSaved').textContent = 'Profile updated successfully! ✓';
-    document.getElementById('settingsSaved').style.display = '';
-    document.getElementById('profileName').textContent = updated.displayName;
-    document.getElementById('profileMeta').innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> ${escHTML(updated.city || 'Hargeisa')}`;
-    setTimeout(() => document.getElementById('settingsSaved').style.display = 'none', 3000);
-  } catch(e) {
-    document.getElementById('settingsError').textContent = e.message || 'Failed to save. Please try again.';
-    document.getElementById('settingsError').style.display = '';
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.textContent = ' Save Changes';
-  }
+// ── Password change ───────────────────────────
+async function changePassword(){
+  const current=document.getElementById('currentPass').value;
+  const newP=document.getElementById('newPass').value;
+  const conf=document.getElementById('confirmNewPass').value;
+  const errEl=document.getElementById('passChangeError');
+  const succEl=document.getElementById('passChangeSuccess');
+  errEl.style.display=succEl.style.display='none';
+  if(!current||!newP||!conf){errEl.textContent='All fields are required';errEl.style.display='';return;}
+  if(newP.length<6){errEl.textContent='New password must be at least 8 characters';errEl.style.display='';return;}
+  if(newP!==conf){errEl.textContent='New passwords do not match';errEl.style.display='';return;}
+  try{
+    await API.changePassword(current,newP,conf);
+    succEl.style.display='';
+    document.getElementById('currentPass').value='';
+    document.getElementById('newPass').value='';
+    document.getElementById('confirmNewPass').value='';
+    setTimeout(()=>succEl.style.display='none',4000);
+  }catch(e){errEl.textContent=e.message||'Failed to update password';errEl.style.display='';}
 }
 
-async function uploadAvatar(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  try {
-    const fd = new FormData();
-    fd.append('avatar', file);
-    const result = await API.uploadAvatar(fd);
-    const avatarWrap = document.getElementById('profileAvatarWrap');
-    avatarWrap.innerHTML = `<img loading="lazy" src="${result.photoURL}" alt="" style="width:100%;height:100%;object-fit:cover">`;
-    showToast('Avatar updated!', 'success');
-    // Update user in localStorage
-    const user = Auth.getUser();
-    if (user) { user.photoURL = result.photoURL; Auth.setSession(Auth.getToken(), user); }
-  } catch(e) {
-    showToast('Failed to upload avatar', 'error');
-  }
+// ── Delete account ────────────────────────────
+function showDeleteModal(){document.getElementById('deleteModal').style.display='flex';}
+function hideDeleteModal(){document.getElementById('deleteModal').style.display='none';}
+
+async function cancelDeletion(){
+  if(!Auth.isLoggedIn()){window.location.href='auth.html';return;}
+  if(!confirm('Cancel deletion and recover your account?'))return;
+  try{
+    const r=await fetch('api/auth.php?action=recover_account',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+Auth.getToken()},body:JSON.stringify({from_profile:true})});
+    const d=await r.json();if(!d.success)throw new Error(d.error);
+    showToast('✓ Account recovered!','success');
+    document.getElementById('pendingDeletionBanner').style.display='none';
+  }catch(e){showToast(e.message,'error');}
 }
 
-// ── Load Favorites ─────────────────────────────────────────────
-async function loadFavorites() {
-  try {
-    const favs = await API.getFavorites();
-    if (!favs.length) {
-      document.getElementById('favoritesEmpty').style.display = '';
-    } else {
-      document.getElementById('favoritesGrid').innerHTML = favs.map(l => `
-        <div style="position:relative">
-          ${listingCardHTML(l)}
-          <button onclick="removeFav(${l.id}, this)" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center" title="Remove from favorites">️</button>
-        </div>`).join('');
-    }
-  } catch(e) {
-    document.getElementById('favoritesEmpty').style.display = '';
-  }
+async function loadDeletionStatus(){
+  if(!Auth.isLoggedIn())return;
+  try{
+    const r=await fetch('api/auth.php?action=check_deletion',{headers:{Authorization:'Bearer '+Auth.getToken()}});
+    const d=await r.json();if(!d.success||!d.data.scheduled)return;
+    const banner=document.getElementById('pendingDeletionBanner');
+    const countdown=document.getElementById('deletionCountdown');
+    if(banner)banner.style.display='';
+    if(countdown)countdown.textContent=`Your account will be permanently deleted in ${d.data.days_left} days.`;
+  }catch(e){}
 }
 
-async function removeFav(listingId, btn) {
-  try {
-    await API.removeFavorite(listingId);
-    btn.closest('div').remove();
-    showToast('Removed from favorites');
-    const grid = document.getElementById('favoritesGrid');
-    if (!grid.children.length) document.getElementById('favoritesEmpty').style.display = '';
-  } catch(e) { showToast('Failed to remove', 'error'); }
-}
-
-// ── Change Password ────────────────────────────────────────────
-function togglePassField(id, btn) {
-  const inp = document.getElementById(id);
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  btn.textContent = inp.type === 'password' ? '●' : '○';
-}
-
-async function changePassword() {
-  const current = document.getElementById('currentPass').value;
-  const newP    = document.getElementById('newPass').value;
-  const confirm = document.getElementById('confirmNewPass').value;
-  const errEl   = document.getElementById('passChangeError');
-  const succEl  = document.getElementById('passChangeSuccess');
-  errEl.style.display = succEl.style.display = 'none';
-
-  if (!current || !newP || !confirm) { errEl.textContent = '️ All fields are required'; errEl.style.display = ''; return; }
-  if (newP.length < 6) { errEl.textContent = '️ New password must be at least 6 characters'; errEl.style.display = ''; return; }
-  if (newP !== confirm) { errEl.textContent = '️ New passwords do not match'; errEl.style.display = ''; return; }
-
-  try {
-    await API.changePassword(current, newP, confirm);
-    succEl.textContent = '✓ Password updated successfully!';
-    succEl.style.display = '';
-    document.getElementById('currentPass').value = '';
-    document.getElementById('newPass').value = '';
-    document.getElementById('confirmNewPass').value = '';
-    setTimeout(() => succEl.style.display = 'none', 4000);
-  } catch(e) {
-    errEl.textContent = '️ ' + (e.message || 'Failed to update password');
-    errEl.style.display = '';
-  }
-}
-
-// ── Delete Account ─────────────────────────────────────────────
-function showDeleteModal() {
-  document.getElementById('deleteModal').style.display = 'flex';
-  document.getElementById('deletePassInput').value = '';
-  document.getElementById('deleteError').style.display = 'none';
-}
-function hideDeleteModal() {
-  document.getElementById('deleteModal').style.display = 'none';
-}
-
-async function cancelDeletion() {
-  if (!Auth.isLoggedIn()) { window.location.href = 'auth.html'; return; }
-  if (!confirm('Are you sure you want to cancel the deletion and recover your account?')) return;
-  try {
-    const r = await fetch('api/auth.php?action=recover_account', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ from_profile: true })
-    });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error);
-    showToast('✓ Account recovered! Your listings are restored.', 'success');
-    const banner = document.getElementById('pendingDeletionBanner');
-    if (banner) banner.style.display = 'none';
-  } catch(e) {
-    showToast(e.message, 'error');
-  }
-}
-
-async function loadDeletionStatus() {
-  if (!Auth.isLoggedIn()) return;
-  try {
-    const r = await fetch('api/auth.php?action=check_deletion', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d = await r.json();
-    if (!d.success || !d.data.scheduled) return;
-    const banner = document.getElementById('pendingDeletionBanner');
-    const countdown = document.getElementById('deletionCountdown');
-    if (banner) banner.style.display = '';
-    if (countdown) countdown.textContent = `Your account will be permanently deleted in ${d.data.days_left} days. Tap below to recover it.`;
-  } catch(e) {}
-}
-
-async function deleteAccount() {
-  const pass = document.getElementById('deletePassInput')?.value || '';
-  const errEl = document.getElementById('deleteError');
-  if (!pass) { if (errEl) { errEl.textContent = 'Password required'; errEl.style.display = ''; } return; }
-
-  try {
-    const r = await fetch('api/auth.php?action=delete_account', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ password: pass })
-    });
-    const txt = await r.text();
-    let d; try { d = JSON.parse(txt); } catch(e) { throw new Error('Server error'); }
-    if (!d.success) throw new Error(d.error || 'Failed');
-
-    // Soft delete başarılı
-    const daysLeft = 30;
-    document.getElementById('deleteModal').style.display = 'none';
-    showToast('Account scheduled for deletion. You have 30 days to recover it.', 'success');
-
-    // Banner göster
-    const banner = document.getElementById('pendingDeletionBanner');
-    const countdown = document.getElementById('deletionCountdown');
-    if (banner) banner.style.display = '';
-    if (countdown) countdown.textContent = `Your account will be permanently deleted in ${daysLeft} days. Tap "Cancel Deletion" to recover it.`;
-
-    // Çıkış yap ama local storage'ı temizle
+async function deleteAccount(){
+  const pass=document.getElementById('deletePassInput')?.value||'';
+  const errEl=document.getElementById('deleteError');
+  if(!pass){if(errEl){errEl.textContent='Password required';errEl.style.display='';}return;}
+  try{
+    const r=await fetch('api/auth.php?action=delete_account',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+Auth.getToken()},body:JSON.stringify({password:pass})});
+    const d=await r.json();if(!d.success)throw new Error(d.error||'Failed');
+    hideDeleteModal();
+    showToast('Account scheduled for deletion. You have 30 days to recover it.','success');
     Auth.clearSession();
-    setTimeout(() => window.location.href = 'auth.html', 2000);
-  } catch(e) {
-    if (errEl) { errEl.textContent = e.message; errEl.style.display = ''; }
-  }
+    setTimeout(()=>window.location.href='auth.html',2000);
+  }catch(e){if(errEl){errEl.textContent=e.message;errEl.style.display='';}}
 }
 
-
-async async function loadVerifyStatus() {
-  const wrap = document.getElementById('verifyBadgeWrap');
-  if (!wrap) return;
-  try {
-    const d = await apiFetch('api/verify.php?action=status');
-    const status = d.status || 'none';
-    const badge  = d.badge  || 'basic';
-
-    const map = {
-      none:     { bg:'#f1f5f9', color:'#64748b', icon:'', label:'Not Verified' },
-      pending:  { bg:'#fef9c3', color:'#854d0e', icon:'⏳', label:'Verification Pending' },
-      approved: { bg:'#dcfce7', color:'#166534', icon:'✓', label:'Verified' },
-      rejected: { bg:'#fee2e2', color:'#991b1b', icon:'✕', label:'Verification Rejected' },
-    };
-    const cfg = map[status] || map.none;
-
-    wrap.innerHTML = `
-      <span style="display:inline-flex;align-items:center;gap:5px;background:${cfg.bg};color:${cfg.color};
-        border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;cursor:${status !== 'approved' ? 'pointer' : 'default'}"
-        onclick="${status !== 'approved' ? "window.location.href='verify.html'" : ''}">
-        ${cfg.icon} ${cfg.label}
-      </span>`;
-
-    // Profil başlığındaki rozet
-    const nameEl = document.getElementById('profileName');
-    if (nameEl && status === 'approved') {
-      if (!nameEl.querySelector('.verified-tick')) {
-        nameEl.insertAdjacentHTML('beforeend', '<span class="verified-tick" style="color:#16a34a;font-size:18px;margin-left:6px" title="Verified">✓</span>');
-      }
+// ── Verification ──────────────────────────────
+async function loadVerifyStatus(){
+  const wrap=document.getElementById('verifyBadgeWrap');if(!wrap)return;
+  try{
+    const r=await fetch('api/verify.php?action=status',{headers:{Authorization:'Bearer '+Auth.getToken()}});
+    const d=await r.json();
+    const status=d.status||'none';
+    const map={none:{bg:'#f1f5f9',color:'#64748b',label:'Not Verified'},pending:{bg:'#fef9c3',color:'#854d0e',label:'⏳ Verification Pending'},approved:{bg:'#dcfce7',color:'#16a34a',label:'✓ Verified Seller'},rejected:{bg:'#fee2e2',color:'#991b1b',label:'✕ Verification Rejected'}};
+    const cfg=map[status]||map.none;
+    wrap.innerHTML=`<span style="display:inline-flex;align-items:center;gap:5px;background:${cfg.bg};color:${cfg.color};border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;cursor:${status!=='approved'?'pointer':'default'};" onclick="${status!=='approved'?"window.location.href='verify.html'":''}">${cfg.label}</span>`;
+    if(status==='approved'){
+      const nameEl=document.getElementById('profileName');
+      if(nameEl&&!nameEl.querySelector('.vtick'))nameEl.insertAdjacentHTML('afterend','<div class="vtick" style="display:none"></div>');
     }
-
-    // Get Verified butonunu gizle/güncelle
-    const btn = document.getElementById('verifyBtn');
-    if (btn) {
-      btn.style.display = 'flex'; // önce göster
-      if (status === 'approved') {
-        btn.style.display = 'none';
-      } else if (status === 'pending') {
-        btn.textContent = '⏳ Verification Pending';
-        btn.style.background = '#fef9c3';
-        btn.style.color = '#854d0e';
-        btn.style.border = '1px solid #fde68a';
-        btn.removeAttribute('href');
-        btn.style.cursor = 'default';
-      } else if (status === 'rejected') {
-        btn.textContent = '✕ Rejected — Resubmit';
-        btn.style.background = '#fee2e2';
-        btn.style.color = '#991b1b';
-      }
-    }
-  } catch(e) {
-    // Giriş yapılmamışsa badge gösterme
-  }
+  }catch(e){}
 }
 
-async async function loadPendingReviews() {
-  if (!Auth.isLoggedIn()) return;
-  try {
-    const r = await fetch('api/reviews.php?action=pending', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d = await r.json();
-    if (!d.success || !d.data.pending?.length) return;
-    const pending = d.data.pending;
-    const reminder = document.getElementById('pendingReviewsReminder');
-    const list     = document.getElementById('pendingReviewsList');
-    if (!reminder || !list) return;
-    reminder.style.display = '';
-    list.innerHTML = pending.map(p => {
-      const img = p.listingImage
-        ? `<img loading="lazy" src="${p.listingImage}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;flex-shrink:0">`
-        : `<div style="width:40px;height:40px;background:#fed7aa;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0"></div>`;
-      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        ${img}
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.listingTitle}</div>
-          <div style="font-size:11px;color:#64748b">${p.sellerName} · ${p.daysSince}d ago</div>
-        </div>
-        <a href="listing.html?id=${p.listingId}#reviews" style="background:#f97316;color:white;padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0">Rate</a>
-      </div>`;
-    }).join('');
-    // Reviews tab'ında da göster
-    const tabReminder = document.getElementById('pendingReviewsReminder');
-    if (tabReminder) tabReminder.style.display = '';
-  } catch(e) {}
-}
-
-async async function loadDeletionStatus() {
-  if (!Auth.isLoggedIn()) return;
-  try {
-    const r = await fetch('api/auth.php?action=check_deletion', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d = await r.json();
-    if (!d.success || !d.data.scheduled) return;
-    const banner = document.getElementById('pendingDeletionBanner');
-    const countdown = document.getElementById('deletionCountdown');
-    if (banner) banner.style.display = '';
-    if (countdown) countdown.textContent = `Your account will be permanently deleted in ${d.data.days_left} days. Tap below to recover it.`;
-  } catch(e) {}
-}</script>
+// ── Notif dropdown ────────────────────────────
+document.addEventListener('click',e=>{
+  const w=document.getElementById('notifBellWrap');
+  if(w&&!w.contains(e.target)){const dd=document.getElementById('notifDropdown');if(dd)dd.style.display='none';}
+});
+</script>
 <script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
-
-// ── Verification Badge ──────────────────────────────────────────────────
-async function loadVerifyStatus() {
-  const wrap = document.getElementById('verifyBadgeWrap');
-  if (!wrap) return;
-  try {
-    const d = await apiFetch('api/verify.php?action=status');
-    const status = d.status || 'none';
-    const badge  = d.badge  || 'basic';
-
-    const map = {
-      none:     { bg:'#f1f5f9', color:'#64748b', icon:'', label:'Not Verified' },
-      pending:  { bg:'#fef9c3', color:'#854d0e', icon:'⏳', label:'Verification Pending' },
-      approved: { bg:'#dcfce7', color:'#166534', icon:'✓', label:'Verified' },
-      rejected: { bg:'#fee2e2', color:'#991b1b', icon:'✕', label:'Verification Rejected' },
-    };
-    const cfg = map[status] || map.none;
-
-    wrap.innerHTML = `
-      <span style="display:inline-flex;align-items:center;gap:5px;background:${cfg.bg};color:${cfg.color};
-        border-radius:20px;padding:4px 12px;font-size:12px;font-weight:600;cursor:${status !== 'approved' ? 'pointer' : 'default'}"
-        onclick="${status !== 'approved' ? "window.location.href='verify.html'" : ''}">
-        ${cfg.icon} ${cfg.label}
-      </span>`;
-
-    // Profil başlığındaki rozet
-    const nameEl = document.getElementById('profileName');
-    if (nameEl && status === 'approved') {
-      if (!nameEl.querySelector('.verified-tick')) {
-        nameEl.insertAdjacentHTML('beforeend', '<span class="verified-tick" style="color:#16a34a;font-size:18px;margin-left:6px" title="Verified">✓</span>');
-      }
-    }
-
-    // Get Verified butonunu gizle/güncelle
-    const btn = document.getElementById('verifyBtn');
-    if (btn) {
-      btn.style.display = 'flex'; // önce göster
-      if (status === 'approved') {
-        btn.style.display = 'none';
-      } else if (status === 'pending') {
-        btn.textContent = '⏳ Verification Pending';
-        btn.style.background = '#fef9c3';
-        btn.style.color = '#854d0e';
-        btn.style.border = '1px solid #fde68a';
-        btn.removeAttribute('href');
-        btn.style.cursor = 'default';
-      } else if (status === 'rejected') {
-        btn.textContent = '✕ Rejected — Resubmit';
-        btn.style.background = '#fee2e2';
-        btn.style.color = '#991b1b';
-      }
-    }
-  } catch(e) {
-    // Giriş yapılmamışsa badge gösterme
-  }
-}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 </body>
 </html>
