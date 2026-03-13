@@ -2,249 +2,526 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="" id="csrfMeta">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Payment — SomBazar</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Poppins,sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh}
-
-    .topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-    .topbar-logo{font-weight:800;font-size:20px;color:#1e293b;text-decoration:none}
-    .topbar-logo span{background:#f97316;color:#fff;padding:1px 7px;border-radius:6px;font-size:13px;margin-right:4px}
-    .topbar-back{color:#f97316;text-decoration:none;font-weight:600;font-size:13px}
-
-    .page{max-width:560px;margin:40px auto;padding:0 20px 60px}
-
-    /* STEPS */
-    .steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:36px}
-    .step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;position:relative}
-    .step:not(:last-child)::after{content:'';position:absolute;top:16px;left:60%;width:80%;height:2px;background:#e2e8f0;z-index:0}
-    .step.done::after{background:#f97316}
-    .step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;z-index:1;position:relative;border:2px solid #e2e8f0;background:#fff;color:#94a3b8}
-    .step.done .step-dot{background:#f97316;border-color:#f97316;color:#fff}
-    .step.active .step-dot{background:#fff;border-color:#f97316;color:#f97316;box-shadow:0 0 0 4px rgba(249,115,22,.15)}
-    .step-label{font-size:10px;color:#94a3b8;font-weight:600;text-align:center}
-    .step.done .step-label,.step.active .step-label{color:#f97316}
-
-    /* CARDS */
-    .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:28px;margin-bottom:20px}
-    .card-title{font-size:16px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px}
-
-    /* PLAN SUMMARY */
-    .plan-summary{display:flex;align-items:center;justify-content:space-between;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:16px 20px;margin-bottom:20px}
-    .plan-summary .plan-name{font-weight:700;font-size:16px}
-    .plan-summary .plan-price{font-size:28px;font-weight:800;color:#f97316}
-    .plan-summary .plan-period{font-size:12px;color:#64748b}
-
-    /* METHOD SELECT */
-    .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-    .method-card{border:2px solid #e2e8f0;border-radius:12px;padding:16px;cursor:pointer;text-align:center;transition:all .2s}
-    .method-card:hover{border-color:#f97316}
-    .method-card.selected{border-color:#f97316;background:#fff7ed}
-    .method-card .method-logo{font-size:28px;margin-bottom:6px}
-    .method-card .method-name{font-weight:700;font-size:14px}
-    .method-card .method-sub{font-size:11px;color:#64748b;margin-top:2px}
-    .zaad-selected{border-color:#16a34a !important;background:#f0fdf4 !important}
-    .edahab-selected{border-color:#2563eb !important;background:#eff6ff !important}
-
-    /* SEND TO BOX */
-    .send-to{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;margin-bottom:20px}
-    .send-to-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-    .send-to-num{font-size:28px;font-weight:800;color:#1e293b;letter-spacing:2px;margin-bottom:2px}
-    .send-to-name{font-size:13px;color:#64748b}
-    .copy-btn{margin-top:10px;background:#f97316;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-family:Poppins;font-size:12px;font-weight:700;cursor:pointer}
-    .copy-btn:active{background:#ea6c0a}
-
-    /* FORM */
-    .form-group{margin-bottom:18px}
-    .form-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;display:block}
-    .form-label .req{color:#ef4444}
-    .form-input{width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-family:Poppins;font-size:14px;color:#1e293b;outline:none;transition:border .2s}
-    .form-input:focus{border-color:#f97316}
-    .form-hint{font-size:11px;color:#94a3b8;margin-top:4px}
-    .form-error{font-size:12px;color:#ef4444;margin-top:4px;display:none}
-
-    /* UPLOAD */
-    .upload-area{border:2px dashed #e2e8f0;border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
-    .upload-area:hover{border-color:#f97316;background:#fff7ed}
-    .upload-area.has-file{border-color:#10b981;background:#f0fdf4}
-    .upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
-    .upload-icon{font-size:32px;margin-bottom:8px}
-    .upload-text{font-size:13px;font-weight:600;color:#374151}
-    .upload-sub{font-size:11px;color:#94a3b8;margin-top:4px}
-    .upload-preview{width:100%;max-height:160px;object-fit:contain;border-radius:8px;margin-top:8px;display:none}
-
-    /* SUBMIT */
-    .btn-submit{width:100%;padding:14px;background:#f97316;color:#fff;border:none;border-radius:12px;font-family:Poppins;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
-    .btn-submit:hover{background:#ea6c0a}
-    .btn-submit:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed}
-
-    /* SUCCESS */
-    .success-card{text-align:center;padding:40px 28px}
-    .success-icon{font-size:64px;margin-bottom:16px;animation:pop .4s ease}
-    @keyframes pop{0%{transform:scale(.5)}80%{transform:scale(1.1)}100%{transform:scale(1)}}
-    .success-title{font-size:22px;font-weight:800;margin-bottom:8px}
-    .success-sub{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:24px}
-    .success-ref{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:14px;font-size:13px;margin-bottom:24px}
-    .success-ref b{display:block;font-size:18px;color:#f97316;margin-top:4px}
-    .btn-home{display:inline-block;padding:11px 28px;background:#f97316;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none}
-    .btn-outline{display:inline-block;padding:11px 28px;border:2px solid #e2e8f0;color:#374151;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none;margin-right:10px}
-  </style>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ec5b13">
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <!-- Google Analytics GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M', {
-      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
-      'cookie_flags': 'SameSite=None;Secure'
-    });
+    gtag('config', 'G-6H7F8Y980M', { cookie_domain: 'sombazar-fixed-production.up.railway.app', cookie_flags: 'SameSite=None;Secure' });
   </script>
-  <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: "#ec5b13" }, fontFamily: { sans: ["Public Sans","sans-serif"] } } }
+    }
+  </script>
+  <style>
+    body { font-family: "Public Sans", sans-serif; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
+    .method-radio:checked + label { border-color: #ec5b13; background: #fff7ed; }
+    .method-card-selected { border-color: #ec5b13 !important; background: #fff7ed !important; }
+    .zaad-selected { border-color: #16a34a !important; background: #f0fdf4 !important; }
+    .edahab-selected { border-color: #2563eb !important; background: #eff6ff !important; }
+    .card-selected { border-color: #ec5b13 !important; background: #fff7ed !important; }
+    @keyframes pop { 0%{transform:scale(.5)} 80%{transform:scale(1.15)} 100%{transform:scale(1)} }
+    .pop-in { animation: pop .45s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .step-line { flex:1; height:2px; background:#e2e8f0; margin-top:-1px; }
+    .step-line.done { background:#ec5b13; }
+    .upload-drop { border:2px dashed #e2e8f0; border-radius:12px; transition:all .2s; }
+    .upload-drop:hover, .upload-drop.drag { border-color:#ec5b13; background:#fff7ed; }
+    .upload-drop.has-file { border-color:#22c55e; background:#f0fdf4; }
+    input[type=file] { display:none; }
+    .progress-bar { transition: width .5s ease; }
+  </style>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
 
-<nav class="topbar">
-  <a href="index.html" class="topbar-logo"><span>SB</span>SomBazar</a>
-  <a href="packages.html" class="topbar-back">← Change Plan</a>
-</nav>
-
-<div class="page">
-
-  <!-- STEPS -->
-  <div class="steps">
-    <div class="step done" id="step1-dot">
-      <div class="step-dot">1</div>
-      <div class="step-label">Select Plan</div>
+<!-- ============================================================
+     TOPBAR
+============================================================ -->
+<header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+  <div class="flex items-center justify-between h-14 px-4 sm:px-6 max-w-6xl mx-auto">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="bg-primary p-1.5 rounded-lg text-white">
+        <span class="material-symbols-outlined text-lg block" style="font-size:18px">storefront</span>
+      </div>
+      <span class="text-lg font-black tracking-tight text-slate-900">Som<span class="text-primary">Bazar</span></span>
+    </a>
+    <div class="flex items-center gap-3">
+      <a href="messages.html" id="topbarMessages" class="hidden sm:flex items-center gap-1.5 p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors relative">
+        <span class="material-symbols-outlined text-xl">notifications</span>
+      </a>
+      <a href="profile.html" id="topbarAccount" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-sm font-semibold text-slate-700">
+        <span class="material-symbols-outlined text-lg">person</span>
+        My Account
+      </a>
+      <a href="packages.html" class="text-primary font-bold text-sm hover:underline">← Change Plan</a>
     </div>
-    <div class="step active" id="step2-dot">
-      <div class="step-dot">2</div>
-      <div class="step-label">Pay & Submit</div>
+  </div>
+</header>
+
+<!-- ============================================================
+     STEP 2: PAYMENT FORM
+============================================================ -->
+<div id="paymentView" class="max-w-6xl mx-auto px-4 sm:px-6 py-8 pb-20">
+
+  <!-- Progress Header -->
+  <div class="mb-8">
+    <div class="flex items-center gap-1.5 text-primary text-xs font-bold uppercase tracking-widest mb-2" id="stepLabel">
+      STEP 2 OF 3
     </div>
-    <div class="step" id="step3-dot">
-      <div class="step-dot">3</div>
-      <div class="step-label">Confirmation</div>
+    <div class="flex items-center justify-between mb-3">
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-900" id="stepTitle">Payment &amp; Submission</h1>
+      <span class="text-sm font-bold text-slate-500" id="stepPercent">66% Complete</span>
+    </div>
+    <!-- Progress Bar -->
+    <div class="h-2 bg-slate-200 rounded-full overflow-hidden">
+      <div class="progress-bar h-full bg-primary rounded-full" id="progressBar" style="width:66%"></div>
+    </div>
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 mt-3 text-xs font-semibold text-slate-400">
+      <span class="text-slate-400">Select Plan</span>
+      <span class="material-symbols-outlined text-xs" style="font-size:14px">chevron_right</span>
+      <span class="text-primary">Pay &amp; Submit</span>
+      <span class="material-symbols-outlined text-xs" style="font-size:14px">chevron_right</span>
+      <span class="text-slate-400">Confirmation</span>
     </div>
   </div>
 
-  <!-- STEP 2: PAYMENT FORM -->
-  <div id="paymentForm">
+  <!-- Two-column layout -->
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
 
-    <!-- Plan summary -->
-    <div class="plan-summary">
-      <div>
-        <div class="plan-name" id="planName">—</div>
-        <div class="plan-period">30 days · Billed manually</div>
-      </div>
-      <div>
-        <div class="plan-price" id="planPrice">$—</div>
-        <div id="discountBadge" style="display:none;font-size:11px;color:#22c55e;font-weight:700;text-align:right"></div>
-      </div>
-    </div>
+    <!-- LEFT COLUMN -->
+    <div class="space-y-5">
 
-    <!-- Coupon -->
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-title">🎟️ Coupon Code (optional)</div>
-      <div id="availableCoupons" style="display:none;margin-bottom:12px">
-        <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;margin-bottom:6px">Available coupons — click to apply</div>
-        <div id="couponChipList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <input class="form-input" id="couponInput" placeholder="Enter coupon code" maxlength="30" style="flex:1"
-          oninput="document.getElementById('couponMsg').textContent=''">
-        <button onclick="applyCoupon()" style="background:#f97316;color:white;border:none;border-radius:10px;padding:10px 18px;font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">Apply</button>
-      </div>
-      <div id="couponMsg" style="font-size:12px;margin-top:6px"></div>
-    </div>
-
-    <!-- Method select -->
-    <div class="card">
-      <div class="card-title"> Select Payment Method</div>
-      <div class="method-grid">
-        <div class="method-card" id="zaadCard" onclick="selectMethod('zaad')">
-          <div class="method-logo"></div>
-          <div class="method-name" style="color:#16a34a">Zaad</div>
-          <div class="method-sub">Telesom</div>
-        </div>
-        <div class="method-card" id="edahabCard" onclick="selectMethod('edahab')">
-          <div class="method-logo"></div>
-          <div class="method-name" style="color:#2563eb">eDahab</div>
-          <div class="method-sub">Dahabshiil</div>
-        </div>
-      </div>
-
-      <!-- Send to number -->
-      <div class="send-to" id="sendToBox" style="display:none">
-        <div class="send-to-label">Send <span id="sendAmount">$—</span> to this number</div>
-        <div class="send-to-num" id="sendNumber">—</div>
-        <div class="send-to-name" id="sendName">—</div>
-        <button class="copy-btn" onclick="copyNumber()"> Copy Number</button>
-      </div>
-    </div>
-
-    <!-- Reference code + screenshot -->
-    <div class="card">
-      <div class="card-title"> Confirm Your Payment</div>
-
-      <div class="form-group">
-        <label class="form-label">Reference Code <span class="req">*</span></label>
-        <input class="form-input" id="refCode" placeholder="e.g. TXN123456789" maxlength="60">
-        <div class="form-hint">The transaction ID / reference number from your Zaad or eDahab confirmation message</div>
-        <div class="form-error" id="refError">Please enter a valid reference code</div>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Screenshot (optional but recommended)</label>
-        <div class="upload-area" id="uploadArea">
-          <input type="file" accept="image/*" id="screenshotInput" onchange="handleScreenshot(this)">
-          <div id="uploadContent">
-            <div class="upload-icon"></div>
-            <div class="upload-text">Take screenshot of payment confirmation</div>
-            <div class="upload-sub">Tap to select · JPG/PNG · Max 5MB</div>
+      <!-- ① SELECT PAYMENT METHOD -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
+            <span class="material-symbols-outlined text-lg" style="font-size:18px">payments</span>
           </div>
-          <img id="uploadPreview" class="upload-preview">
+          <h2 class="text-base font-bold text-slate-900">Select Payment Method</h2>
         </div>
-        <div class="form-hint">Speeds up verification — admin sees the payment proof immediately</div>
+
+        <div class="space-y-3" id="methodList">
+          <!-- Zaad -->
+          <div class="method-option border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-primary/50 transition-all" id="zaadCard" onclick="selectMethod('zaad')">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="text-green-700 font-black text-xs">Z</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-slate-900 text-sm">Zaad Service</div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Mobile Wallet</div>
+                  </div>
+                  <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 method-radio-ui" id="zaadRadio">
+                    <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 transition-all" id="zaadDot"></div>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">Secure payment through Somtel's Zaad service. You will receive a prompt on your phone.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- eDahab -->
+          <div class="method-option border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-primary/50 transition-all" id="edahabCard" onclick="selectMethod('edahab')">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="text-blue-700 font-black text-xs">eD</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-slate-900 text-sm">eDahab</div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Mobile Money</div>
+                  </div>
+                  <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 method-radio-ui" id="edahabRadio">
+                    <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 transition-all" id="edahabDot"></div>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">Fast and reliable payment using Telesom's eDahab service.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Credit/Debit Card -->
+          <div class="method-option border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-primary/50 transition-all" id="cardCard" onclick="selectMethod('card')">
+            <div class="flex items-start gap-3">
+              <div class="w-10 h-10 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span class="material-symbols-outlined text-primary" style="font-size:20px">credit_card</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="font-bold text-slate-900 text-sm">Credit / Debit Card</div>
+                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Visa, Mastercard</div>
+                  </div>
+                  <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 method-radio-ui" id="cardRadio">
+                    <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 transition-all" id="cardDot"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="form-error" style="display:block;margin-bottom:12px;font-size:13px" id="submitError"></div>
+      <!-- ② MOBILE WALLET DETAILS (shown when zaad/edahab selected) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6" id="mobileDetailsBox" style="display:none">
+        <h2 class="text-base font-bold text-slate-900 mb-4">Mobile Wallet Details</h2>
+        <div class="space-y-4">
+          <!-- Send To Number -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Send <span id="sendAmountLabel" class="text-primary">$—</span> to this number</div>
+            <div class="flex items-center gap-3">
+              <div>
+                <div class="text-2xl font-black text-slate-900 tracking-widest" id="sendNumber">—</div>
+                <div class="text-xs text-slate-500 mt-0.5" id="sendName">—</div>
+              </div>
+              <button onclick="copyNumber()" class="ml-auto flex items-center gap-1.5 bg-white border border-slate-200 hover:border-primary hover:text-primary text-slate-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                <span class="material-symbols-outlined text-sm" style="font-size:14px">content_copy</span>
+                Copy
+              </button>
+            </div>
+          </div>
 
-      <button class="btn-submit" id="submitBtn" onclick="submitPayment()" disabled>
-        <span id="submitBtnText">Select a payment method first</span>
-      </button>
+          <!-- Phone Number Input -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Phone Number <span class="text-red-500">*</span></label>
+            <div class="flex items-center border-2 border-slate-200 rounded-xl overflow-hidden focus-within:border-primary transition-colors">
+              <div class="px-3 py-3 bg-slate-50 border-r border-slate-200 text-sm font-bold text-slate-500 flex-shrink-0">+252</div>
+              <input type="tel" id="phoneInput" placeholder="63 XXX XXXX" maxlength="15"
+                class="flex-1 px-3 py-3 bg-transparent text-sm font-medium outline-none placeholder-slate-400"
+                style="border:none;box-shadow:none">
+            </div>
+            <p class="text-xs text-slate-400 mt-1.5">Enter your registered mobile number to receive the payment prompt.</p>
+          </div>
+
+          <!-- Reference Code -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Transaction Reference Code <span class="text-red-500">*</span></label>
+            <input type="text" id="refCode" placeholder="e.g. TXN123456789" maxlength="60"
+              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-medium focus:border-primary outline-none transition-colors placeholder-slate-400">
+            <p class="text-xs text-slate-400 mt-1.5">The transaction ID from your Zaad or eDahab confirmation SMS.</p>
+            <p class="text-xs text-red-500 mt-1 hidden" id="refError">Please enter your reference code.</p>
+          </div>
+
+          <!-- Screenshot Upload -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Payment Screenshot <span class="text-slate-400 font-normal">(optional)</span></label>
+            <div class="upload-drop rounded-xl p-5 text-center cursor-pointer" id="uploadArea" onclick="document.getElementById('screenshotInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+              <input type="file" id="screenshotInput" accept="image/*" onchange="handleScreenshot(this)">
+              <div id="uploadPlaceholder">
+                <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                  <span class="material-symbols-outlined text-slate-400">upload</span>
+                </div>
+                <div class="text-sm font-semibold text-slate-700">Upload payment screenshot</div>
+                <div class="text-xs text-slate-400 mt-1">Click or drag · JPG, PNG · Max 5MB</div>
+              </div>
+              <img id="uploadPreview" class="max-h-40 mx-auto rounded-lg hidden">
+              <div id="uploadSuccess" class="hidden">
+                <span class="material-symbols-outlined text-green-500 text-2xl">check_circle</span>
+                <div class="text-sm font-semibold text-green-700 mt-1">Screenshot uploaded</div>
+              </div>
+            </div>
+            <p class="text-xs text-slate-400 mt-1.5">Speeds up verification — admin sees your payment proof immediately.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ② CARD DETAILS (shown when card selected) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6" id="cardDetailsBox" style="display:none">
+        <h2 class="text-base font-bold text-slate-900 mb-4">Card Details</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Cardholder Name <span class="text-red-500">*</span></label>
+            <input type="text" id="cardName" placeholder="Full name on card"
+              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-medium focus:border-primary outline-none transition-colors placeholder-slate-400">
+          </div>
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Card Number <span class="text-red-500">*</span></label>
+            <div class="relative">
+              <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19"
+                oninput="formatCardNumber(this)"
+                class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-medium focus:border-primary outline-none transition-colors placeholder-slate-400 pr-12">
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1" id="cardTypeIcons">
+                <span class="text-xs text-slate-400 font-bold">VISA</span>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">Expiry <span class="text-red-500">*</span></label>
+              <input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)"
+                class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-medium focus:border-primary outline-none transition-colors placeholder-slate-400">
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-slate-700 mb-1.5">CVV <span class="text-red-500">*</span></label>
+              <input type="text" id="cardCvv" placeholder="123" maxlength="4" inputmode="numeric"
+                class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-medium focus:border-primary outline-none transition-colors placeholder-slate-400">
+            </div>
+          </div>
+          <!-- Reference Code for card -->
+          <div>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Transaction Reference <span class="text-red-500">*</span></label>
+            <input type="text" id="refCode" placeholder="e.g. TXN123456789" maxlength="60"
+              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl text-sm font-medium focus:border-primary outline-none transition-colors placeholder-slate-400">
+            <p class="text-xs text-slate-400 mt-1.5">Transaction ID from your card statement or bank SMS.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ③ COUPON CODE -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary flex-shrink-0">
+            <span class="material-symbols-outlined text-lg" style="font-size:18px">local_offer</span>
+          </div>
+          <h2 class="text-base font-bold text-slate-900">Promo Code</h2>
+          <span class="text-xs text-slate-400 font-medium">(optional)</span>
+        </div>
+
+        <!-- Public coupons -->
+        <div id="availableCoupons" style="display:none" class="mb-4">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Available codes — click to apply</div>
+          <div id="couponChipList" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="flex gap-2">
+          <input type="text" id="couponInput" placeholder="Enter promo code" maxlength="30"
+            oninput="document.getElementById('couponMsg').textContent=''"
+            class="flex-1 px-4 py-2.5 border-2 border-slate-200 rounded-xl text-sm font-medium focus:border-primary outline-none transition-colors placeholder-slate-400">
+          <button onclick="applyCoupon()"
+            class="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all whitespace-nowrap">
+            Apply
+          </button>
+        </div>
+        <p class="text-xs mt-2" id="couponMsg"></p>
+      </div>
+
+      <!-- Error message -->
+      <p class="text-sm text-red-500 font-semibold hidden" id="submitError"></p>
+
+      <!-- Submit & Back buttons -->
+      <div class="flex flex-col sm:flex-row gap-3">
+        <a href="packages.html" class="flex-shrink-0 flex items-center justify-center gap-1.5 px-6 py-3.5 border-2 border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all">
+          Back to Plans
+        </a>
+        <button id="submitBtn" onclick="submitPayment()" disabled
+          class="flex-1 flex items-center justify-center gap-2 bg-primary text-white py-3.5 px-6 rounded-xl font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20">
+          <span class="material-symbols-outlined text-lg" style="font-size:18px">lock</span>
+          <span id="submitBtnText">Select a payment method first</span>
+        </button>
+      </div>
     </div>
 
-  </div><!-- /paymentForm -->
+    <!-- RIGHT COLUMN — Order Summary -->
+    <div class="space-y-4">
 
-  <!-- STEP 3: SUCCESS -->
-  <div id="successView" style="display:none">
-    <div class="card success-card">
-      <div class="success-icon">⏳</div>
-      <div class="success-title">Payment Submitted!</div>
-      <div class="success-sub">
-        Our team will verify your payment within <strong>2 hours</strong>.<br>
-        You'll see your plan update automatically in your profile.
+      <!-- Order Summary Card -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sticky top-20">
+        <h3 class="text-base font-bold text-slate-900 mb-5">Order Summary</h3>
+
+        <!-- Plan item -->
+        <div class="flex items-start gap-3 mb-5 pb-5 border-b border-slate-100">
+          <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary" style="font-size:18px">storefront</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-slate-900 text-sm" id="summaryPlanName">—</div>
+            <div class="text-xs text-slate-400 mt-0.5" id="summaryPlanPeriod">Active until —</div>
+          </div>
+          <div class="font-bold text-slate-900 text-sm" id="summaryOriginalPrice">$—</div>
+        </div>
+
+        <!-- Line items -->
+        <div class="space-y-2.5 text-sm mb-5">
+          <div class="flex justify-between text-slate-600">
+            <span>Subtotal</span>
+            <span id="subtotalVal">$—</span>
+          </div>
+          <div class="flex justify-between text-slate-600">
+            <span>Platform Fee</span>
+            <span id="feeVal">$0.00</span>
+          </div>
+          <div class="flex justify-between text-green-600 font-semibold hidden" id="discountRow">
+            <span id="discountLabel">Discount</span>
+            <span id="discountVal">-$0.00</span>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+          <span class="font-bold text-slate-900">Total Amount</span>
+          <span class="text-2xl font-black text-primary" id="totalVal">$—</span>
+        </div>
+
+        <!-- Secure badge -->
+        <div class="mt-5 flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-3.5">
+          <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-green-600" style="font-size:18px">verified_user</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-green-800">Secure Checkout</div>
+            <div class="text-xs text-green-700 leading-relaxed mt-0.5">Your payment information is encrypted with 256-bit SSL security. We never store your full payment details on our servers.</div>
+          </div>
+        </div>
+
+        <!-- Security logos -->
+        <div class="mt-4 flex items-center justify-center gap-3">
+          <div class="flex items-center gap-1 text-xs text-slate-400 font-semibold border border-slate-200 rounded px-2 py-1">
+            <span class="material-symbols-outlined text-sm" style="font-size:14px">lock</span>
+            SSL
+          </div>
+          <div class="text-xs text-slate-400 font-bold border border-slate-200 rounded px-2 py-1">VISA</div>
+          <div class="text-xs text-slate-400 font-bold border border-slate-200 rounded px-2 py-1">MC</div>
+          <div class="text-xs text-slate-400 font-bold border border-slate-200 rounded px-2 py-1">PCI DSS</div>
+        </div>
       </div>
-      <div class="success-ref">
-        Your reference code: <b id="confirmedRef">—</b>
-      </div>
-      <div id="successSummary" style="margin:12px 0;background:#f8fafc;border-radius:10px;padding:12px 16px;font-size:13px;text-align:left"></div>
-      <div id="statusCheckWrap" style="margin:12px 0;font-size:13px;color:#64748b"></div>
-      <div>
-        <button onclick="checkPaymentStatus()" style="background:#f1f5f9;color:#0f172a;border:none;border-radius:10px;padding:10px 20px;font-family:DM Sans;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;width:100%">🔄 Check Status</button>
-        <a href="profile.html" class="btn-outline">Go to Profile</a>
-        <a href="index.html" class="btn-home">Back to Home</a>
+
+      <!-- Need Help? -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="material-symbols-outlined text-primary" style="font-size:18px">support_agent</span>
+          <span class="text-sm font-bold text-slate-900">Need Help?</span>
+        </div>
+        <p class="text-xs text-slate-500 mb-3">Having trouble completing your payment? Our support team is available 24/7.</p>
+        <a href="contact.html" class="flex items-center justify-center gap-1.5 w-full border-2 border-slate-200 rounded-xl py-2.5 text-sm font-bold text-slate-700 hover:border-primary hover:text-primary transition-all">
+          <span class="material-symbols-outlined text-sm" style="font-size:16px">chat</span>
+          Contact Support
+        </a>
       </div>
     </div>
   </div>
+</div>
 
-</div><!-- /page -->
+<!-- ============================================================
+     STEP 3: SUCCESS VIEW
+============================================================ -->
+<div id="successView" style="display:none" class="min-h-screen bg-slate-50 flex items-start justify-center py-12 px-4">
+  <div class="w-full max-w-md">
 
+    <!-- Success Card -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
+      <!-- Top accent -->
+      <div class="h-1.5 bg-gradient-to-r from-primary to-orange-400"></div>
+
+      <div class="p-8 text-center">
+        <!-- Checkmark icon -->
+        <div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-5 pop-in">
+          <div class="w-14 h-14 bg-primary rounded-full flex items-center justify-center">
+            <span class="material-symbols-outlined text-white text-3xl" style="font-size:32px;font-variation-settings:'FILL' 1">check_circle</span>
+          </div>
+        </div>
+
+        <h2 class="text-2xl font-black text-slate-900 mb-2">Payment Successful</h2>
+        <p class="text-slate-500 text-sm leading-relaxed mb-6">Thank you for your purchase. Your transaction has been submitted and will be verified within 2 hours.</p>
+
+        <!-- Amount -->
+        <div class="text-4xl font-black text-primary mb-1" id="successAmount">$—</div>
+        <div class="flex items-center justify-center gap-1.5 text-slate-400 text-xs font-semibold mb-6">
+          <span class="material-symbols-outlined text-sm" style="font-size:14px">receipt</span>
+          <span>Ref: <span id="successRef" class="font-mono">—</span></span>
+        </div>
+
+        <!-- Transaction Details -->
+        <div class="text-left border border-slate-200 rounded-xl overflow-hidden mb-5">
+          <div class="px-4 py-2 bg-slate-50 border-b border-slate-200">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Transaction Details</span>
+          </div>
+          <div class="divide-y divide-slate-100">
+            <div class="flex items-center justify-between px-4 py-3">
+              <span class="text-sm text-slate-500">Payment Method</span>
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm text-slate-400" style="font-size:16px">credit_card</span>
+                <span class="text-sm font-semibold text-slate-900" id="successMethod">—</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3">
+              <span class="text-sm text-slate-500">Date &amp; Time</span>
+              <span class="text-sm font-semibold text-slate-900" id="successDate">—</span>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3">
+              <span class="text-sm text-slate-500">Plan</span>
+              <span class="text-sm font-semibold text-primary" id="successPlan">—</span>
+            </div>
+            <div class="flex items-center justify-between px-4 py-3">
+              <span class="text-sm text-slate-500">Status</span>
+              <div class="flex items-center gap-1.5">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-400"></span>
+                </span>
+                <span class="text-xs font-bold text-amber-600 uppercase tracking-wide" id="successStatus">PENDING REVIEW</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coupon savings (hidden by default) -->
+        <div id="successCouponRow" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-3 mb-5 flex items-center gap-2">
+          <span class="material-symbols-outlined text-green-600" style="font-size:18px">savings</span>
+          <span class="text-sm text-green-700 font-semibold">You saved <span id="successSavings" class="font-black">$0</span> with your promo code!</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-3">
+          <a href="profile.html" class="flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary/90 text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-primary/20">
+            Back to Dashboard
+            <span class="material-symbols-outlined text-lg" style="font-size:18px">arrow_forward</span>
+          </a>
+          <button onclick="downloadReceipt()" class="flex items-center justify-center gap-2 w-full border-2 border-slate-200 hover:border-slate-300 text-slate-700 py-3.5 rounded-xl font-bold text-sm transition-all hover:bg-slate-50">
+            <span class="material-symbols-outlined text-lg" style="font-size:18px">download</span>
+            Download Receipt
+          </button>
+          <button onclick="checkPaymentStatus()" id="checkStatusBtn" class="w-full text-slate-400 text-xs font-semibold py-2 hover:text-primary transition-colors">
+            Check verification status →
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer trust -->
+      <div class="px-6 pb-6">
+        <div class="flex items-start gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div class="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary" style="font-size:16px;font-variation-settings:'FILL' 1">shield</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-slate-900">Payment Secured by SomBazar</div>
+            <div class="text-xs text-slate-500 leading-relaxed mt-0.5">Your data is encrypted and transactions are monitored for your protection.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status check result -->
+    <div id="statusResult" class="hidden mt-4 p-4 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-center text-slate-700"></div>
+
+    <!-- Footer links -->
+    <div class="text-center mt-6 text-xs text-slate-400">
+      Having trouble? <a href="contact.html" class="text-primary font-bold hover:underline">Contact our Support Team</a>
+    </div>
+    <div class="text-center mt-2 text-xs text-slate-400">© 2026 SomBazar. All rights reserved. Professional, Fast, Secure.</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
 <script>
-// Fallback: app.js yüklenemezse Auth crash'i önle
 window.Auth = window.Auth || {
   getToken: () => localStorage.getItem('sb_token') || '',
   getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
@@ -254,50 +531,146 @@ window.Auth = window.Auth || {
 };
 window.API = window.API || {};
 </script>
-  <script src="assets/app.js"></script>
+<script src="assets/app.min.js"></script>
 <script>
-const params = new URLSearchParams(location.search);
-const plan  = params.get('plan')  || 'standard';
-const price = params.get('price') || '8';
+const params     = new URLSearchParams(location.search);
+const plan       = params.get('plan')  || 'standard';
+const priceParam = parseFloat(params.get('price') || '8');
 
-let selectedMethod = null;
-let screenshotUrl  = null;
-let paymentNumbers = {};
-let discountedPrice = null; // kupon uygulandıktan sonra
+const PLAN_LABELS = { free:'Free Plan', standard:'Premium Monthly', pro:'Pro Plan', agency:'Agency Plan' };
+const PLAN_PERIODS = { free:'Free forever', standard:'Active until Dec 2026', pro:'Active until Dec 2026', agency:'Active until Dec 2026' };
+const FEE_RATE    = 0.06; // 6% platform fee
 
-const PLAN_LABELS = { standard:'Standard Plan', pro:'Pro Plan', agency:'Agency Plan' };
+let selectedMethod  = null;
+let screenshotUrl   = null;
+let paymentNumbers  = {};
+let discountedPrice = null;
+let couponCode      = null;
 
+// ─────────────────────────── INIT ───────────────────────────
 async function init() {
-  if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=payment.html?plan='+plan+'&price='+price; return; }
+  if (!Auth.isLoggedIn()) {
+    window.location.href = `auth.html?redirect=payment.html?plan=${plan}&price=${priceParam}`;
+    return;
+  }
 
-  document.getElementById('planName').textContent  = PLAN_LABELS[plan] || plan;
-  document.getElementById('planPrice').textContent = '$' + price;
-  document.getElementById('sendAmount').textContent = '$' + price;
+  updateSummary();
+  populateTopbar();
 
   try {
     const r = await fetch('api/payment.php?action=plans');
     const d = await r.json();
-    if (d.success) paymentNumbers = d.data.numbers;
+    if (d.success) paymentNumbers = d.data.numbers || {};
   } catch(e) {}
 
-  // Mevcut kuponları yükle
   loadPublicCoupons();
 }
 
+function populateTopbar() {
+  const user = Auth.getUser();
+  if (user) {
+    const accEl = document.getElementById('topbarAccount');
+    if (accEl) accEl.innerHTML = `<span class="material-symbols-outlined text-lg">person</span>${user.name || 'My Account'}`;
+  }
+}
+
+function updateSummary() {
+  const base      = discountedPrice !== null ? discountedPrice : priceParam;
+  const fee       = 0; // included
+  const discount  = discountedPrice !== null ? (priceParam - discountedPrice) : 0;
+  const total     = base + fee;
+  const planLabel = PLAN_LABELS[plan] || plan;
+
+  document.getElementById('summaryPlanName').textContent    = planLabel;
+  document.getElementById('summaryPlanPeriod').textContent  = PLAN_PERIODS[plan] || '';
+  document.getElementById('summaryOriginalPrice').textContent = `$${priceParam.toFixed(2)}`;
+  document.getElementById('subtotalVal').textContent        = `$${priceParam.toFixed(2)}`;
+  document.getElementById('feeVal').textContent             = `$${fee.toFixed(2)}`;
+  document.getElementById('totalVal').textContent           = `$${total.toFixed(2)}`;
+  document.getElementById('sendAmountLabel').textContent    = `$${total.toFixed(2)}`;
+
+  if (discount > 0) {
+    document.getElementById('discountRow').classList.remove('hidden');
+    document.getElementById('discountLabel').textContent = couponCode ? `Discount (${couponCode})` : 'Discount';
+    document.getElementById('discountVal').textContent   = `-$${discount.toFixed(2)}`;
+  } else {
+    document.getElementById('discountRow').classList.add('hidden');
+  }
+
+  updateSubmitButton();
+}
+
+// ─────────────────────────── METHODS ───────────────────────────
+function selectMethod(method) {
+  selectedMethod = method;
+
+  // Reset all cards
+  ['zaadCard','edahabCard','cardCard'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'method-option border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-primary/50 transition-all';
+  });
+  ['zaadDot','edahabDot','cardDot'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.opacity = '0';
+  });
+  ['zaadRadio','edahabRadio','cardRadio'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 method-radio-ui';
+  });
+
+  // Activate selected
+  const selectedCard  = document.getElementById(method + 'Card');
+  const selectedDot   = document.getElementById(method + 'Dot');
+  const selectedRadio = document.getElementById(method + 'Radio');
+  if (selectedCard)  selectedCard.classList.add('border-primary', 'bg-orange-50');
+  if (selectedDot)   selectedDot.style.opacity = '1';
+  if (selectedRadio) selectedRadio.className = 'w-5 h-5 rounded-full border-2 border-primary flex items-center justify-center flex-shrink-0 method-radio-ui';
+
+  // Show relevant details panel
+  const mobileBox = document.getElementById('mobileDetailsBox');
+  const cardBox   = document.getElementById('cardDetailsBox');
+
+  if (method === 'zaad' || method === 'edahab') {
+    mobileBox.style.display = 'block';
+    cardBox.style.display   = 'none';
+    const info = paymentNumbers[method] || {};
+    document.getElementById('sendNumber').textContent = info.number || 'Contact support';
+    document.getElementById('sendName').textContent   = info.name   || '';
+  } else if (method === 'card') {
+    mobileBox.style.display = 'none';
+    cardBox.style.display   = 'block';
+  }
+
+  updateSubmitButton();
+}
+
+function updateSubmitButton() {
+  const btn  = document.getElementById('submitBtn');
+  const txt  = document.getElementById('submitBtnText');
+  const total = (discountedPrice !== null ? discountedPrice : priceParam).toFixed(2);
+  if (!selectedMethod) {
+    btn.disabled = true;
+    txt.textContent = 'Select a payment method first';
+  } else {
+    btn.disabled = false;
+    txt.textContent = `Complete Secure Payment — $${total}`;
+  }
+}
+
+// ─────────────────────────── COUPON ───────────────────────────
 async function loadPublicCoupons() {
   try {
     const r = await fetch(`api/payment.php?action=public_coupons&plan=${plan}`);
     const d = await r.json();
-    if (!d.success || !d.data.coupons.length) return;
-    const wrap = document.getElementById('availableCoupons');
-    if (!wrap) return;
-    wrap.style.display = 'block';
+    if (!d.success || !d.data.coupons?.length) return;
+    document.getElementById('availableCoupons').style.display = 'block';
     document.getElementById('couponChipList').innerHTML = d.data.coupons.map(c => {
-      const label = c.type === 'percent' ? c.value + '% off' : '$' + c.value + ' off';
-      return `<div onclick="useCoupon('${c.code}')" style="display:inline-flex;align-items:center;gap:6px;background:#fff7ed;border:1.5px dashed #f97316;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px;font-weight:700;color:#f97316;white-space:nowrap" title="Click to apply">
-        🎟️ <span style="font-family:monospace">${c.code}</span>
-        <span style="background:#f97316;color:white;border-radius:4px;padding:1px 6px;font-size:11px">${label}</span>
-      </div>`;
+      const label = c.type === 'percent' ? `${c.value}% off` : `$${c.value} off`;
+      return `<button onclick="useCoupon('${c.code}')" class="inline-flex items-center gap-1.5 bg-orange-50 border border-dashed border-primary rounded-lg px-3 py-1.5 text-xs font-bold text-primary hover:bg-orange-100 transition-colors">
+        <span class="material-symbols-outlined text-xs" style="font-size:13px">local_offer</span>
+        <span class="font-mono">${c.code}</span>
+        <span class="bg-primary text-white rounded px-1.5 py-0.5 text-[10px]">${label}</span>
+      </button>`;
     }).join('');
   } catch(e) {}
 }
@@ -307,27 +680,10 @@ function useCoupon(code) {
   applyCoupon();
 }
 
-function selectMethod(method) {
-  selectedMethod = method;
-
-  document.getElementById('zaadCard').className  = 'method-card' + (method==='zaad'  ? ' zaad-selected'   : '');
-  document.getElementById('edahabCard').className = 'method-card' + (method==='edahab'? ' edahab-selected' : '');
-
-  const info = paymentNumbers[method] || {};
-  document.getElementById('sendNumber').textContent = info.number || 'Contact support';
-  document.getElementById('sendName').textContent   = info.name   || '';
-  document.getElementById('sendToBox').style.display = 'block';
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = false;
-  const finalP = discountedPrice !== null ? discountedPrice : price;
-  document.getElementById('submitBtnText').textContent = `Submit Payment — $${finalP}`;
-}
-
 async function applyCoupon() {
   const code = document.getElementById('couponInput').value.trim();
   const msg  = document.getElementById('couponMsg');
-  if (!code) { msg.style.color='#ef4444'; msg.textContent='Enter a coupon code.'; return; }
+  if (!code) { msg.style.color='#ef4444'; msg.textContent='Please enter a coupon code.'; return; }
   msg.style.color='#94a3b8'; msg.textContent='Checking…';
   try {
     const r = await fetch('api/payment.php?action=apply_coupon', {
@@ -337,121 +693,149 @@ async function applyCoupon() {
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error || 'Invalid coupon');
-    const discount   = d.data.discount;
-    const finalPrice = d.data.finalPrice;
-    discountedPrice  = finalPrice;
-    document.getElementById('planPrice').innerHTML = `<span style="text-decoration:line-through;font-size:18px;color:#94a3b8">$${price}</span> <span style="color:#22c55e">$${finalPrice}</span>`;
-    document.getElementById('discountBadge').style.display = 'block';
-    document.getElementById('discountBadge').textContent   = `${discount}% discount applied ✓`;
-    document.getElementById('sendAmount').textContent      = '$' + finalPrice;
-    document.getElementById('submitBtnText').textContent   = `Submit Payment — $${finalPrice}`;
-    msg.style.color='#22c55e'; msg.textContent=`✓ Coupon applied! You save $${(price - finalPrice).toFixed(2)}`;
+    discountedPrice = d.data.finalPrice;
+    couponCode      = code;
+    msg.style.color='#22c55e';
+    msg.textContent = `✓ Code applied! You save $${(priceParam - discountedPrice).toFixed(2)}`;
+    updateSummary();
   } catch(e) {
     discountedPrice = null;
-    msg.style.color='#ef4444'; msg.textContent=e.message;
+    couponCode      = null;
+    msg.style.color='#ef4444';
+    msg.textContent = e.message;
+    updateSummary();
   }
 }
 
-function copyNumber() {
-  const num = document.getElementById('sendNumber').textContent;
-  navigator.clipboard?.writeText(num).then(() => showToast('Number copied!', 'success')).catch(() => {});
+// ─────────────────────────── UPLOAD ───────────────────────────
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadArea').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
 }
 
-async function handleScreenshot(input) {
+function handleScreenshot(input) {
   const file = input.files[0];
-  if (!file) return;
-  if (file.size > 5 * 1024 * 1024) { showToast('File too large (max 5MB)', 'error'); return; }
+  if (file) processFile(file);
+}
 
-  const area = document.getElementById('uploadArea');
-  area.querySelector('#uploadContent').innerHTML = '<div style="font-size:24px">⏳</div><div style="font-size:12px;color:#64748b">Uploading…</div>';
+async function processFile(file) {
+  if (file.size > 5 * 1024 * 1024) { showToast?.('File too large (max 5MB)', 'error'); return; }
+  const area      = document.getElementById('uploadArea');
+  const placeholder = document.getElementById('uploadPlaceholder');
+  const preview   = document.getElementById('uploadPreview');
+  const success   = document.getElementById('uploadSuccess');
+
+  placeholder.classList.add('hidden');
+  area.innerHTML += `<div id="uploadSpinner" class="py-4"><div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div><p class="text-xs text-slate-400 mt-2">Uploading…</p></div>`;
 
   try {
     const fd = new FormData();
     fd.append('images[]', file);
     const r = await fetch('api/listings.php?action=upload_images&listing_id=', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + Auth.getToken() },
-      body: fd,
+      method: 'POST', headers: { Authorization: 'Bearer ' + Auth.getToken() }, body: fd
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error);
     screenshotUrl = d.data.urls?.[0];
-
-    const preview = document.getElementById('uploadPreview');
+    document.getElementById('uploadSpinner')?.remove();
     preview.src = screenshotUrl;
-    preview.style.display = 'block';
-    area.querySelector('#uploadContent').style.display = 'none';
+    preview.classList.remove('hidden');
+    success.classList.remove('hidden');
     area.classList.add('has-file');
   } catch(e) {
-    area.querySelector('#uploadContent').innerHTML = `<div style="font-size:12px;color:#ef4444">Upload failed: ${e.message}</div>`;
+    document.getElementById('uploadSpinner')?.remove();
+    placeholder.classList.remove('hidden');
+    placeholder.innerHTML = `<div class="text-xs text-red-500 font-semibold">Upload failed. Try again.</div>`;
   }
 }
 
+function copyNumber() {
+  const num = document.getElementById('sendNumber').textContent;
+  navigator.clipboard?.writeText(num).then(() => {
+    showToast?.('Number copied!', 'success');
+  }).catch(() => {});
+}
+
+// ─────────────────────────── SUBMIT ───────────────────────────
 async function submitPayment() {
-  const ref = document.getElementById('refCode').value.trim();
-  const errEl = document.getElementById('submitError');
+  const refEl  = document.getElementById('refCode');
+  const ref    = refEl?.value.trim() || '';
+  const errEl  = document.getElementById('submitError');
   const refErr = document.getElementById('refError');
 
-  errEl.textContent = '';
-  refErr.style.display = 'none';
+  errEl?.classList.add('hidden');
+  refErr?.classList.add('hidden');
 
-  if (!selectedMethod) { errEl.textContent = 'Please select a payment method.'; return; }
-  if (ref.length < 4)  { refErr.style.display = 'block'; return; }
+  if (!selectedMethod) { errEl.textContent='Select a payment method.'; errEl.classList.remove('hidden'); return; }
+  if ((selectedMethod !== 'card') && ref.length < 4) { refErr?.classList.remove('hidden'); return; }
 
   const btn = document.getElementById('submitBtn');
+  const txt = document.getElementById('submitBtnText');
   btn.disabled = true;
-  document.getElementById('submitBtnText').textContent = 'Submitting…';
+  txt.textContent = 'Submitting…';
 
   try {
     const r = await fetch('api/payment.php?action=initiate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
       body: JSON.stringify({
-        plan, method: selectedMethod,
+        plan,
+        method: selectedMethod,
         reference_code: ref,
         screenshot_url: screenshotUrl,
-        coupon_code: document.getElementById('couponInput').value.trim() || undefined,
+        coupon_code: couponCode || undefined,
       })
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error);
 
-    // Show success
-    document.getElementById('paymentForm').style.display = 'none';
-    document.getElementById('successView').style.display = 'block';
-    document.getElementById('confirmedRef').textContent = ref;
-
-    // Özet - kupon kullanıldıysa göster
-    const summary = document.getElementById('successSummary');
-    if (summary) {
-      const finalAmt  = d.data?.amount ?? (discountedPrice !== null ? discountedPrice : price);
-      const origAmt   = d.data?.original_amount ?? price;
-      const discount  = d.data?.discount ?? 0;
-      const couponUsed = d.data?.coupon_used || document.getElementById('couponInput').value.trim();
-      let html = `<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#64748b">Plan</span><span style="font-weight:700;text-transform:capitalize">${plan}</span></div>`;
-      if (discount > 0 && couponUsed) {
-        html += `<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#64748b">Original Price</span><span>$${parseFloat(origAmt).toFixed(2)}</span></div>`;
-        html += `<div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:#16a34a">Coupon <b style="font-family:monospace">${couponUsed}</b></span><span style="color:#16a34a;font-weight:700">-$${parseFloat(discount).toFixed(2)}</span></div>`;
-      }
-      html += `<div style="display:flex;justify-content:space-between;border-top:1px solid #e2e8f0;padding-top:8px;margin-top:4px"><span style="font-weight:700">Amount Sent</span><span style="font-weight:800;color:#f97316;font-size:15px">$${parseFloat(finalAmt).toFixed(2)}</span></div>`;
-      summary.innerHTML = html;
-    }
-
-    // Update steps
-    document.getElementById('step2-dot').className = 'step done';
-    document.getElementById('step3-dot').className = 'step active';
-
+    showSuccess(ref, d.data);
   } catch(e) {
     errEl.textContent = e.message;
+    errEl.classList.remove('hidden');
     btn.disabled = false;
-    document.getElementById('submitBtnText').textContent = `Submit Payment — $${price}`;
+    updateSubmitButton();
   }
 }
 
+function showSuccess(ref, data) {
+  document.getElementById('paymentView').style.display  = 'none';
+  document.getElementById('successView').style.display  = 'block';
+
+  const total   = data?.amount ?? (discountedPrice !== null ? discountedPrice : priceParam);
+  const savings = discountedPrice !== null ? (priceParam - discountedPrice) : 0;
+  const now     = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })
+                + ' at ' + now.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+
+  document.getElementById('successAmount').textContent = `$${parseFloat(total).toFixed(2)}`;
+  document.getElementById('successRef').textContent    = ref;
+  document.getElementById('successPlan').textContent   = PLAN_LABELS[plan] || plan;
+  document.getElementById('successDate').textContent   = dateStr;
+
+  const methodLabels = { zaad:'Zaad Service', edahab:'eDahab', card:'Credit / Debit Card' };
+  document.getElementById('successMethod').textContent = methodLabels[selectedMethod] || selectedMethod;
+
+  if (savings > 0) {
+    document.getElementById('successCouponRow').classList.remove('hidden');
+    document.getElementById('successSavings').textContent = `$${savings.toFixed(2)}`;
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────── STATUS CHECK ───────────────────────────
 async function checkPaymentStatus() {
-  const wrap = document.getElementById('statusCheckWrap');
-  if (!wrap) return;
-  wrap.textContent = 'Checking…';
+  const btn    = document.getElementById('checkStatusBtn');
+  const result = document.getElementById('statusResult');
+  if (!btn || !result) return;
+
+  btn.textContent = 'Checking…';
+  result.classList.remove('hidden');
+  result.textContent = '';
+
   try {
     const r = await fetch('api/payment.php?action=status', {
       headers: { Authorization: 'Bearer ' + Auth.getToken() }
@@ -459,22 +843,77 @@ async function checkPaymentStatus() {
     const d = await r.json();
     if (!d.success) throw new Error(d.error || 'Failed');
     const s = d.data;
-    const label = s.status === 'approved' ? '✅ Approved — your plan is active!' :
-                  s.status === 'rejected' ? '❌ Rejected — please contact support.' :
-                  '⏳ Still pending — usually verified within 2 hours.';
-    wrap.innerHTML = `<span style="font-weight:700">${label}</span>`;
+
     if (s.status === 'approved') {
-      document.querySelector('.success-icon').textContent = '✅';
-      document.querySelector('.success-title').textContent = 'Payment Approved!';
+      result.className = 'mt-4 p-4 bg-green-50 border border-green-200 rounded-xl text-sm font-bold text-green-700 text-center';
+      result.innerHTML = '✅ Payment approved — your plan is now active!';
+      document.getElementById('successStatus').textContent = 'APPROVED';
+      document.querySelector('#successView [id="successStatus"]')?.closest('.flex')?.querySelector('span.animate-ping')?.classList.replace('bg-amber-400','bg-green-500');
+    } else if (s.status === 'rejected') {
+      result.className = 'mt-4 p-4 bg-red-50 border border-red-200 rounded-xl text-sm font-bold text-red-700 text-center';
+      result.innerHTML = '❌ Payment rejected. Please contact support.';
+    } else {
+      result.className = 'mt-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm font-bold text-amber-700 text-center';
+      result.innerHTML = '⏳ Still pending — usually verified within 2 hours.';
     }
   } catch(e) {
-    wrap.textContent = 'Could not check status. Try again later.';
+    result.className = 'mt-4 p-4 bg-slate-100 border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 text-center';
+    result.textContent = 'Could not check status. Try again later.';
+  } finally {
+    btn.textContent = 'Check verification status →';
   }
 }
 
+// ─────────────────────────── RECEIPT ───────────────────────────
+function downloadReceipt() {
+  const ref   = document.getElementById('successRef')?.textContent || '—';
+  const plan_ = document.getElementById('successPlan')?.textContent || '—';
+  const amt   = document.getElementById('successAmount')?.textContent || '—';
+  const date  = document.getElementById('successDate')?.textContent || new Date().toLocaleString();
+  const meth  = document.getElementById('successMethod')?.textContent || '—';
+
+  const content = [
+    '================================================',
+    '          SOMBAZAR PAYMENT RECEIPT              ',
+    '================================================',
+    '',
+    `Reference:      ${ref}`,
+    `Plan:           ${plan_}`,
+    `Amount:         ${amt}`,
+    `Method:         ${meth}`,
+    `Date:           ${date}`,
+    `Status:         Pending Review`,
+    '',
+    '------------------------------------------------',
+    'SomBazar — Somaliland\'s Largest Marketplace',
+    'https://sombazar-fixed-production.up.railway.app',
+    '© 2026 SomBazar. All rights reserved.',
+    '================================================',
+  ].join('\n');
+
+  const blob = new Blob([content], { type: 'text/plain' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `SomBazar-Receipt-${ref}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─────────────────────────── FORMATTERS ───────────────────────────
+function formatCardNumber(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  input.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+function formatExpiry(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,4);
+  if (v.length >= 2) v = v.substring(0,2) + ' / ' + v.substring(2);
+  input.value = v;
+}
+
+// ─────────────────────────── BOOT ───────────────────────────
 init();
-</script>
-<script>
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
