@@ -5,235 +5,349 @@
   <meta name="csrf-token" content="" id="csrfMeta">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Plans & Pricing — SomBazar</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'DM Sans',sans-serif;background:#f8fafc;color:#1e293b;min-height:100vh}
-
-    /* NAV */
-    .topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-    .topbar-logo{font-weight:800;font-size:20px;color:#1e293b;text-decoration:none}
-    .topbar-logo span{background:#f97316;color:#fff;padding:1px 7px;border-radius:6px;font-size:13px;margin-right:4px}
-    .topbar-back{color:#f97316;text-decoration:none;font-weight:600;font-size:13px;display:flex;align-items:center;gap:4px}
-
-    /* HERO */
-    .hero{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:#fff;padding:64px 24px 48px;text-align:center}
-    .hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;margin-bottom:12px}
-    .hero h1 span{color:#f97316}
-    .hero p{color:#94a3b8;font-size:16px;max-width:480px;margin:0 auto 28px}
-    .current-plan-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(249,115,22,.15);border:1px solid rgba(249,115,22,.3);color:#fb923c;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600}
-
-    /* PLANS GRID */
-    .plans-wrap{max-width:1100px;margin:0 auto;padding:48px 20px}
-    .plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
-
-    .plan-card{background:#fff;border-radius:16px;border:2px solid #e2e8f0;padding:28px 24px;position:relative;transition:all .2s;cursor:pointer}
-    .plan-card:hover{border-color:#f97316;transform:translateY(-3px);box-shadow:0 12px 32px rgba(249,115,22,.12)}
-    .plan-card.popular{border-color:#f97316}
-    .plan-card.current{border-color:#10b981;background:#f0fdf4}
-
-    .popular-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#f97316;color:#fff;font-size:11px;font-weight:800;padding:3px 14px;border-radius:20px;white-space:nowrap}
-    .current-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#10b981;color:#fff;font-size:11px;font-weight:800;padding:3px 14px;border-radius:20px;white-space:nowrap}
-
-    .plan-name{font-size:18px;font-weight:700;margin-bottom:4px}
-    .plan-price{font-size:36px;font-weight:800;color:#f97316;margin:12px 0 4px}
-    .plan-price span{font-size:15px;font-weight:500;color:#64748b}
-    .plan-desc{font-size:13px;color:#64748b;margin-bottom:20px}
-
-    .plan-features{list-style:none;margin-bottom:24px}
-    .plan-features li{display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;padding:5px 0;border-bottom:1px solid #f1f5f9}
-    .plan-features li:last-child{border:none}
-    .plan-features li .icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
-    .icon-yes{background:#dcfce7;color:#16a34a}
-    .icon-no{background:#f1f5f9;color:#94a3b8}
-
-    .plan-btn{width:100%;padding:11px;border-radius:10px;border:none;font-family:'DM Sans';font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
-    .plan-btn-primary{background:#f97316;color:#fff}
-    .plan-btn-primary:hover{background:#ea6c0a}
-    .plan-btn-outline{background:#fff;color:#f97316;border:2px solid #f97316}
-    .plan-btn-outline:hover{background:#fff7ed}
-    .plan-btn-disabled{background:#f1f5f9;color:#94a3b8;cursor:not-allowed}
-
-    /* FAQ */
-    .faq-wrap{max-width:700px;margin:0 auto;padding:0 20px 60px}
-    .faq-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:24px}
-    .faq-item{background:#fff;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:12px;overflow:hidden}
-    .faq-q{padding:16px 20px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
-    .faq-a{padding:0 20px 16px;font-size:13px;color:#64748b;line-height:1.7;display:none}
-    .faq-item.open .faq-a{display:block}
-    .faq-item.open .faq-arrow{transform:rotate(180deg)}
-    .faq-arrow{transition:transform .2s;font-size:12px;color:#94a3b8}
-
-    /* PAYMENT NUMBERS */
-    .pay-info{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;max-width:600px;margin:0 auto 40px;text-align:center}
-    .pay-info h3{font-size:16px;font-weight:700;margin-bottom:16px}
-    .pay-methods{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-    .pay-method{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 24px;min-width:180px}
-    .pay-method .method-name{font-weight:700;font-size:14px;margin-bottom:4px}
-    .pay-method .method-num{font-size:20px;font-weight:800;color:#f97316;letter-spacing:1px}
-    .pay-method .method-acc{font-size:12px;color:#64748b;margin-top:2px}
-    .zaad-color{border-color:#16a34a;background:#f0fdf4}
-    .zaad-color .method-name{color:#16a34a}
-    .edahab-color{border-color:#2563eb;background:#eff6ff}
-    .edahab-color .method-name{color:#2563eb}
-  </style>
-  <!-- Google Analytics 4 — GA_MEASUREMENT_ID değiştirin -->
-  <script>
-    (function(){
-      var GA_ID = window._GA_ID || 'G-XXXXXXXXXX'; // .env veya config'den al
-      if (GA_ID === 'G-XXXXXXXXXX') return; // ID girilmemişse yükleme
-      var s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
-      document.head.appendChild(s);
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', GA_ID, {
-        page_title: document.title,
-        page_location: window.location.href,
-        anonymize_ip: true,
-        cookie_flags: 'SameSite=None;Secure'
-      });
-    })();
-  </script>
-  <script>
-    // Dark mode FOUC prevention — must run before DOM
-    (function(){
-      var t=localStorage.getItem('sb_theme')||
-        (window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
-      document.documentElement.setAttribute('data-theme',t);
-    })();
-  </script>
-<style>
-.skip-link{position:fixed!important;top:-100px!important;left:16px;background:#0f172a;color:#fff;padding:10px 20px;border-radius:0 0 10px 10px;font-size:14px;font-weight:700;z-index:99999;text-decoration:none;transition:top .2s ease;white-space:nowrap}
-.skip-link:focus{top:0!important;outline:3px solid #f97316;outline-offset:2px}
-</style>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ec5b13">
+  <meta name="description" content="Flexible pricing plans for every seller on SomBazar — from solo entrepreneurs to large agencies in Somaliland.">
   <!-- Google Analytics GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M', {
-      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
-      'cookie_flags': 'SameSite=None;Secure'
-    });
+    gtag('config', 'G-6H7F8Y980M', { cookie_domain: 'sombazar-fixed-production.up.railway.app', cookie_flags: 'SameSite=None;Secure' });
   </script>
-  <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { primary: "#ec5b13" }, fontFamily: { sans: ["Public Sans","sans-serif"] } } }
+    }
+  </script>
+  <style>
+    body { font-family: "Public Sans", sans-serif; }
+    .material-symbols-outlined { font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24; vertical-align: middle; }
+    .plan-card { transition: transform .2s, box-shadow .2s; }
+    .plan-card:hover { transform: translateY(-4px); }
+    .toggle-pill { transition: all .25s; }
+    .faq-answer { max-height: 0; overflow: hidden; transition: max-height .35s ease, padding .3s; }
+    .faq-answer.open { max-height: 400px; }
+    .check-icon { color: #ec5b13; }
+    .cross-icon { color: #cbd5e1; }
+    /* table row stripe */
+    .comp-row:nth-child(odd) td { background: #fafafa; }
+    .comp-row td:nth-child(3) { background: rgba(236,91,19,.04) !important; }
+    .annual-badge { display: none; }
+    .annual .annual-badge { display: inline-flex; }
+    .annual .monthly-price { display: none; }
+    .annual .annual-price { display: block; }
+    .monthly-mode .annual-price { display: none; }
+    .monthly-mode .monthly-price { display: block; }
+  </style>
 </head>
-<body>
-<a href="#main-content" class="skip-link">Skip to main content</a>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
 
-
-<nav class="topbar">
-  <a href="index.html" class="topbar-logo"><span>SB</span>SomBazar</a>
-  <a href="index.html" class="topbar-back">← Back to site</a>
-</nav>
-
-<div class="hero">
-  <h1>Simple, <span>Transparent</span> Pricing</h1>
-  <p>Choose the plan that fits your needs. All plans include listing moderation and secure messaging.</p>
-  <div id="currentPlanBadge" style="display:none" class="current-plan-badge">
-    <span>✓</span> <span id="currentPlanText">You are on the Free plan</span>
+<!-- ============================================================
+     TOPBAR
+============================================================ -->
+<header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+  <div class="flex items-center justify-between h-14 px-4 sm:px-6 lg:px-10 max-w-7xl mx-auto">
+    <!-- Logo -->
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="bg-primary p-1.5 rounded-lg text-white">
+        <span class="material-symbols-outlined block" style="font-size:18px">storefront</span>
+      </div>
+      <span class="text-lg font-black tracking-tight">Som<span class="text-primary">Bazar</span></span>
+    </a>
+    <!-- Nav links -->
+    <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-600">
+      <a href="index.html" class="hover:text-primary transition-colors">Features</a>
+      <a href="packages.html" class="text-primary">Pricing</a>
+      <a href="about.html" class="hover:text-primary transition-colors">About</a>
+      <a href="contact.html" class="hover:text-primary transition-colors">Contact</a>
+    </nav>
+    <!-- Actions -->
+    <div class="flex items-center gap-3">
+      <a href="auth.html" id="navSignIn" class="text-sm font-bold text-slate-700 hover:text-primary transition-colors px-3 py-1.5">Log In</a>
+      <a href="post.html" class="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+        Get Started
+      </a>
+    </div>
   </div>
-</div>
+</header>
 
+<!-- ============================================================
+     HERO
+============================================================ -->
+<section class="bg-white pt-16 pb-12 text-center px-4 border-b border-slate-100">
+  <div class="max-w-2xl mx-auto">
+    <h1 class="text-4xl sm:text-5xl font-black text-slate-900 leading-tight mb-4">
+      Flexible Plans for <span class="text-primary">Every Business</span>
+    </h1>
+    <p class="text-slate-500 text-lg mb-8 max-w-xl mx-auto">From solo entrepreneurs to global agencies, choose the perfect plan to scale your commerce with SomBazar's professional suite.</p>
 
-<!-- Free Trial Banner -->
-<div id="trialBanner" style="display:none;max-width:1100px;margin:0 auto 24px;padding:0 20px">
-  <div style="background:linear-gradient(135deg,#7c3aed,#5b21b6);border-radius:16px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <!-- Monthly / Annual toggle -->
+    <div class="inline-flex items-center gap-1 bg-slate-100 p-1 rounded-full">
+      <button id="monthlyBtn" onclick="setBilling('monthly')"
+        class="toggle-pill px-5 py-2 rounded-full text-sm font-bold bg-white text-slate-900 shadow-sm">Monthly</button>
+      <button id="annualBtn" onclick="setBilling('annual')"
+        class="toggle-pill px-5 py-2 rounded-full text-sm font-bold text-slate-500 hover:text-slate-700">
+        Annual
+        <span class="ml-1.5 bg-green-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">20%</span>
+      </button>
+    </div>
+
+    <!-- Current plan badge -->
+    <div id="currentPlanBadge" class="hidden mt-5 inline-flex items-center gap-2 bg-primary/10 border border-primary/25 text-primary text-sm font-bold px-4 py-2 rounded-full">
+      <span class="material-symbols-outlined text-base" style="font-size:16px">verified</span>
+      <span id="currentPlanText">You are on the Free plan</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FREE TRIAL BANNER
+============================================================ -->
+<div id="trialBanner" class="hidden max-w-5xl mx-auto px-4 sm:px-6 pt-8">
+  <div class="bg-gradient-to-r from-violet-600 to-violet-800 rounded-2xl px-6 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
     <div>
-      <div style="color:#fff;font-size:18px;font-weight:800;margin-bottom:4px">🎁 Try Standard Free for 7 Days</div>
-      <div style="color:rgba(255,255,255,.8);font-size:13px">No payment needed. Upgrade anytime.</div>
+      <div class="text-white font-black text-lg mb-1">🎁 Try Standard Free for 7 Days</div>
+      <div class="text-violet-200 text-sm">No payment needed. Upgrade anytime.</div>
     </div>
-    <button onclick="startTrial('standard')" id="trialBtn" style="background:#fff;color:#7c3aed;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">Start Free Trial →</button>
-  </div>
-</div>
-<div class="plans-wrap">
-  <div id="apiError" style="display:none;background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:16px;text-align:center;max-width:900px;margin-left:auto;margin-right:auto"></div>
-  <div class="plans-grid" id="plansGrid">
-    <!-- Injected by JS -->
+    <button onclick="startTrial('standard')" id="trialBtn"
+      class="flex-shrink-0 bg-white text-violet-700 px-6 py-2.5 rounded-xl font-black text-sm hover:bg-violet-50 transition-colors whitespace-nowrap">
+      Start Free Trial →
+    </button>
   </div>
 </div>
 
-<!-- Payment numbers info -->
-<div style="padding:0 20px 20px">
-  <div class="pay-info">
-    <h3> How to Pay</h3>
-    <p style="font-size:13px;color:#64748b;margin-bottom:16px">Send payment to one of the numbers below, then submit your reference code on the next page.</p>
-    <div class="pay-methods">
-      <div class="pay-method zaad-color">
-        <div class="method-name">Zaad</div>
-        <div class="method-num" id="zaadNum">Loading…</div>
-        <div class="method-acc" id="zaadAcc"></div>
-      </div>
-      <div class="pay-method edahab-color">
-        <div class="method-name">eDahab</div>
-        <div class="method-num" id="edahabNum">Loading…</div>
-        <div class="method-acc" id="edahabAcc"></div>
-      </div>
-    </div>
-  </div>
+<!-- ============================================================
+     API ERROR
+============================================================ -->
+<div id="apiError" class="hidden max-w-5xl mx-auto px-4 sm:px-6 pt-6">
+  <div class="bg-amber-50 border border-amber-200 text-amber-800 text-sm font-semibold px-4 py-3 rounded-xl text-center"></div>
 </div>
 
-<!-- FAQ -->
+<!-- ============================================================
+     PLANS GRID
+============================================================ -->
+<section class="max-w-5xl mx-auto px-4 sm:px-6 py-12" id="main-content">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="plansGrid">
+    <!-- Skeleton -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 animate-pulse"><div class="h-4 bg-slate-200 rounded mb-4 w-1/2"></div><div class="h-8 bg-slate-200 rounded mb-6 w-2/3"></div><div class="space-y-2"><div class="h-3 bg-slate-100 rounded"></div><div class="h-3 bg-slate-100 rounded"></div><div class="h-3 bg-slate-100 rounded"></div></div></div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 animate-pulse"><div class="h-4 bg-slate-200 rounded mb-4 w-1/2"></div><div class="h-8 bg-slate-200 rounded mb-6 w-2/3"></div><div class="space-y-2"><div class="h-3 bg-slate-100 rounded"></div><div class="h-3 bg-slate-100 rounded"></div><div class="h-3 bg-slate-100 rounded"></div></div></div>
+    <div class="bg-white border-2 border-primary rounded-2xl p-6 animate-pulse"><div class="h-4 bg-orange-100 rounded mb-4 w-1/2"></div><div class="h-8 bg-orange-100 rounded mb-6 w-2/3"></div><div class="space-y-2"><div class="h-3 bg-orange-50 rounded"></div><div class="h-3 bg-orange-50 rounded"></div><div class="h-3 bg-orange-50 rounded"></div></div></div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-6 animate-pulse"><div class="h-4 bg-slate-200 rounded mb-4 w-1/2"></div><div class="h-8 bg-slate-200 rounded mb-6 w-2/3"></div><div class="space-y-2"><div class="h-3 bg-slate-100 rounded"></div><div class="h-3 bg-slate-100 rounded"></div><div class="h-3 bg-slate-100 rounded"></div></div></div>
+  </div>
+</section>
 
-<!-- Plan Comparison Table -->
-<div style="max-width:1100px;margin:0 auto;padding:0 20px 48px">
-  <h2 style="text-align:center;font-size:22px;font-weight:800;margin-bottom:8px;color:#0f172a">Compare Plans</h2>
-  <p style="text-align:center;color:#64748b;font-size:14px;margin-bottom:28px">Everything you need to know before choosing</p>
-  <div style="overflow-x:auto;border-radius:16px;border:1px solid #e2e8f0">
-    <table style="width:100%;border-collapse:collapse;font-size:13px;background:#fff">
+<!-- ============================================================
+     COMPARE FEATURES TABLE
+============================================================ -->
+<section class="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
+  <h2 class="text-2xl font-black text-center text-slate-900 mb-2">Compare Features</h2>
+  <p class="text-center text-slate-500 text-sm mb-8">Dive deep into the specifics of each plan level.</p>
+
+  <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
+    <table class="w-full text-sm border-collapse bg-white">
       <thead>
-        <tr style="border-bottom:2px solid #e2e8f0">
-          <th style="padding:16px 20px;text-align:left;font-weight:700;color:#64748b;width:240px">Feature</th>
-          <th style="padding:16px 12px;text-align:center;font-weight:800;color:#0f172a">Free</th>
-          <th style="padding:16px 12px;text-align:center;font-weight:800;color:#f97316;background:#fff7ed"> Standard</th>
-          <th style="padding:16px 12px;text-align:center;font-weight:800;color:#7c3aed">⚡ Pro</th>
-          <th style="padding:16px 12px;text-align:center;font-weight:800;color:#0ea5e9">🏢 Agency</th>
-        </tr>
-        <tr style="border-bottom:1px solid #e2e8f0;background:#f8fafc">
-          <td style="padding:12px 20px;font-size:12px;color:#64748b">Monthly Price</td>
-          <td style="padding:12px;text-align:center;font-weight:700;color:#64748b">$0</td>
-          <td style="padding:12px;text-align:center;font-weight:800;color:#f97316;background:#fff7ed">$8</td>
-          <td style="padding:12px;text-align:center;font-weight:800;color:#7c3aed">$18</td>
-          <td style="padding:12px;text-align:center;font-weight:800;color:#0ea5e9">$35</td>
+        <tr class="border-b-2 border-slate-200">
+          <th class="text-left px-5 py-4 text-slate-500 font-bold w-48">Feature</th>
+          <th class="px-4 py-4 text-center font-black text-slate-900">Free</th>
+          <th class="px-4 py-4 text-center font-black text-slate-900">Standard</th>
+          <th class="px-4 py-4 text-center font-black text-primary bg-orange-50/60">Pro</th>
+          <th class="px-4 py-4 text-center font-black text-slate-900">Agency</th>
         </tr>
       </thead>
       <tbody id="comparisonBody">
-        <!-- Injected by JS -->
+        <!-- injected -->
       </tbody>
     </table>
   </div>
-  <p style="text-align:center;margin-top:16px;font-size:12px;color:#94a3b8">✓ All plans include: secure messaging, buyer protection, and mobile app access</p>
-</div>
-<div class="faq-wrap">
-  <div class="faq-title">Frequently Asked Questions</div>
+  <p class="text-center text-xs text-slate-400 mt-4">✓ All plans include: secure messaging, buyer protection, and mobile app access</p>
+</section>
 
-  <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">How long does activation take? <span class="faq-arrow">▼</span></div>
-    <div class="faq-a">We manually verify every payment. Activation takes up to 2 hours during business hours (8am–8pm). You'll see your plan update in your profile once approved.</div>
+<!-- ============================================================
+     HOW TO PAY
+============================================================ -->
+<section class="bg-white border-t border-slate-100 py-14 px-4">
+  <div class="max-w-2xl mx-auto text-center">
+    <h2 class="text-xl font-black text-slate-900 mb-2">How to Pay</h2>
+    <p class="text-slate-500 text-sm mb-8">Send payment to one of the numbers below, then submit your reference code on the payment page.</p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <div class="flex-1 bg-green-50 border border-green-200 rounded-2xl p-5 text-left">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+            <span class="text-green-700 font-black text-xs">Z</span>
+          </div>
+          <span class="font-bold text-green-800">Zaad Service</span>
+          <span class="text-xs text-green-600 font-semibold bg-green-100 px-2 py-0.5 rounded-full">Telesom</span>
+        </div>
+        <div class="text-2xl font-black text-green-700 tracking-wider mb-0.5" id="zaadNum">—</div>
+        <div class="text-xs text-green-600" id="zaadAcc">SomBazar Official</div>
+      </div>
+      <div class="flex-1 bg-blue-50 border border-blue-200 rounded-2xl p-5 text-left">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+            <span class="text-blue-700 font-black text-xs">eD</span>
+          </div>
+          <span class="font-bold text-blue-800">eDahab</span>
+          <span class="text-xs text-blue-600 font-semibold bg-blue-100 px-2 py-0.5 rounded-full">Dahabshiil</span>
+        </div>
+        <div class="text-2xl font-black text-blue-700 tracking-wider mb-0.5" id="edahabNum">—</div>
+        <div class="text-xs text-blue-600" id="edahabAcc">SomBazar Official</div>
+      </div>
+    </div>
   </div>
-  <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">What happens when my plan expires? <span class="faq-arrow">▼</span></div>
-    <div class="faq-a">Your account reverts to the Free plan. Your existing active listings will remain visible until they expire naturally (30 days), but you won't be able to post new ones beyond the free limit of 3.</div>
+</section>
+
+<!-- ============================================================
+     FAQ
+============================================================ -->
+<section class="py-16 px-4 bg-slate-50">
+  <div class="max-w-2xl mx-auto">
+    <h2 class="text-2xl font-black text-center text-slate-900 mb-2">Frequently Asked Questions</h2>
+    <p class="text-center text-slate-500 text-sm mb-8">Everything you need to know about our plans.</p>
+
+    <div class="space-y-3" id="faqList">
+
+      <div class="faq-item bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <button class="faq-btn w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-slate-900 hover:bg-slate-50 transition-colors" onclick="toggleFaq(this)">
+          <span>Can I change my plan at any time?</span>
+          <span class="material-symbols-outlined text-slate-400 transition-transform faq-arrow" style="font-size:20px">expand_more</span>
+        </button>
+        <div class="faq-answer px-5 text-sm text-slate-500 leading-relaxed">
+          <div class="pb-4">Yes, you can upgrade or downgrade your plan instantly from your dashboard. Pro-rated charges will apply on upgrades — you'll only pay the difference for the remaining period.</div>
+        </div>
+      </div>
+
+      <div class="faq-item bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <button class="faq-btn w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-slate-900 hover:bg-slate-50 transition-colors" onclick="toggleFaq(this)">
+          <span>Are there any hidden transaction fees?</span>
+          <span class="material-symbols-outlined text-slate-400 transition-transform faq-arrow" style="font-size:20px">expand_more</span>
+        </button>
+        <div class="faq-answer px-5 text-sm text-slate-500 leading-relaxed">
+          <div class="pb-4">Our fees are transparent. Transaction fees apply based on your tier and are clearly listed in your monthly statement. The Free plan has a 2.5% fee, Standard 1.8%, Pro 0.9%, and Agency uses custom pricing.</div>
+        </div>
+      </div>
+
+      <div class="faq-item bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <button class="faq-btn w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-slate-900 hover:bg-slate-50 transition-colors" onclick="toggleFaq(this)">
+          <span>How long does plan activation take?</span>
+          <span class="material-symbols-outlined text-slate-400 transition-transform faq-arrow" style="font-size:20px">expand_more</span>
+        </button>
+        <div class="faq-answer px-5 text-sm text-slate-500 leading-relaxed">
+          <div class="pb-4">We manually verify every payment. Activation takes up to 2 hours during business hours (8am–8pm Somaliland time). You'll see your plan update automatically in your profile once approved.</div>
+        </div>
+      </div>
+
+      <div class="faq-item bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <button class="faq-btn w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-slate-900 hover:bg-slate-50 transition-colors" onclick="toggleFaq(this)">
+          <span>What happens when my plan expires?</span>
+          <span class="material-symbols-outlined text-slate-400 transition-transform faq-arrow" style="font-size:20px">expand_more</span>
+        </button>
+        <div class="faq-answer px-5 text-sm text-slate-500 leading-relaxed">
+          <div class="pb-4">Your account reverts to the Free plan. Your existing active listings remain visible until they expire naturally (30 days), but you won't be able to post beyond the free limit of 3 listings.</div>
+        </div>
+      </div>
+
+      <div class="faq-item bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <button class="faq-btn w-full flex items-center justify-between px-5 py-4 text-left font-semibold text-slate-900 hover:bg-slate-50 transition-colors" onclick="toggleFaq(this)">
+          <span>Are refunds available?</span>
+          <span class="material-symbols-outlined text-slate-400 transition-transform faq-arrow" style="font-size:20px">expand_more</span>
+        </button>
+        <div class="faq-answer px-5 text-sm text-slate-500 leading-relaxed">
+          <div class="pb-4">Payments are non-refundable once a plan is activated. If your payment was not approved after 4 hours, please contact us via WhatsApp with your reference code and we will investigate immediately.</div>
+        </div>
+      </div>
+
+    </div>
   </div>
-  <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">Can I upgrade mid-plan? <span class="faq-arrow">▼</span></div>
-    <div class="faq-a">Yes. Submit a new payment for a higher plan and contact us via WhatsApp with your reference code. We will upgrade your plan immediately upon verification.</div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer class="bg-slate-950 text-slate-400 py-14">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+      <!-- Brand -->
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="bg-primary p-1.5 rounded-lg text-white"><span class="material-symbols-outlined block" style="font-size:18px">storefront</span></div>
+          <span class="text-lg font-black text-white">SomBazar</span>
+        </div>
+        <p class="text-sm leading-relaxed text-slate-400">The modern operating system for the next generation of commerce in Somaliland. Scale your store with tools built for speed and growth.</p>
+        <div class="flex items-center gap-3 mt-5">
+          <a href="#" class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors text-slate-400 hover:text-white text-xs font-bold">f</a>
+          <a href="#" class="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-primary transition-colors text-slate-400 hover:text-white text-xs font-bold">in</a>
+        </div>
+      </div>
+      <!-- Product -->
+      <div>
+        <h3 class="text-white font-bold text-xs uppercase tracking-widest mb-4">Product</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="index.html" class="hover:text-primary transition-colors">Features</a></li>
+          <li><a href="packages.html" class="text-primary font-semibold">Pricing</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Integrations</a></li>
+          <li><a href="post.html" class="hover:text-primary transition-colors">Post a Listing</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Changelog</a></li>
+        </ul>
+      </div>
+      <!-- Resources -->
+      <div>
+        <h3 class="text-white font-bold text-xs uppercase tracking-widest mb-4">Resources</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="#" class="hover:text-primary transition-colors">Documentation</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Guides</a></li>
+          <li><a href="contact.html" class="hover:text-primary transition-colors">Help Center</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">API Reference</a></li>
+        </ul>
+      </div>
+      <!-- Company -->
+      <div>
+        <h3 class="text-white font-bold text-xs uppercase tracking-widest mb-4">Company</h3>
+        <ul class="space-y-3 text-sm">
+          <li><a href="about.html" class="hover:text-primary transition-colors">About</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Careers</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors">Blog</a></li>
+          <li><a href="contact.html" class="hover:text-primary transition-colors">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+      <p>© 2026 SomBazar Inc. All rights reserved.</p>
+      <div class="flex gap-5">
+        <a href="terms.html" class="hover:text-white transition-colors">Terms of Service</a>
+        <a href="privacy.html" class="hover:text-white transition-colors">Privacy Policy</a>
+        <a href="contact.html" class="hover:text-white transition-colors">Visitor Settings</a>
+      </div>
+    </div>
   </div>
-  <div class="faq-item">
-    <div class="faq-q" onclick="toggleFaq(this)">Are refunds available? <span class="faq-arrow">▼</span></div>
-    <div class="faq-a">Payments are non-refundable once a plan is activated. If payment was not approved after 4 hours, contact us via WhatsApp and we will investigate.</div>
+</footer>
+
+<!-- ============================================================
+     UPGRADE MODAL
+============================================================ -->
+<div id="upgradeModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeModal()">
+  <div class="bg-white rounded-2xl p-7 max-w-sm w-full shadow-2xl">
+    <h3 class="text-lg font-black text-slate-900 mb-1" id="modalTitle">Upgrade Plan</h3>
+    <p class="text-sm text-slate-500 mb-5" id="modalDesc"></p>
+    <div id="modalCredit" class="hidden bg-green-50 border border-green-200 rounded-xl px-4 py-3 text-sm text-green-700 font-semibold mb-4"></div>
+    <div class="flex gap-3">
+      <button id="modalProceed" onclick="proceedPayment()"
+        class="flex-1 bg-primary text-white py-3 rounded-xl font-bold text-sm hover:bg-primary/90 transition-colors">Proceed</button>
+      <button onclick="closeModal()" class="bg-slate-100 text-slate-700 py-3 px-5 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Cancel</button>
+    </div>
   </div>
 </div>
 
+<!-- ============================================================
+     SCRIPTS
+============================================================ -->
 <script>
-// Fallback: app.js yüklenemezse Auth crash'i önle
 window.Auth = window.Auth || {
   getToken: () => localStorage.getItem('sb_token') || '',
   getUser:  () => { try { return JSON.parse(localStorage.getItem('sb_user')); } catch(e) { return null; } },
@@ -243,271 +357,384 @@ window.Auth = window.Auth || {
 };
 window.API = window.API || {};
 </script>
-  <script src="assets/app.min.js"></script>
+<script src="assets/app.min.js"></script>
 <script>
-const PLAN_META = {
-  free:     { color:'#64748b', emoji:'' },
-  standard: { color:'#f97316', emoji:'' },
-  pro:      { color:'#8b5cf6', emoji:'' },
-  agency:   { color:'#0ea5e9', emoji:'' },
+
+// ─────────────────────────── CONSTANTS ───────────────────────────
+let currentPlan = 'free';
+let billingMode = 'monthly'; // 'monthly' | 'annual'
+let pendingPlan = null;
+let pendingPrice = 0;
+
+const ANNUAL_DISCOUNT = 0.20;
+
+const PLANS_STATIC = {
+  free: {
+    label: 'Free',
+    monthlyPrice: 0,
+    desc: 'Perfect for exploring the platform and testing your store.',
+    color: '#64748b',
+    features: [
+      { text: '3 Products', yes: true },
+      { text: 'Basic Analytics', yes: true },
+      { text: 'Community Support', yes: true },
+      { text: 'Priority Support', yes: false },
+      { text: 'Featured Listings', yes: false },
+    ]
+  },
+  standard: {
+    label: 'Standard',
+    monthlyPrice: 8,
+    desc: 'For growing stores ready to scale operations professionally.',
+    color: '#0f172a',
+    features: [
+      { text: 'Unlimited Products', yes: true },
+      { text: 'Advanced Analytics', yes: true },
+      { text: 'Email Support', yes: true },
+      { text: 'Custom Domain', yes: true },
+      { text: 'Boost Credits (1/mo)', yes: true },
+    ]
+  },
+  pro: {
+    label: 'Pro',
+    monthlyPrice: 20,
+    desc: 'Advanced features and automation for established businesses.',
+    color: '#ec5b13',
+    popular: true,
+    features: [
+      { text: 'Everything in Standard', yes: true },
+      { text: 'Priority 24/7 Support', yes: true },
+      { text: 'Inventory Management', yes: true },
+      { text: 'API Access & Webhooks', yes: true },
+      { text: 'Marketing Automations', yes: true },
+    ]
+  },
+  agency: {
+    label: 'Agency',
+    monthlyPrice: 50,
+    desc: 'Multi-store management and bespoke enterprise solutions.',
+    color: '#0f172a',
+    features: [
+      { text: 'Dedicated Account Manager', yes: true },
+      { text: 'White-label Interface', yes: true },
+      { text: 'Custom ERP Integration', yes: true },
+      { text: 'Unlimited Staff Accounts', yes: true },
+      { text: 'SLA Support (99.9% uptime)', yes: true },
+    ]
+  }
 };
 
-let currentPlan = 'free';
-
-async function init() {
-  if (!Auth.isLoggedIn()) {
-    window.location.href = 'auth.html?redirect=packages.html';
-    return;
-  }
-
-  try {
-    // Load plans + payment numbers
-    const r = await fetch('api/payment.php?action=plans');
-    const rawText = await r.text();
-    let d;
-    try {
-      d = JSON.parse(rawText);
-    } catch (je) {
-      console.error('Plans API returned non-JSON:', rawText.substring(0, 200));
-      throw new Error('Plans data unavailable. Please check API configuration.');
-    }
-    if (!d.success) throw new Error(d.error || 'Failed to load plans');
-
-    // Load user's current plan
-    const r2 = await fetch('api/payment.php?action=my_plan', {
-      headers: { Authorization: 'Bearer ' + Auth.getToken() }
-    });
-    const d2 = await r2.json();
-    if (d2.success) {
-      currentPlan = d2.data.plan;
-      const badge = document.getElementById('currentPlanBadge');
-      const txt   = document.getElementById('currentPlanText');
-      badge.style.display = 'inline-flex';
-      txt.textContent = `Current plan: ${currentPlan.charAt(0).toUpperCase()+currentPlan.slice(1)}` +
-        (d2.data.expiresAt ? ` — expires ${new Date(d2.data.expiresAt).toLocaleDateString()}` : '');
-    }
-
-    // Payment numbers
-    const nums = d.data.numbers;
-    document.getElementById('zaadNum').textContent  = nums.zaad.number;
-    document.getElementById('zaadAcc').textContent  = nums.zaad.name;
-    document.getElementById('edahabNum').textContent = nums.edahab.number;
-    document.getElementById('edahabAcc').textContent = nums.edahab.name;
-
-    renderPlans(d.data.plans);
-  } catch(e) {
-    console.warn('Plans API error, using static fallback:', e.message);
-    // Statik fallback planları - API cevap vermezse
-    const fallbackPlans = {
-      standard: { price: 8,  label: 'Standard', listing_limit: 10,  photo_limit: 5,  boost_credits: 0 },
-      pro:      { price: 20, label: 'Pro',      listing_limit: 999, photo_limit: 15, boost_credits: 2 },
-      agency:   { price: 50, label: 'Agency',   listing_limit: 999, photo_limit: 20, boost_credits: 5 },
-    };
-    const fallbackNums = {
-      zaad:   { number: '063 XXX XXXX', name: 'SomBazar' },
-      edahab: { number: '077 XXX XXXX', name: 'SomBazar' },
-    };
-    renderPlans(fallbackPlans);
-    updatePaymentNumbers(fallbackNums);
-    // Hata bildirimini küçük bir uyarı olarak göster (kırmızı hata yerine)
-    const errEl = document.getElementById('apiError');
-    if (errEl) {
-      errEl.style.display = 'block';
-      errEl.textContent = 'Using cached plan data. Some features may be unavailable.';
-    }
-  }
-}
-
-
-function updatePaymentNumbers(nums) {
-  if (!nums) return;
-  const zn = document.getElementById('zaadNum');
-  const za = document.getElementById('zaadAcc');
-  const en = document.getElementById('edahabNum');
-  const ea = document.getElementById('edahabAcc');
-  if (zn && nums.zaad)   { zn.textContent = nums.zaad.number;   za && (za.textContent = nums.zaad.name); }
-  if (en && nums.edahab) { en.textContent = nums.edahab.number; ea && (ea.textContent = nums.edahab.name); }
-}
-
-function renderPlans(plans) {
-  const grid = document.getElementById('plansGrid');
-
-  // Free plan card first
-  const freeCard = `
-    <div class="plan-card ${currentPlan==='free'?'current':''}">
-      ${currentPlan==='free' ? '<div class="current-tag">✓ Current Plan</div>' : ''}
-      <div class="plan-name"> Free</div>
-      <div class="plan-price">$0<span>/month</span></div>
-      <div class="plan-desc">Get started with basic listings</div>
-      <ul class="plan-features">
-        <li><span class="icon icon-yes">✓</span> 3 active listings</li>
-        <li><span class="icon icon-yes">✓</span> 2 photos per listing</li>
-        <li><span class="icon icon-yes">✓</span> Secure messaging</li>
-        <li><span class="icon icon-no">—</span> No boosting</li>
-        <li><span class="icon icon-no">—</span> No priority support</li>
-      </ul>
-      <button class="plan-btn plan-btn-disabled" disabled>${currentPlan==='free'?'Current Plan':'Free'}</button>
-    </div>`;
-
-  const planOrder = ['standard', 'pro', 'agency'];
-  const planCards = planOrder.map(key => {
-    const p = plans[key];
-    const isCurrent = currentPlan === key;
-    const isPopular = key === 'pro';
-    const meta = PLAN_META[key];
-    const boostText = p.boost_credits > 0 ? `${p.boost_credits} free boosts/month` : 'Paid boosts only';
-    const listText  = p.listing_limit >= 999 ? 'Unlimited listings' : `${p.listing_limit} listings`;
-
-    return `
-      <div class="plan-card ${isPopular?'popular':''} ${isCurrent?'current':''}">
-        ${isPopular && !isCurrent ? '<div class="popular-tag"> Most Popular</div>' : ''}
-        ${isCurrent ? '<div class="current-tag">✓ Current Plan</div>' : ''}
-        <div class="plan-name">${meta.emoji} ${p.label}</div>
-        <div class="plan-price">$${p.price}<span>/month</span></div>
-        <div class="plan-desc">${key==='standard'?'For regular sellers':key==='pro'?'For active sellers':'For agencies & firms'}</div>
-        <ul class="plan-features">
-          <li><span class="icon icon-yes">✓</span> ${listText}</li>
-          <li><span class="icon icon-yes">✓</span> ${p.photo_limit} photos per listing</li>
-          <li><span class="icon icon-yes">✓</span> Secure messaging</li>
-          <li><span class="${p.boost_credits>0?'icon icon-yes':'icon icon-no'}">${p.boost_credits>0?'✓':'—'}</span> ${boostText}</li>
-          <li><span class="icon icon-yes">✓</span> Priority support</li>
-        </ul>
-        <button
-          class="plan-btn ${isCurrent?'plan-btn-disabled':isPopular?'plan-btn-primary':'plan-btn-outline'}"
-          ${isCurrent?'disabled':''}
-          onclick="${isCurrent?'':"previewUpgrade('"+key+"',"+p.price+")"}"
-        >${isCurrent?'Current Plan':'Get '+p.label}</button>
-      </div>`;
-  });
-
-  grid.innerHTML = freeCard + planCards.join('');
-}
-
-function selectPlan(plan, price) {
-  if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=packages.html'; return; }
-  window.location.href = `payment.html?plan=${plan}&price=${price}`;
-}
-
-function toggleFaq(el) {
-  el.closest('.faq-item').classList.toggle('open');
-}
-
-init();
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
-
-// ── Plan Karşılaştırma Tablosu ───────────────────────────────
-const COMPARISON = [
-  { feature: 'Active Listings',   free: '3',    standard: '20',    pro: '60',       agency: 'Unlimited' },
-  { feature: 'Featured Listings', free: '—',    standard: '1/mo',  pro: '5/mo',     agency: '15/mo' },
-  { feature: 'Photo Uploads',     free: '5',    standard: '15',    pro: '30',       agency: '50' },
-  { feature: 'Boost (Promote)',   free: '—',    standard: '1/mo',  pro: '5/mo',     agency: 'Unlimited' },
-  { feature: 'Verified Badge',    free: '—',    standard: '✓',     pro: '✓',        agency: '✓' },
-  { feature: 'Priority Support',  free: '—',    standard: '—',     pro: '✓',        agency: '✓' },
-  { feature: 'Analytics',         free: '—',    standard: 'Basic', pro: 'Advanced', agency: 'Full' },
-  { feature: 'Team Members',      free: '1',    standard: '1',     pro: '3',        agency: '10' },
-  { feature: 'CSV Export',        free: '—',    standard: '—',     pro: '✓',        agency: '✓' },
-  { feature: 'API Access',        free: '—',    standard: '—',     pro: '—',        agency: '✓' },
+const COMPARISON_ROWS = [
+  { feature: 'Monthly Transaction Limit', free: '$500',   standard: '$10k',       pro: 'Unlimited', agency: 'Unlimited' },
+  { feature: 'Transaction Fee',           free: '2.5%',   standard: '1.8%',       pro: '0.9%',      agency: 'Custom' },
+  { feature: 'Custom Themes',            free: false,     standard: true,         pro: true,        agency: true },
+  { feature: 'Advanced SEO Tools',       free: false,     standard: false,        pro: true,        agency: true },
+  { feature: 'Mobile App Access',        free: true,      standard: true,         pro: true,        agency: true },
+  { feature: 'Active Listings',          free: '3',       standard: '20',         pro: '60',        agency: 'Unlimited' },
+  { feature: 'Photos per Listing',       free: '2',       standard: '10',         pro: '20',        agency: '30' },
+  { feature: 'Boost Credits / mo',       free: '—',       standard: '1',          pro: '5',         agency: 'Unlimited' },
+  { feature: 'Featured Listings / mo',   free: '—',       standard: '1',          pro: '5',         agency: '15' },
+  { feature: 'Team Members',             free: '1',       standard: '1',          pro: '3',         agency: '10' },
+  { feature: 'Analytics',               free: 'Basic',   standard: 'Basic',      pro: 'Advanced',  agency: 'Full' },
+  { feature: 'Priority Support',        free: false,     standard: false,        pro: true,        agency: true },
+  { feature: 'API Access',              free: false,     standard: false,        pro: false,       agency: true },
 ];
 
+// ─────────────────────────── BILLING TOGGLE ───────────────────────────
+function setBilling(mode) {
+  billingMode = mode;
+  document.getElementById('monthlyBtn').className = mode === 'monthly'
+    ? 'toggle-pill px-5 py-2 rounded-full text-sm font-bold bg-white text-slate-900 shadow-sm'
+    : 'toggle-pill px-5 py-2 rounded-full text-sm font-bold text-slate-500 hover:text-slate-700';
+  document.getElementById('annualBtn').className = mode === 'annual'
+    ? 'toggle-pill px-5 py-2 rounded-full text-sm font-bold bg-white text-slate-900 shadow-sm'
+    : 'toggle-pill px-5 py-2 rounded-full text-sm font-bold text-slate-500 hover:text-slate-700';
+
+  // Update all price displays
+  document.querySelectorAll('[data-plan-key]').forEach(card => {
+    const key   = card.dataset.planKey;
+    const plan  = PLANS_STATIC[key];
+    if (!plan) return;
+    const price = mode === 'annual'
+      ? Math.round(plan.monthlyPrice * (1 - ANNUAL_DISCOUNT))
+      : plan.monthlyPrice;
+    const priceEl = card.querySelector('.plan-price-amount');
+    if (priceEl) priceEl.textContent = price === 0 ? '$0' : `$${price}`;
+    const subEl = card.querySelector('.plan-price-sub');
+    if (subEl) subEl.textContent = price === 0 ? 'forever' : (mode === 'annual' ? '/mo, billed annually' : '/month');
+    // Update button data
+    const btn = card.querySelector('.plan-cta-btn');
+    if (btn && !btn.disabled) btn.dataset.price = price;
+  });
+}
+
+// ─────────────────────────── RENDER PLANS ───────────────────────────
+function renderPlans(apiPlans) {
+  const merged = {};
+  const keys = ['free','standard','pro','agency'];
+  keys.forEach(k => {
+    merged[k] = { ...PLANS_STATIC[k], ...(apiPlans?.[k] || {}) };
+    if (apiPlans?.[k]?.price) merged[k].monthlyPrice = apiPlans[k].price;
+  });
+
+  const grid = document.getElementById('plansGrid');
+  grid.innerHTML = keys.map(key => {
+    const p       = merged[key];
+    const isCurrent = currentPlan === key;
+    const isPopular = p.popular && !isCurrent;
+    const price   = p.monthlyPrice;
+    const annPrice = Math.round(price * (1 - ANNUAL_DISCOUNT));
+
+    // Button config
+    let btnClass, btnText, btnDisabled = false;
+    if (isCurrent) {
+      btnClass = 'w-full py-2.5 rounded-xl text-sm font-bold border-2 border-slate-200 text-slate-400 cursor-default';
+      btnText = 'Current Plan';
+      btnDisabled = true;
+    } else if (key === 'free') {
+      btnClass = 'w-full py-2.5 rounded-xl text-sm font-bold border-2 border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors';
+      btnText = 'Current Plan';
+      btnDisabled = true;
+    } else if (isPopular) {
+      btnClass = 'plan-cta-btn w-full py-2.5 rounded-xl text-sm font-bold bg-primary text-white hover:bg-primary/90 transition-all shadow-md shadow-primary/20';
+      btnText = 'Upgrade Now';
+    } else {
+      btnClass = `plan-cta-btn w-full py-2.5 rounded-xl text-sm font-bold border-2 ${key==='agency'?'border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white':'border-slate-200 text-slate-700 hover:border-primary hover:text-primary'} transition-all`;
+      btnText = key === 'agency' ? 'Contact Sales' : 'Get Started';
+    }
+
+    return `
+    <div class="plan-card relative bg-white ${isPopular ? 'border-2 border-primary shadow-xl shadow-primary/10' : 'border border-slate-200 shadow-sm'} rounded-2xl p-6 flex flex-col" data-plan-key="${key}">
+      ${isPopular ? `<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-primary text-white text-[11px] font-black px-4 py-1 rounded-full whitespace-nowrap uppercase tracking-wide">Best Popular</div>` : ''}
+      ${isCurrent ? `<div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[11px] font-black px-4 py-1 rounded-full whitespace-nowrap">✓ Current Plan</div>` : ''}
+
+      <!-- Plan name -->
+      <div class="mb-1">
+        <span class="text-base font-black text-slate-900">${p.label}</span>
+      </div>
+
+      <!-- Price -->
+      <div class="mb-1 flex items-end gap-1">
+        <span class="plan-price-amount text-4xl font-black ${isPopular ? 'text-primary' : 'text-slate-900'}">${price === 0 ? '$0' : `$${price}`}</span>
+      </div>
+      <div class="plan-price-sub text-xs text-slate-400 font-medium mb-3">${price === 0 ? 'forever' : '/month'}</div>
+      ${isPopular ? `<div class="annual-badge hidden items-center gap-1 text-[10px] font-black text-green-600 bg-green-50 border border-green-200 rounded-full px-2.5 py-1 mb-3 w-fit">Save 20% annually</div>` : ''}
+
+      <!-- Description -->
+      <p class="text-xs text-slate-500 mb-5 leading-relaxed">${p.desc}</p>
+
+      <!-- CTA -->
+      <button
+        class="${btnClass}"
+        data-plan="${key}"
+        data-price="${price}"
+        ${btnDisabled ? 'disabled' : `onclick="handlePlanClick('${key}', ${price})"`}
+      >${btnText}</button>
+
+      <!-- Divider -->
+      <div class="border-t border-slate-100 my-5"></div>
+
+      <!-- Features -->
+      <ul class="space-y-3 flex-1">
+        ${p.features.map(f => `
+        <li class="flex items-center gap-2.5 text-sm">
+          <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${f.yes ? 'bg-primary/10' : 'bg-slate-100'}">
+            <span class="material-symbols-outlined ${f.yes ? 'text-primary' : 'text-slate-300'}" style="font-size:13px;font-variation-settings:'FILL' 1">${f.yes ? 'check' : 'remove'}</span>
+          </div>
+          <span class="${f.yes ? 'text-slate-700' : 'text-slate-400'}">${f.text}</span>
+        </li>`).join('')}
+      </ul>
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────── COMPARISON TABLE ───────────────────────────
 function renderComparison() {
   const tbody = document.getElementById('comparisonBody');
-  if (!tbody) return;
-  tbody.innerHTML = COMPARISON.map((row, i) => `
-    <tr style="border-bottom:1px solid #f1f5f9;${i%2===0?'background:#fafafa':''}">
-      <td style="padding:12px 20px;font-weight:600;color:#0f172a">${row.feature}</td>
-      <td style="padding:12px;text-align:center;color:${row.free==='—'?'#cbd5e1':'#0f172a'}">${row.free}</td>
-      <td style="padding:12px;text-align:center;background:rgba(249,115,22,.04);color:${row.standard==='—'?'#cbd5e1':'#0f172a'};font-weight:${row.standard!=='—'?'600':'400'}">${row.standard}</td>
-      <td style="padding:12px;text-align:center;color:${row.pro==='—'?'#cbd5e1':'#0f172a'};font-weight:${row.pro!=='—'?'600':'400'}">${row.pro}</td>
-      <td style="padding:12px;text-align:center;color:${row.agency==='—'?'#cbd5e1':'#0f172a'};font-weight:${row.agency!=='—'?'600':'400'}">${row.agency}</td>
+  const tick = `<span class="material-symbols-outlined text-primary" style="font-size:18px;font-variation-settings:'FILL' 1">check_circle</span>`;
+  const cross = `<span class="material-symbols-outlined text-slate-300" style="font-size:18px">remove</span>`;
+
+  const cell = (val, highlight = false) => {
+    const base = `px-4 py-3.5 text-center text-sm font-semibold ${highlight ? 'bg-orange-50/60' : ''}`;
+    if (val === true)  return `<td class="${base} text-primary">${tick}</td>`;
+    if (val === false) return `<td class="${base} text-slate-300">${cross}</td>`;
+    return `<td class="${base} text-slate-700">${val}</td>`;
+  };
+
+  tbody.innerHTML = COMPARISON_ROWS.map((row, i) => `
+    <tr class="comp-row border-b border-slate-100">
+      <td class="px-5 py-3.5 text-sm font-bold text-slate-800">${row.feature}</td>
+      ${cell(row.free)}
+      ${cell(row.standard)}
+      ${cell(row.pro, true)}
+      ${cell(row.agency)}
     </tr>
   `).join('');
 }
 
-// ── 7-Gün Ücretsiz Deneme ────────────────────────────────────
+// ─────────────────────────── PLAN CLICK ───────────────────────────
+async function handlePlanClick(plan, price) {
+  if (!Auth.isLoggedIn()) {
+    window.location.href = `auth.html?redirect=packages.html`;
+    return;
+  }
+  if (plan === 'agency') {
+    window.location.href = 'contact.html?subject=Agency+Plan+Inquiry';
+    return;
+  }
+  if (currentPlan === plan) return;
+
+  // Try upgrade preview
+  try {
+    const r = await fetch('api/payment.php?action=upgrade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ plan })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error();
+
+    const data = d.data;
+    pendingPlan  = plan;
+    pendingPrice = data.netAmount ?? price;
+
+    document.getElementById('modalTitle').textContent = `${data.isUpgrade ? '⬆️ Upgrade' : '⬇️ Downgrade'} to ${plan.charAt(0).toUpperCase()+plan.slice(1)}`;
+    document.getElementById('modalDesc').textContent  = data.message || '';
+    document.getElementById('modalProceed').textContent = `Proceed — $${parseFloat(pendingPrice).toFixed(2)}`;
+
+    const creditEl = document.getElementById('modalCredit');
+    if (data.credit > 0) {
+      creditEl.classList.remove('hidden');
+      creditEl.textContent = `✓ You have $${data.credit.toFixed(2)} credit from your current plan`;
+    } else {
+      creditEl.classList.add('hidden');
+    }
+    document.getElementById('upgradeModal').classList.remove('hidden');
+  } catch {
+    // fallback direct
+    window.location.href = `payment.html?plan=${plan}&price=${price}`;
+  }
+}
+
+function proceedPayment() {
+  closeModal();
+  if (pendingPlan) window.location.href = `payment.html?plan=${pendingPlan}&price=${pendingPrice}`;
+}
+
+function closeModal() {
+  document.getElementById('upgradeModal').classList.add('hidden');
+}
+
+// ─────────────────────────── FAQ TOGGLE ───────────────────────────
+function toggleFaq(btn) {
+  const item   = btn.closest('.faq-item');
+  const answer = item.querySelector('.faq-answer');
+  const arrow  = btn.querySelector('.faq-arrow');
+  const isOpen = answer.classList.contains('open');
+
+  // Close all
+  document.querySelectorAll('.faq-answer.open').forEach(el => el.classList.remove('open'));
+  document.querySelectorAll('.faq-arrow').forEach(el => el.style.transform = '');
+
+  if (!isOpen) {
+    answer.classList.add('open');
+    arrow.style.transform = 'rotate(180deg)';
+  }
+}
+
+// ─────────────────────────── FREE TRIAL ───────────────────────────
 async function startTrial(plan) {
   const btn = document.getElementById('trialBtn');
   if (btn) { btn.disabled = true; btn.textContent = 'Starting…'; }
   try {
     const r = await fetch('api/payment.php?action=trial', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ plan }),
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ plan })
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error || 'Could not start trial');
-    document.getElementById('trialBanner').style.display = 'none';
-    showPkgToast('🎉 ' + d.data.message, 'success');
-    // Planı güncelle
+    document.getElementById('trialBanner').classList.add('hidden');
+    showToast('🎉 Free trial started! Enjoy Standard for 7 days.', 'success');
     currentPlan = plan;
-    setTimeout(() => window.location.reload(), 1500);
+    setTimeout(() => window.location.reload(), 1800);
   } catch(e) {
     if (btn) { btn.disabled = false; btn.textContent = 'Start Free Trial →'; }
-    showPkgToast(e.message, 'error');
+    showToast(e.message, 'error');
   }
 }
 
-// ── Plan Upgrade/Downgrade önizleme ──────────────────────────
-async function previewUpgrade(plan, price) {
-  if (!Auth.isLoggedIn()) { window.location.href = 'auth.html?redirect=packages.html'; return; }
-  if (currentPlan === plan) { showPkgToast('You are already on this plan', 'info'); return; }
-
-  // Upgrade hesabı al
-  try {
-    const r = await fetch('api/payment.php?action=upgrade', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-      body: JSON.stringify({ plan }),
-    });
-    const d = await r.json();
-    if (!d.success) { selectPlan(plan, price); return; }
-    const data = d.data;
-
-    // Modal göster
-    const isUp = data.isUpgrade;
-    const modal = document.createElement('div');
-    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px';
-    modal.innerHTML = `
-      <div style="background:#fff;border-radius:20px;padding:28px;max-width:400px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.2)">
-        <div style="font-size:18px;font-weight:800;margin-bottom:8px">${isUp ? '⬆️ Upgrade' : '⬇️ Downgrade'} to ${plan.charAt(0).toUpperCase()+plan.slice(1)}</div>
-        ${data.credit > 0 ? `<div style="background:#f0fdf4;border-radius:10px;padding:10px 14px;font-size:13px;color:#16a34a;margin-bottom:12px">✓ You have <strong>$${data.credit.toFixed(2)}</strong> credit from your current plan</div>` : ''}
-        <div style="font-size:14px;color:#64748b;margin-bottom:16px">${data.message}</div>
-        <div style="display:flex;gap:8px">
-          <button onclick="this.closest('[style*=fixed]').remove();selectPlan('${plan}',${data.netAmount})" style="flex:1;background:#f97316;color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">Proceed $${data.netAmount.toFixed(2)}</button>
-          <button onclick="this.closest('[style*=fixed]').remove()" style="background:#f1f5f9;color:#0f172a;border:none;border-radius:10px;padding:11px 16px;font-size:14px;cursor:pointer">Cancel</button>
-        </div>
-      </div>`;
-    document.body.appendChild(modal);
-  } catch { selectPlan(plan, price); }
-}
-
-function showPkgToast(msg, type='success') {
+// ─────────────────────────── TOAST ───────────────────────────
+function showToast(msg, type = 'success') {
   const colors = { success: '#16a34a', error: '#dc2626', info: '#0ea5e9' };
   const t = document.createElement('div');
-  t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;border-left:4px solid ${colors[type]||colors.success};max-width:340px;text-align:center`;
+  t.style.cssText = `position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:13px 22px;border-radius:14px;font-size:13px;font-weight:700;z-index:9999;border-left:4px solid ${colors[type]||colors.success};max-width:360px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.25)`;
   t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 3500);
 }
 
-// Init'e comparison ve trial ekle
-document.addEventListener('DOMContentLoaded', () => {
-  renderComparison();
-  // Trial banner — sadece free plan kullanıcısına göster
-  if (Auth.isLoggedIn()) {
-    fetch('api/payment.php?action=my_plan', { headers: { Authorization: 'Bearer ' + Auth.getToken() } })
-      .then(r => r.json())
-      .then(d => {
-        if (d.success && d.data.plan === 'free' && !d.data.trialUsed) {
-          document.getElementById('trialBanner').style.display = 'block';
-        }
-      }).catch(() => {});
+// ─────────────────────────── INIT ───────────────────────────
+async function init() {
+  // Update nav for logged-in user
+  const user = Auth.getUser();
+  if (user) {
+    const navSign = document.getElementById('navSignIn');
+    if (navSign) navSign.href = 'profile.html', navSign.textContent = user.name || 'My Account';
   }
-});
 
+  try {
+    const r = await fetch('api/payment.php?action=plans');
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'API error');
+
+    // Payment numbers
+    const nums = d.data.numbers || {};
+    document.getElementById('zaadNum').textContent   = nums.zaad?.number   || '—';
+    document.getElementById('zaadAcc').textContent   = nums.zaad?.name     || 'SomBazar Official';
+    document.getElementById('edahabNum').textContent  = nums.edahab?.number || '—';
+    document.getElementById('edahabAcc').textContent  = nums.edahab?.name   || 'SomBazar Official';
+
+    // Current user plan
+    if (Auth.isLoggedIn()) {
+      try {
+        const r2 = await fetch('api/payment.php?action=my_plan', {
+          headers: { Authorization: 'Bearer ' + Auth.getToken() }
+        });
+        const d2 = await r2.json();
+        if (d2.success) {
+          currentPlan = d2.data.plan;
+          const badge = document.getElementById('currentPlanBadge');
+          const txt   = document.getElementById('currentPlanText');
+          badge.classList.remove('hidden');
+          txt.textContent = `Current plan: ${currentPlan.charAt(0).toUpperCase()+currentPlan.slice(1)}` +
+            (d2.data.expiresAt ? ` — expires ${new Date(d2.data.expiresAt).toLocaleDateString()}` : '');
+
+          // Free trial banner
+          if (d2.data.plan === 'free' && !d2.data.trialUsed) {
+            document.getElementById('trialBanner').classList.remove('hidden');
+          }
+        }
+      } catch {}
+    }
+
+    renderPlans(d.data.plans);
+  } catch(e) {
+    console.warn('API fallback:', e.message);
+    renderPlans(null);
+    const errEl = document.getElementById('apiError');
+    errEl.classList.remove('hidden');
+    errEl.querySelector('div').textContent = 'Using cached plan data. Some prices may vary.';
+  }
+
+  renderComparison();
+}
+
+init();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>
