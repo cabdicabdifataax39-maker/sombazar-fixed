@@ -522,6 +522,46 @@
     }
     .theme-toggle:hover { background: var(--border); color: var(--text); }
     .theme-toggle .material-symbols-outlined { font-size: 16px; }
+
+    /* ─── Analytics chart rows ────────────────────────────── */
+    .chart-bar-row {
+      display: flex; align-items: center; gap: 10px; font-size: 11px;
+    }
+    .chart-bar-date { color: var(--text3); width: 65px; flex-shrink: 0; font-weight: 600; }
+    .chart-bar-track {
+      flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
+    }
+    .chart-bar-fill { height: 100%; background: var(--primary); border-radius: 4px; transition: width .5s; }
+    .chart-bar-val { color: var(--text2); font-weight: 700; width: 30px; text-align: right; flex-shrink: 0; }
+
+    /* ─── Revenue plan bars ───────────────────────────────── */
+    .plan-bar-row {
+      display: flex; align-items: center; gap: 10px; font-size: 12px; margin-bottom: 8px;
+    }
+    .plan-name { width: 80px; flex-shrink: 0; font-weight: 700; color: var(--text); }
+    .plan-bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .plan-bar-fill { height: 100%; background: var(--green); border-radius: 4px; transition: width .5s; }
+    .plan-bar-info { color: var(--green); font-weight: 800; width: 50px; text-align: right; flex-shrink: 0; }
+    .plan-bar-count { color: var(--text3); font-weight: 600; width: 30px; flex-shrink: 0; }
+
+    /* ─── Push history item ───────────────────────────────── */
+    .push-history-item {
+      display: flex; gap: 10px; padding: 10px;
+      background: var(--surface2); border-radius: 8px; border: 1px solid var(--border);
+    }
+    .push-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--primary-s); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; color: var(--primary);
+    }
+
+    /* ─── Announcement card ───────────────────────────────── */
+    .announcement-card {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 18px; border-bottom: 1px solid var(--border2);
+    }
+    .announcement-card:last-child { border-bottom: none; }
+    .announcement-card.active { background: rgba(236,91,19,.03); }
   </style>
 </head>
 <body>
@@ -1201,13 +1241,31 @@
         </div>
       </div>
       <div class="card">
+        <div class="card-body" style="padding-bottom:0">
+          <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+            <div class="stat-card" style="--accent-color:#8b5cf6;--accent-bg:rgba(139,92,246,.1)">
+              <div class="stat-card-icon"><span class="material-symbols-outlined">forum</span></div>
+              <div class="stat-num" id="msgTotalConvs">—</div>
+              <div class="stat-label">Total Conversations</div>
+            </div>
+            <div class="stat-card" style="--accent-color:#3b82f6;--accent-bg:rgba(59,130,246,.1)">
+              <div class="stat-card-icon"><span class="material-symbols-outlined">chat</span></div>
+              <div class="stat-num" id="msgTotalMsgs">—</div>
+              <div class="stat-label">Total Messages</div>
+            </div>
+            <div class="stat-card" style="--accent-color:#10b981;--accent-bg:rgba(16,185,129,.1)">
+              <div class="stat-card-icon"><span class="material-symbols-outlined">today</span></div>
+              <div class="stat-num" id="msgTodayMsgs">—</div>
+              <div class="stat-label">Today</div>
+            </div>
+          </div>
+        </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Participants</th><th>Listing</th><th>Last Message</th><th>Messages</th><th>Date</th><th>Actions</th></tr></thead>
-            <tbody id="adminMsgBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody>
+            <thead><tr><th>Participants</th><th>Last Message</th><th>Count</th><th>Date</th></tr></thead>
+            <tbody id="messagesBody"><tr><td colspan="4" class="empty-row">Loading…</td></tr></tbody>
           </table>
         </div>
-        <div class="pagination" id="msgPagination"></div>
       </div>
     </div>
 
@@ -1219,15 +1277,44 @@
           <div class="page-subtitle">Platform growth and usage metrics</div>
         </div>
         <div class="page-actions">
-          <select id="analyticsRange" class="form-input btn-sm" onchange="loadAnalytics()" style="min-width:130px">
+          <select id="analyticsPeriod" class="form-input btn-sm" onchange="loadAnalytics()" style="min-width:130px">
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
             <option value="90">Last 90 days</option>
           </select>
         </div>
       </div>
-      <div id="analyticsContent">
-        <div class="empty-state"><span class="material-symbols-outlined">bar_chart</span><p>Loading analytics…</p></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">
+        <div class="stat-card" style="--accent-color:#ec5b13;--accent-bg:rgba(236,91,19,.1)">
+          <div class="stat-card-icon"><span class="material-symbols-outlined">person_add</span></div>
+          <div class="stat-num" id="anaNewUsers">—</div>
+          <div class="stat-label">New Users</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#3b82f6;--accent-bg:rgba(59,130,246,.1)">
+          <div class="stat-card-icon"><span class="material-symbols-outlined">add_box</span></div>
+          <div class="stat-num" id="anaNewListings">—</div>
+          <div class="stat-label">New Listings</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#10b981;--accent-bg:rgba(16,185,129,.1)">
+          <div class="stat-card-icon"><span class="material-symbols-outlined">payments</span></div>
+          <div class="stat-num" id="anaNewPayments">—</div>
+          <div class="stat-label">New Payments</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#f59e0b;--accent-bg:rgba(245,158,11,.1)">
+          <div class="stat-card-icon"><span class="material-symbols-outlined">star</span></div>
+          <div class="stat-num" id="anaNewReviews">—</div>
+          <div class="stat-label">New Reviews</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="material-symbols-outlined">show_chart</span> Daily Activity</div>
+        </div>
+        <div class="card-body">
+          <div id="analyticsChart" style="display:flex;flex-direction:column;gap:6px">
+            <div class="empty-state"><span class="material-symbols-outlined">bar_chart</span><p>Loading chart…</p></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1239,15 +1326,57 @@
           <div class="page-subtitle">Subscription revenue and financial overview</div>
         </div>
         <div class="page-actions">
-          <select id="revenueRange" class="form-input btn-sm" onchange="loadRevenue()" style="min-width:130px">
+          <select id="revenuePeriod" class="form-input btn-sm" onchange="loadRevenue()" style="min-width:130px">
             <option value="30">Last 30 days</option>
             <option value="90">Last 90 days</option>
             <option value="365">Last year</option>
           </select>
         </div>
       </div>
-      <div id="revenueContent">
-        <div class="empty-state"><span class="material-symbols-outlined">attach_money</span><p>Loading revenue data…</p></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">
+        <div class="stat-card" style="--accent-color:#10b981;--accent-bg:rgba(16,185,129,.1)">
+          <div class="stat-card-icon"><span class="material-symbols-outlined">attach_money</span></div>
+          <div class="stat-num" id="revTotal">—</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#3b82f6;--accent-bg:rgba(59,130,246,.1)">
+          <div class="stat-card-icon"><span class="material-symbols-outlined">check_circle</span></div>
+          <div class="stat-num" id="revApproved">—</div>
+          <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#f59e0b;--accent-bg:rgba(245,158,11,.1)">
+          <div class="stat-card-icon"><span class="material-symbols-outlined">pending</span></div>
+          <div class="stat-num" id="revPending">—</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#8b5cf6;--accent-bg:rgba(139,92,246,.1)">
+          <div class="stat-card-icon"><span class="material-symbols-outlined">avg_pace</span></div>
+          <div class="stat-num" id="revAvg">—</div>
+          <div class="stat-label">Avg Amount</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="material-symbols-outlined">receipt_long</span> Recent Payments</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>User</th><th>Plan</th><th>Amount</th><th>Method</th><th>Date</th><th>Status</th></tr></thead>
+              <tbody id="revenueBody"><tr><td colspan="6" class="empty-row">Loading…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="material-symbols-outlined">pie_chart</span> Revenue by Plan</div>
+          </div>
+          <div class="card-body">
+            <div id="revByPlan" style="display:flex;flex-direction:column;gap:8px">
+              <div class="empty-state"><span class="material-symbols-outlined">attach_money</span><p>Loading…</p></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1259,13 +1388,13 @@
           <div class="page-subtitle">Broadcast messages to all users</div>
         </div>
         <div class="page-actions">
-          <button class="btn btn-primary" onclick="openAnnouncementModal()">
+          <button class="btn btn-primary" onclick="showAnnouncementModal()">
             <span class="material-symbols-outlined">add</span> New Announcement
           </button>
         </div>
       </div>
       <div class="card">
-        <div id="announcementList" style="padding:8px 0">
+        <div id="announcementsList" style="padding:8px 0">
           <div class="empty-state"><span class="material-symbols-outlined">campaign</span><p>Loading announcements…</p></div>
         </div>
       </div>
@@ -1311,9 +1440,15 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-title"><span class="material-symbols-outlined">insights</span> Push Stats</div></div>
-          <div class="card-body" id="pushStats">
-            <div class="empty-state"><span class="material-symbols-outlined">notifications</span><p>Loading stats…</p></div>
+          <div class="card-header">
+            <div class="card-title"><span class="material-symbols-outlined">insights</span> Push Stats</div>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px" id="pushSubCount">Loading…</div>
+            <div class="card-title" style="font-size:12px;margin-bottom:8px;color:var(--text3)">RECENT HISTORY</div>
+            <div id="pushHistory" style="display:flex;flex-direction:column;gap:10px">
+              <div class="empty-state" style="padding:20px"><span class="material-symbols-outlined">notifications_none</span><p>No notifications sent yet</p></div>
+            </div>
           </div>
         </div>
       </div>
@@ -2525,4 +2660,3 @@ async function loadCategories() {
 </script>
 </body>
 </html>
-</body></html>
