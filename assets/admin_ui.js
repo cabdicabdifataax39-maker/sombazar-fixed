@@ -92,7 +92,7 @@ async function _loadDashListings(){
     el.innerHTML=data.map(function(d){
       var h=Math.max(Math.round((d.count/max)*100),4);
       var label=d.day?d.day.slice(5):'';
-      return'<div class="col-bar-wrap"><div class="col-bar" style="height:'+h+'px;background:var(--pr);opacity:.85;border-radius:4px 4px 0 0"></div><div class="col-label">'+label+'</div></div>';
+      return'<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;flex:1;min-width:0;height:100%"><div style="width:100%;max-width:40px;border-radius:4px 4px 0 0;background:var(--pr);opacity:.85;height:'+h+'px;min-height:4px;transition:height .4s"></div><div style="font-size:9px;color:var(--text3);font-weight:600;white-space:nowrap">'+label+'</div></div>';
     }).join('');
   };
 })();
@@ -396,9 +396,9 @@ window.loadAnalytics=async function(){
     if(chart&&daily.length){
       var max=Math.max.apply(null,daily.map(function(x){return x.count||0;}));if(max<1)max=1;
       chart.innerHTML=daily.map(function(x){
-        var h=Math.max(Math.round((x.count/max)*140),4);
-        var label=(x.date||'').substring(5); // "03-06"
-        return'<div class="col-bar-wrap"><div class="col-bar" style="height:'+h+'px;background:var(--pr);opacity:.8;border-radius:4px 4px 0 0"></div><div class="col-label">'+label+'</div></div>';
+        var h=Math.max(Math.round((x.count/max)*130),4);
+        var label=(x.date||'').substring(5);
+        return'<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;flex:1;min-width:0;max-width:80px;height:100%"><div style="width:100%;max-width:50px;border-radius:4px 4px 0 0;background:var(--pr);opacity:.85;height:'+h+'px;transition:height .4s;min-height:4px"></div><div style="font-size:9px;color:var(--text3);font-weight:600;white-space:nowrap">'+label+'</div></div>';
       }).join('');
     } else if(chart){
       chart.innerHTML='<div class="empty-state" style="width:100%;padding:10px"><small>No activity data for this period</small></div>';
@@ -418,7 +418,9 @@ window.loadRevenue=async function(){
     _set('revTotal2',_money(r.total_revenue||0));
     _set('revMRR',_money(r.mrr||Math.floor((r.total_revenue||0)/3)));
     _set('revSubs',r.active_subscriptions!=null?r.active_subscriptions:(r.approved_count!=null?r.approved_count:'—'));
-    _set('revChurn',(r.churn_rate||'—')+'%');
+    // churn_rate not in API, compute or show N/A
+    var churnVal=r.churn_rate!=null?r.churn_rate.toFixed(1)+'%':'N/A';
+    _set('revChurn',churnVal);
     _set('revAvg',_money(r.avg_amount||0));
     // by_plan: {pro:{count:5,total:100}, agency:{count:2,total:100}} → top methods bars
     var planEl=document.getElementById('revByPlan');
@@ -431,6 +433,49 @@ window.loadRevenue=async function(){
         var pct=Math.round((info.total/maxTotal)*100);
         return'<div class="h-bar-row"><div class="h-bar-name" style="width:80px;font-weight:700;text-transform:capitalize">'+_esc(plan)+'</div><div class="h-bar-track"><div class="h-bar-fill" style="width:'+pct+'%;background:'+colors[i%colors.length]+'"></div></div><div class="h-bar-pct">$'+Number(info.total||0).toLocaleString()+'</div></div>';
       }).join('');
+    }
+    // Populate Subscription Revenue Trends chart (revTrendsChart)
+    var trendsChart=document.getElementById('revTrendsChart');
+    if(trendsChart&&r.payments&&r.payments.length){
+      // Group payments by month
+      var byMonth={};
+      r.payments.forEach(function(p){
+        if(p.status==='approved'&&p.created_at){
+          var m=p.created_at.substring(0,7); // "2026-03"
+          byMonth[m]=(byMonth[m]||0)+parseFloat(p.amount||0);
+        }
+      });
+      var months=Object.keys(byMonth).sort();
+      if(months.length){
+        var maxAmt=Math.max.apply(null,months.map(function(m){return byMonth[m];}));
+        if(maxAmt<1)maxAmt=1;
+        trendsChart.innerHTML=months.map(function(m){
+          var h=Math.max(Math.round((byMonth[m]/maxAmt)*130),4);
+          var label=m.substring(5); // "03"
+          return'<div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;flex:1;height:100%"><div style="width:100%;max-width:50px;border-radius:4px 4px 0 0;background:var(--pr);opacity:.8;height:'+h+'px;min-height:4px;transition:height .4s"></div><div style="font-size:9px;color:var(--text3);font-weight:600">'+label+'</div></div>';
+        }).join('');
+      } else {
+        trendsChart.innerHTML='<div class="empty-state" style="width:100%;padding:10px"><small>No revenue data</small></div>';
+      }
+    } else if(trendsChart){
+      trendsChart.innerHTML='<div class="empty-state" style="width:100%;padding:10px"><small>No revenue data</small></div>';
+    }
+    // Also populate Payments tab chart (revChartBars)  
+    var revBars=document.getElementById('revChartBars');
+    if(revBars&&r.payments&&r.payments.length){
+      var byDay={};
+      r.payments.filter(function(p){return p.status==='approved';}).forEach(function(p){
+        if(p.created_at){var day=p.created_at.substring(0,10);byDay[day]=(byDay[day]||0)+parseFloat(p.amount||0);}
+      });
+      var days2=Object.keys(byDay).sort().slice(-7);
+      if(days2.length){
+        var maxD=Math.max.apply(null,days2.map(function(d){return byDay[d];}));if(maxD<1)maxD=1;
+        revBars.innerHTML=days2.map(function(day){
+          var h=Math.max(Math.round((byDay[day]/maxD)*120),4);
+          var label=day.substring(5);
+          return'<div class="col-bar-wrap"><div class="col-bar" style="height:'+h+'px;background:var(--pr);opacity:.75"></div><div class="col-label">'+label+'</div></div>';
+        }).join('');
+      }
     }
     var rows=r.payments||(d.data&&d.data.payments)||[];
     var tbody=document.getElementById('revenueBody');
