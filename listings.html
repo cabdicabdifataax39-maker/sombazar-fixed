@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Dark mode init — prevents flash of wrong theme
+    (function(){
+      var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#f97316">
@@ -243,7 +250,8 @@
             <span class="material-symbols-outlined text-xl">chat_bubble</span>
             <span id="msgBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
           </a>
-          <div style="position:relative" id="notifBellWrap">
+          <button onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:7px;color:#64748b;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .15s" class="dark-mode-btn"><span class="material-symbols-outlined" style="font-size:20px">dark_mode</span></button>
+        <div style="position:relative" id="notifBellWrap">
             <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-2 rounded-full hover:bg-slate-100 text-slate-600">
               <span class="material-symbols-outlined text-xl">notifications</span>
               <span id="notifBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>

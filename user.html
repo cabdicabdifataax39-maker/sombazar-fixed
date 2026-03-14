@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Dark mode init — prevents flash of wrong theme
+    (function(){
+      var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#f97316">
@@ -118,6 +125,25 @@
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
     @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
     .profile-content { animation: slideUp .3s ease; }
+  
+    /* ── Dark mode overrides ── */
+    [data-theme="dark"] body { background:#1e293b!important; color:#f1f5f9!important; }
+    [data-theme="dark"] .card, [data-theme="dark"] [class*="-card"], [data-theme="dark"] .modal-box,
+    [data-theme="dark"] .panel, [data-theme="dark"] .box, [data-theme="dark"] .container-box {
+      background:#1e293b!important; border-color:#334155!important; color:#f1f5f9!important;
+    }
+    [data-theme="dark"] input, [data-theme="dark"] textarea, [data-theme="dark"] select {
+      background:#0f172a!important; color:#f1f5f9!important; border-color:#334155!important;
+    }
+    [data-theme="dark"] input::placeholder, [data-theme="dark"] textarea::placeholder { color:#64748b!important; }
+    [data-theme="dark"] a { color:#f8a87c; }
+    [data-theme="dark"] .text-gray-500, [data-theme="dark"] .text-slate-500 { color:#94a3b8!important; }
+    [data-theme="dark"] .bg-white, [data-theme="dark"] .bg-slate-50, [data-theme="dark"] .bg-gray-50 { background:#1e293b!important; }
+    [data-theme="dark"] .border-gray-200, [data-theme="dark"] .border-slate-200, [data-theme="dark"] .border-e2e8f0 { border-color:#334155!important; }
+    [data-theme="dark"] .shadow { box-shadow:0 4px 24px rgba(0,0,0,.4)!important; }
+    [data-theme="dark"] .user-profile-card { background:#1e293b!important; border-color:#334155!important; }
+    [data-theme="dark"] .user-stat { background:#0f172a!important; }
+    [data-theme="dark"] .listing-grid .listing-card { background:#1e293b!important; border-color:#334155!important; }
   </style>
 <script type="application/ld+json" id="userSchema">{}</script>
   <!-- Google Analytics GA4 -->
@@ -141,7 +167,8 @@
   <a href="index.html" class="logo">SomBazar</a>
   <div class="header-actions">
     <div id="header-user" style="display:none;align-items:center;gap:8px">
-      <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
+      <button onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:7px;color:#64748b;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .15s" class="dark-mode-btn"><span class="material-symbols-outlined" style="font-size:20px">dark_mode</span></button>
+        <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:9px;font-weight:800;border-radius:50%;width:16px;height:16px;line-height:16px;text-align:center"></span>
       </a>

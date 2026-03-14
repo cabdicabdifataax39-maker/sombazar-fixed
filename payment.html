@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Dark mode init — prevents flash of wrong theme
+    (function(){
+      var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
   <meta name="csrf-token" content="" id="csrfMeta">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Payment — SomBazar</title>
@@ -43,6 +50,27 @@
     .upload-drop.has-file { border-color:#22c55e; background:#f0fdf4; }
     input[type=file] { display:none; }
     .progress-bar { transition: width .5s ease; }
+  
+    /* ── Dark mode overrides ── */
+    [data-theme="dark"] body { background:#1e293b!important; color:#f1f5f9!important; }
+    [data-theme="dark"] .card, [data-theme="dark"] [class*="-card"], [data-theme="dark"] .modal-box,
+    [data-theme="dark"] .panel, [data-theme="dark"] .box, [data-theme="dark"] .container-box {
+      background:#1e293b!important; border-color:#334155!important; color:#f1f5f9!important;
+    }
+    [data-theme="dark"] input, [data-theme="dark"] textarea, [data-theme="dark"] select {
+      background:#0f172a!important; color:#f1f5f9!important; border-color:#334155!important;
+    }
+    [data-theme="dark"] input::placeholder, [data-theme="dark"] textarea::placeholder { color:#64748b!important; }
+    [data-theme="dark"] a { color:#f8a87c; }
+    [data-theme="dark"] .text-gray-500, [data-theme="dark"] .text-slate-500 { color:#94a3b8!important; }
+    [data-theme="dark"] .bg-white, [data-theme="dark"] .bg-slate-50, [data-theme="dark"] .bg-gray-50 { background:#1e293b!important; }
+    [data-theme="dark"] .border-gray-200, [data-theme="dark"] .border-slate-200, [data-theme="dark"] .border-e2e8f0 { border-color:#334155!important; }
+    [data-theme="dark"] .shadow { box-shadow:0 4px 24px rgba(0,0,0,.4)!important; }
+    [data-theme="dark"] .pay-card, [data-theme="dark"] .step-card { background:#1e293b!important; border-color:#334155!important; }
+    [data-theme="dark"] .method-btn { background:#1e293b!important; border-color:#334155!important; color:#f1f5f9!important; }
+    [data-theme="dark"] .method-btn.selected { border-color:#ec5b13!important; background:#1e293b!important; }
+    [data-theme="dark"] .upload-zone { background:#0f172a!important; border-color:#334155!important; }
+    [data-theme="dark"] .receipt-box { background:#0f172a!important; border-color:#334155!important; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen">
@@ -59,7 +87,8 @@
       <span class="text-lg font-black tracking-tight text-slate-900">Som<span class="text-primary">Bazar</span></span>
     </a>
     <div class="flex items-center gap-3">
-      <a href="messages.html" id="topbarMessages" class="hidden sm:flex items-center gap-1.5 p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors relative">
+      <button onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:7px;color:#64748b;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .15s" class="dark-mode-btn"><span class="material-symbols-outlined" style="font-size:20px">dark_mode</span></button>
+        <a href="messages.html" id="topbarMessages" class="hidden sm:flex items-center gap-1.5 p-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors relative">
         <span class="material-symbols-outlined text-xl">notifications</span>
       </a>
       <a href="profile.html" id="topbarAccount" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors text-sm font-semibold text-slate-700">
