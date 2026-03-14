@@ -40,7 +40,18 @@ foreach ([
 try { $db->exec("CREATE TABLE IF NOT EXISTS blacklist (id INT AUTO_INCREMENT PRIMARY KEY, phone VARCHAR(30), national_id VARCHAR(100), reason VARCHAR(500), added_by INT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB"); } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 try { $db->exec("CREATE TABLE IF NOT EXISTS admin_log (id INT AUTO_INCREMENT PRIMARY KEY, admin_id INT NOT NULL, action VARCHAR(100), target_type VARCHAR(30), target_id INT, note TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB"); } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 try { $db->exec("CREATE TABLE IF NOT EXISTS verification_docs (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, doc_type VARCHAR(50), file_url VARCHAR(500), uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP, superseded TINYINT(1) DEFAULT 0) ENGINE=InnoDB"); } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
-try { $db->exec("CREATE TABLE IF NOT EXISTS reports (id INT AUTO_INCREMENT PRIMARY KEY, listing_id INT NOT NULL, reporter_id INT NOT NULL, reason VARCHAR(300), resolved TINYINT(1) DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB"); } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
+try { $db->exec("CREATE TABLE IF NOT EXISTS reports (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    listing_id INT NULL,
+    reporter_id INT NOT NULL,
+    reason VARCHAR(300),
+    report_type ENUM('Listing','User','Order','Message','Other') NOT NULL DEFAULT 'Listing',
+    target_type VARCHAR(20) NULL,
+    target_id INT NULL,
+    status ENUM('pending','reviewing','reviewed','dismissed') NOT NULL DEFAULT 'pending',
+    resolved TINYINT(1) DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"); } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 
 switch ($action) {
     case 'csrf_token':        handleGetCsrfToken();     break;
@@ -78,6 +89,7 @@ switch ($action) {
     case 'list_reports':      handleListReports();      break;
     case 'list_reviews':      handleListReviews();      break;
     case 'delete_review':     handleDeleteReview();     break;
+    case 'moderate_review':   handleModerateReview();   break;
     case 'list_conversations':handleListConversations();break;
     case 'analytics':         handleAnalytics();        break;
     case 'revenue':           handleRevenue();          break;
@@ -428,7 +440,7 @@ function handleVerifications(): void {
 
 function handleBlacklist(): void {
     $db = getDB();
-    $st = $db->query('SELECT b.*, u.display_name AS added_by_name FROM blacklist b LEFT JOIN users u ON b.added_by=u.id ORDER BY b.created_at DESC LIMIT 100');
+    $st = $db->query('SELECT b.id, b.phone, b.reason, b.created_at, COALESCE(b.national_id, "") as national_id, u.display_name AS added_by_name FROM blacklist b LEFT JOIN users u ON b.added_by=u.id ORDER BY b.created_at DESC LIMIT 100');
     jsonSuccess($st->fetchAll());
 }
 
@@ -440,8 +452,19 @@ function handleAddBlacklist(): void {
     $reason = trim($data['reason'] ?? '');
     if (!$phone && !$natId) jsonError('Phone or national ID required');
     if (!$reason) jsonError('Reason required');
-    $db->prepare('INSERT INTO blacklist (phone, national_id, reason, added_by) VALUES (?,?,?,?)')
-       ->execute([$phone, $natId, $reason, $uid]);
+    // Try with national_id column (migration 005), fall back without it
+    try {
+        $db->prepare('INSERT INTO blacklist (phone, national_id, reason, added_by) VALUES (?,?,?,?)')
+           ->execute([$phone ?: null, $natId ?: null, $reason, $uid]);
+    } catch (\Throwable $e) {
+        // national_id column not yet added — insert with phone only
+        if ($phone) {
+            $db->prepare('INSERT INTO blacklist (phone, reason, added_by) VALUES (?,?,?)')
+               ->execute([$phone, $reason, $uid]);
+        } else {
+            jsonError('Run migration 005 to support national_id blacklisting');
+        }
+    }
     // Also ban matching users
     if ($phone) $db->prepare("UPDATE users SET is_banned=1, ban_reason=? WHERE phone=?")->execute(["Blacklisted: $reason", $phone]);
     logAction($uid, 'add_blacklist', 'user', 0, "phone:$phone nat_id:$natId reason:$reason");
@@ -1065,11 +1088,16 @@ function handleListReports(): void {
     $db = getDB();
     $filterStatus = $_GET['status'] ?? 'pending';
     // status kolonu kullanmadan, sadece resolved kolonuyla filtrele
-    $sql = "SELECT r.*, u.display_name as reporter_name, u.email as reporter_email
-            FROM reports r LEFT JOIN users u ON u.id = r.reporter_id";
-    if ($filterStatus === 'pending')    { $sql .= " WHERE r.resolved = 0"; }
-    elseif ($filterStatus === 'reviewed')   { $sql .= " WHERE r.resolved = 1"; }
-    elseif ($filterStatus === 'dismissed')  { $sql .= " WHERE r.resolved = 1"; }
+    $sql = "SELECT r.*,
+                    u.display_name as reporter_name, u.email as reporter_email,
+                    COALESCE(l.title, CONCAT('User #', r.target_id)) as target_title
+             FROM reports r
+             LEFT JOIN users u ON u.id = r.reporter_id
+             LEFT JOIN listings l ON l.id = r.target_id AND r.report_type = 'Listing'";
+    if ($filterStatus === 'pending')    { $sql .= " WHERE r.status = 'pending'"; }
+    elseif ($filterStatus === 'reviewing') { $sql .= " WHERE r.status = 'reviewing'"; }
+    elseif ($filterStatus === 'reviewed')  { $sql .= " WHERE r.status = 'reviewed'"; }
+    elseif ($filterStatus === 'dismissed') { $sql .= " WHERE r.status = 'dismissed'"; }
     // filterStatus = '' ise tum raporlar
     $sql .= " ORDER BY r.created_at DESC LIMIT 100";
     $st = $db->prepare($sql);
@@ -1082,13 +1110,35 @@ function handleListReviews(): void {
     requireAdmin();
     $db = getDB();
     try {
-        $st = $db->query("SELECT rv.*, u1.display_name as reviewer_name, u2.display_name as seller_name
-                          FROM reviews rv
-                          LEFT JOIN users u1 ON u1.id = rv.reviewer_id
-                          LEFT JOIN users u2 ON u2.id = rv.seller_id
-                          ORDER BY rv.created_at DESC LIMIT 200");
+        $filterStatus = $_GET['status'] ?? '';
+        $sql = "SELECT rv.*, u1.display_name as reviewer_name, u2.display_name as seller_name
+                FROM reviews rv
+                LEFT JOIN users u1 ON u1.id = rv.reviewer_id
+                LEFT JOIN users u2 ON u2.id = rv.seller_id";
+        if ($filterStatus) { $sql .= " WHERE rv.status = " . $db->quote($filterStatus); }
+        $sql .= " ORDER BY rv.created_at DESC LIMIT 200";
+        $st = $db->query($sql);
         jsonSuccess(['reviews' => $st->fetchAll()]);
     } catch(\Exception $e) { jsonSuccess(['reviews' => []]); }
+}
+
+function handleModerateReview(): void {
+    requireAdmin();
+    $adminId = requireAdmin();
+    $data = json_decode(file_get_contents('php://input'), true);
+    $id     = (int)($data['id'] ?? 0);
+    $status = in_array($data['status'] ?? '', ['approved','flagged','rejected']) ? $data['status'] : 'approved';
+    if (!$id) jsonError('Invalid ID');
+    $db = getDB();
+    try {
+        $db->prepare("UPDATE reviews SET status=?, moderated_by=?, moderated_at=NOW() WHERE id=?")
+           ->execute([$status, $adminId, $id]);
+    } catch(\Throwable $e) {
+        // status column may not exist yet in older installations
+        error_log("moderateReview: " . $e->getMessage());
+    }
+    logAction($adminId, 'moderate_review', 'review', $id, 'status='.$status);
+    jsonSuccess(['moderated' => true, 'status' => $status]);
 }
 
 function handleDeleteReview(): void {
