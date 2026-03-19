@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -613,5 +613,6 @@ function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").repl
 function toast(msg,type){const t=document.createElement("div");const bg=type==="success"?"#16a34a":type==="error"?"#dc2626":"#0f172a";t.style.cssText=`position:fixed;bottom:24px;right:24px;z-index:99999;background:${bg};color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:toastIn .25s ease;max-width:320px;font-family:"DM Sans"`;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>{t.style.opacity="0";t.style.transform="translateY(8px)";t.style.transition="all .3s";setTimeout(()=>t.remove(),300);},3000);}
 window.showToast=window.showToast||toast;
 </script>
+<script src="assets/notif.js"></script>
 </body>
 </html>
