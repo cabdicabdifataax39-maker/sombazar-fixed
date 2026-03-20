@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -264,8 +264,8 @@
   <div class="header-right">
     <!-- Notif bell -->
     <div style="position:relative;" id="notifBellWrap">
-      <button <button onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode" class="hdr-icon-btn dark-mode-btn"><span class="material-symbols-outlined" style="font-size:20px">dark_mode</span></button>
-        class="hdr-icon-btn" onclick="toggleNotifDropdown()" id="notifBell">
+      <button onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode" class="hdr-icon-btn dark-mode-btn"><span class="material-symbols-outlined" style="font-size:20px">dark_mode</span></button>
+      <button class="hdr-icon-btn" onclick="toggleNotifDropdown()" id="notifBell">
         <span class="material-symbols-outlined" style="font-size:22px;">notifications</span>
         <span id="notifBadge" class="hdr-badge" style="display:none;"></span>
       </button>
@@ -705,9 +705,7 @@ function renderContacts(convs) {
       </div>
       ${isUnread ? `<span class="unread-badge">${c.unreadCount}</span>` : isNew&&!isActive ? `<div class="unread-dot"></div>` : ''}
     </div>`;
-  }).join('') + `<a href="#" class="archive-link" onclick="loadArchived();return false;">
-    <span class="material-symbols-outlined" style="font-size:18px;">archive</span> View Archived Chats
-  </a>`;
+  }).join('');
 }
 
 // ── Open chat ─────────────────────────────────
