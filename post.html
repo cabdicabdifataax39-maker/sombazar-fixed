@@ -406,12 +406,15 @@ const STEPS=['Select Category','Item Details','Upload Photos','Location','Review
 const STEP_PCT=[20,40,60,80,100];
 
 const CATS=[
-  {id:'car',        label:'Vehicles',       desc:'Cars, motorbikes & accessories', icon:'directions_car'},
-  {id:'house',      label:'Property',        desc:'Rent or buy houses & land',      icon:'apartment'},
-  {id:'electronics',label:'Electronics',     desc:'Phones, laptops & gadgets',       icon:'devices'},
-  {id:'furniture',  label:'Home & Living',   desc:'Furniture, garden & appliances',  icon:'chair'},
-  {id:'jobs',       label:'Jobs & Services', desc:'Employment & professional',        icon:'work'},
-  {id:'services',   label:'Fashion',         desc:'Clothing, shoes & jewelry',        icon:'checkroom'},
+  {id:'car',        label:'Vehicles',      desc:'Cars, motorbikes & accessories',  icon:'directions_car'},
+  {id:'house',      label:'Property',      desc:'Rent or buy houses & apartments', icon:'apartment'},
+  {id:'land',       label:'Land',          desc:'Plots, farms & commercial land',  icon:'landscape'},
+  {id:'electronics',label:'Electronics',   desc:'Phones, laptops & gadgets',       icon:'devices'},
+  {id:'furniture',  label:'Home & Living', desc:'Furniture, garden & appliances',  icon:'chair'},
+  {id:'jobs',       label:'Jobs',          desc:'Full-time, part-time & freelance',icon:'work'},
+  {id:'services',   label:'Services',      desc:'Professional & local services',   icon:'handyman'},
+  {id:'hotel',      label:'Hotels',        desc:'Hotels, guesthouses & rentals',   icon:'hotel'},
+  {id:'fashion',    label:'Fashion',       desc:'Clothing, shoes & jewelry',       icon:'checkroom'},
 ];
 
 const SPEC_FIELDS={
@@ -475,9 +478,44 @@ const SPEC_FIELDS={
     {id:'spec_experience',   label:'Experience',      type:'select', options:['< 1 Year','1-3 Years','3-5 Years','5+ Years']},
     {id:'descInput',         label:'Description',    type:'textarea',placeholder:'Describe your service...', full:true},
   ],
+  land:[
+    {id:'titleInput',        label:'Ad Title *',      type:'text',    placeholder:'e.g. 500m² Plot in Hargeisa City Center', full:true},
+    {id:'listingTypeRow',    label:'',                 type:'lt_row'},
+    {id:'priceRow',          label:'',                 type:'price_row'},
+    {id:'spec_area',         label:'Area (m²)',        type:'number',  placeholder:'500'},
+    {id:'spec_land_type',    label:'Land Type',        type:'select',  options:['Residential','Commercial','Agricultural','Industrial','Mixed Use']},
+    {id:'spec_title_deed',   label:'Title Deed',       type:'select',  options:['Available','Not Available','In Progress']},
+    {id:'spec_road_access',  label:'Road Access',      type:'select',  options:['Yes','No']},
+    {id:'spec_water',        label:'Water Access',     type:'select',  options:['Yes','No']},
+    {id:'spec_electricity',  label:'Electricity',      type:'select',  options:['Available','Not Available']},
+    {id:'descInput',         label:'Description',     type:'textarea', placeholder:'Describe the land, location, boundaries...', full:true},
+  ],
+  hotel:[
+    {id:'titleInput',        label:'Ad Title *',      type:'text',    placeholder:'e.g. Deluxe Room at Peace Hotel - Hargeisa', full:true},
+    {id:'listingTypeRow',    label:'',                 type:'lt_row'},
+    {id:'priceRow',          label:'',                 type:'price_row'},
+    {id:'spec_room_type',    label:'Room Type',        type:'select',  options:['Single','Double','Twin','Suite','Family Room','Entire Property']},
+    {id:'spec_guests',       label:'Max Guests',       type:'number',  placeholder:'2'},
+    {id:'spec_beds',         label:'Beds',             type:'number',  placeholder:'1'},
+    {id:'spec_bathrooms',    label:'Bathrooms',        type:'select',  options:['1','2','3+']},
+    {id:'spec_wifi',         label:'WiFi',             type:'select',  options:['Free WiFi','Paid WiFi','No WiFi']},
+    {id:'spec_breakfast',    label:'Breakfast',        type:'select',  options:['Included','Not Included']},
+    {id:'spec_parking',      label:'Parking',          type:'select',  options:['Free','Paid','No Parking']},
+    {id:'descInput',         label:'Description',     type:'textarea', placeholder:'Describe the room, amenities, check-in/out...', full:true},
+  ],
+  fashion:[
+    {id:'titleInput',        label:'Ad Title *',      type:'text',    placeholder:'e.g. Nike Air Max 2023 - Size 42', full:true},
+    {id:'priceRow',          label:'',                 type:'price_row'},
+    {id:'conditionRow',      label:'',                 type:'cond_row'},
+    {id:'spec_category',     label:'Category',         type:'select',  options:['Men's Clothing','Women's Clothing','Kids','Shoes','Bags','Jewelry','Accessories','Other']},
+    {id:'spec_brand',        label:'Brand',            type:'text',   placeholder:'Nike, Adidas, Zara...'},
+    {id:'spec_size',         label:'Size',             type:'text',   placeholder:'M, L, 42, Free Size...'},
+    {id:'spec_color',        label:'Color',            type:'text',   placeholder:'Black, White, Red...'},
+    {id:'descInput',         label:'Description',     type:'textarea', placeholder:'Describe the item, material, authenticity...', full:true},
+  ],
 };
 
-const CAT_TITLES={car:'Vehicle Specifications',house:'Property Details',electronics:'Product Details',furniture:'Item Details',jobs:'Job Details',services:'Service Details'};
+const CAT_TITLES={car:'Vehicle Specifications',house:'Property Details',land:'Land Details',electronics:'Product Details',furniture:'Item Details',jobs:'Job Details',services:'Service Details',hotel:'Hotel / Room Details',fashion:'Fashion Item Details'};
 
 // ── STATE ──
 let step=0,category='',condition='like_new',listingType='sale',rentalPeriod='monthly',previews=[],files=[],mapInst=null,mapMark=null;
