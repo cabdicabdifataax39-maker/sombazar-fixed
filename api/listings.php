@@ -219,7 +219,7 @@ function handleCreate(): void {
         json_encode($data['images'] ?? []),
         json_encode($data['specs'] ?? []),
         isset($data['year']) && $data['year'] ? (int)$data['year'] : null,
-        'pending',  // Requires admin approval
+        'active',  // Auto-approved
     ]);
 
     handleGet((int) $db->lastInsertId());

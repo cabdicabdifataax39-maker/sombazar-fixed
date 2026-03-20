@@ -969,12 +969,12 @@ function renderMyListings(listings){
                <span style="font-size:12px;color:#94a3b8;margin-left:auto;">Permanent Removal</span>`;
     } else {
       actions=`
-        <a href="listing.html?id=${l.id}" class="act-btn" style="background:#f1f5f9;color:#374151;">
+        <a href="edit.html?id=${l.id}" class="act-btn" style="background:#f1f5f9;color:#374151;">
           <span class="material-symbols-outlined" style="font-size:14px;">edit</span> Edit
         </a>`;
       if(!isPending){
-        actions+=`<button onclick="toggleSoldListing(${l.id},'${l.status}')" class="act-btn" style="background:#f1f5f9;color:#374151;">
-          ${isSold?'Activate':'Deactivate'}
+        actions+=`<button onclick="toggleSoldListing(${l.id},'${l.status}')" class="act-btn" style="background:${isSold?'#f0fdf4':'#f1f5f9'};color:${isSold?'#16a34a':'#374151'};">
+          ${isSold?'✓ Activate':'Mark as Sold'}
         </button>`;
       }
       if(!isSold&&!isPending){
@@ -983,7 +983,7 @@ function renderMyListings(listings){
         </button>`;
       }
       if(isPending){
-        actions+=`<span style="font-size:12px;color:#94a3b8;font-weight:600;margin-left:auto;">Listing being reviewed for safety</span>`;
+        actions+=`<span style="font-size:12px;color:#f59e0b;font-weight:600;margin-left:auto;">⏳ Under review</span>`;
       }
       actions+=`<button onclick="deleteListing(${l.id})" class="act-btn" style="background:#fee2e2;color:#dc2626;margin-left:auto;">
         <span class="material-symbols-outlined" style="font-size:14px;">delete</span> Delete
