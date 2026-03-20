@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -25,7 +25,8 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-6H7F8Y980M',{'cookie_domain':'sombazar-fixed-production.up.railway.app','cookie_flags':'SameSite=None;Secure'});</script>
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
   <style>
-    body{font-family:"Public Sans",sans-serif;background:#f8fafc;}
+    body{font-family:"Public Sans",sans-serif;background:#f8fafc;min-height:100vh;display:flex;flex-direction:column;}
+    #mainWrap{flex:1;}
     .material-symbols-outlined{font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24;vertical-align:middle;}
     .toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;}
     .toast{background:#0f172a;color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);}
@@ -168,6 +169,7 @@
   </div>
 
   <!-- BODY GRID -->
+<div id="mainWrap">
   <div style="max-width:960px;margin:0 auto;padding:28px 24px;display:grid;grid-template-columns:240px 1fr;gap:28px;" id="bodyGrid">
 
     <!-- SIDEBAR -->
@@ -375,6 +377,7 @@
 
 <div class="toast-container" id="toastContainer"></div>
 
+</div><!-- /mainWrap -->
 <footer style="background:white;border-top:1px solid #e2e8f0;padding:20px;margin-top:40px;text-align:center;">
   <p style="font-size:12px;color:#94a3b8;">© 2026 SomBazar. All rights reserved. &nbsp;·&nbsp;<a href="privacy.html" style="color:#94a3b8;">Privacy Policy</a> &nbsp;·&nbsp;<a href="terms.html" style="color:#94a3b8;">Terms of Service</a> &nbsp;·&nbsp;<a href="contact.html" style="color:#94a3b8;">Help Center</a></p>
 </footer>
