@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -160,7 +160,7 @@
                     <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 transition-all" id="zaadDot"></div>
                   </div>
                 </div>
-                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">Secure payment through Somtel's Zaad service. You will receive a prompt on your phone.</p>
+                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">Send payment to our Zaad account. After payment, enter your transaction reference code below.</p>
               </div>
             </div>
           </div>
@@ -181,27 +181,20 @@
                     <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 transition-all" id="edahabDot"></div>
                   </div>
                 </div>
-                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">Fast and reliable payment using Telesom's eDahab service.</p>
+                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">Send payment to our eDahab account. After payment, enter your transaction reference code below.</p>
               </div>
             </div>
           </div>
 
-          <!-- Credit/Debit Card -->
-          <div class="method-option border-2 border-slate-200 rounded-xl p-4 cursor-pointer hover:border-primary/50 transition-all" id="cardCard" onclick="selectMethod('card')">
+          <!-- Coming soon: Card -->
+          <div class="border-2 border-dashed border-slate-200 rounded-xl p-4 opacity-50 cursor-not-allowed">
             <div class="flex items-start gap-3">
-              <div class="w-10 h-10 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span class="material-symbols-outlined text-primary" style="font-size:20px">credit_card</span>
+              <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-slate-400" style="font-size:20px">credit_card</span>
               </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <div class="font-bold text-slate-900 text-sm">Credit / Debit Card</div>
-                    <div class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Visa, Mastercard</div>
-                  </div>
-                  <div class="w-5 h-5 rounded-full border-2 border-slate-300 flex items-center justify-center flex-shrink-0 method-radio-ui" id="cardRadio">
-                    <div class="w-2.5 h-2.5 rounded-full bg-primary opacity-0 transition-all" id="cardDot"></div>
-                  </div>
-                </div>
+              <div>
+                <div class="font-bold text-slate-500 text-sm">Credit / Debit Card</div>
+                <div class="text-xs text-slate-400 mt-0.5">Coming soon</div>
               </div>
             </div>
           </div>
@@ -214,7 +207,8 @@
         <div class="space-y-4">
           <!-- Send To Number -->
           <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
-            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Send <span id="sendAmountLabel" class="text-primary">$—</span> to this number</div>
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">📱 Send <span id="sendAmountLabel" class="text-primary">$—</span> to this number</div>
+            <div class="text-xs text-amber-600 font-semibold mb-2 bg-amber-50 px-3 py-2 rounded-lg">⚠️ After sending, enter the reference code from your SMS confirmation below. Your plan will be activated within 2 hours after admin verification.</div>
             <div class="flex items-center gap-3">
               <div>
                 <div class="text-2xl font-black text-slate-900 tracking-widest" id="sendNumber">—</div>
@@ -250,7 +244,7 @@
 
           <!-- Screenshot Upload -->
           <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1.5">Payment Screenshot <span class="text-slate-400 font-normal">(optional)</span></label>
+            <label class="block text-sm font-bold text-slate-700 mb-1.5">Payment Screenshot <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-0.5 rounded-full ml-1">Speeds up verification</span></label>
             <div class="upload-drop rounded-xl p-5 text-center cursor-pointer" id="uploadArea" onclick="document.getElementById('screenshotInput').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
               <input type="file" id="screenshotInput" accept="image/*" onchange="handleScreenshot(this)">
               <div id="uploadPlaceholder">
@@ -566,7 +560,7 @@ const params     = new URLSearchParams(location.search);
 const plan       = params.get('plan')  || 'standard';
 const priceParam = parseFloat(params.get('price') || '8');
 
-const PLAN_LABELS = { free:'Free Plan', standard:'Premium Monthly', pro:'Pro Plan', agency:'Agency Plan' };
+const PLAN_LABELS = { free:'Free Plan', standard:'Standard Plan', pro:'Pro Plan', business:'Business Plan' };
 const PLAN_PERIODS = { free:'Free forever', standard:'Active until Dec 2026', pro:'Active until Dec 2026', agency:'Active until Dec 2026' };
 const FEE_RATE    = 0.06; // 6% platform fee
 

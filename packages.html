@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -403,72 +403,73 @@ const PLANS_STATIC = {
   free: {
     label: 'Free',
     monthlyPrice: 0,
-    desc: 'Perfect for exploring the platform and testing your store.',
+    desc: 'Start selling on SomBazar at no cost. Perfect for individuals.',
     color: '#64748b',
     features: [
-      { text: '3 Products', yes: true },
-      { text: 'Basic Analytics', yes: true },
-      { text: 'Community Support', yes: true },
-      { text: 'Priority Support', yes: false },
+      { text: '3 Active Listings', yes: true },
+      { text: '2 Photos per Listing', yes: true },
+      { text: 'Basic Profile Page', yes: true },
+      { text: 'Boost Listings', yes: false },
       { text: 'Featured Listings', yes: false },
+      { text: 'Priority Support', yes: false },
     ]
   },
   standard: {
     label: 'Standard',
     monthlyPrice: 8,
-    desc: 'For growing stores ready to scale operations professionally.',
+    desc: 'For active sellers who want more visibility and listings.',
     color: '#0f172a',
     features: [
-      { text: 'Unlimited Products', yes: true },
-      { text: 'Advanced Analytics', yes: true },
+      { text: '20 Active Listings', yes: true },
+      { text: '10 Photos per Listing', yes: true },
+      { text: '1 Boost Credit / month', yes: true },
+      { text: '1 Featured Listing / month', yes: true },
       { text: 'Email Support', yes: true },
-      { text: 'Custom Domain', yes: true },
-      { text: 'Boost Credits (1/mo)', yes: true },
+      { text: 'Priority Support', yes: false },
     ]
   },
   pro: {
     label: 'Pro',
     monthlyPrice: 20,
-    desc: 'Advanced features and automation for established businesses.',
+    desc: 'For serious sellers who want maximum reach and features.',
     color: '#ec5b13',
     popular: true,
     features: [
-      { text: 'Everything in Standard', yes: true },
+      { text: '60 Active Listings', yes: true },
+      { text: '20 Photos per Listing', yes: true },
+      { text: '5 Boost Credits / month', yes: true },
+      { text: '5 Featured Listings / month', yes: true },
       { text: 'Priority 24/7 Support', yes: true },
-      { text: 'Inventory Management', yes: true },
-      { text: 'API Access & Webhooks', yes: true },
-      { text: 'Marketing Automations', yes: true },
+      { text: 'Advanced Analytics', yes: true },
     ]
   },
-  agency: {
-    label: 'Agency',
+  business: {
+    label: 'Business',
     monthlyPrice: 50,
-    desc: 'Multi-store management and bespoke enterprise solutions.',
+    desc: 'For businesses and power sellers with unlimited needs.',
     color: '#0f172a',
     features: [
+      { text: 'Unlimited Active Listings', yes: true },
+      { text: '30 Photos per Listing', yes: true },
+      { text: 'Unlimited Boost Credits', yes: true },
+      { text: '15 Featured Listings / month', yes: true },
       { text: 'Dedicated Account Manager', yes: true },
-      { text: 'White-label Interface', yes: true },
-      { text: 'Custom ERP Integration', yes: true },
-      { text: 'Unlimited Staff Accounts', yes: true },
-      { text: 'SLA Support (99.9% uptime)', yes: true },
+      { text: 'Full Analytics & Reports', yes: true },
     ]
   }
 };
 
 const COMPARISON_ROWS = [
-  { feature: 'Monthly Transaction Limit', free: '$500',   standard: '$10k',       pro: 'Unlimited', agency: 'Unlimited' },
-  { feature: 'Transaction Fee',           free: '2.5%',   standard: '1.8%',       pro: '0.9%',      agency: 'Custom' },
-  { feature: 'Custom Themes',            free: false,     standard: true,         pro: true,        agency: true },
-  { feature: 'Advanced SEO Tools',       free: false,     standard: false,        pro: true,        agency: true },
-  { feature: 'Mobile App Access',        free: true,      standard: true,         pro: true,        agency: true },
-  { feature: 'Active Listings',          free: '3',       standard: '20',         pro: '60',        agency: 'Unlimited' },
-  { feature: 'Photos per Listing',       free: '2',       standard: '10',         pro: '20',        agency: '30' },
-  { feature: 'Boost Credits / mo',       free: '—',       standard: '1',          pro: '5',         agency: 'Unlimited' },
-  { feature: 'Featured Listings / mo',   free: '—',       standard: '1',          pro: '5',         agency: '15' },
-  { feature: 'Team Members',             free: '1',       standard: '1',          pro: '3',         agency: '10' },
-  { feature: 'Analytics',               free: 'Basic',   standard: 'Basic',      pro: 'Advanced',  agency: 'Full' },
-  { feature: 'Priority Support',        free: false,     standard: false,        pro: true,        agency: true },
-  { feature: 'API Access',              free: false,     standard: false,        pro: false,       agency: true },
+  { feature: 'Active Listings',          free: '3',       standard: '20',         pro: '60',        business: 'Unlimited' },
+  { feature: 'Photos per Listing',       free: '2',       standard: '10',         pro: '20',        business: '30' },
+  { feature: 'Boost Credits / mo',       free: '—',       standard: '1',          pro: '5',         business: 'Unlimited' },
+  { feature: 'Featured Listings / mo',   free: '—',       standard: '1',          pro: '5',         business: '15' },
+  { feature: 'Ad Duration',             free: '30 days', standard: '60 days',    pro: '90 days',   business: 'Unlimited' },
+  { feature: 'Priority in Search',      free: false,     standard: false,        pro: true,        business: true },
+  { feature: 'Analytics',               free: 'Basic',   standard: 'Basic',      pro: 'Advanced',  business: 'Full' },
+  { feature: 'Email Support',           free: false,     standard: true,         pro: true,        business: true },
+  { feature: 'Priority Support',        free: false,     standard: false,        pro: true,        business: true },
+  { feature: 'Account Manager',         free: false,     standard: false,        pro: false,       business: true },
 ];
 
 // ─────────────────────────── BILLING TOGGLE ───────────────────────────
@@ -502,7 +503,7 @@ function setBilling(mode) {
 // ─────────────────────────── RENDER PLANS ───────────────────────────
 function renderPlans(apiPlans) {
   const merged = {};
-  const keys = ['free','standard','pro','agency'];
+  const keys = ['free','standard','pro','business'];
   keys.forEach(k => {
     merged[k] = { ...PLANS_STATIC[k], ...(apiPlans?.[k] || {}) };
     if (apiPlans?.[k]?.price) merged[k].monthlyPrice = apiPlans[k].price;
