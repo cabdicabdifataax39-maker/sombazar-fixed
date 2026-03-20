@@ -36,7 +36,7 @@
     /* Cards */
     .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;}
     /* Stat card */
-    .stat-box{background:#fff;border-radius:12px;padding:16px;border:1px solid #e2e8f0;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+    .stat-box{background:#f8fafc;border-radius:12px;padding:16px;border:1px solid #e8ecf0;}
     /* Badge */
     .status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.3px;}
     .badge-active{background:#dcfce7;color:#16a34a;}
@@ -68,10 +68,10 @@
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     .skel{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;}
     /* Listing row */
-    .listing-row{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;display:flex;gap:0;transition:box-shadow .15s;}
-    .listing-row:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);}
-    .listing-row-img{width:130px;min-height:110px;flex-shrink:0;object-fit:cover;display:block;}
-    .listing-row-ph{width:130px;min-height:110px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#f1f5f9;font-size:32px;}
+    .listing-row{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s;}
+    .listing-row:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-2px);}
+    .listing-row-img{width:100%;height:180px;object-fit:cover;display:block;}
+    .listing-row-ph{width:100%;height:180px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;font-size:48px;}
     /* Action btn */
     .act-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;font-family:inherit;text-decoration:none;transition:filter .15s;}
     .act-btn:hover{filter:brightness(.92);}
@@ -89,7 +89,7 @@
     }
     @media(max-width:640px){
       .stat-grid-4{grid-template-columns:1fr 1fr!important;}
-      .listing-row-img,.listing-row-ph{width:90px;min-height:80px;}
+      .listing-row-img,.listing-row-ph{width:100%;height:140px;}
       .similar-4col{grid-template-columns:repeat(2,1fr)!important;}
     }
     /* Settings sidebar */
@@ -131,6 +131,7 @@
     [data-theme="dark"] .toggle-wrap { border-color:#334155!important; }
     [data-theme="dark"] .listing-row { background:#1e293b!important; border-color:#334155!important; }
     [data-theme="dark"] .listing-row-ph { background:#0f172a!important; }
+    [data-theme="dark"] .listing-row:hover { transform:translateY(-2px); }
     [data-theme="dark"] .rev-row { background:#1e293b!important; border-color:#334155!important; }
     [data-theme="dark"] .fav-card { background:#1e293b!important; border-color:#334155!important; }
     [data-theme="dark"] .pay-row { background:#1e293b!important; border-color:#334155!important; }
@@ -168,12 +169,12 @@
           <span class="material-symbols-outlined" style="font-size:22px;">notifications</span>
           <span id="notifBadge" style="display:none;position:absolute;top:7px;right:7px;width:8px;height:8px;background:#ec5b13;border-radius:50%;border:2px solid #fff;"></span>
         </button>
-        <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:400px;overflow-y:auto;">
+        <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100%+8px);width:300px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:400px;overflow-y:auto;">
           <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9;font-weight:800;font-size:14px;">Notifications</div>
           <div id="notifList" style="padding:12px 16px;font-size:13px;color:#94a3b8;">No new notifications</div>
         </div>
       </div>
-      <button onclick="switchTab('settings')" style="background:none;border:none;cursor:pointer;padding:8px;color:#64748b;border-radius:8px;transition:background .15s;" title="Settings" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background=''">
+      <button onclick="window.location='settings.html'" style="background:none;border:none;cursor:pointer;padding:8px;color:#64748b;" title="Settings">
         <span class="material-symbols-outlined" style="font-size:22px;">settings</span>
       </button>
       <div id="header-user" style="display:none;">
@@ -372,7 +373,7 @@
       </div>
 
       <!-- Listings list -->
-      <div id="myListingsList" style="display:flex;flex-direction:column;gap:12px;">
+      <div id="myListingsList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">
         <div class="skel" style="height:110px;border-radius:14px;"></div>
         <div class="skel" style="height:110px;border-radius:14px;"></div>
         <div class="skel" style="height:110px;border-radius:14px;"></div>
@@ -386,7 +387,7 @@
       <div id="listingsCount" style="font-size:12px;color:#94a3b8;text-align:center;margin-top:12px;"></div>
 
       <!-- Post New Ad placeholder -->
-      <a href="post.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:#fff;border-radius:16px;border:2px dashed #cbd5e1;text-decoration:none;margin-top:16px;transition:all .2s;" onmouseover="this.style.borderColor='#ec5b13'" onmouseout="this.style.borderColor='#cbd5e1'">
+      <a href="post.html" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;background:#f8fafc;border-radius:16px;border:2px dashed #cbd5e1;text-decoration:none;margin-top:16px;transition:all .2s;" onmouseover="this.style.borderColor='#ec5b13'" onmouseout="this.style.borderColor='#cbd5e1'">
         <div style="width:48px;height:48px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:10px;">
           <span class="material-symbols-outlined" style="color:#ec5b13;font-size:26px;">add</span>
         </div>
@@ -989,24 +990,20 @@ function renderMyListings(listings){
       </button>`;
     }
     return`<div class="listing-row">
-      ${img}
-      <div style="flex:1;padding:14px 16px;min-width:0;">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-          <div style="min-width:0;">
-            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-              ${statusBadge}${featuredBadge}
-            </div>
-            <h3 style="font-size:15px;font-weight:800;color:#0f172a;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;">${l.title}</h3>
-            <div style="font-size:12px;color:#94a3b8;margin-top:2px;">${l.category} · Posted ${timeAgo}</div>
-          </div>
-          <div style="font-size:17px;font-weight:900;color:#ec5b13;white-space:nowrap;">${l.currency||'USD'} ${Number(l.price).toLocaleString()}</div>
+      <div style="position:relative;">
+        ${img}
+        <div style="position:absolute;top:10px;left:10px;display:flex;gap:5px;flex-wrap:wrap;">${statusBadge}${featuredBadge}</div>
+        <div style="position:absolute;top:10px;right:10px;font-size:14px;font-weight:900;color:#fff;background:rgba(0,0,0,.55);padding:3px 10px;border-radius:20px;">${l.currency||'USD'} ${Number(l.price).toLocaleString()}</div>
+      </div>
+      <div style="padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:6px;">
+        <h3 style="font-size:14px;font-weight:800;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.title}</h3>
+        <div style="font-size:11px;color:#94a3b8;">${l.category} · Posted ${timeAgo}</div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">visibility</span>${l.views||0}</span>
+          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">favorite</span>${l.likes||0}</span>
+          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">chat_bubble</span>${l.inquiries||0}</span>
         </div>
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap;">
-          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">visibility</span>${l.views||0} Views</span>
-          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">favorite</span>${l.likes||0} Likes</span>
-          <span style="font-size:11px;color:#64748b;display:flex;align-items:center;gap:3px;"><span class="material-symbols-outlined" style="font-size:13px;">chat_bubble</span>${l.inquiries||0} Inquiries</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">${actions}</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;">${actions}</div>
       </div>
     </div>`;
   }).join('');
