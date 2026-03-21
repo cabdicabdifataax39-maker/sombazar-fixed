@@ -565,6 +565,9 @@ function _initMessages() {
     initHeader();
     loadConversations();
     setInterval(loadConversations, 5000);
+    // Update our own last_seen every 30 seconds while on page
+    setInterval(_updateMyLastSeen, 30000);
+    _updateMyLastSeen(); // immediate
     // startSSE defined in later script block — defer
     setTimeout(function() {
       if (typeof startSSE === 'function') startSSE();
@@ -664,6 +667,17 @@ function filterAndRender() {
 function filterContacts(q) { filterAndRender(); }
 
 // ── Load conversations ────────────────────────
+async function _updateMyLastSeen() {
+  // Ping server to update our own last_seen
+  try {
+    await fetch('api/messages.php?action=mark_read', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ conversation_id: activeConvId || 0 })
+    });
+  } catch(e) {}
+}
+
 async function loadConversations() {
   if (!user) return;
   try {
@@ -765,9 +779,23 @@ function openChat(convId, conv) {
          <div style="position:absolute;bottom:1px;right:1px;width:10px;height:10px;background:${conv.isOnline?'#22c55e':'#94a3b8'};border-radius:50%;border:2px solid #fff;"></div>`
       : (conv.otherUserName||'?')[0].toUpperCase();
     document.getElementById('chatUserName').textContent = conv.otherUserName || 'User';
-    document.getElementById('chatStatus').innerHTML = conv.isOnline
-      ? '<span style="color:#22c55e;">● Online</span> · <span style="color:#64748b;">Responds in 5 mins</span>'
-      : '<span style="color:#94a3b8;">● Offline</span>';
+    let statusHtml;
+    if (conv.isOnline) {
+      statusHtml = '<span style="color:#22c55e;font-weight:700;">● Online</span>';
+    } else if (conv.lastSeen) {
+      const ls = new Date(conv.lastSeen);
+      const now = new Date();
+      const diff = Math.floor((now - ls) / 60000); // minutes
+      let timeAgo;
+      if (diff < 1) timeAgo = 'just now';
+      else if (diff < 60) timeAgo = diff + 'm ago';
+      else if (diff < 1440) timeAgo = Math.floor(diff/60) + 'h ago';
+      else timeAgo = Math.floor(diff/1440) + 'd ago';
+      statusHtml = '<span style="color:#94a3b8;">● Last seen ' + timeAgo + '</span>';
+    } else {
+      statusHtml = '<span style="color:#94a3b8;">● Offline</span>';
+    }
+    document.getElementById('chatStatus').innerHTML = statusHtml;
 
     // Listing pill
     if (conv.listing) {

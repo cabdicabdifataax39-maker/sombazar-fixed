@@ -75,8 +75,12 @@ function handleConversations(): void {
 
     $st = $db->prepare(
         'SELECT c.*,
-                u1.display_name AS user1_name, u1.photo_url AS user1_photo,
-                u2.display_name AS user2_name, u2.photo_url AS user2_photo,
+                u1.display_name AS user1_name,
+                COALESCE(u1.avatar_url, u1.photo_url) AS user1_photo,
+                u1.last_seen AS user1_last_seen,
+                u2.display_name AS user2_name,
+                COALESCE(u2.avatar_url, u2.photo_url) AS user2_photo,
+                u2.last_seen AS user2_last_seen,
                 l.title AS listing_title, l.price AS listing_price, l.currency AS listing_currency
          FROM conversations c
          JOIN users u1 ON c.user1_id = u1.id
@@ -97,11 +101,22 @@ function handleConversations(): void {
         $otherTypingAt = $isUser1 ? $r['user2_typing_at'] : $r['user1_typing_at'];
         $isTyping  = $otherTypingAt && (strtotime($otherTypingAt) > time() - 5);
 
+        $otherLastSeen = $isUser1 ? $r['user2_last_seen'] : $r['user1_last_seen'];
+        $isOnline = $otherLastSeen && (strtotime($otherLastSeen) > time() - 300); // 5 min
+
+        // Build photo URL - handle both Cloudinary URLs and local paths
+        $photoUrl = null;
+        if ($otherPhoto) {
+            $photoUrl = str_starts_with($otherPhoto, 'http') ? $otherPhoto : UPLOAD_URL . $otherPhoto;
+        }
+
         return [
             'id'             => $r['id'],
             'otherUserId'    => $otherId,
             'otherUserName'  => $otherName,
-            'otherUserPhoto' => $otherPhoto ? UPLOAD_URL . $otherPhoto : null,
+            'otherUserPhoto' => $photoUrl,
+            'isOnline'       => $isOnline,
+            'lastSeen'       => $otherLastSeen,
             'lastMessage'    => $r['last_message'],
             'lastMessageAt'  => $r['last_message_at'],
             'unreadCount'    => (int) $unread,
