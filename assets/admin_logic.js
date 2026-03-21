@@ -667,9 +667,7 @@ function toggleCouponForm() { openCouponModal(); }
 
 function openCouponModal() {
   document.getElementById('couponModal').classList.add('open');
-  ['newCouponCode','newCouponValue','newCouponExpiry'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  document.getElementById('newCouponType').value = 'percent';
-  document.getElementById('newCouponUses').value = '0';
+  ['couponCode','couponDiscount','couponMax','couponExpiry'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 }
 
 function closeCouponModal() {
@@ -705,12 +703,12 @@ async function loadCoupons() {
 }
 
 async function createCoupon() {
-  const code  = document.getElementById('newCouponCode').value.trim().toUpperCase();
-  const type  = document.getElementById('newCouponType').value;
-  const value = parseFloat(document.getElementById('newCouponValue').value);
-  const uses  = parseInt(document.getElementById('newCouponUses').value) || 0;
-  const exp   = document.getElementById('newCouponExpiry').value;
-  if (!code || !value) return showAdminToast('Code and value required', 'error');
+  const code  = (document.getElementById('couponCode')?.value || '').trim().toUpperCase();
+  const value = parseFloat(document.getElementById('couponDiscount')?.value || 0);
+  const uses  = parseInt(document.getElementById('couponMax')?.value || 0) || 0;
+  const exp   = document.getElementById('couponExpiry')?.value || '';
+  const type  = 'percent';
+  if (!code || !value) return showAdminToast('Code and discount % required', 'error');
   try {
     const r = await fetch('api/admin.php?action=create_coupon', {
       method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
