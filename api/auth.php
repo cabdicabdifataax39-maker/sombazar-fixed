@@ -64,6 +64,10 @@ switch ($action) {
     case 'check_deletion':
         handleCheckDeletion();
         break;
+    case 'block_user':
+        if ($method !== 'POST') jsonError('Method not allowed', 405);
+        handleBlockUser();
+        break;
     case 'my_affiliate':
         handleMyAffiliate();
         break;
@@ -73,6 +77,34 @@ switch ($action) {
         break;
     default:
         jsonError('Unknown action', 404);
+}
+
+// ── Block User ──────────────────────────────────────────────
+function handleBlockUser(): void {
+    $uid  = requireAuth();
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $blockedId = (int)($data['blocked_user_id'] ?? 0);
+    if (!$blockedId || $blockedId === $uid) jsonError('Invalid user');
+
+    $db = getDB();
+    // Create blocked_users table if not exists
+    try {
+        $db->exec("CREATE TABLE IF NOT EXISTS blocked_users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            blocked_user_id INT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_block (user_id, blocked_user_id)
+        ) ENGINE=InnoDB");
+    } catch(\Throwable $e) {}
+
+    try {
+        $db->prepare("INSERT IGNORE INTO blocked_users (user_id, blocked_user_id) VALUES (?,?)")
+           ->execute([$uid, $blockedId]);
+        jsonSuccess(['message' => 'User blocked successfully']);
+    } catch(\Throwable $e) {
+        jsonError('Could not block user');
+    }
 }
 
 // ── Affiliate: get my affiliate status ────────────────────────

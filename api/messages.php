@@ -67,6 +67,12 @@ function handleConversations(): void {
     $uid = requireAuth();
     $db  = getDB();
 
+    $showArchived = ($_GET['archived'] ?? '0') === '1';
+
+    // Auto-add archived columns if missing
+    try { $db->exec("ALTER TABLE conversations ADD COLUMN archived_by_user1 TINYINT(1) DEFAULT 0"); } catch(\Throwable $e) {}
+    try { $db->exec("ALTER TABLE conversations ADD COLUMN archived_by_user2 TINYINT(1) DEFAULT 0"); } catch(\Throwable $e) {}
+
     $st = $db->prepare(
         'SELECT c.*,
                 u1.display_name AS user1_name, u1.photo_url AS user1_photo,
@@ -76,7 +82,7 @@ function handleConversations(): void {
          JOIN users u1 ON c.user1_id = u1.id
          JOIN users u2 ON c.user2_id = u2.id
          LEFT JOIN listings l ON c.listing_id = l.id
-         WHERE c.user1_id = ? OR c.user2_id = ?
+         WHERE (c.user1_id = ? OR c.user2_id = ?)
          ORDER BY c.last_message_at DESC'
     );
     $st->execute([$uid, $uid]);
@@ -106,8 +112,14 @@ function handleConversations(): void {
                 'price'    => $r['listing_price'],
                 'currency' => $r['listing_currency'],
             ] : null,
+            'isSeller'       => $r['listing_id'] ? ($r['user1_id'] == $uid ? false : true) : false,
+            'isArchived'     => $isUser1 ? (bool)($r['archived_by_user1'] ?? 0) : (bool)($r['archived_by_user2'] ?? 0),
         ];
-    }, $st->fetchAll()));
+    }, array_filter($st->fetchAll(), function($r) use ($uid, $showArchived) {
+        $isUser1 = $r['user1_id'] == $uid;
+        $archived = $isUser1 ? ($r['archived_by_user1'] ?? 0) : ($r['archived_by_user2'] ?? 0);
+        return $showArchived ? (bool)$archived : !(bool)$archived;
+    })));
 }
 
 function handleMessages(): void {
