@@ -66,14 +66,14 @@
     .tab-btn:not(.active):hover{background:#f1f5f9;}
     /* Search */
     .sidebar-search{padding:10px 12px;border-bottom:1px solid #f1f5f9;}
-    .sidebar-search input{width:100%;padding:8px 12px 8px 32px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;outline:none;font-family:inherit;}
+    .sidebar-search input{width:100%;padding:8px 12px 8px 32px;background:#fef6ee;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;outline:none;font-family:inherit;}
     .sidebar-search input:focus{border-color:#ec5b13;background:#fff;}
     .sidebar-search{position:relative;}
     .sidebar-search .s-icon{position:absolute;left:22px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:15px;pointer-events:none;}
     /* Conversation list */
     .conv-list{flex:1;overflow-y:auto;scrollbar-width:thin;}
-    .conv-item{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:1px solid #f8fafc;transition:background .1s;position:relative;}
-    .conv-item:hover{background:#f8fafc;}
+    .conv-item{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;border-bottom:1px solid #fef6ee;transition:background .1s;position:relative;}
+    .conv-item:hover{background:#fef6ee;}
     .conv-item.active{background:#fff7f2;border-left:3px solid #ec5b13;}
     .conv-item.active .conv-name{color:#ec5b13;}
     .conv-item.unread .conv-name{font-weight:800;}
@@ -93,7 +93,7 @@
     .archive-link:hover{color:#ec5b13;}
 
     /* ── CHAT PANEL ── */
-    .chat-panel{flex:1;display:flex;flex-direction:column;background:#f8fafc;overflow:hidden;}
+    .chat-panel{flex:1;display:flex;flex-direction:column;background:#fef6ee;overflow:hidden;}
 
     /* Empty state */
     .chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;}
@@ -116,7 +116,7 @@
     .chat-header-info{flex:1;min-width:0;}
     .chat-header-name{font-size:14px;font-weight:800;color:#0f172a;}
     .chat-header-status{font-size:12px;color:#22c55e;font-weight:600;}
-    .listing-pill{display:flex;align-items:center;gap:8px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:6px 12px;text-decoration:none;cursor:pointer;}
+    .listing-pill{display:flex;align-items:center;gap:8px;background:#fef6ee;border:1px solid #e2e8f0;border-radius:12px;padding:6px 12px;text-decoration:none;cursor:pointer;}
     .listing-pill-icon{width:28px;height:28px;background:#e2e8f0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;flex-shrink:0;}
     .listing-pill-title{font-size:11px;font-weight:700;color:#0f172a;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .listing-pill-price{font-size:12px;font-weight:900;color:#ec5b13;}
@@ -159,7 +159,7 @@
     .input-bar{background:#fff;border-top:1px solid #e2e8f0;padding:12px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
     .input-attach-btn{background:none;border:none;cursor:pointer;color:#94a3b8;padding:6px;border-radius:8px;display:flex;transition:color .15s;}
     .input-attach-btn:hover{color:#ec5b13;}
-    .input-wrap{flex:1;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:24px;display:flex;align-items:center;padding:0 16px;transition:border-color .15s;}
+    .input-wrap{flex:1;background:#fef6ee;border:1.5px solid #e2e8f0;border-radius:24px;display:flex;align-items:center;padding:0 16px;transition:border-color .15s;}
     .input-wrap:focus-within{border-color:#ec5b13;background:#fff;}
     .msg-input{flex:1;border:none;background:none;padding:10px 0;font-size:14px;font-family:inherit;outline:none;color:#0f172a;}
     .msg-input::placeholder{color:#94a3b8;}
@@ -174,7 +174,7 @@
     /* Context menu */
     .ctx-menu{position:fixed;background:#fff;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:4px;z-index:200;min-width:140px;display:none;}
     .ctx-item{display:flex;align-items:center;gap:8px;padding:8px 12px;font-size:13px;font-weight:600;cursor:pointer;border-radius:8px;color:#374151;}
-    .ctx-item:hover{background:#f8fafc;}
+    .ctx-item:hover{background:#fef6ee;}
     .ctx-item.danger{color:#ef4444;}
     .ctx-item.danger:hover{background:#fee2e2;}
 
@@ -283,7 +283,7 @@
     <!-- User chip -->
     <a href="auth.html" id="header-signin" style="font-size:13px;font-weight:700;color:#374151;text-decoration:none;padding:7px 14px;border:1.5px solid #e2e8f0;border-radius:10px;">Sign In</a>
     <div id="header-user" style="display:none;position:relative;" id="avatarMenuWrap">
-      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px 4px 6px;border-radius:10px;transition:background .15s;" onclick="toggleAvatarMenu()" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px 4px 6px;border-radius:10px;transition:background .15s;" onclick="toggleAvatarMenu()" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
         <div class="user-avatar" id="headerUserAvatar"></div>
         <div style="text-align:right;">
           <div class="user-chip-name" id="headerUserName">User</div>
@@ -292,10 +292,10 @@
         <span class="material-symbols-outlined" style="font-size:16px;color:#94a3b8">expand_more</span>
       </div>
       <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 6px);width:180px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid #e2e8f0;z-index:1001;overflow:hidden;">
-        <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+        <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
           <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">person</span> My Profile
         </a>
-        <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+        <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
           <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">list_alt</span> My Listings
         </a>
         <div style="border-top:1px solid #f1f5f9;margin:2px 0"></div>
@@ -443,7 +443,7 @@
       <div class="messages-area" id="messagesList"></div>
 
       <!-- Typing indicator -->
-      <div id="typingIndicator" style="display:none;padding:4px 16px 8px;background:#f8fafc;">
+      <div id="typingIndicator" style="display:none;padding:4px 16px 8px;background:#fef6ee;">
         <div class="typing-row">
           <div class="msg-avatar-wrap" id="typingAvatar" style="width:28px;height:28px;font-size:11px;"></div>
           <div style="margin-left:8px;">

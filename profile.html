@@ -46,7 +46,7 @@
     /* Form input */
     .form-inp{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 14px;font-size:13px;outline:none;font-family:inherit;transition:border-color .15s;background:#fff;}
     .form-inp:focus{border-color:#ec5b13;}
-    .form-inp:read-only{background:#f8fafc;color:#64748b;}
+    .form-inp:read-only{background:#fef6ee;color:#64748b;}
     .form-label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px;}
     /* Toggle switch */
     .toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #f1f5f9;}
@@ -603,7 +603,7 @@
               <p style="font-size:13px;color:#64748b;margin-bottom:20px;">Update your personal details and manage your account security.</p>
 
               <!-- Avatar row -->
-              <div style="display:flex;align-items:center;gap:16px;padding:16px;background:#f8fafc;border-radius:12px;margin-bottom:20px;">
+              <div style="display:flex;align-items:center;gap:16px;padding:16px;background:#fef6ee;border-radius:12px;margin-bottom:20px;">
                 <div id="settingsAvatarWrap" style="width:56px;height:56px;border-radius:50%;background:#ec5b13;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                   <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">person</span>
                 </div>
@@ -1135,7 +1135,7 @@ async function loadAffiliateSection() {
     if (status === 'none') {
       // Not applied yet
       el.innerHTML = `
-        <div style="background:#f8fafc;border-radius:14px;padding:28px;text-align:center;border:2px dashed #e2e8f0;">
+        <div style="background:#fef6ee;border-radius:14px;padding:28px;text-align:center;border:2px dashed #e2e8f0;">
           <span class="material-symbols-outlined" style="font-size:40px;color:#ec5b13;display:block;margin-bottom:12px;">share</span>
           <div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:8px;">Join the Affiliate Program</div>
           <div style="font-size:13px;color:#64748b;margin-bottom:20px;max-width:340px;margin-left:auto;margin-right:auto;">
@@ -1177,7 +1177,7 @@ async function loadAffiliateSection() {
             <div style="font-size:22px;font-weight:900;color:#16a34a;">$${pending}</div>
             <div style="font-size:11px;color:#166534;font-weight:600;margin-top:2px;">Pending Payout</div>
           </div>
-          <div style="background:#f8fafc;border-radius:12px;padding:16px;text-align:center;">
+          <div style="background:#fef6ee;border-radius:12px;padding:16px;text-align:center;">
             <div style="font-size:22px;font-weight:900;color:#0f172a;">${refs}</div>
             <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:2px;">Referrals</div>
           </div>
@@ -1187,7 +1187,7 @@ async function loadAffiliateSection() {
           </div>
         </div>
 
-        <div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:16px;">
+        <div style="background:#fef6ee;border-radius:12px;padding:16px;margin-bottom:16px;">
           <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">YOUR REFERRAL LINK</div>
           <div style="display:flex;gap:8px;align-items:center;">
             <input id="affiliateRefLink" readonly value="${refLink}"
@@ -1352,7 +1352,7 @@ async function loadPaymentHistory(){
           </div>`:'';
       return`<div class="pay-row">
         <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-          <div style="width:40px;height:40px;background:#f8fafc;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:40px;height:40px;background:#fef6ee;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
             <span class="material-symbols-outlined" style="color:#ec5b13;font-size:20px;">receipt_long</span>
           </div>
           <div>
@@ -1599,7 +1599,7 @@ async function loadMyReviews(){
           </div>
         </div>
         ${rv.comment?`<p style="font-size:13px;color:#475569;line-height:1.6;font-style:italic;">"${rv.comment}"</p>`:''}
-        ${rv.listingTitle?`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:#f8fafc;border-radius:9px;">
+        ${rv.listingTitle?`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:#fef6ee;border-radius:9px;">
           ${rv.listingImage?`<img src="${rv.listingImage}" style="width:32px;height:32px;object-fit:cover;border-radius:6px;" loading="lazy">`:''}
           <div>
             <div style="font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;">PURCHASED ITEM</div>

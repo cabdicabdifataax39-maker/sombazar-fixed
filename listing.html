@@ -57,7 +57,7 @@
   </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: "Public Sans", sans-serif; background: #f8fafc; color: #0f172a; overflow-x: hidden; }
+    body { font-family: "Public Sans", sans-serif; background: #fef6ee; color: #0f172a; overflow-x: hidden; }
     .material-symbols-outlined { font-variation-settings: "FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24; vertical-align: middle; line-height: 1; }
 
     /* ── Layout ── */
@@ -91,7 +91,7 @@
     .badge-sold { background: #f1f5f9; color: #64748b; }
 
     /* ── Spec pills ── */
-    .spec-pill { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #e8ecf0; text-align: center; min-width: 0; }
+    .spec-pill { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 10px; background: #fef6ee; border-radius: 12px; border: 1px solid #e8ecf0; text-align: center; min-width: 0; }
     .spec-icon { color: #ec5b13; font-size: 20px; display: block; }
     .spec-label { font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; white-space: nowrap; }
     .spec-value { font-size: 13px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px; }
@@ -104,7 +104,7 @@
     .btn-dark   { background: #0f172a; color: #fff; }
     .btn-green  { background: #25d366; color: #fff; }
     .btn-outline { background: #eff6ff; color: #2563eb; border: 2px solid #bfdbfe !important; }
-    .btn-ghost  { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 10px; background: #f8fafc; border: 1.5px solid #e8ecf0; font-size: 13px; font-weight: 700; color: #374151; cursor: pointer; font-family: inherit; transition: background .15s; }
+    .btn-ghost  { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 10px; background: #fef6ee; border: 1.5px solid #e8ecf0; font-size: 13px; font-weight: 700; color: #374151; cursor: pointer; font-family: inherit; transition: background .15s; }
     .btn-ghost:hover { background: #f1f5f9; }
 
     /* ── Seller avatar ── */
@@ -231,10 +231,10 @@
         <div style="position:relative" id="avatarMenuWrap">
           <button onclick="toggleAvatarMenu()" class="header-avatar" data-visual-avatar="1" style="width:34px;height:34px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px;border:none;cursor:pointer;overflow:hidden;" aria-label="Account menu"></button>
           <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:180px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid #e2e8f0;z-index:1001;overflow:hidden;">
-            <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+            <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
               <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">person</span> My Profile
             </a>
-            <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+            <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
               <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">list_alt</span> My Listings
             </a>
             <div style="border-top:1px solid #f1f5f9;margin:2px 0"></div>
@@ -433,13 +433,13 @@
         </button>
       </div>
       <!-- Share panel -->
-      <div id="sharePanel" style="display:none;background:#f8fafc;border-radius:12px;padding:10px;margin-bottom:12px;gap:8px;flex-wrap:wrap;">
+      <div id="sharePanel" style="display:none;background:#fef6ee;border-radius:12px;padding:10px;margin-bottom:12px;gap:8px;flex-wrap:wrap;">
         <button onclick="shareWhatsApp()" style="flex:1;background:#25d366;color:#fff;border:none;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">WhatsApp</button>
         <button onclick="copyLink()" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Copy Link</button>
       </div>
 
       <!-- Safety Tips -->
-      <div style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:12px;">
+      <div style="background:#fef6ee;border-radius:12px;padding:14px;margin-bottom:12px;">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;">
           <span class="material-symbols-outlined" style="color:#ec5b13;font-size:17px;">security</span>
           <span style="font-size:13px;font-weight:800;color:#0f172a;">Safety Tips</span>
@@ -453,7 +453,7 @@
       </div>
 
       <!-- Need Help -->
-      <div style="background:#f8fafc;border-radius:12px;padding:12px;">
+      <div style="background:#fef6ee;border-radius:12px;padding:12px;">
         <p style="font-size:12px;font-weight:800;color:#0f172a;margin-bottom:4px;">Need Help?</p>
         <p style="font-size:11px;color:#64748b;line-height:1.5;margin-bottom:8px;">Contact our support team for any issues regarding this listing.</p>
         <button onclick="showReportModal()" style="background:none;border:none;color:#ec5b13;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;font-family:inherit;">
@@ -492,7 +492,7 @@
       <h3 style="font-size:17px;font-weight:900;color:#0f172a;">Make an Offer</h3>
       <button onclick="closeOfferModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1;">✕</button>
     </div>
-    <div id="offerHistory" style="display:none;background:#f8fafc;border-radius:12px;padding:12px;margin-bottom:12px;font-size:13px;"></div>
+    <div id="offerHistory" style="display:none;background:#fef6ee;border-radius:12px;padding:12px;margin-bottom:12px;font-size:13px;"></div>
     <div id="offerRoundInfo" style="display:none;margin-bottom:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
         <span id="offerRoundText" style="font-size:12px;font-weight:700;color:#64748b;"></span>
@@ -521,7 +521,7 @@
       <h3 style="font-size:17px;font-weight:900;color:#0f172a;">Respond to Offer</h3>
       <button onclick="document.getElementById('offerRespondModal').style.display='none'" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1;">✕</button>
     </div>
-    <div id="respondOfferDetails" style="background:#f8fafc;border-radius:12px;padding:14px;margin-bottom:14px;font-size:13px;"></div>
+    <div id="respondOfferDetails" style="background:#fef6ee;border-radius:12px;padding:14px;margin-bottom:14px;font-size:13px;"></div>
     <div id="respondCounterFields" style="display:none;margin-bottom:10px;">
       <input id="counterAmount" type="number" placeholder="Counter amount" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;margin-bottom:8px;">
       <input id="counterNote" placeholder="Counter note (optional)" style="width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;font-family:inherit;">
