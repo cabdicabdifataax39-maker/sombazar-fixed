@@ -810,6 +810,8 @@ async function markAffiliatePaid(id, amount) {
 
 // ── Settings ──────────────────────────────────────────────
 async function loadSettings() {
+  load2FAStatus();
+  loadLastBackupTime();
   try {
     const d = await adminFetch('stats');
     const s = d.stats || d || {};
@@ -1143,4 +1145,130 @@ function showAnnouncementModal() {
   const el = document.getElementById('announcementModal');
   if (el) el.classList.add('open');
   ['annTitle','annBody'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+}
+
+// ════════════════════════════════════════════════════
+// 2FA FUNCTIONS
+// ════════════════════════════════════════════════════
+
+async function load2FAStatus() {
+  try {
+    const r = await fetch('api/admin.php?action=get_2fa_status', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    }).then(r => r.json());
+    const enabled = r.data?.totp_enabled;
+    const txt = document.getElementById('twoFAStatusText');
+    if (txt) {
+      txt.textContent = enabled ? '✅ Enabled' : 'Not Enabled';
+      txt.style.color = enabled ? '#22c55e' : '#94a3b8';
+    }
+    const setupArea = document.getElementById('twoFASetupArea');
+    const disablePanel = document.getElementById('twoFADisablePanel');
+    if (enabled) {
+      if (setupArea) setupArea.style.display = 'none';
+      if (disablePanel) disablePanel.style.display = 'block';
+    } else {
+      if (setupArea) setupArea.style.display = 'block';
+      if (disablePanel) disablePanel.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+async function setup2FA() {
+  const btn = document.getElementById('btn2FASetup');
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+  try {
+    const r = await fetch('api/auth.php?action=2fa_setup', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    }).then(r => r.json());
+    if (!r.success) { showToast(r.error || 'Error', 'error'); return; }
+    const panel = document.getElementById('twoFAQRPanel');
+    const qr    = document.getElementById('twoFAQR');
+    const secret = document.getElementById('twoFASecret');
+    if (panel) panel.style.display = 'block';
+    if (qr) qr.src = r.data.qr_url;
+    if (secret) secret.textContent = r.data.secret;
+    if (btn) btn.style.display = 'none';
+  } catch(e) {
+    showToast('Error setting up 2FA', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Enable 2FA'; }
+  }
+}
+
+async function verify2FA() {
+  const code = document.getElementById('twoFACode')?.value.trim();
+  const msg  = document.getElementById('twoFAMsg');
+  if (!code || code.length !== 6) { if (msg) { msg.textContent = 'Enter 6-digit code'; msg.style.color = '#ef4444'; } return; }
+  try {
+    const r = await fetch('api/auth.php?action=2fa_verify', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + Auth.getToken(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    }).then(r => r.json());
+    if (r.success) {
+      if (msg) { msg.textContent = '✅ 2FA enabled!'; msg.style.color = '#22c55e'; }
+      showToast('2FA enabled successfully!', 'success');
+      setTimeout(load2FAStatus, 1000);
+    } else {
+      if (msg) { msg.textContent = r.error || 'Invalid code'; msg.style.color = '#ef4444'; }
+    }
+  } catch(e) { if (msg) { msg.textContent = 'Error'; msg.style.color = '#ef4444'; } }
+}
+
+async function disable2FA() {
+  const pass = document.getElementById('twoFADisablePass')?.value;
+  const code = document.getElementById('twoFADisableCode')?.value.trim();
+  const msg  = document.getElementById('twoFADisableMsg');
+  if (!pass || !code) { if (msg) { msg.textContent = 'Password and code required'; msg.style.color = '#ef4444'; } return; }
+  try {
+    const r = await fetch('api/auth.php?action=2fa_disable', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + Auth.getToken(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, password: pass })
+    }).then(r => r.json());
+    if (r.success) {
+      showToast('2FA disabled', 'success');
+      load2FAStatus();
+    } else {
+      if (msg) { msg.textContent = r.error || 'Invalid credentials'; msg.style.color = '#ef4444'; }
+    }
+  } catch(e) {}
+}
+
+// ════════════════════════════════════════════════════
+// BACKUP FUNCTIONS
+// ════════════════════════════════════════════════════
+
+async function downloadBackup(type) {
+  const btn = document.getElementById('btnBackupFull');
+  showToast('Preparing backup...', '');
+  try {
+    const r = await fetch(`api/admin.php?action=backup&type=${type}`, {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    if (!r.ok) throw new Error('Backup failed');
+    const blob = await r.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const now  = new Date().toISOString().slice(0,19).replace(/:/g,'-');
+    a.href     = url;
+    a.download = `sombazar-backup-${type}-${now}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    // Update last backup time
+    const el = document.getElementById('lastBackupTime');
+    if (el) el.textContent = new Date().toLocaleString();
+    localStorage.setItem('sb_last_backup', new Date().toISOString());
+    showToast('Backup downloaded!', 'success');
+  } catch(e) {
+    showToast('Backup failed: ' + e.message, 'error');
+  }
+}
+
+function loadLastBackupTime() {
+  const el = document.getElementById('lastBackupTime');
+  const last = localStorage.getItem('sb_last_backup');
+  if (el && last) el.textContent = new Date(last).toLocaleString();
 }

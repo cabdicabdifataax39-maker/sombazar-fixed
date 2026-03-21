@@ -96,6 +96,8 @@ switch ($action) {
     case 'list_conversations':handleListConversations();break;
     case 'analytics':         handleAnalytics();        break;
     case 'revenue':           handleRevenue();          break;
+    case 'backup':             handleBackup();                break;
+    case 'get_2fa_status':     handleGet2FAStatus();          break;
     case 'list_announcements':handleListAnnouncements();break;
     case 'create_announcement':handleCreateAnnouncement();break;
     case 'update_announcement':handleUpdateAnnouncement();break;
@@ -950,7 +952,7 @@ function handleAffiliateApprove(): void {
         $db->prepare("UPDATE users SET ref_code = ? WHERE id = ?")
            ->execute([$refCode, $userId]);
         jsonSuccess(['ref_code' => $refCode, 'message' => "Affiliate approved with code {$refCode}"]);
-    } catch(\Throwable $e) { jsonError('Database error: ' . $e->getMessage()); }
+    } catch(\Throwable $e) { error_log('admin.php error: ' . $e->getMessage()); jsonError('Database error. Please try again.'); }
 }
 
 function handleAffiliatePayout(): void {
@@ -1027,7 +1029,7 @@ function handleAffiliateApply(): void {
         $db->prepare("INSERT INTO affiliates (user_id, ref_code, status, is_active) VALUES (?,?,'pending',0)")
            ->execute([$uid, $refCode]);
         jsonSuccess(['status' => 'pending', 'message' => 'Application submitted. Admin will review within 24 hours.']);
-    } catch(\Throwable $e) { jsonError('Database error: ' . $e->getMessage()); }
+    } catch(\Throwable $e) { error_log('admin.php error: ' . $e->getMessage()); jsonError('Database error. Please try again.'); }
 }
 
 // ── handleCouponStats ────────────────────────────────────────
@@ -1109,7 +1111,7 @@ function handleGetReports(): void {
         $total_unresolved = (int)$db->query("SELECT COUNT(*) FROM reports WHERE resolved=0")->fetchColumn();
         jsonSuccess(['reports' => $reports, 'total_unresolved' => $total_unresolved]);
     } catch(\Throwable $e) {
-        jsonError($e->getMessage());
+        error_log('admin.php error: ' . $e->getMessage()); jsonError('Request failed. Please try again.');
     }
 }
 
@@ -1370,7 +1372,7 @@ function handleSendPush(): void {
         $db->prepare("INSERT INTO push_logs (title, body, target, sent_count) VALUES (?,?,?,0)")
            ->execute([$title, $body, $target]);
         jsonSuccess(['sent' => true, 'message' => 'Push logged (configure VAPID to send real pushes)']);
-    } catch(\Exception $e) { jsonError($e->getMessage()); }
+    } catch(\Exception $e) { error_log('admin.php error: ' . $e->getMessage()); jsonError('Request failed. Please try again.'); }
 }
 
 // ── Categories ────────────────────────────────────────────────────────────
@@ -1381,4 +1383,78 @@ function handleListCategories(): void {
                       SUM(CASE WHEN status='active' THEN 1 ELSE 0 END) as active_count
                       FROM listings GROUP BY category ORDER BY count DESC");
     jsonSuccess(['categories' => $st->fetchAll()]);
+}
+
+// ── Backup ────────────────────────────────────────────────────
+function handleBackup(): void {
+    $uid  = requireAuth();
+    $db   = getDB();
+    $type = $_GET['type'] ?? 'full';
+
+    // Verify admin
+    $st = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
+    $st->execute([$uid]);
+    $me = $st->fetch();
+    if (!$me || !$me['is_admin']) jsonError('Forbidden', 403);
+
+    $backup = [
+        'exported_at' => date('Y-m-d H:i:s'),
+        'type'        => $type,
+        'site'        => 'SomBazar',
+    ];
+
+    if ($type === 'full' || $type === 'users') {
+        $users = $db->query(
+            'SELECT id, display_name, email, phone, city, is_verified, is_admin, created_at, last_seen
+             FROM users ORDER BY id'
+        )->fetchAll();
+        $backup['users'] = $users;
+    }
+
+    if ($type === 'full' || $type === 'listings') {
+        $listings = $db->query(
+            'SELECT id, user_id, title, description, category, price, currency, city, status, created_at
+             FROM listings WHERE status != "deleted" ORDER BY id'
+        )->fetchAll();
+        $backup['listings'] = $listings;
+    }
+
+    if ($type === 'full') {
+        $payments = $db->query(
+            'SELECT id, user_id, plan, amount, method, status, billing_cycle, created_at
+             FROM payments ORDER BY id'
+        )->fetchAll();
+        $backup['payments'] = $payments;
+
+        $reviews = $db->query(
+            'SELECT id, reviewer_id, seller_id, listing_id, rating, comment, created_at
+             FROM reviews ORDER BY id'
+        )->fetchAll();
+        $backup['reviews'] = $reviews;
+    }
+
+    // Output as downloadable JSON
+    header('Content-Type: application/json');
+    header('Content-Disposition: attachment; filename="sombazar-backup-' . $type . '-' . date('Ymd-His') . '.json"');
+    header('Cache-Control: no-cache');
+    echo json_encode($backup, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// ── Get 2FA Status ────────────────────────────────────────────
+function handleGet2FAStatus(): void {
+    $uid = requireAuth();
+    $db  = getDB();
+
+    // Auto-add columns if missing
+    try { $db->exec("ALTER TABLE users ADD COLUMN totp_enabled TINYINT(1) DEFAULT 0"); } catch(\Throwable $e) {}
+
+    try {
+        $st = $db->prepare('SELECT totp_enabled FROM users WHERE id = ?');
+        $st->execute([$uid]);
+        $user = $st->fetch();
+        jsonSuccess(['totp_enabled' => !empty($user['totp_enabled'])]);
+    } catch(\Throwable $e) {
+        jsonSuccess(['totp_enabled' => false]);
+    }
 }

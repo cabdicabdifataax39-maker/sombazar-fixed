@@ -16,6 +16,7 @@ register_shutdown_function(function() {
 });
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/totp.php';
 require_once __DIR__ . '/mailer.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -65,6 +66,18 @@ switch ($action) {
     case 'check_deletion':
         handleCheckDeletion();
         break;
+    case '2fa_setup':
+        if ($method !== 'POST') jsonError('Method not allowed', 405);
+        handle2FASetup();
+        break;
+    case '2fa_verify':
+        if ($method !== 'POST') jsonError('Method not allowed', 405);
+        handle2FAVerify();
+        break;
+    case '2fa_disable':
+        if ($method !== 'POST') jsonError('Method not allowed', 405);
+        handle2FADisable();
+        break;
     case 'block_user':
         if ($method !== 'POST') jsonError('Method not allowed', 405);
         handleBlockUser();
@@ -78,6 +91,87 @@ switch ($action) {
         break;
     default:
         jsonError('Unknown action', 404);
+}
+
+// ── 2FA Setup ────────────────────────────────────────────────
+function handle2FASetup(): void {
+    $uid = requireAuth();
+    $db  = getDB();
+
+    // Auto-add 2FA columns
+    try { $db->exec("ALTER TABLE users ADD COLUMN totp_secret VARCHAR(64) NULL"); } catch(\Throwable $e) {}
+    try { $db->exec("ALTER TABLE users ADD COLUMN totp_enabled TINYINT(1) DEFAULT 0"); } catch(\Throwable $e) {}
+
+    // Generate new secret
+    $secret = TOTP::generateSecret();
+
+    // Get user email for QR code
+    $st = $db->prepare('SELECT email, totp_enabled FROM users WHERE id = ?');
+    $st->execute([$uid]);
+    $user = $st->fetch();
+
+    if ($user['totp_enabled']) {
+        jsonError('2FA is already enabled. Disable it first.');
+    }
+
+    // Store pending secret (not enabled yet — user must verify first)
+    $db->prepare('UPDATE users SET totp_secret = ? WHERE id = ?')->execute([$secret, $uid]);
+
+    $qrUrl = TOTP::getQRUrl($secret, $user['email']);
+
+    jsonSuccess([
+        'secret' => $secret,
+        'qr_url' => $qrUrl,
+        'message' => 'Scan the QR code with Google Authenticator, then verify with a code.',
+    ]);
+}
+
+// ── 2FA Verify & Enable ───────────────────────────────────────
+function handle2FAVerify(): void {
+    $uid  = requireAuth();
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $code = trim($data['code'] ?? '');
+
+    if (!$code) jsonError('Verification code required');
+
+    $db = getDB();
+    $st = $db->prepare('SELECT totp_secret, totp_enabled FROM users WHERE id = ?');
+    $st->execute([$uid]);
+    $user = $st->fetch();
+
+    if (!$user || !$user['totp_secret']) jsonError('2FA setup not initiated. Call 2fa_setup first.');
+
+    if (!TOTP::verify($user['totp_secret'], $code)) {
+        jsonError('Invalid code. Check your authenticator app and try again.');
+    }
+
+    // Enable 2FA
+    $db->prepare('UPDATE users SET totp_enabled = 1 WHERE id = ?')->execute([$uid]);
+
+    jsonSuccess(['message' => '2FA enabled successfully! Your account is now more secure.']);
+}
+
+// ── 2FA Disable ───────────────────────────────────────────────
+function handle2FADisable(): void {
+    $uid  = requireAuth();
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $code = trim($data['code'] ?? '');
+    $pass = $data['password'] ?? '';
+
+    if (!$code || !$pass) jsonError('Current password and 2FA code required to disable 2FA');
+
+    $db = getDB();
+    $st = $db->prepare('SELECT password_hash, totp_secret, totp_enabled FROM users WHERE id = ?');
+    $st->execute([$uid]);
+    $user = $st->fetch();
+
+    if (!$user) jsonError('User not found');
+    if (!$user['totp_enabled']) jsonError('2FA is not enabled');
+    if (!password_verify($pass, $user['password_hash'])) jsonError('Incorrect password');
+    if (!TOTP::verify($user['totp_secret'], $code)) jsonError('Invalid 2FA code');
+
+    $db->prepare('UPDATE users SET totp_enabled = 0, totp_secret = NULL WHERE id = ?')->execute([$uid]);
+    jsonSuccess(['message' => '2FA disabled.']);
 }
 
 // ── Block User ──────────────────────────────────────────────
@@ -158,7 +252,7 @@ function handleAffiliateApply(): void {
         } catch(\Throwable $mailErr) { error_log('Affiliate apply email error: ' . $mailErr->getMessage()); }
 
         jsonSuccess(['status' => 'pending', 'message' => 'Application submitted. Admin will review within 24 hours.']);
-    } catch(\Throwable $e) { jsonError('Database error: ' . $e->getMessage()); }
+    } catch(\Throwable $e) { error_log('auth.php error: ' . $e->getMessage()); jsonError('Database error. Please try again.'); }
 }
 
 function handleRegister(): void {
@@ -281,6 +375,25 @@ function handleLogin(): void {
     if (!empty($user['is_banned'])) {
         jsonError('Your account has been suspended. Contact support.', 403);
     }
+
+    // Check 2FA if enabled
+    try {
+        $twoFA = $db->prepare('SELECT totp_enabled, totp_secret FROM users WHERE id = ?');
+        $twoFA->execute([$user['id']]);
+        $tfData = $twoFA->fetch();
+        if ($tfData && !empty($tfData['totp_enabled'])) {
+            $totpCode = trim($data['totp_code'] ?? '');
+            if (!$totpCode) {
+                // Tell client 2FA is required — don't issue token yet
+                http_response_code(200);
+                echo json_encode(['success' => true, 'data' => ['requires_2fa' => true, 'user_id' => $user['id']]]);
+                exit;
+            }
+            if (!TOTP::verify($tfData['totp_secret'], $totpCode)) {
+                jsonError('Invalid 2FA code. Check your authenticator app.', 401);
+            }
+        }
+    } catch(\Throwable $e) { /* 2FA columns not yet created — skip */ }
 
     // Update last seen
     $db->prepare('UPDATE users SET last_seen = NOW() WHERE id = ?')->execute([$user['id']]);

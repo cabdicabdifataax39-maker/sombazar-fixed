@@ -2091,6 +2091,79 @@ textarea.fi{resize:vertical}
     <div class="sc"><div class="sc-label">CONVOS</div><div class="sc-num" id="dbConvos" style="font-size:22px">—</div><div class="sc-delta up" style="margin-top:4px;font-size:11px">↑ +7%</div></div>
   </div>
 
+  <!-- ── Security: 2FA & Backup ─────────────────────────── -->
+  <div class="g2" style="margin-bottom:16px">
+    <!-- 2FA Card -->
+    <div class="card" style="margin-bottom:0">
+      <div class="card-hd">
+        <div class="card-title"><span class="ms">security</span> Two-Factor Authentication (2FA)</div>
+      </div>
+      <div class="card-body">
+        <div id="twoFAStatus" style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--surface2);border-radius:var(--r2);margin-bottom:14px;">
+          <span class="ms" style="font-size:22px;color:#94a3b8;">shield</span>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Status: <span id="twoFAStatusText" style="color:#94a3b8;">Not Enabled</span></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">Protects your admin account with Google Authenticator</div>
+          </div>
+        </div>
+        <div id="twoFASetupArea">
+          <button class="btn btn-pr" onclick="setup2FA()" id="btn2FASetup"><span class="ms">qr_code</span> Enable 2FA</button>
+        </div>
+        <!-- QR Setup Panel -->
+        <div id="twoFAQRPanel" style="display:none;margin-top:14px;">
+          <div style="font-size:12.5px;color:var(--text2);margin-bottom:10px;">1. Open Google Authenticator → Add account → Scan QR</div>
+          <img id="twoFAQR" src="" alt="QR Code" style="width:180px;height:180px;border-radius:10px;border:2px solid var(--border);display:block;margin-bottom:10px;">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px;">Can't scan? Manual key: <code id="twoFASecret" style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:11px;user-select:all;"></code></div>
+          <div style="font-size:12.5px;color:var(--text2);margin-bottom:8px;">2. Enter the 6-digit code from the app:</div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="twoFACode" maxlength="6" placeholder="000000" style="width:120px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:18px;font-weight:800;letter-spacing:4px;text-align:center;font-family:monospace;outline:none;background:var(--surface2);color:var(--text);">
+            <button class="btn btn-pr" onclick="verify2FA()"><span class="ms">check_circle</span> Verify & Enable</button>
+          </div>
+          <div id="twoFAMsg" style="margin-top:8px;font-size:12px;font-weight:600;"></div>
+        </div>
+        <!-- Disable Panel -->
+        <div id="twoFADisablePanel" style="display:none;margin-top:14px;">
+          <div style="font-size:12.5px;color:var(--text2);margin-bottom:10px;">Enter your password and authenticator code to disable 2FA:</div>
+          <input type="password" id="twoFADisablePass" placeholder="Your password" style="width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;margin-bottom:8px;background:var(--surface2);color:var(--text);box-sizing:border-box;">
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <input type="text" id="twoFADisableCode" maxlength="6" placeholder="000000" style="width:120px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:18px;font-weight:800;letter-spacing:4px;text-align:center;font-family:monospace;outline:none;background:var(--surface2);color:var(--text);">
+            <button class="btn btn-red" onclick="disable2FA()"><span class="ms">no_encryption</span> Disable 2FA</button>
+          </div>
+          <div id="twoFADisableMsg" style="font-size:12px;font-weight:600;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backup Card -->
+    <div class="card" style="margin-bottom:0">
+      <div class="card-hd">
+        <div class="card-title"><span class="ms">backup</span> Database Backup</div>
+      </div>
+      <div class="card-body">
+        <div style="font-size:12.5px;color:var(--text2);margin-bottom:14px;">Download a full backup of all site data as a JSON file. Store it in a safe location outside of Railway.</div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:12px;margin-bottom:14px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Last Backup</div>
+          <div id="lastBackupTime" style="font-size:13px;font-weight:700;color:var(--text);">Never</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Backup regularly — Railway does not auto-backup your data</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-pr" onclick="downloadBackup('full')" id="btnBackupFull">
+            <span class="ms">cloud_download</span> Full Backup (Users + Listings + Messages)
+          </button>
+          <button class="btn btn-ghost" onclick="downloadBackup('users')">
+            <span class="ms">group</span> Users Only
+          </button>
+          <button class="btn btn-ghost" onclick="downloadBackup('listings')">
+            <span class="ms">list_alt</span> Listings Only
+          </button>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:#fef3c7;border-radius:8px;border:1px solid #fbbf24;">
+          <div style="font-size:11px;color:#92400e;font-weight:700;">⚠️ Backup contains personal data — store securely and comply with GDPR/local laws.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="g2" style="margin-bottom:16px">
     <!-- Export -->
     <div class="card" style="margin-bottom:0">
