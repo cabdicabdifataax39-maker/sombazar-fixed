@@ -474,6 +474,99 @@ const TRANSLATIONS = {
     'sys-new-message': 'You have a new message from',
     'sys-offer-received': 'You received an offer on your listing',
     'sys-welcome': 'Welcome to SomBazar!',
+    // General UI
+    'btn-save': 'Save Changes',
+    'btn-cancel': 'Cancel',
+    'btn-delete': 'Delete',
+    'btn-edit': 'Edit',
+    'btn-submit': 'Submit',
+    'btn-send': 'Send',
+    'btn-search': 'Search',
+    'btn-filter': 'Filter',
+    'btn-close': 'Close',
+    'btn-confirm': 'Confirm',
+    'btn-back': 'Back',
+    'btn-next': 'Next',
+    'lbl-price': 'Price',
+    'lbl-location': 'Location',
+    'lbl-category': 'Category',
+    'lbl-condition': 'Condition',
+    'lbl-description': 'Description',
+    'lbl-title': 'Title',
+    'lbl-phone': 'Phone Number',
+    'lbl-city': 'City',
+    'lbl-name': 'Full Name',
+    'lbl-email': 'Email',
+    'lbl-bio': 'Bio',
+    'lbl-sort': 'Sort by',
+    'lbl-all-cities': 'All Cities',
+    'lbl-all-cats': 'All Categories',
+    'lbl-newest': 'Newest First',
+    'lbl-price-low': 'Price: Low to High',
+    'lbl-price-high': 'Price: High to Low',
+    'lbl-most-viewed': 'Most Viewed',
+    'lbl-for-sale': 'For Sale',
+    'lbl-for-rent': 'For Rent',
+    'lbl-new': 'New',
+    'lbl-used': 'Used',
+    'lbl-negotiable': 'Negotiable',
+    'lbl-fixed': 'Fixed Price',
+    'lbl-no-listings': 'No listings found',
+    'lbl-loading': 'Loading...',
+    'lbl-no-results': 'No results found',
+    'lbl-see-all': 'See All Listings',
+    'lbl-verified': 'Verified',
+    'lbl-member-since': 'Member since',
+    'lbl-views': 'views',
+    'lbl-favorites': 'Favorites',
+    'lbl-share': 'Share',
+    'lbl-report': 'Report',
+    'lbl-offers': 'Offers',
+    'lbl-reviews': 'Reviews',
+    'lbl-notifications': 'Notifications',
+    'lbl-no-notifs': 'No new notifications',
+    'lbl-settings': 'Account Settings',
+    'lbl-billing': 'Payments & Billing',
+    'lbl-signout': 'Sign Out',
+    'lbl-my-listings': 'My Listings',
+    'lbl-post-new': '+ Post New Ad',
+    'lbl-active': 'Active',
+    'lbl-sold': 'Sold',
+    'lbl-expired': 'Expired',
+    'lbl-mark-sold': 'Mark as Sold',
+    'lbl-boost': 'Boost',
+    'lbl-make-offer': 'Make an Offer',
+    'lbl-accept': 'Accept',
+    'lbl-decline': 'Decline',
+    'lbl-counter': 'Counter Offer',
+    'lbl-type-msg': 'Type a message...',
+    'lbl-no-msgs': 'No messages yet. Start a conversation!',
+    'lbl-today': 'Today',
+    'lbl-yesterday': 'Yesterday',
+    'lbl-search-conv': 'Search conversations...',
+    'toast-saved': 'Changes saved!',
+    'toast-error': 'Something went wrong. Please try again.',
+    'toast-copied': 'Copied to clipboard!',
+    'toast-deleted': 'Deleted successfully',
+    'toast-sent': 'Message sent!',
+    'toast-offer-sent': 'Offer sent!',
+    'toast-login-required': 'Please sign in to continue.',
+    'hero-title': "Somaliland's Largest Online Marketplace",
+    'hero-sub': 'Buy, sell and rent — from cars to real estate. Secure, fast, and local.',
+    'hero-search-ph': 'What are you looking for?',
+    'explore-title': 'Explore Categories',
+    'explore-sub': 'Find exactly what you need in our curated sections',
+    'recent-title': 'Recent Listings',
+    'safety-title': 'Trade Safely on SomBazar',
+    'safety-sub': 'Your security is our priority. Follow these simple steps.',
+    'footer-desc': 'The leading classifieds platform in Somaliland. We connect thousands of buyers and sellers daily.',
+    'footer-cats-title': 'Categories',
+    'footer-company-title': 'Quick Links',
+    'footer-about': 'About Us',
+    'footer-contact': 'Contact Support',
+    'footer-copy': '© 2026 SomBazar Marketplace. All rights reserved.',
+    'footer-terms': 'Terms of Service',
+    'footer-privacy': 'Privacy Policy',
   },
   so: {
     // Bogga hore
@@ -611,6 +704,99 @@ const TRANSLATIONS = {
     'sys-new-message': 'Fariin cusub ayaad ka heshay',
     'sys-offer-received': 'Dalad ayaad ku heshay xayeysiiskaaga',
     'sys-welcome': 'Soo dhawoow SomBazar!',
+    // Guud ahaan UI
+    'btn-save': 'Badbaadi Isbedelada',
+    'btn-cancel': 'Jooji',
+    'btn-delete': 'Tirtir',
+    'btn-edit': 'Wax ka Beddel',
+    'btn-submit': 'Dir',
+    'btn-send': 'Dir',
+    'btn-search': 'Raadi',
+    'btn-filter': 'Shaandheyn',
+    'btn-close': 'Xir',
+    'btn-confirm': 'Xaqiiji',
+    'btn-back': 'Dib u Noqo',
+    'btn-next': 'Xiga',
+    'lbl-price': 'Qiimaha',
+    'lbl-location': 'Goobta',
+    'lbl-category': 'Nooca',
+    'lbl-condition': 'Xaaladda',
+    'lbl-description': 'Sharaxaad',
+    'lbl-title': 'Cinwaanka',
+    'lbl-phone': 'Lambarka Telefoonka',
+    'lbl-city': 'Magaalada',
+    'lbl-name': 'Magaca Buuxa',
+    'lbl-email': 'Iimaylka',
+    'lbl-bio': 'Ku saabsan',
+    'lbl-sort': 'Kala sooc',
+    'lbl-all-cities': 'Dhammaan Magaalooyinka',
+    'lbl-all-cats': 'Dhammaan Noocyada',
+    'lbl-newest': 'Cusub Hore',
+    'lbl-price-low': 'Qiimaha: Hoose ilaa Sare',
+    'lbl-price-high': 'Qiimaha: Sare ilaa Hoose',
+    'lbl-most-viewed': 'Ugu Badan La Daawadey',
+    'lbl-for-sale': 'Iibinta',
+    'lbl-for-rent': 'Kiro',
+    'lbl-new': 'Cusub',
+    'lbl-used': 'La Isticmaalay',
+    'lbl-negotiable': 'Wax Laga Xukumi Karo',
+    'lbl-fixed': 'Qiime Go\'an',
+    'lbl-no-listings': 'Xayeysiis lama helin',
+    'lbl-loading': 'Waa la rarayo...',
+    'lbl-no-results': 'Wax la helay ma jiraan',
+    'lbl-see-all': 'Dhammaan Xayeysiisyada Arag',
+    'lbl-verified': 'La Xaqiijiyay',
+    'lbl-member-since': 'Xubinnimada laga bilaabay',
+    'lbl-views': 'daawasho',
+    'lbl-favorites': 'Jecelayaashayda',
+    'lbl-share': 'La wadaag',
+    'lbl-report': 'Warbixin',
+    'lbl-offers': 'Dalabyada',
+    'lbl-reviews': 'Faallooyin',
+    'lbl-notifications': 'Ogeysiisyada',
+    'lbl-no-notifs': 'Ogeysiis cusub ma jiro',
+    'lbl-settings': 'Goobaha Xisaabta',
+    'lbl-billing': 'Lacag Bixinta',
+    'lbl-signout': 'Ka Bax',
+    'lbl-my-listings': 'Xayeysiisyadayda',
+    'lbl-post-new': '+ Xayeysiis Cusub',
+    'lbl-active': 'Firfircoon',
+    'lbl-sold': 'La Iibiyay',
+    'lbl-expired': 'Waqtigiisii Dhammaaday',
+    'lbl-mark-sold': 'Iibsan Calaamadee',
+    'lbl-boost': 'Kor u qaad',
+    'lbl-make-offer': 'Dalad Soo Gudbi',
+    'lbl-accept': 'Aqbalo',
+    'lbl-decline': 'Diiday',
+    'lbl-counter': 'Dalad Kale',
+    'lbl-type-msg': 'Fariin geli...',
+    'lbl-no-msgs': 'Wali fariin ma jirto. Wadahadal bilow!',
+    'lbl-today': 'Maanta',
+    'lbl-yesterday': 'Shalay',
+    'lbl-search-conv': 'Wadahadalada raadi...',
+    'toast-saved': 'Isbedelada waa la badbaadiyay!',
+    'toast-error': 'Wax khalad ah ayaa dhacay. Isku day mar kale.',
+    'toast-copied': 'Clipboard-ka ayaa lagu koobiyeeyay!',
+    'toast-deleted': 'Si guul leh ayaa loo tirtiray',
+    'toast-sent': 'Farriin la diray!',
+    'toast-offer-sent': 'Dalad la diray!',
+    'toast-login-required': 'Fadlan gal si aad u sii waddo.',
+    'hero-title': 'Suuqga Onlaynka Ugu Weyn ee Somaliland',
+    'hero-sub': 'Iibso, iibso oo kiro — baabuurta ilaa hantida. Ammaan, degdeg, oo maxalliga ah.',
+    'hero-search-ph': 'Maxaad raadinaysaa?',
+    'explore-title': 'Qaybaha Raadi',
+    'explore-sub': 'Ku hel sida saxda ah waxa aad u baahan tahay qaybaheena',
+    'recent-title': 'Xayeysiisyada Dhowaan',
+    'safety-title': 'Si Ammaan ah ugu Ganacsado SomBazar',
+    'safety-sub': 'Ammaankaagu waa mudnaanteena. Tallaabadahan fudud raac.',
+    'footer-desc': 'Barnaamijka xayeysiisyada ee ugu weyn Somaliland. Kumanaan iibiye iyo iibsade ayaan maalin walba xidhiidhinnaa.',
+    'footer-cats-title': 'Qaybaha',
+    'footer-company-title': 'Xiriiriyeyaasha Degdegga ah',
+    'footer-about': 'Nagu Saabsan',
+    'footer-contact': 'Taageerada La Xiriir',
+    'footer-copy': '© 2026 SomBazar Marketplace. Dhammaan xuquuqda way xidantahay.',
+    'footer-terms': 'Shuruudaha Adeegga',
+    'footer-privacy': 'Siyaasadda Xumaasnimada',
   }
 };
 
@@ -634,18 +820,17 @@ function applyLang(lang) {
   localStorage.setItem('sb_lang', lang);
   document.documentElement.setAttribute('lang', lang);
 
-  // Update lang button
-  const btn = document.getElementById('langBtn');
-  if (btn) {
-    btn.innerHTML = lang === 'en'
-      ? '<span style="font-size:16px">&#x1F1F8;&#x1F1F4;</span> Somali'
-      : '<span style="font-size:16px">&#x1F1EC;&#x1F1E7;</span> English';
-  }
+  // Update ALL lang buttons on page (some pages have multiple)
+  document.querySelectorAll('#langBtn, .lang-btn').forEach(btn => {
+    btn.innerHTML = lang === 'en' ? '🇸🇴 Somali' : '🇬🇧 English';
+  });
 
-  // Apply all data-i18n elements
+  const tr = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+  // Apply data-i18n attribute elements
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    const val = t(key);
+    const val = tr[key] || TRANSLATIONS.en[key] || key;
     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
       el.placeholder = val;
     } else if (el.hasAttribute('data-i18n-html')) {
@@ -655,15 +840,35 @@ function applyLang(lang) {
     }
   });
 
-  // Apply by ID (legacy)
-  const tr = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  // Apply by ID — match translation key to element ID
   Object.entries(tr).forEach(([id, text]) => {
     const el = document.getElementById(id);
-    if (el) el.textContent = text;
+    if (el && !el.getAttribute('data-i18n')) el.textContent = text;
   });
 
-  // Update page title direction (Somali is LTR like English, no RTL needed)
-  // Store for dynamic content
+  // Translate common placeholders
+  const phMap = {
+    'hero-search-ph':  ['#heroSearch', '#headerSearchInput', '#searchInput'],
+    'lbl-type-msg':    ['#msgInput', '#messageInput'],
+    'msg-search':      ['#convSearch', '#searchConvInput'],
+    'listings-search': ['#listingSearch', '#searchBox'],
+  };
+  Object.entries(phMap).forEach(([key, selectors]) => {
+    const val = tr[key] || TRANSLATIONS.en[key];
+    if (!val) return;
+    selectors.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.placeholder = val;
+    });
+  });
+
+  // Translate notification panel text
+  const noNotif = document.getElementById('notifList');
+  if (noNotif && noNotif.textContent.trim() === 'No new notifications' || 
+      noNotif && noNotif.textContent.trim() === 'Ogeysiis cusub ma jiro') {
+    noNotif.textContent = tr['lbl-no-notifs'] || 'No new notifications';
+  }
+
   window._lang = lang;
 }
 
