@@ -190,6 +190,9 @@ function applyEndpointRateLimit(string $endpoint): void {
         'payment'       => [20,  3600],  // 20 ödeme/saat
         'contact'       => [5,   3600],  // 5 contact/saat
         'reports'       => [10,  86400], // 10 rapor/gün
+        'listings'      => [60,  60],    // 60 istek/dk
+        'messages'      => [100, 3600],  // 100 mesaj/saat
+        'upload'        => [20,  3600],  // 20 upload/saat
         'default'       => [120, 60],    // 120 istek/dk (genel)
     ];
     [$max, $window] = $limits[$endpoint] ?? $limits['default'];

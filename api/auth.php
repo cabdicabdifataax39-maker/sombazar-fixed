@@ -24,6 +24,7 @@ $action = $_GET['action'] ?? '';
 switch ($action) {
     case 'register':
         if ($method !== 'POST') jsonError('Method not allowed', 405);
+        applyEndpointRateLimit('auth'); // Prevent mass registration
         handleRegister();
         break;
     case 'login':
