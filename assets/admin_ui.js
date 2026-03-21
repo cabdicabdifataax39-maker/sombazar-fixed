@@ -291,7 +291,7 @@ window.loadCoupons=async function(){
 // ═══════════════════════════════════════════════════════════════════════════
 window.loadAffiliates=async function(){
   var tbody=document.getElementById('affiliateList');
-  if(tbody)tbody.innerHTML='<tr><td colspan="7" class="empty-row">Loading...</td></tr>';
+  if(tbody)tbody.innerHTML='<tr><td colspan="8" class="empty-row">Loading...</td></tr>';
   try{
     var r=await fetch('api/admin.php?action=get_affiliates',{headers:{'Authorization':'Bearer '+_token()}});
     var d=await r.json();
@@ -299,14 +299,50 @@ window.loadAffiliates=async function(){
     _set('affTotalRefs',items.reduce(function(s,a){return s+(a.total_referrals||0);},0));
     _set('affTotalComm',_money(items.reduce(function(s,a){return s+parseFloat(a.total_earned||0);},0)));
     _set('affUnpaid',_money(items.reduce(function(s,a){return s+parseFloat(a.pending_payout||0);},0)));
-    _set('affNew',items.length);_set('affCount','Showing 1 to '+items.length+' of '+items.length+' entries');
-    if(!items.length){if(tbody)tbody.innerHTML='<tr><td colspan="7" class="empty-row">No affiliates yet</td></tr>';return;}
-    var stCls={active:'bg',inactive:'bc',pending:'by'};
+    _set('affNew',items.length);
+    _set('affCount','Showing 1 to '+items.length+' of '+items.length+' entries');
+    if(!items.length){if(tbody)tbody.innerHTML='<tr><td colspan="8" class="empty-row">No affiliates yet. Users can apply from their profile page.</td></tr>';return;}
+    var stCls={approved:'bg',active:'bg',inactive:'bc',pending:'by',rejected:'br'};
     if(tbody)tbody.innerHTML=items.map(function(a){
-      var payBtn=a.pending_payout>0?'<button class="act act-ok" onclick="markAffiliatePaid('+a.id+','+a.pending_payout+')">Mark Paid</button>':'';
-      return'<tr><td><div style="display:flex;align-items:center;gap:9px"><div class="uav uav-sm">'+((a.display_name||'?')[0].toUpperCase())+'</div><div><div style="font-weight:700">'+_esc(a.display_name||'—')+'</div><div style="font-size:11px;color:var(--text3)">'+_esc(a.email||'')+'</div></div></div></td><td style="font-weight:700">'+(a.total_referrals||0)+'</td><td style="color:var(--pr);font-weight:800">'+(a.commission_rate||0)+'%</td><td style="font-weight:800">$'+parseFloat(a.total_earned||0).toFixed(2)+'</td><td><span class="badge '+(stCls[a.status]||'bc')+'" style="text-transform:capitalize">'+_esc(a.status||'active')+'</span></td><td style="color:var(--text2)">'+(a.last_payout?_date(a.last_payout):'N/A')+'</td><td><div class="act-group">'+payBtn+'<button class="ib"><span class="ms">more_vert</span></button></div></td></tr>';
+      var isPending=!parseInt(a.is_active)&&a.status!=='rejected';
+      var isActive=!!parseInt(a.is_active);
+      var stLabel=isPending?'Pending':(isActive?'Active':'Inactive');
+      var stClass=isPending?'by':(isActive?'bg':'bc');
+      var approveBtn=isPending?'<button class="act act-ok" onclick="approveAffiliate('+a.user_id+')">Approve</button>':'';
+      var toggleBtn='<button class="act act-view" onclick="toggleAffiliate('+a.id+')">'+(isActive?'Disable':'Enable')+'</button>';
+      var payBtn=parseFloat(a.pending_payout||0)>0?'<button class="act act-ok" onclick="markAffiliatePaid('+a.id+','+a.pending_payout+')">Pay $'+parseFloat(a.pending_payout).toFixed(2)+'</button>':'';
+      return'<tr>'
+        +'<td><div style="display:flex;align-items:center;gap:9px"><div class="uav uav-sm">'+((a.display_name||'?')[0].toUpperCase())+'</div>'
+        +'<div><div style="font-weight:700">'+_esc(a.display_name||'—')+'</div><div style="font-size:11px;color:var(--text3)">'+_esc(a.email||'')+'</div></div></div></td>'
+        +'<td style="font-weight:700;font-family:monospace">'+_esc(a.ref_code||'—')+'</td>'
+        +'<td><span class="badge '+stClass+'" style="text-transform:capitalize">'+stLabel+'</span></td>'
+        +'<td style="font-weight:700">'+(a.total_referrals||0)+'</td>'
+        +'<td style="font-weight:800">$'+parseFloat(a.total_earned||0).toFixed(2)+'</td>'
+        +'<td style="color:var(--pr);font-weight:800">$'+parseFloat(a.pending_payout||0).toFixed(2)+'</td>'
+        +'<td style="color:var(--text2)">'+(a.commission_rate||10)+'%</td>'
+        +'<td><div class="act-group">'+approveBtn+toggleBtn+payBtn+'</div></td>'
+        +'</tr>';
     }).join('');
-  }catch(e){if(tbody)tbody.innerHTML='<tr><td colspan="7" class="empty-row" style="color:var(--red)">'+_esc(e.message)+'</td></tr>';}
+  }catch(e){if(tbody)tbody.innerHTML='<tr><td colspan="8" class="empty-row" style="color:var(--red)">'+_esc(e.message)+'</td></tr>';}
+};
+
+window.approveAffiliate=async function(userId){
+  if(!confirm('Approve this affiliate?'))return;
+  try{
+    var r=await fetch('api/admin.php?action=approve_affiliate',{method:'POST',headers:{'Authorization':'Bearer '+_token(),'Content-Type':'application/json'},body:JSON.stringify({user_id:userId})});
+    var d=await r.json();
+    if(d.success){showAdminToast('✓ Affiliate approved — code: '+d.data.ref_code,'success');window.loadAffiliates();}
+    else showAdminToast(d.error||'Failed','error');
+  }catch(e){showAdminToast(e.message,'error');}
+};
+
+window.toggleAffiliate=async function(id){
+  try{
+    var r=await fetch('api/admin.php?action=toggle_affiliate',{method:'POST',headers:{'Authorization':'Bearer '+_token(),'Content-Type':'application/json'},body:JSON.stringify({id:id})});
+    var d=await r.json();
+    if(d.success){showAdminToast('Affiliate updated','success');window.loadAffiliates();}
+    else showAdminToast(d.error||'Failed','error');
+  }catch(e){showAdminToast(e.message,'error');}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
