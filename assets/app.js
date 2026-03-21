@@ -1149,7 +1149,7 @@ function applyLang(lang) {
 
   // Update ALL lang buttons on page (some pages have multiple)
   document.querySelectorAll('#langBtn, .lang-btn').forEach(btn => {
-    btn.innerHTML = lang === 'en' ? '🇸🇴 Somali' : '🇬🇧 English';
+    btn.innerHTML = lang === 'en' ? '<svg width="22" height="15" viewBox="0 0 22 15" xmlns="http://www.w3.org/2000/svg" style="border-radius:2px;flex-shrink:0;display:inline-block;vertical-align:middle"><rect width="22" height="15" fill="#009A44"/><rect y="5" width="22" height="5" fill="white"/><rect y="10" width="22" height="5" fill="#CE1126"/><text x="11" y="4.2" text-anchor="middle" font-size="3" fill="white" font-family="Arial,sans-serif" font-weight="bold">&#x644;&#x627; &#x625;&#x644;&#x647; &#x625;&#x644;&#x627; &#x627;&#x644;&#x644;&#x647;</text><text x="11" y="9" text-anchor="middle" font-size="5" fill="black" font-family="serif">&#x2605;</text></svg> Somali' : '🇬🇧 English';
   });
 
   const tr = TRANSLATIONS[lang] || TRANSLATIONS.en;
