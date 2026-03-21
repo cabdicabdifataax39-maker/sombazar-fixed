@@ -723,6 +723,8 @@ async function createCoupon() {
     loadCoupons();
   } catch(e) { showAdminToast(e.message, 'error'); }
 }
+// Alias: admin.html calls saveCoupon() but function is createCoupon()
+const saveCoupon = createCoupon;
 
 async function toggleCoupon(id) {
   const r = await fetch('api/admin.php?action=toggle_coupon&id=' + id, { headers: adminHeaders() });

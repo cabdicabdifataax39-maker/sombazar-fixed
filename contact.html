@@ -278,15 +278,34 @@
 
 <script>
 function sendMessage() {
-  const name = document.getElementById('contactName').value.trim();
-  const email = document.getElementById('contactEmail').value.trim();
-  const msg = document.getElementById('contactMsg').value.trim();
+  const name    = document.getElementById('contactName').value.trim();
+  const email   = document.getElementById('contactEmail').value.trim();
+  const subject = document.getElementById('contactSubject').value.trim();
+  const msg     = document.getElementById('contactMsg').value.trim();
   if (!name || !email || !msg) { alert('Please fill in all required fields.'); return; }
-  // TODO: Connect to API
-  document.getElementById('formSuccess').style.display = 'block';
-  document.getElementById('contactName').value = '';
-  document.getElementById('contactEmail').value = '';
-  document.getElementById('contactMsg').value = '';
+
+  const btn = document.querySelector('.form-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+
+  fetch('api/contact.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, subject, message: msg })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
+      document.getElementById('formSuccess').style.display = 'block';
+      document.getElementById('contactName').value    = '';
+      document.getElementById('contactEmail').value   = '';
+      document.getElementById('contactMsg').value     = '';
+      if (document.getElementById('contactSubject')) document.getElementById('contactSubject').value = '';
+    } else {
+      alert(d.error || 'Failed to send message. Please try again.');
+    }
+  })
+  .catch(() => alert('Network error. Please check your connection and try again.'))
+  .finally(() => { if (btn) { btn.disabled = false; btn.textContent = 'Send Message'; } });
 }
 </script>
 <script src="assets/app.min.js"></script>

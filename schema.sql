@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS listings (
     id              INT AUTO_INCREMENT PRIMARY KEY,
     user_id         INT NOT NULL,
-    category        ENUM('car','house','land','electronics','furniture','jobs','services','hotel') NOT NULL,
+    category        ENUM('car','house','land','electronics','furniture','jobs','services','hotel','fashion') NOT NULL,
     listing_type    ENUM('sale','rent') DEFAULT 'sale',
     rental_period   ENUM('daily','monthly','yearly') DEFAULT NULL,
     title           VARCHAR(150) NOT NULL,

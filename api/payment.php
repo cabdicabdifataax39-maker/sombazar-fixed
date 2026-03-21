@@ -23,8 +23,8 @@ $action = $_GET['action'] ?? '';
 // Paket fiyatları ve limitleri
 const PLANS = [
     'standard' => ['price' => 8,  'label' => 'Standard', 'listing_limit' => 10,  'photo_limit' => 5,  'boost_credits' => 0],
-    'pro'      => ['price' => 20, 'label' => 'Pro',      'listing_limit' => 999, 'photo_limit' => 15, 'boost_credits' => 2],
-    'agency'   => ['price' => 50, 'label' => 'Agency',   'listing_limit' => 999, 'photo_limit' => 20, 'boost_credits' => 5],
+    'pro'      => ['price' => 20, 'label' => 'Pro',       'listing_limit' => 30,  'photo_limit' => 15, 'boost_credits' => 2],
+    'agency'   => ['price' => 50, 'label' => 'Agency',    'listing_limit' => 999, 'photo_limit' => 20, 'boost_credits' => 5],
 ];
 
 const PAYMENT_NUMBERS = [
@@ -180,6 +180,7 @@ function handleInitiate(): void {
     $screenshot = trim($data['screenshot_url']  ?? '');
     $couponCode = strtoupper(trim($data['coupon_code'] ?? ''));
     $affiliateRef = trim($data['ref'] ?? $_GET['ref'] ?? '');  // affiliate referral kodu
+    $billingCycle = in_array($data['billing_cycle'] ?? '', ['monthly','annual']) ? $data['billing_cycle'] : 'monthly';
 
     if (!isset(PLANS[$plan]))                    jsonError('Invalid plan');
     if (!in_array($method, ['zaad','edahab']))   jsonError('Invalid payment method');
@@ -238,8 +239,12 @@ function handleInitiate(): void {
         if ($refChk->fetch()) jsonError('This reference code has already been used.');
 
         $finalAmount = max(0, (float)$plan_data['price'] - $discountAmount);
-        $st = $db->prepare('INSERT INTO payments (user_id, plan, amount, method, reference_code, screenshot_url, idempotency_key, affiliate_id, coupon_code, discount_amount) VALUES (?,?,?,?,?,?,?,?,?,?)');
-        $st->execute([$uid, $plan, $finalAmount, $method, $ref, $screenshot ?: null, $idem, $affiliateId, $couponCode ?: null, $discountAmount]);
+        // Annual billing: 10 months price for 12 months
+        if ($billingCycle === 'annual') {
+            $finalAmount = max(0, round($plan_data['price'] * 10, 2) - $discountAmount);
+        }
+        $st = $db->prepare('INSERT INTO payments (user_id, plan, amount, method, reference_code, screenshot_url, idempotency_key, affiliate_id, coupon_code, discount_amount, billing_cycle) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
+        $st->execute([$uid, $plan, $finalAmount, $method, $ref, $screenshot ?: null, $idem, $affiliateId, $couponCode ?: null, $discountAmount, $billingCycle]);
         $paymentId = $db->lastInsertId();
 
         // Kupon kullanım sayısını artır
@@ -477,7 +482,10 @@ function handleReceipt(): void {
         'couponCode'   => $p['coupon_code'] ?: null,
         'currency'     => 'USD',
         'status'       => 'Paid',
-        'validUntil'   => date('Y-m-d', strtotime('+30 days', strtotime($p['created_at']))),
+        'validUntil'   => date('Y-m-d', strtotime(
+            ($p['billing_cycle'] ?? 'monthly') === 'annual' ? '+365 days' : '+30 days',
+            strtotime($p['reviewed_at'] ?: $p['created_at'])
+        )),
     ]]);
 }
 

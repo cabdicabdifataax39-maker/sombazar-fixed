@@ -44,6 +44,7 @@ switch ($action) {
     case 'report':       if ($method !== 'POST') jsonError('Method not allowed', 405); handleReport(); break;
     case 'upload_images':if ($method !== 'POST') jsonError('Method not allowed', 405); handleUploadImages(); break;
     case 'user_listings':handleUserListings(); break;
+    case 'relist':       if ($method !== 'POST') jsonError('Method not allowed', 405); if (!$id) jsonError('ID required'); handleRelist($id); break;
     default:             jsonError('Unknown action', 404);
 }
 
@@ -113,7 +114,7 @@ function handleList(): void {
         $params[] = (float) $_GET['price_max'];
     }
 
-    $sortMap = ['price' => 'l.price ASC', 'views' => 'l.views DESC', 'createdAt' => 'l.created_at DESC'];
+    $sortMap = ['price' => 'l.price ASC', 'price_asc' => 'l.price ASC', 'price_desc' => 'l.price DESC', 'views' => 'l.views DESC', 'createdAt' => 'l.created_at DESC'];
     $sort     = $sortMap[$_GET['sortBy'] ?? 'createdAt'] ?? 'l.created_at DESC';
     $sql     .= " ORDER BY l.featured DESC, $sort";
 
@@ -653,4 +654,43 @@ function handleSuggest($pdo) {
 
     echo json_encode(['suggestions' => $final]);
     exit;
+}
+
+// ── Relist: expired ilanı yenile ──────────────────────────────────────────
+function handleRelist(int $id): void {
+    $uid = requireAuth();
+    $db  = getDB();
+
+    $st = $db->prepare("SELECT * FROM listings WHERE id = ? AND user_id = ?");
+    $st->execute([$id, $uid]);
+    $listing = $st->fetch();
+
+    if (!$listing) jsonError('Listing not found or not yours', 404);
+    if (!in_array($listing['status'], ['expired', 'sold'])) jsonError('Only expired or sold listings can be relisted');
+
+    // Plan limitini kontrol et
+    $planLimits = ['free' => 3, 'standard' => 10, 'pro' => 30, 'agency' => 999];
+    $userRow = $db->prepare('SELECT plan, plan_expires_at FROM users WHERE id = ?');
+    $userRow->execute([$uid]);
+    $uData = $userRow->fetch();
+    $currentPlan = 'free';
+    if ($uData && $uData['plan'] && $uData['plan'] !== 'free') {
+        if (!$uData['plan_expires_at'] || strtotime($uData['plan_expires_at']) > time()) {
+            $currentPlan = $uData['plan'];
+        }
+    }
+    $maxListings = $planLimits[$currentPlan] ?? 3;
+    if ($maxListings < 999) {
+        $activeSt = $db->prepare("SELECT COUNT(*) FROM listings WHERE user_id = ? AND status IN ('active','pending')");
+        $activeSt->execute([$uid]);
+        if ((int)$activeSt->fetchColumn() >= $maxListings) {
+            jsonError("Listing limit reached. Your {$currentPlan} plan allows {$maxListings} active listings.", 403);
+        }
+    }
+
+    $newExpiry = date('Y-m-d H:i:s', strtotime('+30 days'));
+    $db->prepare("UPDATE listings SET status = 'pending', created_at = NOW(), expires_at = ? WHERE id = ? AND user_id = ?")
+       ->execute([$newExpiry, $id, $uid]);
+
+    jsonSuccess(['message' => 'Listing relisted successfully. Pending admin approval.', 'listing_id' => $id]);
 }

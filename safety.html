@@ -300,14 +300,36 @@
 
 <script>
 function submitReport() {
-  const type = document.getElementById('reportType').value;
-  const desc = document.getElementById('reportDesc').value.trim();
+  const type    = document.getElementById('reportType').value;
+  const desc    = document.getElementById('reportDesc').value.trim();
+  const listing = document.getElementById('reportListing').value.trim();
   if (!type || !desc) { alert('Please select a report type and add a description.'); return; }
-  // TODO: Connect to API
-  document.getElementById('reportSuccess').style.display = 'block';
-  document.getElementById('reportType').value = '';
-  document.getElementById('reportDesc').value = '';
-  document.getElementById('reportListing').value = '';
+
+  const btn = document.querySelector('.form-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+  let listingId = null;
+  const idMatch = listing.match(/(\d+)/);
+  if (idMatch) listingId = parseInt(idMatch[1]);
+
+  fetch('api/reports.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ report_type: type, description: desc, listing_ref: listing, listing_id: listingId })
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
+      document.getElementById('reportSuccess').style.display = 'block';
+      document.getElementById('reportType').value    = '';
+      document.getElementById('reportDesc').value    = '';
+      document.getElementById('reportListing').value = '';
+    } else {
+      alert(d.error || 'Failed to submit report. Please try again.');
+    }
+  })
+  .catch(() => alert('Network error. Please check your connection and try again.'))
+  .finally(() => { if (btn) { btn.disabled = false; btn.textContent = 'Submit Report'; } });
 }
 </script>
 <script src="assets/app.min.js"></script>

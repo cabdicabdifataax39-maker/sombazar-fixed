@@ -255,7 +255,7 @@ function listingCardHTML(l) {
   if (l.specs && l.specs.rooms) chips.push(l.specs.rooms + ' rooms');
   if (l.negotiable) chips.push('Negotiable');
 
-  const catLabel = {car:'Automotive',house:'Real Estate',land:'Real Estate',electronics:'Electronics',furniture:'Furniture',jobs:'Jobs',services:'Services',hotel:'Hotels'}[l.category] || l.category;
+  const catLabel = {car:'Automotive',house:'Real Estate',land:'Real Estate',electronics:'Electronics',furniture:'Furniture',jobs:'Jobs',services:'Services',hotel:'Hotels',fashion:'Fashion'}[l.category] || l.category;
   const timeAgo = l.createdAt ? timeSince(new Date(l.createdAt)) : '';
   const sellerInitial = l.sellerName ? l.sellerName[0].toUpperCase() : '?';
   const sellerDisplay = l.sellerName || 'Seller';

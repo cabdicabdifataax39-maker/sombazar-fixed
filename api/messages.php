@@ -27,6 +27,7 @@ switch ($action) {
     case 'mark_read':      if ($method!=='POST') jsonError('Method not allowed',405); handleMarkRead();     break;
     case 'delete_message': if ($method!=='POST') jsonError('Method not allowed',405); handleDeleteMessage();break;
     case 'unread_count':   handleUnreadCount();   break;
+    case 'archive':        if ($method!=='POST') jsonError('Method not allowed',405); handleArchive(); break;
     default: jsonError('Unknown action', 404);
 }
 
@@ -299,4 +300,44 @@ function handleGetOrCreate(): void {
            ->execute([$u1, $u2, $listingId]);
         jsonSuccess(['conversationId' => (int)$db->lastInsertId()], 201);
     }
+}
+
+// ── Archive: konuşmayı arşivle / arşivden çıkar ──────────────────────────
+function handleArchive(): void {
+    $uid  = requireAuth();
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $convId = (int)($data['conversation_id'] ?? 0);
+    if (!$convId) jsonError('conversation_id required');
+
+    $db = getDB();
+
+    // archived_by_user1 / archived_by_user2 kolonları yoksa ekle
+    try { $db->exec("ALTER TABLE conversations ADD COLUMN archived_by_user1 TINYINT(1) DEFAULT 0"); } catch(\Throwable $e) {}
+    try { $db->exec("ALTER TABLE conversations ADD COLUMN archived_by_user2 TINYINT(1) DEFAULT 0"); } catch(\Throwable $e) {}
+
+    // Kullanıcının bu konuşmada olup olmadığını kontrol et
+    $st = $db->prepare("SELECT id, user1_id, user2_id FROM conversations WHERE id = ?");
+    $st->execute([$convId]);
+    $conv = $st->fetch();
+    if (!$conv) jsonError('Conversation not found', 404);
+
+    if ($conv['user1_id'] == $uid) {
+        $col = 'archived_by_user1';
+    } elseif ($conv['user2_id'] == $uid) {
+        $col = 'archived_by_user2';
+    } else {
+        jsonError('Not your conversation', 403);
+    }
+
+    // Toggle: şu anki durumu al, tersine çevir
+    $current = (int)($conv[$col] ?? 0);
+    $newVal  = $current ? 0 : 1;
+    $db->prepare("UPDATE conversations SET {$col} = ? WHERE id = ?")
+       ->execute([$newVal, $convId]);
+
+    jsonSuccess([
+        'archived'       => (bool)$newVal,
+        'conversationId' => $convId,
+        'message'        => $newVal ? 'Conversation archived.' : 'Conversation unarchived.',
+    ]);
 }

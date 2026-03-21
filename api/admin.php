@@ -699,9 +699,9 @@ function handleApprovePayment(): void {
     global $uid;
     requireCsrf($uid);
     $PLANS_ADMIN = [
-        'standard' => ['price' => 8,  'label' => 'Standard', 'listing_limit' => 20,  'photo_limit' => 10, 'boost_credits' => 1, 'days' => 30],
-        'pro'      => ['price' => 20, 'label' => 'Pro',      'listing_limit' => 60,  'photo_limit' => 20, 'boost_credits' => 5, 'days' => 30],
-        'business' => ['price' => 50, 'label' => 'Business', 'listing_limit' => 999, 'photo_limit' => 30, 'boost_credits' => 10, 'days' => 30],
+        'standard' => ['price' => 8,  'label' => 'Standard', 'listing_limit' => 10,  'photo_limit' => 5,  'boost_credits' => 0, 'days' => 30],
+        'pro'      => ['price' => 20, 'label' => 'Pro',      'listing_limit' => 30,  'photo_limit' => 15, 'boost_credits' => 2, 'days' => 30],
+        'agency'   => ['price' => 50, 'label' => 'Agency',   'listing_limit' => 999, 'photo_limit' => 20, 'boost_credits' => 5, 'days' => 30],
     ];
     try {
     $db   = getDB();
@@ -742,8 +742,9 @@ function handleApprovePayment(): void {
     $db->prepare('UPDATE payments SET status="approved", reviewed_by=?, reviewed_at=NOW() WHERE id=?')
        ->execute([$uid, $pid]);
 
-    // Activate plan on user
-    $expires = date('Y-m-d H:i:s', strtotime('+' . $plan_data['days'] . ' days'));
+    // Activate plan on user — respect billing_cycle
+    $billingDays = (isset($pay['billing_cycle']) && $pay['billing_cycle'] === 'annual') ? 365 : $plan_data['days'];
+    $expires = date('Y-m-d H:i:s', strtotime('+' . $billingDays . ' days'));
     $db->prepare('UPDATE users SET plan=?, plan_expires_at=? WHERE id=?')
        ->execute([$plan, $expires, $pay['user_id']]);
 
