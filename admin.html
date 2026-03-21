@@ -1041,7 +1041,7 @@ textarea.fi{resize:vertical}
     </div>
     <div class="sc" style="border-top:3px solid var(--pr)">
       <div class="sc-top"><div class="sc-icon" style="background:var(--pr-s)"><span class="ms" style="color:var(--pr)">pending</span></div><span style="background:#fee2e2;color:#dc2626;font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px">New</span></div>
-      <div class="sc-label">Pending Approval</div><div class="sc-num" id="listStatPending">—</div>
+      <div class="sc-label">Rejected Listings</div><div class="sc-num" id="listStatPending">—</div>
     </div>
     <div class="sc">
       <div class="sc-top"><div class="sc-icon" style="background:#f5f5f5"><span class="ms" style="color:#6b7280">timer_off</span></div><div class="sc-delta dn">-2.4%</div></div>
@@ -1172,24 +1172,8 @@ textarea.fi{resize:vertical}
     <div class="card" style="margin-bottom:0">
       <div class="card-hd"><div class="card-title">Top Methods</div></div>
       <div class="card-body" id="revByPlan">
-        <div class="h-bar-row">
-          <div class="h-bar-icon" style="background:#e0f2fe"><span class="ms" style="color:#0284c7;font-size:16px">credit_card</span></div>
-          <div class="h-bar-name">Visa/Mastercard</div>
-          <div class="h-bar-track"><div class="h-bar-fill" style="width:52%;background:var(--green)"></div></div>
-          <div class="h-bar-pct">52%</div>
-        </div>
-        <div class="h-bar-row">
-          <div class="h-bar-icon" style="background:#dcfce7"><span class="ms" style="color:#16a34a;font-size:16px">account_balance</span></div>
-          <div class="h-bar-name">Bank Transfer</div>
-          <div class="h-bar-track"><div class="h-bar-fill" style="width:28%;background:var(--blue)"></div></div>
-          <div class="h-bar-pct">28%</div>
-        </div>
-        <div class="h-bar-row">
-          <div class="h-bar-icon" style="background:#fef3c7"><span class="ms" style="color:#d97706;font-size:16px">smartphone</span></div>
-          <div class="h-bar-name">Mobile Wallet</div>
-          <div class="h-bar-track"><div class="h-bar-fill" style="width:20%;background:var(--yellow)"></div></div>
-          <div class="h-bar-pct">20%</div>
-        </div>
+        <div id="revChartBarsPayment">
+        <div style="font-size:13px;color:var(--text3);text-align:center;padding:20px">Loading payment methods...</div>
       </div>
     </div>
   </div>
@@ -1474,8 +1458,8 @@ textarea.fi{resize:vertical}
           <div style="font-size:11px;color:var(--text3)">Monthly performance over last 7 months</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:20px;font-weight:900;color:var(--pr)">$42.5k</div>
-          <div style="font-size:11px;color:var(--green)">+14% Growth</div>
+          <div style="font-size:20px;font-weight:900;color:var(--pr)" id="revGrowthAmt">—</div>
+          <div style="font-size:11px;color:var(--green)" id="revGrowthPct">Growth</div>
         </div>
       </div>
       <div class="card-body">
@@ -1497,7 +1481,7 @@ textarea.fi{resize:vertical}
           <div style="font-size:11px;color:var(--text3)">Revenue contribution per tier</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:18px;font-weight:900;color:var(--text)">$128.4k</div>
+          <div style="font-size:18px;font-weight:900;color:var(--text)" id="revYTD">—</div>
           <div style="font-size:10px;color:var(--text3)">Year to Date</div>
         </div>
       </div>
@@ -1577,10 +1561,7 @@ textarea.fi{resize:vertical}
       <span class="pag-meta" id="msgCount"></span>
       <div class="pag-btns">
         <button class="pg pg-prev">‹</button>
-        <button class="pg on">1</button><button class="pg">2</button><button class="pg">3</button>
-        <span style="color:var(--text3);padding:0 4px">…</span>
-        <button class="pg">48</button>
-        <button class="pg pg-next">›</button>
+        <div id="msgPagination" style="display:flex;gap:4px;align-items:center"></div>
       </div>
     </div>
   </div>
@@ -1760,9 +1741,7 @@ textarea.fi{resize:vertical}
       <div class="card" style="margin-bottom:14px">
         <div class="card-hd"><div class="card-title">Device Distribution</div></div>
         <div class="card-body">
-          <div class="h-bar-row"><div class="h-bar-name">Android Devices</div><div class="h-bar-track"><div class="h-bar-fill" style="width:65%;background:var(--green)"></div></div><div class="h-bar-pct">65%</div></div>
-          <div class="h-bar-row"><div class="h-bar-name">iOS Devices</div><div class="h-bar-track"><div class="h-bar-fill" style="width:32%;background:var(--pr)"></div></div><div class="h-bar-pct">32%</div></div>
-          <div class="h-bar-row"><div class="h-bar-name">Web Browser</div><div class="h-bar-track"><div class="h-bar-fill" style="width:3%;background:var(--blue)"></div></div><div class="h-bar-pct">3%</div></div>
+          <div class="h-bar-row"><div class="h-bar-name">Android Devices</div><div class="h-bar-track"><div id="pushDeviceBars"><div style="font-size:13px;color:var(--text3);padding:12px">Loading...</div></div></div><div class="h-bar-pct">3%</div></div>
         </div>
       </div>
     </div>
@@ -2185,7 +2164,7 @@ textarea.fi{resize:vertical}
   </div>
   <div class="fg"><label class="fl">Expires At</label><input class="fi" id="couponExpiry" type="date"></div>
   <div class="fg"><label class="fl">Public (shown on payment page)</label><select class="fi" id="couponPublic"><option value="1">Yes – Show publicly</option><option value="0">No – Admin only</option></select></div>
-  <div class="modal-ft"><button class="btn btn-pr" onclick="saveCoupon()"><span class="ms">add</span> Create Coupon</button><button class="btn btn-ghost" onclick="closeModal('couponModal')">Cancel</button></div>
+  <div class="modal-ft"><button class="btn btn-pr" onclick="createCoupon()"><span class="ms">add</span> Create Coupon</button><button class="btn btn-ghost" onclick="closeModal('couponModal')">Cancel</button></div>
   </div>
 </div>
 <div class="modal-overlay" id="announcementModal">
@@ -2193,7 +2172,7 @@ textarea.fi{resize:vertical}
   <div class="fg"><label class="fl">Title</label><input class="fi" id="annTitle" placeholder="Announcement title…"></div>
   <div class="fg"><label class="fl">Message Body</label><textarea class="fi" id="annBody" rows="4" placeholder="Write your announcement here…"></textarea></div>
   <div class="fg"><label class="fl">Target Audience</label><select class="fi" id="annType"><option value="info">All Users</option><option value="warning">Vendors Only</option><option value="success">New Vendors</option><option value="maintenance">Maintenance</option></select></div>
-  <div class="modal-ft"><button class="btn btn-pr" onclick="saveAnnouncement()"><span class="ms">campaign</span> Publish</button><button class="btn btn-ghost" onclick="closeModal('announcementModal')">Cancel</button></div>
+  <div class="modal-ft"><button class="btn btn-pr" onclick="createAnnouncement()"><span class="ms">campaign</span> Publish</button><button class="btn btn-ghost" onclick="closeModal('announcementModal')">Cancel</button></div>
   </div>
 </div>
 <div id="toastContainer"></div>

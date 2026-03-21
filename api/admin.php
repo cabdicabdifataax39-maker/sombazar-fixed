@@ -120,7 +120,7 @@ function handleStats(): void {
         'pending_verif'      => (int)$db->query("SELECT COUNT(*) FROM users WHERE verification_status='pending'")->fetchColumn(),
         'total_listings'     => (int)$db->query("SELECT COUNT(*) FROM listings WHERE status != 'deleted'")->fetchColumn(),
         'active_listings'    => (int)$db->query("SELECT COUNT(*) FROM listings WHERE status='active'")->fetchColumn(),
-        'pending_listings'   => (int)$db->query("SELECT COUNT(*) FROM listings WHERE status='pending'")->fetchColumn(),
+        'pending_listings'   => (int)$db->query("SELECT COUNT(*) FROM listings WHERE status='rejected'")->fetchColumn(),
         'total_messages'     => (int)$db->query('SELECT COUNT(*) FROM messages')->fetchColumn(),
         'total_conversations'=> (int)$db->query('SELECT COUNT(*) FROM conversations')->fetchColumn(),
         'banned_users'       => (int)$db->query('SELECT COUNT(*) FROM users WHERE is_banned=1')->fetchColumn(),
@@ -533,7 +533,7 @@ function handlePayments(): void {
         $db->exec("CREATE TABLE IF NOT EXISTS payments (
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
-            plan ENUM('standard','pro','agency') NOT NULL,
+            plan ENUM('standard','pro','agency','business') NOT NULL,
             amount DECIMAL(8,2) NOT NULL,
             method ENUM('zaad','edahab') NOT NULL,
             reference_code VARCHAR(100) NOT NULL,
@@ -699,9 +699,9 @@ function handleApprovePayment(): void {
     global $uid;
     requireCsrf($uid);
     $PLANS_ADMIN = [
-        'standard' => ['price' => 8,  'label' => 'Standard', 'listing_limit' => 10,  'photo_limit' => 5,  'boost_credits' => 0, 'days' => 30],
-        'pro'      => ['price' => 20, 'label' => 'Pro',      'listing_limit' => 999, 'photo_limit' => 15, 'boost_credits' => 2, 'days' => 30],
-        'agency'   => ['price' => 50, 'label' => 'Agency',   'listing_limit' => 999, 'photo_limit' => 20, 'boost_credits' => 5, 'days' => 30],
+        'standard' => ['price' => 8,  'label' => 'Standard', 'listing_limit' => 20,  'photo_limit' => 10, 'boost_credits' => 1, 'days' => 30],
+        'pro'      => ['price' => 20, 'label' => 'Pro',      'listing_limit' => 60,  'photo_limit' => 20, 'boost_credits' => 5, 'days' => 30],
+        'business' => ['price' => 50, 'label' => 'Business', 'listing_limit' => 999, 'photo_limit' => 30, 'boost_credits' => 10, 'days' => 30],
     ];
     try {
     $db   = getDB();
@@ -1214,12 +1214,25 @@ function handleRevenue(): void {
     $payments= $db->prepare("SELECT p.*, u.display_name as user_name, u.email as user_email FROM payments p LEFT JOIN users u ON u.id=p.user_id WHERE p.created_at >= ? ORDER BY p.created_at DESC LIMIT 50"); $payments->execute([$since]);
     $byPlanArr = [];
     foreach ($byPlan->fetchAll() as $row) $byPlanArr[$row['plan']] = ['count'=>$row['count'],'total'=>$row['total']];
+    // by_method breakdown
+    $byMethod = $db->prepare("SELECT method, COUNT(*) as cnt, COALESCE(SUM(amount),0) as total FROM payments WHERE created_at >= ? AND status='approved' GROUP BY method"); $byMethod->execute([$since]);
+    $byMethodArr = [];
+    foreach ($byMethod->fetchAll() as $r) { $byMethodArr[$r['method']] = ['count'=>(int)$r['cnt'],'total'=>(float)$r['total']]; }
+    // YTD revenue
+    $ytdSince = date('Y-01-01');
+    $ytd = $db->query("SELECT COALESCE(SUM(amount),0) FROM payments WHERE created_at >= '$ytdSince' AND status='approved'")->fetchColumn();
+    // MRR = avg monthly revenue
+    $mrr = $db->query("SELECT COALESCE(SUM(amount),0)/GREATEST(DATEDIFF(NOW(),'$ytdSince')/30,1) FROM payments WHERE created_at >= '$ytdSince' AND status='approved'")->fetchColumn();
+
     jsonSuccess(['revenue' => [
         'total_revenue' => round($total->fetchColumn(), 2),
         'approved_count'=> $appCnt->fetchColumn(),
         'pending_count' => $penCnt->fetchColumn(),
         'avg_amount'    => round($avg->fetchColumn(), 2),
         'by_plan'       => $byPlanArr,
+        'by_method'     => $byMethodArr,
+        'ytd_revenue'   => round((float)$ytd, 2),
+        'mrr'           => round((float)$mrr, 2),
         'payments'      => $payments->fetchAll()
     ]]);
 }

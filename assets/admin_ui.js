@@ -422,7 +422,7 @@ window.loadRevenue=async function(){
     var churnVal=r.churn_rate!=null?r.churn_rate.toFixed(1)+'%':'N/A';
     _set('revChurn',churnVal);
     _set('revAvg',_money(r.avg_amount||0));
-    // by_plan: {pro:{count:5,total:100}, agency:{count:2,total:100}} → top methods bars
+    // by_plan: {pro:{count:5,total:100}, business:{count:2,total:100}} → top methods bars
     var planEl=document.getElementById('revByPlan');
     if(planEl&&r.by_plan){
       var plans=Object.entries(r.by_plan);
