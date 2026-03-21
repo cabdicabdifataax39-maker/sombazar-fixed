@@ -1030,7 +1030,7 @@ async function deleteAnnouncement(id) {
 }
 
 // ── Push Notifications ───────────────────────────────────────────────────
-async async function loadPushNotifs() {
+async function loadPushNotifs() {
   try {
     const d = await adminFetch('push_stats');
     const s = d.stats || d.data?.stats || d.data || {};
