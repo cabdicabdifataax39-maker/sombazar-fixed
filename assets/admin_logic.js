@@ -1092,4 +1092,21 @@ async function loadCategories() {
   } catch(e) { grid.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">${e.message}</div>`; }
 }
 
+// ── Save Announcement (modal submit) ──────────────────────────────────────
+async function saveAnnouncement() {
+  const title = document.getElementById('annTitle')?.value?.trim();
+  const body  = document.getElementById('annBody')?.value?.trim();
+  if (!title || !body) { showAdminToast('Title and message required', 'error'); return; }
+  try {
+    await adminFetch('create_announcement', { title, message: body, is_active: 1 });
+    showAdminToast('✔ Announcement published!', 'success');
+    closeModal('announcementModal');
+    loadAnnouncements();
+  } catch(e) { showAdminToast(e.message, 'error'); }
+}
 
+function showAnnouncementModal() {
+  const el = document.getElementById('announcementModal');
+  if (el) el.classList.add('open');
+  ['annTitle','annBody'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+}
