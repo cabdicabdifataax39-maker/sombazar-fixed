@@ -555,14 +555,26 @@ let _ctxMsgText  = '';
 let _ctxMsgMine  = false;
 
 // ── Init ──────────────────────────────────────
-if (!Auth.isLoggedIn()) {
-  document.getElementById('notLoggedIn').style.display = '';
+function _initMessages() {
+  if (!Auth.isLoggedIn()) {
+    const el = document.getElementById('notLoggedIn');
+    if (el) el.style.display = '';
+  } else {
+    const app = document.getElementById('appBody');
+    if (app) app.style.display = 'flex';
+    initHeader();
+    loadConversations();
+    setInterval(loadConversations, 5000);
+    // startSSE defined in later script block — defer
+    setTimeout(function() {
+      if (typeof startSSE === 'function') startSSE();
+    }, 0);
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _initMessages);
 } else {
-  document.getElementById('appBody').style.display = 'flex';
-  initHeader();
-  loadConversations();
-  setInterval(loadConversations, 5000);
-  startSSE();
+  _initMessages();
 }
 
 function initHeader() {
@@ -680,7 +692,8 @@ async function loadConversations() {
 // ── Render contacts ───────────────────────────
 function renderContacts(convs) {
   const el = document.getElementById('contactsList');
-  document.getElementById('convSkeletons').style.display = 'none';
+  const skelEl = document.getElementById('convSkeletons');
+  if (skelEl) skelEl.style.display = 'none';
 
   if (!convs.length) {
     el.innerHTML = `<div style="text-align:center;padding:40px 16px;">
