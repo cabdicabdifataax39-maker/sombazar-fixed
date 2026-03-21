@@ -560,6 +560,12 @@ const params     = new URLSearchParams(location.search);
 const plan       = params.get('plan')  || 'standard';
 const priceParam = parseFloat(params.get('price') || '8');
 
+// Affiliate referral: capture ?ref= and persist in sessionStorage
+(function() {
+  const ref = params.get('ref');
+  if (ref) sessionStorage.setItem('sb_affiliate_ref', ref);
+})();
+
 const PLAN_LABELS = { free:'Free Plan', standard:'Standard Plan', pro:'Pro Plan', business:'Business Plan' };
 const PLAN_PERIODS = { free:'Free forever', standard:'Active until Dec 2026', pro:'Active until Dec 2026', agency:'Active until Dec 2026' };
 const FEE_RATE    = 0.06; // 6% platform fee
@@ -809,6 +815,7 @@ async function submitPayment() {
         reference_code: ref,
         screenshot_url: screenshotUrl,
         coupon_code: couponCode || undefined,
+        ref: sessionStorage.getItem('sb_affiliate_ref') || undefined,
       })
     });
     const d = await r.json();

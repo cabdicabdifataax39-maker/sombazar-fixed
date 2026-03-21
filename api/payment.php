@@ -218,7 +218,7 @@ function handleInitiate(): void {
     $affiliateId = null;
     if ($affiliateRef) {
         try {
-            $affSt = $db->prepare("SELECT id FROM affiliates WHERE ref_code = ? AND status = 'approved'");
+            $affSt = $db->prepare("SELECT id FROM affiliates WHERE ref_code = ? AND is_active = 1");
             $affSt->execute([$affiliateRef]);
             $aff = $affSt->fetch();
             if ($aff) $affiliateId = (int)$aff['id'];

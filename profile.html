@@ -583,6 +583,9 @@
             <button onclick="switchSettings('billing_s')" id="snavBillingS" class="settings-nav-item">
               <span class="material-symbols-outlined" style="font-size:18px;color:#64748b;">credit_card</span> Billing
             </button>
+            <button onclick="switchSettings('affiliate_s')" id="snavAffiliateS" class="settings-nav-item">
+              <span class="material-symbols-outlined" style="font-size:18px;color:#64748b;">share</span> Affiliate
+            </button>
             <div style="margin-top:8px;border-top:1px solid #f1f5f9;padding-top:8px;">
               <button onclick="doLogout()" class="settings-nav-item signout">
                 <span class="material-symbols-outlined" style="font-size:18px;">logout</span> Sign Out
@@ -833,6 +836,18 @@
 window.Auth=window.Auth||{getToken:()=>localStorage.getItem('sb_token')||'',getUser:()=>{try{return JSON.parse(localStorage.getItem('sb_user'));}catch(e){return null;}},isLoggedIn:()=>!!localStorage.getItem('sb_token'),setSession:(t,u)=>{localStorage.setItem('sb_token',t);localStorage.setItem('sb_user',JSON.stringify(u));},clearSession:()=>{localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');}};
 window.API=window.API||{};
 </script>
+
+          <div id="settingsAffiliateS" style="display:none;">
+            <div class="card" style="padding:24px;">
+              <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px;">Affiliate Program</h3>
+              <p style="font-size:13px;color:#64748b;margin-bottom:20px;">Earn commission by referring new users to SomBazar. Share your unique link and get paid for every successful plan purchase.</p>
+
+              <div id="affiliateDashboard">
+                <div style="text-align:center;padding:32px;color:#94a3b8;font-size:14px;">Loading…</div>
+              </div>
+            </div>
+          </div>
+
 <script src="assets/app.min.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
 <script>
@@ -1089,12 +1104,144 @@ function switchTab(tab){
 
 // ── Settings sub-sections ──────────────────────
 function switchSettings(section){
-  ['Profile','Security','Notifications','BillingS'].forEach(s=>{
-    document.getElementById('settings'+s).style.display=(s.toLowerCase()===section||s==='BillingS'&&section==='billing_s')?'block':'none';
+  ['Profile','Security','Notifications','BillingS','AffiliateS'].forEach(s=>{
+    const secId = 'settings'+s;
+    const el = document.getElementById(secId);
+    const sLow = s.toLowerCase();
+    const match = sLow===section || (s==='BillingS'&&section==='billing_s') || (s==='AffiliateS'&&section==='affiliate_s');
+    if(el) el.style.display = match ? 'block' : 'none';
     const btn=document.getElementById('snav'+s);
-    if(btn)btn.classList.toggle('active',s.toLowerCase()===section||s==='BillingS'&&section==='billing_s');
+    if(btn)btn.classList.toggle('active', match);
   });
-  if(section==='billing_s')loadSettingsBilling();
+  if(section==='billing_s') loadSettingsBilling();
+  if(section==='affiliate_s') loadAffiliateSection();
+}
+
+async function loadAffiliateSection() {
+  const el = document.getElementById('affiliateDashboard');
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:#94a3b8;font-size:14px;">Loading…</div>';
+
+  try {
+    const r = await fetch('api/admin.php?action=my_affiliate', {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    const d = await r.json();
+
+    if (!d.success) throw new Error(d.error || 'Failed to load');
+
+    const aff = d.data.affiliate;
+    const status = d.data.status; // 'none' | 'pending' | 'approved'
+
+    if (status === 'none') {
+      // Not applied yet
+      el.innerHTML = `
+        <div style="background:#f8fafc;border-radius:14px;padding:28px;text-align:center;border:2px dashed #e2e8f0;">
+          <span class="material-symbols-outlined" style="font-size:40px;color:#ec5b13;display:block;margin-bottom:12px;">share</span>
+          <div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:8px;">Join the Affiliate Program</div>
+          <div style="font-size:13px;color:#64748b;margin-bottom:20px;max-width:340px;margin-left:auto;margin-right:auto;">
+            Earn <strong style="color:#ec5b13;">10% commission</strong> on every plan purchase from people you refer. 
+            Get paid via Zaad or eDahab once your balance reaches $5.
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin-bottom:20px;text-align:left;max-width:300px;margin-left:auto;margin-right:auto;">
+            <div style="font-size:12px;color:#374151;display:flex;gap:8px;align-items:center;"><span class="material-symbols-outlined" style="font-size:16px;color:#22c55e;">check_circle</span> Share your unique referral link</div>
+            <div style="font-size:12px;color:#374151;display:flex;gap:8px;align-items:center;"><span class="material-symbols-outlined" style="font-size:16px;color:#22c55e;">check_circle</span> Someone buys a plan using your link</div>
+            <div style="font-size:12px;color:#374151;display:flex;gap:8px;align-items:center;"><span class="material-symbols-outlined" style="font-size:16px;color:#22c55e;">check_circle</span> You earn 10% — paid monthly</div>
+          </div>
+          <button onclick="applyForAffiliate()" style="background:#ec5b13;color:#fff;border:none;border-radius:10px;padding:11px 28px;font-size:14px;font-weight:700;cursor:pointer;">
+            Apply Now — It's Free
+          </button>
+        </div>`;
+    } else if (status === 'pending') {
+      el.innerHTML = `
+        <div style="background:#fefce8;border:1.5px solid #fde047;border-radius:14px;padding:24px;text-align:center;">
+          <span class="material-symbols-outlined" style="font-size:36px;color:#ca8a04;display:block;margin-bottom:10px;">hourglass_top</span>
+          <div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:6px;">Application Under Review</div>
+          <div style="font-size:13px;color:#64748b;">Your affiliate application is being reviewed. We'll notify you within 24 hours.</div>
+        </div>`;
+    } else {
+      // Approved — show full dashboard
+      const refCode = aff.ref_code || '';
+      const refLink = window.location.origin + '/packages.html?ref=' + refCode;
+      const earned  = parseFloat(aff.total_earned  || 0).toFixed(2);
+      const pending = parseFloat(aff.pending_payout || 0).toFixed(2);
+      const refs    = parseInt(aff.total_referrals  || 0);
+      const rate    = parseFloat(aff.commission_rate || 10).toFixed(0);
+
+      el.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">
+          <div style="background:#fff7ed;border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:22px;font-weight:900;color:#ec5b13;">$${earned}</div>
+            <div style="font-size:11px;color:#92400e;font-weight:600;margin-top:2px;">Total Earned</div>
+          </div>
+          <div style="background:#f0fdf4;border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:22px;font-weight:900;color:#16a34a;">$${pending}</div>
+            <div style="font-size:11px;color:#166534;font-weight:600;margin-top:2px;">Pending Payout</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:22px;font-weight:900;color:#0f172a;">${refs}</div>
+            <div style="font-size:11px;color:#64748b;font-weight:600;margin-top:2px;">Referrals</div>
+          </div>
+          <div style="background:#faf5ff;border-radius:12px;padding:16px;text-align:center;">
+            <div style="font-size:22px;font-weight:900;color:#7c3aed;">${rate}%</div>
+            <div style="font-size:11px;color:#6b21a8;font-weight:600;margin-top:2px;">Commission</div>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc;border-radius:12px;padding:16px;margin-bottom:16px;">
+          <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">YOUR REFERRAL LINK</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input id="affiliateRefLink" readonly value="${refLink}"
+              style="flex:1;background:#fff;border:1.5px solid #e2e8f0;border-radius:8px;padding:9px 12px;font-size:12px;font-family:monospace;color:#0f172a;outline:none;">
+            <button onclick="copyAffiliateLink()" style="background:#ec5b13;color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">
+              <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;">content_copy</span> Copy
+            </button>
+          </div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:6px;">Share this link on social media, WhatsApp, or with friends. You earn commission when they buy a plan.</div>
+        </div>
+
+        <div style="background:#fff7ed;border-radius:12px;padding:14px;font-size:12px;color:#92400e;">
+          <strong>How payouts work:</strong> Once your pending balance reaches $5, contact us via the support page and we'll send your payment via Zaad or eDahab within 48 hours.
+        </div>`;
+    }
+  } catch(e) {
+    el.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px;">Error: ${e.message}</div>`;
+  }
+}
+
+async function applyForAffiliate() {
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  try {
+    const r = await fetch('api/admin.php?action=apply_for_affiliate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({})
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error);
+    loadAffiliateSection();
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = 'Apply Now — It\'s Free';
+    alert(e.message || 'Failed to apply. Please try again.');
+  }
+}
+
+function copyAffiliateLink() {
+  const el = document.getElementById('affiliateRefLink');
+  if (!el) return;
+  el.select();
+  try {
+    navigator.clipboard.writeText(el.value).then(() => showToast('Link copied!', 'success')).catch(() => {
+      document.execCommand('copy');
+      showToast('Link copied!', 'success');
+    });
+  } catch(e) {
+    document.execCommand('copy');
+    showToast('Link copied!', 'success');
+  }
 }
 
 async function loadSettingsBilling(){

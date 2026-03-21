@@ -77,9 +77,12 @@ switch ($action) {
     case 'create_coupon':     handleCreateCoupon();    break;
     case 'toggle_coupon':     handleToggleCoupon();    break;
     case 'delete_coupon':     handleDeleteCoupon();    break;
-    case 'get_affiliates':    handleListAffiliates();  break;
-    case 'toggle_affiliate':  handleToggleAffiliate(); break;
-    case 'affiliate_payout':  handleAffiliatePayout(); break;
+    case 'get_affiliates':      handleListAffiliates();    break;
+    case 'approve_affiliate':   handleAffiliateApprove();  break;
+    case 'toggle_affiliate':    handleToggleAffiliate();   break;
+    case 'affiliate_payout':    handleAffiliatePayout();   break;
+    case 'apply_for_affiliate': handleAffiliateApply();    break;
+    case 'my_affiliate':         handleMyAffiliate();       break;
     case 'get_coupon_stats':  handleCouponStats();     break;
     case 'clean':             handleClean();            break;
     case 'approve_payment':   handleApprovePayment();   break;
@@ -919,13 +922,24 @@ function handleAffiliateApprove(): void {
     $db = getDB();
     // Rastgele ref kodu oluştur
     $refCode = 'SB' . strtoupper(substr(md5($userId . time()), 0, 6));
+    // Auto-add status column if missing
+    try { $db->exec("ALTER TABLE affiliates ADD COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending'"); } catch(\Throwable $e) {}
+
     try {
-        $db->prepare("INSERT IGNORE INTO affiliates (user_id, ref_code) VALUES (?,?)")
-           ->execute([$userId, $refCode]);
+        // If already applied (pending), approve them; otherwise create fresh
+        $exists = $db->prepare("SELECT id FROM affiliates WHERE user_id = ?");
+        $exists->execute([$userId]);
+        if ($exists->fetch()) {
+            $db->prepare("UPDATE affiliates SET ref_code=?, is_active=1, status='approved' WHERE user_id=?")
+               ->execute([$refCode, $userId]);
+        } else {
+            $db->prepare("INSERT INTO affiliates (user_id, ref_code, is_active, status) VALUES (?,?,1,'approved')")
+               ->execute([$userId, $refCode]);
+        }
         $db->prepare("UPDATE users SET ref_code = ? WHERE id = ?")
            ->execute([$refCode, $userId]);
         jsonSuccess(['ref_code' => $refCode, 'message' => "Affiliate approved with code {$refCode}"]);
-    } catch(\Throwable $e) { jsonError('Database error'); }
+    } catch(\Throwable $e) { jsonError('Database error: ' . $e->getMessage()); }
 }
 
 function handleAffiliatePayout(): void {
@@ -965,6 +979,44 @@ function handleToggleAffiliate(): void {
         $db->prepare("UPDATE affiliates SET is_active = NOT is_active WHERE id = ?")->execute([$id]);
         jsonSuccess(['message' => 'Affiliate toggled']);
     } catch(\Throwable $e) { jsonError('Database error'); }
+}
+
+// ── handleMyAffiliate: User's own affiliate status & stats ──
+function handleMyAffiliate(): void {
+    $uid = requireAuth();
+    $db  = getDB();
+    try { $db->exec("ALTER TABLE affiliates ADD COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending'"); } catch(\Throwable $e) {}
+    $st = $db->prepare("SELECT a.*, u.display_name, u.email FROM affiliates a JOIN users u ON u.id=a.user_id WHERE a.user_id=?");
+    $st->execute([$uid]);
+    $aff = $st->fetch();
+    if (!$aff) {
+        jsonSuccess(['affiliate' => null, 'status' => 'none']);
+    }
+    jsonSuccess(['affiliate' => $aff, 'status' => $aff['status'] ?? ($aff['is_active'] ? 'approved' : 'pending')]);
+}
+
+// ── handleAffiliateApply: User applies to become affiliate ───
+function handleAffiliateApply(): void {
+    $uid = requireAuth();
+    $db  = getDB();
+
+    // Auto-add status column if missing
+    try { $db->exec("ALTER TABLE affiliates ADD COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending'"); } catch(\Throwable $e) {}
+
+    // Check already applied
+    $st = $db->prepare("SELECT id, status FROM affiliates WHERE user_id = ?");
+    $st->execute([$uid]);
+    $existing = $st->fetch();
+    if ($existing) {
+        jsonSuccess(['status' => $existing['status'], 'message' => 'Already applied. Status: ' . $existing['status']]);
+    }
+
+    $refCode = 'SB' . strtoupper(substr(md5($uid . time()), 0, 6));
+    try {
+        $db->prepare("INSERT INTO affiliates (user_id, ref_code, status, is_active) VALUES (?,?,'pending',0)")
+           ->execute([$uid, $refCode]);
+        jsonSuccess(['status' => 'pending', 'message' => 'Application submitted. Admin will review within 24 hours.']);
+    } catch(\Throwable $e) { jsonError('Database error: ' . $e->getMessage()); }
 }
 
 // ── handleCouponStats ────────────────────────────────────────

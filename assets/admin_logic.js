@@ -744,27 +744,61 @@ async function loadAffiliates() {
     const r = await fetch('api/admin.php?action=get_affiliates', { headers: adminHeaders() });
     const d = await r.json();
     if (!d.success || !d.data.affiliates.length) {
-      list.innerHTML = '<div class="empty-state"><p>No affiliates yet</p></div>';
+      list.innerHTML = '<tr><td colspan="8" class="empty-row">No affiliates yet. Users can apply from their profile page.</td></tr>';
       return;
     }
-    list.innerHTML = '<div class="table-wrap"><table><thead><tr><th>User</th><th>Ref Code</th><th>Referrals</th><th>Total Earned</th><th>Pending</th><th>Actions</th></tr></thead><tbody>' +
-      d.data.affiliates.map(a => `<tr>
-        <td>
-          <div style="font-weight:700">${escHTML(a.display_name)}</div>
-          <div style="font-size:11px;color:var(--text3)">${escHTML(a.email)}</div>
-        </td>
-        <td><span class="coupon-code">${escHTML(a.ref_code)}</span></td>
+    list.innerHTML = d.data.affiliates.map(a => {
+      const isPending  = !a.is_active && a.status !== 'rejected';
+      const isApproved = !!parseInt(a.is_active);
+      const statusBadge = isPending
+        ? '<span style="background:#fef9c3;color:#854d0e;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">Pending</span>'
+        : isApproved
+          ? '<span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">Active</span>'
+          : '<span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700">Inactive</span>';
+      const payBtn = a.pending_payout > 0
+        ? `<button onclick="markAffiliatePaid(${a.id},${a.pending_payout})" class="act-btn act-approve">Mark Paid $${parseFloat(a.pending_payout).toFixed(2)}</button>`
+        : '';
+      const approveBtn = isPending
+        ? `<button onclick="approveAffiliate(${a.user_id})" class="act-btn act-approve">Approve</button>`
+        : '';
+      const toggleBtn = `<button onclick="toggleAffiliate(${a.id})" class="act-btn act-view">${isApproved ? 'Disable' : 'Enable'}</button>`;
+      return `<tr>
+        <td><div style="font-weight:700">${escHTML(a.display_name)}</div><div style="font-size:11px;color:var(--text3)">${escHTML(a.email)}</div></td>
+        <td>${a.ref_code ? `<span class="coupon-code">${escHTML(a.ref_code)}</span>` : '—'}</td>
+        <td>${statusBadge}</td>
         <td style="font-weight:700;font-family:var(--mono)">${a.total_referrals}</td>
         <td style="font-weight:700;font-family:var(--mono)">$${parseFloat(a.total_earned).toFixed(2)}</td>
         <td style="font-weight:700;color:${a.pending_payout > 0 ? 'var(--primary)' : 'var(--text3)'}">$${parseFloat(a.pending_payout).toFixed(2)}</td>
-        <td>${a.pending_payout > 0 ? `<button onclick="markAffiliatePaid(${a.id},${a.pending_payout})" class="act-btn act-approve">Mark Paid</button>` : '—'}</td>
-      </tr>`).join('') +
-      '</tbody></table></div>';
-  } catch(e) { list.innerHTML = `<div class="empty-state"><p style="color:var(--red)">${e.message}</p></div>`; }
+        <td style="font-family:var(--mono);font-size:11px">${a.commission_rate}%</td>
+        <td style="display:flex;gap:4px;flex-wrap:wrap">${approveBtn}${toggleBtn}${payBtn}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) { list.innerHTML = `<tr><td colspan="8" style="color:var(--red);padding:12px">${e.message}</td></tr>`; }
+}
+
+async function approveAffiliate(userId) {
+  if (!confirm('Approve this affiliate?')) return;
+  const r = await fetch('api/admin.php?action=approve_affiliate', {
+    method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: userId })
+  });
+  const d = await r.json();
+  if (d.success) { showAdminToast('✓ Affiliate approved — code: ' + d.data.ref_code, 'success'); loadAffiliates(); }
+  else showAdminToast(d.error || 'Failed', 'error');
+}
+
+async function toggleAffiliate(id) {
+  const r = await fetch('api/admin.php?action=toggle_affiliate', {
+    method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id })
+  });
+  const d = await r.json();
+  if (d.success) { showAdminToast('Affiliate updated', 'success'); loadAffiliates(); }
+  else showAdminToast(d.error || 'Failed', 'error');
 }
 
 async function markAffiliatePaid(id, amount) {
-  if (!confirm(`Mark $${amount} as paid?`)) return;
+  if (!confirm(`Mark $${amount} as paid to this affiliate?`)) return;
   const r = await fetch('api/admin.php?action=affiliate_payout', {
     method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
     body: JSON.stringify({ affiliate_id: id, amount })
