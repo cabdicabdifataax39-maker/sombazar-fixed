@@ -2130,7 +2130,7 @@ body {
   --ink:           #0c0f1a;
   --ink-muted:     #64748b;
   --surface:       #ffffff;
-  --surface-2:     #f8fafc;
+  --surface-2:     #fef6ee;
   --surface-3:     #f1f5f9;
   --border:        #e8edf3;
   --radius-pill:   50px;
@@ -2676,7 +2676,7 @@ footer {
   font-weight: 600;
   transition: background .15s;
 }
-.mobile-nav-link:hover { background: var(--bg-secondary, #f8fafc); }
+.mobile-nav-link:hover { background: var(--bg-secondary, #fef6ee); }
 .mobile-nav-link svg { color: #f97316; flex-shrink: 0; }
 .mobile-nav-link .nav-badge {
   margin-left: auto;

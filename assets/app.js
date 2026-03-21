@@ -270,7 +270,7 @@ function listingCardHTML(l) {
       <div style="position:relative;width:100%;height:200px;background:#f3f4f6;overflow:hidden">
         ${img
           ? `<img loading="lazy" src="${img}" alt="${l.title}" style="width:100%;height:100%;object-fit:cover;transition:transform .5s,opacity .3s;opacity:0" onload="this.style.opacity=1" onerror="this.src='assets/icon-192.png';this.style.opacity=1" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform='scale(1)'">`
-          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#f8fafc,#e2e8f0)">${emoji}</div>`
+          : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px;background:linear-gradient(135deg,#fef6ee,#e2e8f0)">${emoji}</div>`
         }
         <button onclick="event.preventDefault();toggleFavCard(this,${l.id})" style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,.92);border:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#64748b;transition:all .15s" title="Save">
           <span class="material-symbols-outlined" style="font-size:18px">favorite_border</span>
@@ -1070,8 +1070,8 @@ const Notif = {
     const iconBg = (type) => ({
       message: '#eff6ff', offer: '#fff7ed', offer_accepted: '#f0fdf4',
       offer_rejected: '#fef2f2', offer_counter: '#faf5ff', review: '#fffbeb',
-      listing: '#f0fdf4', system: '#f8fafc'
-    })[type] || '#f8fafc';
+      listing: '#f0fdf4', system: '#fef6ee'
+    })[type] || '#fef6ee';
 
     try {
       const r = await fetch('api/notifications.php?action=list&limit=10', {
@@ -1086,7 +1086,7 @@ const Notif = {
         return;
       }
       const items = d.data.notifications.map(n => `
-        <a href="${n.link || '#'}" onclick="Notif.markRead(${n.id})" style="display:flex;gap:12px;padding:12px 16px;text-decoration:none;color:inherit;border-bottom:1px solid #f1f5f9;background:${n.isRead?'white':'#fafbff'};transition:background .15s;align-items:flex-start" onmouseenter="this.style.background='#f8fafc'" onmouseleave="this.style.background='${n.isRead?'white':'#fafbff'}'">
+        <a href="${n.link || '#'}" onclick="Notif.markRead(${n.id})" style="display:flex;gap:12px;padding:12px 16px;text-decoration:none;color:inherit;border-bottom:1px solid #f1f5f9;background:${n.isRead?'white':'#fafbff'};transition:background .15s;align-items:flex-start" onmouseenter="this.style.background='#fef6ee'" onmouseleave="this.style.background='${n.isRead?'white':'#fafbff'}'">
           <div style="width:36px;height:36px;border-radius:10px;background:${iconBg(n.type)};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:${iconColor(n.type)}">${svgIcon(n.type)}</div>
           <div style="flex:1;min-width:0;padding-top:1px">
             <div style="font-size:13px;font-weight:${n.isRead?'500':'700'};color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${n.title}</div>
@@ -1349,7 +1349,7 @@ window.addEventListener('appinstalled', () => {
 
         // Hover efekti
         dd.querySelectorAll('.ac-item').forEach(el => {
-          el.addEventListener('mouseover', () => el.style.background = '#f8fafc');
+          el.addEventListener('mouseover', () => el.style.background = '#fef6ee');
           el.addEventListener('mouseout',  () => el.style.background = '');
         });
 

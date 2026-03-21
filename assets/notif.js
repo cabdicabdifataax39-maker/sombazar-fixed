@@ -139,7 +139,7 @@
 
     return `
       <a href="${link}" style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;text-decoration:none;color:inherit;border-bottom:1px solid #f1f5f9;${bg}transition:background .15s"
-         onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='${n.isRead ? '' : '#fff7ed'}'"
+         onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background='${n.isRead ? '' : '#fff7ed'}'"
          onclick="Notif._markRead(${n.id})">
         <span style="font-size:20px;flex-shrink:0;margin-top:2px">${icon}</span>
         <div style="flex:1;min-width:0">
