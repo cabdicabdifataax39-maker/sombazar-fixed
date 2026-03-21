@@ -666,14 +666,14 @@ function loadAdminOffers() { loadOffers(); }
 function toggleCouponForm() { openCouponModal(); }
 
 function openCouponModal() {
-  document.getElementById('couponModalOverlay').classList.add('open');
+  document.getElementById('couponModal').classList.add('open');
   ['newCouponCode','newCouponValue','newCouponExpiry'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   document.getElementById('newCouponType').value = 'percent';
   document.getElementById('newCouponUses').value = '0';
 }
 
 function closeCouponModal() {
-  document.getElementById('couponModalOverlay').classList.remove('open');
+  document.getElementById('couponModal').classList.remove('open');
 }
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCouponModal(); closeModal('banModal'); } });
