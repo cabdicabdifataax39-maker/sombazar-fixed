@@ -21,16 +21,18 @@ require_once __DIR__ . '/mailer.php';
 $action = $_GET['action'] ?? '';
 
 // Paket fiyatları ve limitleri
-const PLANS = [
-    'standard' => ['price' => 8,  'label' => 'Standard', 'listing_limit' => 10,  'photo_limit' => 5,  'boost_credits' => 0],
-    'pro'      => ['price' => 20, 'label' => 'Pro',       'listing_limit' => 30,  'photo_limit' => 15, 'boost_credits' => 2],
-    'agency'   => ['price' => 50, 'label' => 'Agency',    'listing_limit' => 999, 'photo_limit' => 20, 'boost_credits' => 5],
-];
-
-const PAYMENT_NUMBERS = [
-    'zaad'   => ['number' => '063XXXXXXX', 'name' => 'SomBazar Ltd'],
-    'edahab' => ['number' => '077XXXXXXX', 'name' => 'SomBazar Ltd'],
-];
+if (!defined('PLANS_DEFINED')) {
+    define('PLANS_DEFINED', true);
+    define('PLANS', [
+        'standard' => ['price' => 8,  'label' => 'Standard', 'listing_limit' => 10,  'photo_limit' => 5,  'boost_credits' => 0],
+        'pro'      => ['price' => 20, 'label' => 'Pro',       'listing_limit' => 30,  'photo_limit' => 15, 'boost_credits' => 2],
+        'agency'   => ['price' => 50, 'label' => 'Agency',    'listing_limit' => 999, 'photo_limit' => 20, 'boost_credits' => 5],
+    ]);
+    define('PAYMENT_NUMBERS', [
+        'zaad'   => ['number' => '063XXXXXXX', 'name' => 'SomBazar Ltd'],
+        'edahab' => ['number' => '077XXXXXXX', 'name' => 'SomBazar Ltd'],
+    ]);
+}
 
 // Auto-create tables if not exist
 function ensureTables(): void {

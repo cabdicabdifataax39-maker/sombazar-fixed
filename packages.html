@@ -730,7 +730,15 @@ async function init() {
 
   try {
     const r = await fetch('api/payment.php?action=plans');
-    const d = await r.json();
+    // Debug: log raw response if not JSON
+    const text = await r.text();
+    let d;
+    try {
+      d = JSON.parse(text);
+    } catch(parseErr) {
+      console.error('payment.php?action=plans raw response:', text.substring(0, 500));
+      throw new Error('Server returned non-JSON: ' + text.substring(0, 100));
+    }
     if (!d.success) throw new Error(d.error || 'API error');
 
     // Payment numbers
