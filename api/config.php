@@ -6,7 +6,21 @@ ini_set('log_errors', '1');
 // SomBazar — config.php
 
 header('Content-Type: application/json; charset=UTF-8');
-header('Access-Control-Allow-Origin: *');
+// CORS — sadece kendi domain'imize izin ver
+$allowedOrigins = array_filter([
+    getenv('SITE_URL'),
+    getenv('CORS_ORIGIN'),
+    'https://sombazar-fixed-production.up.railway.app', // geçici, domain bağlandıktan sonra kaldır
+]);
+
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if ($origin && in_array(rtrim($origin, '/'), array_map(fn($o) => rtrim($o, '/'), $allowedOrigins))) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+} else {
+    // Same-origin isteklere her zaman izin ver (API ve HTML aynı domainde)
+    header('Access-Control-Allow-Origin: ' . (getenv('SITE_URL') ?: 'https://sombazar-fixed-production.up.railway.app'));
+}
+header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 // Security headers
@@ -167,14 +181,16 @@ function checkRateLimit(string $key, int $maxRequests = 60, int $windowSeconds =
 // Endpoint bazlı rate limit konfigürasyonu
 function applyEndpointRateLimit(string $endpoint): void {
     $limits = [
-        'auth'          => [20,  300],  // 20 istek/5 dakika
-        'upload'        => [30,  3600], // 30 istek/saat
-        'listings_post' => [10,  3600], // 10 yeni ilan/saat
-        'offers'        => [30,  3600], // 30 teklif/saat
-        'messages'      => [100, 3600], // 100 mesaj/saat
-        'reviews'       => [10,  3600], // 10 yorum/saat
-        'payment'       => [20,  3600], // 20 ödeme/saat
-        'default'       => [120, 60],   // 120 istek/dk (genel)
+        'auth'          => [20,  300],   // 20 istek/5 dakika
+        'upload'        => [30,  3600],  // 30 istek/saat
+        'listings_post' => [10,  3600],  // 10 yeni ilan/saat
+        'offers'        => [30,  3600],  // 30 teklif/saat
+        'messages'      => [100, 3600],  // 100 mesaj/saat
+        'reviews'       => [10,  3600],  // 10 yorum/saat
+        'payment'       => [20,  3600],  // 20 ödeme/saat
+        'contact'       => [5,   3600],  // 5 contact/saat
+        'reports'       => [10,  86400], // 10 rapor/gün
+        'default'       => [120, 60],    // 120 istek/dk (genel)
     ];
     [$max, $window] = $limits[$endpoint] ?? $limits['default'];
     checkRateLimit($endpoint, $max, $window);

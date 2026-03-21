@@ -150,7 +150,7 @@ function handleStats(): void {
 
 function handleUsers(): void {
     $db     = getDB();
-    $search = $_GET['q'] ?? '';
+    $search = mb_substr(trim($_GET['q'] ?? ''), 0, 100); // Max 100 chars, prevent abuse
     $status = $_GET['status'] ?? '';
     $page   = max(1, (int)($_GET['page'] ?? 1));
     $limit  = 20;

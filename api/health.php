@@ -1,7 +1,22 @@
 <?php
 // SomBazar — Setup Health Check
-// Open in browser: http://localhost/sombazar-fixed/api/health.php
-// Everything green? You're good to go.
+// Requires: ?token=YOUR_MIGRATION_TOKEN or CLI access
+
+// Security: require token in production
+$token = $_GET['token'] ?? $_SERVER['HTTP_X_HEALTH_TOKEN'] ?? '';
+$expectedToken = getenv('MIGRATION_TOKEN') ?: getenv('CRON_SECRET') ?: '';
+
+// Allow in CLI or localhost without token
+$ip = $_SERVER['REMOTE_ADDR'] ?? '';
+$isLocalhost = in_array($ip, ['127.0.0.1', '::1', 'localhost']);
+$isCLI = php_sapi_name() === 'cli';
+
+if (!$isCLI && !$isLocalhost && ($expectedToken && !hash_equals($expectedToken, $token))) {
+    http_response_code(404);
+    header('Content-Type: text/plain');
+    echo 'Not Found';
+    exit;
+}
 
 header('Content-Type: text/html; charset=UTF-8');
 

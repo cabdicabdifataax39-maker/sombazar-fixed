@@ -135,3 +135,34 @@ ErrorDocument 403 /404.html
   RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+# ── Güvenlik Kuralları ──────────────────────────────────────
+# make_admin.php'yi engelle
+<FilesMatch "^make_admin\.php$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Hassas dosyaları engelle
+<FilesMatch "\.(sql|log|bak|backup|sh|env|ini|cfg)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# run_*.php dosyalarını engelle (migration runner'lar)
+<FilesMatch "^run_.*\.php$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Clickjacking koruması
+Header always set X-Frame-Options "SAMEORIGIN"
+
+# MIME sniffing koruması  
+Header always set X-Content-Type-Options "nosniff"
+
+# Referrer Policy
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Permissions Policy
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(self)"

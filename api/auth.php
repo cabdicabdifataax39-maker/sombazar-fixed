@@ -242,8 +242,12 @@ function handleLogin(): void {
     $st->execute([$email]);
     $user = $st->fetch();
 
-    if (!$user || !password_verify($pass, $user['password_hash'])) {
+    // Use hash_equals for email to prevent timing attacks
+    // password_verify is already constant-time
+    if (!$user || !hash_equals($user['email'], $email) || !password_verify($pass, $user['password_hash'])) {
         try { $db->prepare("INSERT INTO login_attempts (ip, email, success) VALUES (?,?,0)")->execute([$ip, $email]); } catch(\Throwable $e) {}
+        // Always run password_verify even if user not found (prevent user enumeration via timing)
+        if (!$user) password_verify($pass, '$2y$10$invalidhashfortimingprotection00000000000000000000000');
         jsonError('Incorrect email or password', 401);
     }
 

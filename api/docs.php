@@ -4,11 +4,40 @@
  * Erişim: /api/docs.php (Admin only in production)
  */
 
-// Basit güvenlik — sadece localhost veya özel IP'ler
+// Security: require admin JWT or migration token
 $ip = $_SERVER['REMOTE_ADDR'] ?? '';
-$allowed = ['127.0.0.1', '::1'];
-// Production'da admin token gerektir
-$token = $_GET['token'] ?? $_SERVER['HTTP_X_API_KEY'] ?? '';
+$isLocalhost = in_array($ip, ['127.0.0.1', '::1']);
+
+if (!$isLocalhost) {
+    // Require valid MIGRATION_TOKEN or admin JWT
+    $token = $_GET['token'] ?? $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    $token = str_replace('Bearer ', '', $token);
+    $expectedToken = getenv('MIGRATION_TOKEN') ?: '';
+    
+    $validToken = $expectedToken && hash_equals($expectedToken, $token);
+    
+    // Also accept admin JWT
+    if (!$validToken && $token) {
+        try {
+            require_once __DIR__ . '/config.php';
+            $uid = getAuthUser();
+            if ($uid) {
+                $db = getDB();
+                $st = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
+                $st->execute([$uid]);
+                $u = $st->fetch();
+                $validToken = !empty($u['is_admin']);
+            }
+        } catch(Throwable $e) {}
+    }
+    
+    if (!$validToken) {
+        http_response_code(404);
+        header('Content-Type: text/plain');
+        echo 'Not Found';
+        exit;
+    }
+}
 
 header('Content-Type: text/html; charset=UTF-8');
 ?>
