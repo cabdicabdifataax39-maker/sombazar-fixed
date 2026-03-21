@@ -81,10 +81,12 @@ const CSRF = (() => {
     return _token || '';
   }
 
+  // Only fetch CSRF token on admin page — other pages don't need it and get 403
+  const _isAdminPage = window.location.pathname.includes('admin');
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => { if (Auth.getToken()) refresh(); });
+    document.addEventListener('DOMContentLoaded', () => { if (Auth.getToken() && _isAdminPage) refresh(); });
   } else {
-    if (Auth.getToken()) refresh();
+    if (Auth.getToken() && _isAdminPage) refresh();
   }
 
   return { get, refresh };
