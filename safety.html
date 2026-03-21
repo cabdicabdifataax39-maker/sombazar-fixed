@@ -5,106 +5,312 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f97316">
-  <title>Safe Trading Guide — SomBazar</title>
-  <link rel="stylesheet" href="assets/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    .legal-page { max-width: 800px; margin: 40px auto; padding: 0 20px 80px; }
-    .legal-header { text-align: center; margin-bottom: 40px; }
-    .legal-header h1 { font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
-    .legal-header p { color: var(--gray); }
-    .legal-somali { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px 16px; margin-bottom: 32px; font-size: 14px; color: #92400e; }
-    .legal-section { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
-    .legal-section:last-child { border-bottom: none; }
-    .legal-section h3 { font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
-    .legal-section p { color: #4b5563; line-height: 1.7; }
-    .legal-footer { text-align: center; color: var(--gray); font-size: 13px; margin-top: 40px; }
-    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--primary); font-weight: 600; text-decoration: none; margin-bottom: 24px; font-size: 14px; }
-  </style>
-  <!-- Google Analytics GA4 -->
+  <meta name="theme-color" content="#ec5b13">
+  <title>Safety Center — SomBazar</title>
+  <script>(function(){var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  
+  
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M', {
-      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
-      'cookie_flags': 'SameSite=None;Secure'
-    });
-  </script>
-  <!-- Google Search Console Verification -->
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-6H7F8Y980M',{'cookie_domain':'sombazar-fixed-production.up.railway.app','cookie_flags':'SameSite=None;Secure'});</script>
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#fff7f2;color:#0f172a;min-height:100vh}
+    .material-symbols-outlined{font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24;vertical-align:middle}
+    nav{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'DM Serif Display',serif;font-size:20px;font-weight:900;color:#0f172a;text-decoration:none}
+    .nav-logo span{color:#ec5b13}
+    .nav-links{display:flex;align-items:center;gap:8px}
+    .nav-links a{font-size:13px;font-weight:600;color:#64748b;text-decoration:none;padding:6px 14px;border-radius:8px;transition:all .15s}
+    .nav-links a:hover{background:#f1f5f9;color:#0f172a}
+    .nav-links a.btn-primary{background:#ec5b13;color:#fff;padding:7px 18px;border-radius:10px}
+
+    .hero{background:linear-gradient(135deg,#0c1445,#1a0a3c);padding:72px 24px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(236,91,19,.2),transparent 70%);pointer-events:none}
+    .hero-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(236,91,19,.15);border:1px solid rgba(236,91,19,.3);color:#fb923c;padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:16px}
+    .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(30px,5vw,48px);font-weight:900;color:#fff;line-height:1.15;margin-bottom:14px;letter-spacing:-0.5px}
+    .hero h1 span{color:#ec5b13}
+    .hero p{color:rgba(255,255,255,.65);font-size:15px;line-height:1.7;margin-bottom:24px}
+    .safety-metric{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:6px}
+    .metric-num{font-family:'DM Serif Display',serif;font-size:36px;font-weight:900;color:#ec5b13}
+    .metric-label{font-size:13px;color:rgba(255,255,255,.6);font-weight:600}
+    .metric-sub{font-size:11px;color:rgba(255,255,255,.4)}
+    .hero-stats{display:flex;flex-direction:column;gap:12px}
+
+    .wrap{max-width:1000px;margin:0 auto;padding:0 24px}
+    section{padding:64px 0}
+    .section-tag{display:inline-flex;align-items:center;gap:6px;background:#fff7f2;border:1px solid #fed7aa;color:#ec5b13;padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-bottom:16px}
+    .section-title{font-family:'DM Serif Display',serif;font-size:clamp(26px,4vw,38px);font-weight:900;color:#0f172a;margin-bottom:12px;letter-spacing:-0.5px}
+    .section-desc{font-size:15px;color:#64748b;line-height:1.7;margin-bottom:40px}
+
+    /* VIOLATIONS */
+    .violations-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .violation-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:28px;transition:all .2s}
+    .violation-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,.08)}
+    .v-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+    .v-icon .material-symbols-outlined{font-size:24px}
+    .v-title{font-size:15px;font-weight:800;color:#0f172a;margin-bottom:8px}
+    .v-desc{font-size:13px;color:#64748b;line-height:1.6}
+
+    /* REPORT FORM */
+    .report-bg{background:#fff;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;padding:64px 24px}
+    .report-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+    .report-intro h2{font-family:'DM Serif Display',serif;font-size:30px;font-weight:900;color:#0f172a;margin-bottom:12px}
+    .report-intro p{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:20px}
+    .report-steps{display:flex;flex-direction:column;gap:14px;margin-top:24px}
+    .report-step{display:flex;gap:14px;align-items:flex-start}
+    .step-num{width:28px;height:28px;background:#ec5b13;color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;flex-shrink:0;margin-top:1px}
+    .step-text{font-size:14px;color:#4b5563;line-height:1.6}
+    .step-text strong{color:#0f172a}
+    .form-card{background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:32px}
+    .form-label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px}
+    .form-input{width:100%;padding:11px 16px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;background:#fff;color:#0f172a;margin-bottom:16px}
+    .form-input:focus{border-color:#ec5b13;box-shadow:0 0 0 3px rgba(236,91,19,.1)}
+    textarea.form-input{min-height:110px;resize:vertical}
+    select.form-input{cursor:pointer}
+    .form-btn{width:100%;background:#ec5b13;color:#fff;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .form-btn:hover{background:#d94f10;transform:translateY(-1px);box-shadow:0 8px 24px rgba(236,91,19,.3)}
+    .form-success{display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:16px;text-align:center;color:#166534;font-size:14px;font-weight:700;margin-top:16px}
+
+    /* PIPELINE */
+    .pipeline{background:#0f172a;padding:64px 24px}
+    .pipeline h2{font-family:'DM Serif Display',serif;font-size:30px;font-weight:900;color:#fff;margin-bottom:8px;text-align:center}
+    .pipeline p{color:#64748b;text-align:center;margin-bottom:48px;font-size:15px}
+    .pipeline-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+    .pipeline-step{text-align:center}
+    .pipe-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+    .pipe-icon .material-symbols-outlined{font-size:26px}
+    .pipe-num{font-family:'DM Serif Display',serif;font-size:28px;font-weight:900;color:#ec5b13;margin-bottom:4px}
+    .pipe-label{font-size:13px;font-weight:700;color:#fff;margin-bottom:6px}
+    .pipe-desc{font-size:12px;color:#64748b;line-height:1.6}
+
+    footer{background:#fff;border-top:1px solid #e2e8f0;padding:24px;text-align:center}
+    footer p{font-size:13px;color:#94a3b8}
+    footer a{color:#ec5b13;text-decoration:none;margin:0 8px}
+
+    .related{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+    .rel-link{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 18px;text-decoration:none;color:#374151;font-size:13px;font-weight:600;transition:all .2s}
+    .rel-link:hover{border-color:#ec5b13;color:#ec5b13;transform:translateY(-2px)}
+
+    @media(max-width:768px){.hero-inner,.report-grid,.violations-grid{grid-template-columns:1fr}.pipeline-steps{grid-template-columns:repeat(2,1fr)}}
+  </style>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 </head>
 <body>
-<header class="header">
-  <nav class="nav-container">
-    <a href="index.html" class="logo">SomBazar</a>
-    <div class="header-actions">
-      <a href="index.html" class="btn btn-ghost btn-sm">← Home</a>
-    </div>
-  </nav>
-</header>
-
-<div class="legal-page">
-  <div class="legal-header">
-    <h1>️ Safe Trading Guide</h1>
-    <p>Last updated: February 2026</p>
+<nav>
+  <a href="index.html" class="nav-logo">Som<span>Bazar</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="listings.html">Browse</a>
+    <a href="contact.html">Contact</a>
+    <a href="post.html" class="btn-primary">Post Ad</a>
   </div>
-  <div class="legal-somali">🇸🇴 Af-Soomaali: Hagaha Ganacsiga Nabadgelyo — Hoos ka akhri xeerarka adeegga.</div>
-  
-        <div class="legal-section">
-          <h3>✓ Always Meet in Public</h3>
-          <p>For in-person transactions, always meet in a public place — like a busy café, market, or bank. Never meet at someone's home or in a private location.</p>
-        </div>
-        <div class="legal-section">
-          <h3>✓ Verify Before Paying</h3>
-          <p>Inspect the item in person before paying. For vehicles, check registration documents. For property, verify ownership documents with a lawyer.</p>
-        </div>
-        <div class="legal-section">
-          <h3>✓ Use Verified Sellers</h3>
-          <p>Look for the ✓ Verified badge on seller profiles. Verified sellers have confirmed their identity with us.</p>
-        </div>
-        <div class="legal-section">
-          <h3>!️ Never Pay in Advance</h3>
-          <p>Never send money before seeing the item. Legitimate sellers do not ask for deposits or advance payments for basic items.</p>
-        </div>
-        <div class="legal-section">
-          <h3>!️ Beware of Unrealistic Prices</h3>
-          <p>If a price seems too good to be true, it probably is. Scammers often advertise cars or phones at very low prices to attract victims.</p>
-        </div>
-        <div class="legal-section">
-          <h3>!️ Never Share Personal Financial Info</h3>
-          <p>Never share your bank account details, EVC PIN, or Zaad credentials with anyone on the platform.</p>
-        </div>
-        <div class="legal-section">
-          <h3>! Report Fraud Immediately</h3>
-          <p>If you suspect fraud, report the listing immediately using the Report button. We investigate all reports within 24 hours.</p>
-        </div>
-        <div class="legal-section">
-          <h3>! Do Not Pay via Western Union</h3>
-          <p>SomBazar will never ask you to pay via Western Union, MoneyGram, or cryptocurrency. These are common scam payment methods.</p>
-        </div>
-  <div class="legal-footer">
-    <p>© 2026 SomBazar. All rights reserved.</p>
-    <p style="margin-top:8px">
-      <a href="terms.html" style="color:var(--primary);margin:0 8px">Terms</a>
-      <a href="privacy.html" style="color:var(--primary);margin:0 8px">Privacy</a>
-      <a href="safety.html" style="color:var(--primary);margin:0 8px">Safety</a>
-      <a href="contact.html" style="color:var(--primary);margin:0 8px">Contact</a>
-      <a href="faq.html" style="color:var(--primary);margin:0 8px">FAQ</a>
-    </p>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">
+        <span class="material-symbols-outlined" style="font-size:13px">shield</span>
+        Safety Marketplace
+      </div>
+      <h1>Maintaining a <span>Safe</span> Marketplace for All.</h1>
+      <p>We are committed to providing a secure and transparent marketplace. Trust requires vigilance. We identify, classify, and remove harmful content, protecting our entire community.</p>
+      <a href="#report" style="display:inline-flex;align-items:center;gap:8px;background:#ec5b13;color:#fff;padding:12px 24px;border-radius:12px;font-weight:700;font-size:14px;text-decoration:none;margin-top:8px;transition:all .2s">
+        <span class="material-symbols-outlined" style="font-size:18px">flag</span>
+        Submit a Report →
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="safety-metric">
+        <div class="metric-num">24h</div>
+        <div class="metric-label">Report Response Time</div>
+        <div class="metric-sub">Usually resolved within 2 hours</div>
+      </div>
+      <div class="safety-metric">
+        <div class="metric-num">10k+</div>
+        <div class="metric-label">Reports Resolved</div>
+        <div class="metric-sub">Since platform launch</div>
+      </div>
+      <div class="safety-metric">
+        <div class="metric-num">100%</div>
+        <div class="metric-label">Reports Reviewed</div>
+        <div class="metric-sub">Every single report is read</div>
+      </div>
+      <div class="safety-metric" style="background:rgba(236,91,19,.15);border-color:rgba(236,91,19,.3)">
+        <div class="metric-num" style="font-size:14px;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;background:#22c55e;border-radius:50%;display:inline-block"></span>Live</div>
+        <div class="metric-label">Safety Team Status</div>
+        <div class="metric-sub">Sat–Thu · 8AM–8PM EAT</div>
+      </div>
+    </div>
   </div>
 </div>
 
-<nav class="bottom-nav">
-  <a href="index.html" class="bottom-nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Home</span></a>
-  <a href="listings.html" class="bottom-nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Listings</span></a>
-  <a href="post.html" class="bottom-nav-item bottom-nav-post"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></a>
-  <a href="messages.html" class="bottom-nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>Messages</span></a>
-  <a href="profile.html" class="bottom-nav-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Profile</span></a>
-</nav>
+<!-- VIOLATIONS -->
+<section>
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="material-symbols-outlined" style="font-size:13px">gavel</span>
+      Our Standards
+    </div>
+    <div class="section-title">What defines a violation?</div>
+    <div class="section-desc">Reporting the right category ensures faster investigation and a cleaner marketplace for everyone.</div>
+    <div class="violations-grid">
+      <div class="violation-card">
+        <div class="v-icon" style="background:#fef2f2"><span class="material-symbols-outlined" style="color:#ef4444">warning</span></div>
+        <div class="v-title">Fraud & Scams</div>
+        <div class="v-desc">Fake listings, advance-fee fraud, phishing attempts, counterfeit goods, or misleading pricing and item descriptions.</div>
+      </div>
+      <div class="violation-card">
+        <div class="v-icon" style="background:#fff7f2"><span class="material-symbols-outlined" style="color:#ec5b13">block</span></div>
+        <div class="v-title">Prohibited Items</div>
+        <div class="v-desc">Illegal goods, weapons, drugs, stolen property, or any items that violate Somaliland law or our marketplace policies.</div>
+      </div>
+      <div class="violation-card">
+        <div class="v-icon" style="background:#faf5ff"><span class="material-symbols-outlined" style="color:#8b5cf6">person_off</span></div>
+        <div class="v-title">Harassment</div>
+        <div class="v-desc">Offensive or threatening messages, bullying, discrimination of any person using the SomBazar platform.</div>
+      </div>
+      <div class="violation-card">
+        <div class="v-icon" style="background:#eff6ff"><span class="material-symbols-outlined" style="color:#3b82f6">content_copy</span></div>
+        <div class="v-title">Duplicate Listings</div>
+        <div class="v-desc">Spam listings, the same item posted multiple times, or artificial inflation of listings to game the search ranking.</div>
+      </div>
+      <div class="violation-card">
+        <div class="v-icon" style="background:#f0fdf4"><span class="material-symbols-outlined" style="color:#22c55e">manage_accounts</span></div>
+        <div class="v-title">Fake Accounts</div>
+        <div class="v-desc">Impersonating another person or business, using stolen identity, or creating multiple accounts to evade bans.</div>
+      </div>
+      <div class="violation-card">
+        <div class="v-icon" style="background:#fef9c3"><span class="material-symbols-outlined" style="color:#ca8a04">image_not_supported</span></div>
+        <div class="v-title">Wrong Category</div>
+        <div class="v-desc">Items listed in the wrong category, misleading titles, or descriptions that don't match what is being sold.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-<script src="assets/app.js"></script>
+<!-- REPORT FORM -->
+<div class="report-bg" id="report">
+  <div class="wrap">
+    <div class="report-grid">
+      <div class="report-intro">
+        <div class="section-tag">
+          <span class="material-symbols-outlined" style="font-size:13px">flag</span>
+          Submit a Report
+        </div>
+        <h2>Submit a Formal Report</h2>
+        <p>Use this form to report fraudulent listings, policy violations, or user misconduct. Our safety team reviews every report and takes appropriate action.</p>
+        <div class="report-steps">
+          <div class="report-step">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Fill out the form</strong> — Include as much detail as possible. Attach a screenshot if you have one.</div>
+          </div>
+          <div class="report-step">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>We investigate</strong> — Our safety team reviews your report, usually within 2 hours.</div>
+          </div>
+          <div class="report-step">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Action is taken</strong> — Listings are removed, accounts are suspended, or the reporter is informed if no violation was found.</div>
+          </div>
+          <div class="report-step">
+            <div class="step-num">4</div>
+            <div class="step-text"><strong>You stay anonymous</strong> — We never reveal reporter identity to the reported user.</div>
+          </div>
+        </div>
+      </div>
+      <div class="form-card">
+        <label class="form-label">Report Type *</label>
+        <select id="reportType" class="form-input">
+          <option value="">Select violation type</option>
+          <option>Fraud / Scam</option>
+          <option>Prohibited Item</option>
+          <option>Harassment</option>
+          <option>Fake Account</option>
+          <option>Duplicate Listing</option>
+          <option>Wrong Category</option>
+          <option>Other</option>
+        </select>
+        <label class="form-label">Listing ID or URL</label>
+        <input type="text" id="reportListing" class="form-input" placeholder="e.g. SB-1234 or paste the listing link">
+        <label class="form-label">Your Name</label>
+        <input type="text" id="reportName" class="form-input" placeholder="Optional — stays confidential">
+        <label class="form-label">Your Email</label>
+        <input type="email" id="reportEmail" class="form-input" placeholder="For follow-up (optional)">
+        <label class="form-label">Description *</label>
+        <textarea id="reportDesc" class="form-input" placeholder="Describe what happened in detail..."></textarea>
+        <button class="form-btn" onclick="submitReport()">
+          <span class="material-symbols-outlined" style="font-size:18px">send</span>
+          Submit Report →
+        </button>
+        <div class="form-success" id="reportSuccess">
+          ✅ Report submitted! We'll review it within 2 hours.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE -->
+<div class="pipeline">
+  <h2>Our Integrity Pipeline</h2>
+  <p>How we handle every report from submission to resolution.</p>
+  <div class="wrap">
+    <div class="pipeline-steps">
+      <div class="pipeline-step">
+        <div class="pipe-icon" style="background:rgba(236,91,19,.15)"><span class="material-symbols-outlined" style="color:#ec5b13">flag</span></div>
+        <div class="pipe-num">24h</div>
+        <div class="pipe-label">Report Received</div>
+        <div class="pipe-desc">Every report is logged and assigned to a safety reviewer within minutes.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipe-icon" style="background:rgba(59,130,246,.15)"><span class="material-symbols-outlined" style="color:#3b82f6">search</span></div>
+        <div class="pipe-num">10k+</div>
+        <div class="pipe-label">Cases Reviewed</div>
+        <div class="pipe-desc">Our team investigates every report manually and cross-checks with platform data.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipe-icon" style="background:rgba(34,197,94,.15)"><span class="material-symbols-outlined" style="color:#22c55e">gavel</span></div>
+        <div class="pipe-num">100%</div>
+        <div class="pipe-label">Action Taken</div>
+        <div class="pipe-desc">Every valid report results in action — removal, suspension, or escalation to authorities.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipe-icon" style="background:rgba(236,91,19,.15)"><span class="material-symbols-outlined" style="color:#ec5b13">verified</span></div>
+        <div class="pipe-num">Live</div>
+        <div class="pipe-label">Always Monitoring</div>
+        <div class="pipe-desc">Our safety team operates 6 days a week, 12 hours a day to keep the marketplace clean.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 SomBazar · Hargeisa, Somaliland &nbsp;·&nbsp;
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="safety.html">Safety</a>
+    <a href="contact.html">Contact</a>
+    <a href="faq.html">FAQ</a>
+  </p>
+</footer>
+
+<script>
+function submitReport() {
+  const type = document.getElementById('reportType').value;
+  const desc = document.getElementById('reportDesc').value.trim();
+  if (!type || !desc) { alert('Please select a report type and add a description.'); return; }
+  // TODO: Connect to API
+  document.getElementById('reportSuccess').style.display = 'block';
+  document.getElementById('reportType').value = '';
+  document.getElementById('reportDesc').value = '';
+  document.getElementById('reportListing').value = '';
+}
+</script>
+<script src="assets/app.min.js"></script>
+<script src="assets/notif.js"></script>
 </body>
 </html>

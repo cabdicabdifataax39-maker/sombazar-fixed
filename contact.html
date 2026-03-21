@@ -5,88 +5,291 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#f97316">
+  <meta name="theme-color" content="#ec5b13">
   <title>Contact Us — SomBazar</title>
-  <link rel="stylesheet" href="assets/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    .legal-page { max-width: 800px; margin: 40px auto; padding: 0 20px 40px; }
-    .legal-header { text-align: center; margin-bottom: 40px; }
-    .legal-header h1 { font-size: 2rem; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
-    .legal-header p { color: var(--gray); }
-    .legal-somali { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px 16px; margin-bottom: 32px; font-size: 14px; color: #92400e; }
-    .legal-section { margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
-    .legal-section:last-child { border-bottom: none; }
-    .legal-section h3 { font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
-    .legal-section p { color: #4b5563; line-height: 1.7; }
-    .legal-footer { text-align: center; color: var(--gray); font-size: 13px; margin-top: 40px; }
-    .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--primary); font-weight: 600; text-decoration: none; margin-bottom: 24px; font-size: 14px; }
-  </style>
-  <!-- Google Analytics GA4 -->
+  <script>(function(){var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  
+  
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-6H7F8Y980M', {
-      'cookie_domain': 'sombazar-fixed-production.up.railway.app',
-      'cookie_flags': 'SameSite=None;Secure'
-    });
-  </script>
-  <!-- Google Search Console Verification -->
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-6H7F8Y980M',{'cookie_domain':'sombazar-fixed-production.up.railway.app','cookie_flags':'SameSite=None;Secure'});</script>
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'DM Sans',sans-serif;background:#fff7f2;color:#0f172a;min-height:100vh;display:flex;flex-direction:column}
+    .material-symbols-outlined{font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 24;vertical-align:middle}
+    nav{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+    .nav-logo{font-family:'DM Serif Display',serif;font-size:20px;font-weight:900;color:#0f172a;text-decoration:none}
+    .nav-logo span{color:#ec5b13}
+    .nav-links{display:flex;align-items:center;gap:8px}
+    .nav-links a{font-size:13px;font-weight:600;color:#64748b;text-decoration:none;padding:6px 14px;border-radius:8px;transition:all .15s}
+    .nav-links a:hover{background:#f1f5f9;color:#0f172a}
+    .nav-links a.btn-primary{background:#ec5b13;color:#fff;padding:7px 18px;border-radius:10px}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#0c1445,#1a0a3c);padding:72px 24px;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(236,91,19,.2),transparent 70%);pointer-events:none}
+    .hero-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+    .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(236,91,19,.15);border:1px solid rgba(236,91,19,.3);color:#fb923c;padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:16px}
+    .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(32px,5vw,52px);font-weight:900;color:#fff;line-height:1.1;margin-bottom:14px;letter-spacing:-0.5px}
+    .hero h1 span{color:#ec5b13}
+    .hero p{color:rgba(255,255,255,.65);font-size:15px;line-height:1.7;margin-bottom:24px}
+    .response-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:10px 18px;border-radius:12px;font-size:13px;font-weight:700}
+    .response-dot{width:8px;height:8px;background:#22c55e;border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .hero-support{display:flex;flex-direction:column;gap:12px}
+    .support-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:20px 24px;display:flex;align-items:center;gap:16px;transition:all .2s;text-decoration:none}
+    .support-card:hover{background:rgba(255,255,255,.12);transform:translateX(4px)}
+    .support-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .support-icon .material-symbols-outlined{font-size:22px}
+    .support-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px}
+    .support-val{font-size:14px;font-weight:700;color:#fff;margin-top:2px}
+
+    /* CONTACT GRID */
+    .section{padding:64px 24px;flex:1}
+    .wrap{max-width:1000px;margin:0 auto}
+    .section-tag{display:inline-flex;align-items:center;gap:6px;background:#fff7f2;border:1px solid #fed7aa;color:#ec5b13;padding:5px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;margin-bottom:16px}
+    .section-title{font-family:'DM Serif Display',serif;font-size:clamp(26px,4vw,38px);font-weight:900;color:#0f172a;margin-bottom:12px;letter-spacing:-0.5px}
+    .section-desc{font-size:15px;color:#64748b;line-height:1.7;margin-bottom:40px}
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+    .contact-cards{display:flex;flex-direction:column;gap:16px}
+    .contact-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:24px;display:flex;gap:16px;align-items:flex-start;transition:all .2s}
+    .contact-card:hover{border-color:#ec5b13;box-shadow:0 8px 24px rgba(236,91,19,.1);transform:translateY(-2px)}
+    .cc-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .cc-icon .material-symbols-outlined{font-size:24px}
+    .cc-label{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .cc-title{font-size:15px;font-weight:800;color:#0f172a;margin-bottom:6px}
+    .cc-desc{font-size:13px;color:#64748b;line-height:1.6}
+    .cc-link{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;font-weight:700;color:#ec5b13;text-decoration:none}
+    .cc-link:hover{text-decoration:underline}
+
+    /* FORM */
+    .form-card{background:#fff;border:1px solid #e2e8f0;border-radius:24px;padding:36px}
+    .form-title{font-family:'DM Serif Display',serif;font-size:20px;font-weight:800;color:#0f172a;margin-bottom:24px}
+    .form-group{margin-bottom:18px}
+    .form-label{display:block;font-size:13px;font-weight:700;color:#374151;margin-bottom:6px}
+    .form-input{width:100%;padding:11px 16px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;background:#fff;color:#0f172a}
+    .form-input:focus{border-color:#ec5b13;box-shadow:0 0 0 3px rgba(236,91,19,.1)}
+    textarea.form-input{min-height:120px;resize:vertical}
+    select.form-input{cursor:pointer}
+    .form-btn{width:100%;background:#ec5b13;color:#fff;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .form-btn:hover{background:#d94f10;transform:translateY(-1px);box-shadow:0 8px 24px rgba(236,91,19,.3)}
+    .form-success{display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:16px;text-align:center;color:#166534;font-size:14px;font-weight:700;margin-top:16px}
+
+    /* MAP */
+    .map-section{background:#fff;border-top:1px solid #e2e8f0;padding:64px 24px}
+    .map-inner{max-width:1000px;margin:0 auto}
+    .map-box{background:linear-gradient(135deg,#0c1445,#1a0a3c);border-radius:24px;padding:48px;display:flex;gap:48px;align-items:center}
+    .map-text h3{font-family:'DM Serif Display',serif;font-size:26px;font-weight:900;color:#fff;margin-bottom:12px}
+    .map-text p{color:rgba(255,255,255,.65);font-size:14px;line-height:1.7;margin-bottom:20px}
+    .map-info{display:flex;flex-direction:column;gap:12px}
+    .map-info-item{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.8);font-size:13px;font-weight:600}
+    .map-info-item .material-symbols-outlined{font-size:18px;color:#ec5b13}
+    .map-visual{flex:1;min-width:200px;background:rgba(236,91,19,.1);border:2px solid rgba(236,91,19,.2);border-radius:16px;padding:32px;text-align:center}
+    .map-flag{font-size:48px;margin-bottom:8px}
+    .map-city{font-family:'DM Serif Display',serif;font-size:22px;font-weight:900;color:#fff}
+    .map-country{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px}
+
+    footer{background:#fff;border-top:1px solid #e2e8f0;padding:24px;text-align:center}
+    footer p{font-size:13px;color:#94a3b8}
+    footer a{color:#ec5b13;text-decoration:none;margin:0 8px}
+
+    @media(max-width:768px){.hero-inner,.contact-grid,.map-box{grid-template-columns:1fr;flex-direction:column}}
+  </style>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 </head>
 <body>
-<header class="header">
-  <nav class="nav-container">
-    <a href="index.html" class="logo">SomBazar</a>
-    <div class="header-actions">
-      <a href="index.html" class="btn btn-ghost btn-sm">← Home</a>
-    </div>
-  </nav>
-</header>
 
-<div class="legal-page">
-  <div class="legal-header">
-    <h1>📞 Contact Us</h1>
-    <p>Last updated: February 2026</p>
+<nav>
+  <a href="index.html" class="nav-logo">Som<span>Bazar</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="listings.html">Browse</a>
+    <a href="about.html">About</a>
+    <a href="post.html" class="btn-primary">Post Ad</a>
   </div>
-  <div class="legal-somali">🇸🇴 Af-Soomaali: Nala Soo Xiriir — Hoos ka akhri xeerarka adeegga.</div>
-  
-        <div class="legal-section">
-          <h3>WhatsApp Support</h3>
-          <p>+252 63 XXX XXXX — Available Saturday–Thursday, 8:00 AM – 8:00 PM (EAT)</p>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">
+        <span class="material-symbols-outlined" style="font-size:13px">support_agent</span>
+        Support & Inquiries
+      </div>
+      <h1>We're here to help your <span>business grow.</span></h1>
+      <p>Whether you're looking for technical support, partnership opportunities, or help buying or selling — our team is ready to assist you across all digital channels.</p>
+      <div class="response-badge">
+        <div class="response-dot"></div>
+        ≈ 15 Minutes average response time
+      </div>
+    </div>
+    <div class="hero-support">
+      <a href="https://wa.me/252XXXXXXXXX" class="support-card" target="_blank">
+        <div class="support-icon" style="background:rgba(37,211,102,.15)"><span class="material-symbols-outlined" style="color:#25d366">chat</span></div>
+        <div>
+          <div class="support-label">WhatsApp Support</div>
+          <div class="support-val">+252 63 XXX XXXX</div>
         </div>
-        <div class="legal-section">
-          <h3>Email</h3>
-          <p>support@sombazar.com — Response within 24 hours</p>
+      </a>
+      <a href="mailto:business@sombazar.com" class="support-card">
+        <div class="support-icon" style="background:rgba(236,91,19,.15)"><span class="material-symbols-outlined" style="color:#ec5b13">business_center</span></div>
+        <div>
+          <div class="support-label">Business Inquiries</div>
+          <div class="support-val">business@sombazar.com</div>
         </div>
-        <div class="legal-section">
-          <h3>Report a Problem</h3>
-          <p>Use the Report button on any listing or user profile. Urgent reports are handled within 2 hours.</p>
+      </a>
+      <a href="report-abuse.html" class="support-card">
+        <div class="support-icon" style="background:rgba(239,68,68,.15)"><span class="material-symbols-outlined" style="color:#ef4444">flag</span></div>
+        <div>
+          <div class="support-label">Report a Problem</div>
+          <div class="support-val">Use our report form →</div>
         </div>
-        <div class="legal-section">
-          <h3>Business Inquiries</h3>
-          <p>business@sombazar.com — For partnerships, bulk listing packages, or media inquiries.</p>
-        </div>
-        <div class="legal-section">
-          <h3>Office</h3>
-          <p>Hargeisa, Somaliland — Visit by appointment only.</p>
-        </div>
-  <div class="legal-footer">
-    <p>© 2026 SomBazar. All rights reserved.</p>
-    <p style="margin-top:8px">
-      <a href="terms.html" style="color:var(--primary);margin:0 8px">Terms</a>
-      <a href="privacy.html" style="color:var(--primary);margin:0 8px">Privacy</a>
-      <a href="safety.html" style="color:var(--primary);margin:0 8px">Safety</a>
-      <a href="contact.html" style="color:var(--primary);margin:0 8px">Contact</a>
-      <a href="faq.html" style="color:var(--primary);margin:0 8px">FAQ</a>
-    </p>
+      </a>
+    </div>
   </div>
 </div>
 
+<!-- CONTACT SECTION -->
+<div class="section">
+  <div class="wrap">
+    <div class="section-tag">
+      <span class="material-symbols-outlined" style="font-size:13px">contact_support</span>
+      Get In Touch
+    </div>
+    <div class="section-title">Send us a message</div>
+    <div class="section-desc">Our support team responds within 24 hours during business days (Saturday–Thursday).</div>
+    <div class="contact-grid">
+      <div class="contact-cards">
+        <div class="contact-card">
+          <div class="cc-icon" style="background:#f0fdf4"><span class="material-symbols-outlined" style="color:#22c55e">chat</span></div>
+          <div>
+            <div class="cc-label">WhatsApp Support</div>
+            <div class="cc-title">Instant chat support</div>
+            <div class="cc-desc">Available Saturday–Thursday, 8:00 AM – 8:00 PM EAT. We reply in Somali and English.</div>
+            <a href="https://wa.me/252XXXXXXXXX" class="cc-link" target="_blank">Chat Now →</a>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="cc-icon" style="background:#fff7f2"><span class="material-symbols-outlined" style="color:#ec5b13">email</span></div>
+          <div>
+            <div class="cc-label">Email Support</div>
+            <div class="cc-title">support@sombazar.com</div>
+            <div class="cc-desc">For account issues, payment questions, and listing help. Response within 24 hours.</div>
+            <a href="mailto:support@sombazar.com" class="cc-link">Email Us →</a>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="cc-icon" style="background:#eff6ff"><span class="material-symbols-outlined" style="color:#3b82f6">business_center</span></div>
+          <div>
+            <div class="cc-label">Business Inquiries</div>
+            <div class="cc-title">business@sombazar.com</div>
+            <div class="cc-desc">Partnerships, bulk listing packages, media, and advertising inquiries.</div>
+            <a href="mailto:business@sombazar.com" class="cc-link">Email Business →</a>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="cc-icon" style="background:#faf5ff"><span class="material-symbols-outlined" style="color:#8b5cf6">location_on</span></div>
+          <div>
+            <div class="cc-label">Global Office</div>
+            <div class="cc-title">Hargeisa, Somaliland</div>
+            <div class="cc-desc">Visit us by appointment only. Our team operates Sat–Thu, 8AM–8PM EAT.</div>
+          </div>
+        </div>
+      </div>
 
+      <!-- FORM -->
+      <div class="form-card">
+        <div class="form-title">Send a Message</div>
+        <div class="form-group">
+          <label class="form-label">Full Name *</label>
+          <input type="text" id="contactName" class="form-input" placeholder="Your full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input type="email" id="contactEmail" class="form-input" placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <select id="contactSubject" class="form-input">
+            <option value="">Select a topic</option>
+            <option>Account Issue</option>
+            <option>Payment / Billing</option>
+            <option>Listing Help</option>
+            <option>Report Abuse</option>
+            <option>Business Partnership</option>
+            <option>General Support</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message *</label>
+          <textarea id="contactMsg" class="form-input" placeholder="How can we help you?"></textarea>
+        </div>
+        <button class="form-btn" onclick="sendMessage()">
+          <span class="material-symbols-outlined" style="font-size:18px">send</span>
+          Send Message →
+        </button>
+        <div class="form-success" id="formSuccess">
+          ✅ Message sent! We'll reply within 24 hours.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<script src="assets/app.js"></script>
+<!-- MAP -->
+<div class="map-section">
+  <div class="map-inner">
+    <div class="section-tag">
+      <span class="material-symbols-outlined" style="font-size:13px">location_on</span>
+      Visit Our Hub
+    </div>
+    <div class="section-title" style="margin-bottom:32px">Find Us</div>
+    <div class="map-box">
+      <div class="map-text">
+        <h3>Hargeisa HQ</h3>
+        <p>Our main office is located in Hargeisa, the capital of Somaliland. We operate Saturday through Thursday and welcome partners and enterprise clients by appointment.</p>
+        <div class="map-info">
+          <div class="map-info-item"><span class="material-symbols-outlined">schedule</span> Sat–Thu · 8:00 AM – 8:00 PM EAT</div>
+          <div class="map-info-item"><span class="material-symbols-outlined">location_city</span> Hargeisa, Somaliland</div>
+          <div class="map-info-item"><span class="material-symbols-outlined">language</span> support@sombazar.com</div>
+        </div>
+      </div>
+      <div class="map-visual">
+        <div class="map-flag">🇸🇴</div>
+        <div class="map-city">Hargeisa</div>
+        <div class="map-country">Somaliland</div>
+        <a href="https://maps.google.com/?q=Hargeisa,Somaliland" target="_blank" style="display:inline-block;margin-top:16px;background:#ec5b13;color:#fff;padding:9px 20px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;">Get Directions →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 SomBazar · Hargeisa, Somaliland &nbsp;·&nbsp;
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="safety.html">Safety</a>
+    <a href="contact.html">Contact</a>
+    <a href="faq.html">FAQ</a>
+  </p>
+</footer>
+
+<script>
+function sendMessage() {
+  const name = document.getElementById('contactName').value.trim();
+  const email = document.getElementById('contactEmail').value.trim();
+  const msg = document.getElementById('contactMsg').value.trim();
+  if (!name || !email || !msg) { alert('Please fill in all required fields.'); return; }
+  // TODO: Connect to API
+  document.getElementById('formSuccess').style.display = 'block';
+  document.getElementById('contactName').value = '';
+  document.getElementById('contactEmail').value = '';
+  document.getElementById('contactMsg').value = '';
+}
+</script>
+<script src="assets/app.min.js"></script>
+<script src="assets/notif.js"></script>
 </body>
 </html>
