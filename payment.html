@@ -72,6 +72,17 @@
     [data-theme="dark"] .upload-zone { background:#0f172a!important; border-color:#334155!important; }
     [data-theme="dark"] .receipt-box { background:#0f172a!important; border-color:#334155!important; }
   </style>
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sombazar-fixed-production.up.railway.app/payment.html">
+  <meta property="og:title" content="Payment — SomBazar">
+  <meta property="og:description" content="SomBazar — Buy, sell and rent in Somaliland.">
+  <meta property="og:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
+  <meta property="og:site_name" content="SomBazar">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Payment — SomBazar">
+  <meta name="twitter:description" content="SomBazar — Buy, sell and rent in Somaliland.">
+  <meta name="twitter:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
 </head>
 <body class="text-slate-900 min-h-screen" style="background:#fef6ee">
 
@@ -357,7 +368,19 @@
 
       <!-- Order Summary Card -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sticky top-20">
-        <h3 class="text-base font-bold text-slate-900 mb-5">Order Summary</h3>
+        <h3 class="text-base font-bold text-slate-900 mb-4">Order Summary</h3>
+
+        <!-- Billing cycle toggle -->
+        <div style="background:#fef6ee;border:1.5px solid #fed7aa;border-radius:12px;padding:12px 14px;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:800;color:#92400e;margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;">Billing Cycle</div>
+          <div style="display:flex;gap:6px;">
+            <button id="billingMonthly" onclick="setBillingCycle('monthly')" style="flex:1;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid #f97316;background:#f97316;color:#fff;cursor:pointer;font-family:inherit;transition:all .15s;">Monthly</button>
+            <button id="billingAnnual" onclick="setBillingCycle('annual')" style="flex:1;padding:7px 10px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid #e2e8f0;background:#fff;color:#374151;cursor:pointer;font-family:inherit;transition:all .15s;">
+              Annual <span style="background:#dcfce7;color:#16a34a;font-size:10px;padding:1px 5px;border-radius:6px;margin-left:2px;">Save 17%</span>
+            </button>
+          </div>
+          <div id="annualSavingsNote" style="display:none;font-size:11px;color:#16a34a;font-weight:700;margin-top:6px;">✓ You pay for 10 months, get 12 months!</div>
+        </div>
 
         <!-- Plan item -->
         <div class="flex items-start gap-3 mb-5 pb-5 border-b border-slate-100">
@@ -572,6 +595,32 @@ const PLAN_PERIODS = { free:'Free forever', standard:'Active until Dec 2026', pr
 const FEE_RATE    = 0.06; // 6% platform fee
 
 let selectedMethod  = null;
+let billingCycle    = 'monthly';
+
+function setBillingCycle(cycle) {
+  billingCycle = cycle;
+  const monthlyBtn = document.getElementById('billingMonthly');
+  const annualBtn  = document.getElementById('billingAnnual');
+  const note       = document.getElementById('annualSavingsNote');
+  if (cycle === 'annual') {
+    monthlyBtn.style.background = '#fff';
+    monthlyBtn.style.color = '#374151';
+    monthlyBtn.style.borderColor = '#e2e8f0';
+    annualBtn.style.background = '#f97316';
+    annualBtn.style.color = '#fff';
+    annualBtn.style.borderColor = '#f97316';
+    note.style.display = 'block';
+  } else {
+    monthlyBtn.style.background = '#f97316';
+    monthlyBtn.style.color = '#fff';
+    monthlyBtn.style.borderColor = '#f97316';
+    annualBtn.style.background = '#fff';
+    annualBtn.style.color = '#374151';
+    annualBtn.style.borderColor = '#e2e8f0';
+    note.style.display = 'none';
+  }
+  updateSummary();
+}
 let screenshotUrl   = null;
 let paymentNumbers  = {};
 let discountedPrice = null;
@@ -605,14 +654,15 @@ function populateTopbar() {
 }
 
 function updateSummary() {
-  const base      = discountedPrice !== null ? discountedPrice : priceParam;
-  const fee       = 0; // included
-  const discount  = discountedPrice !== null ? (priceParam - discountedPrice) : 0;
-  const total     = base + fee;
+  const monthlyBase = billingCycle === 'annual' ? priceParam * 10 : priceParam;
+  const base        = discountedPrice !== null ? discountedPrice : monthlyBase;
+  const fee         = 0; // included
+  const discount    = discountedPrice !== null ? (monthlyBase - discountedPrice) : 0;
+  const total       = base + fee;
   const planLabel = PLAN_LABELS[plan] || plan;
 
   document.getElementById('summaryPlanName').textContent    = planLabel;
-  document.getElementById('summaryPlanPeriod').textContent  = PLAN_PERIODS[plan] || '';
+  document.getElementById('summaryPlanPeriod').textContent  = billingCycle === 'annual' ? '12 months (annual)' : (PLAN_PERIODS[plan] || 'Monthly');
   document.getElementById('summaryOriginalPrice').textContent = `$${priceParam.toFixed(2)}`;
   document.getElementById('subtotalVal').textContent        = `$${priceParam.toFixed(2)}`;
   document.getElementById('feeVal').textContent             = `$${fee.toFixed(2)}`;
@@ -816,6 +866,7 @@ async function submitPayment() {
         reference_code: ref,
         screenshot_url: screenshotUrl,
         coupon_code: couponCode || undefined,
+        billing_cycle: billingCycle,
         ref: sessionStorage.getItem('sb_affiliate_ref') || undefined,
       })
     });
