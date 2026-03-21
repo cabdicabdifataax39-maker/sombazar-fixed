@@ -249,10 +249,10 @@ function requireAuth(bool $skipBanCheck = false): int {
         $db = getDB();
         // Try with new columns (migrate4), fallback to basic columns
         try {
-            $st = $db->prepare('SELECT banned, ban_reason, token_invalidated_at FROM users WHERE id = ?');
+            $st = $db->prepare('SELECT banned, ban_reason, token_invalidated_at, last_seen FROM users WHERE id = ?');
             $st->execute([$uid]);
         } catch(\Throwable $e) {
-            $st = $db->prepare('SELECT 0 as banned, NULL as ban_reason, NULL as token_invalidated_at FROM users WHERE id = ?');
+            $st = $db->prepare('SELECT 0 as banned, NULL as ban_reason, NULL as token_invalidated_at, NULL as last_seen FROM users WHERE id = ?');
             $st->execute([$uid]);
         }
         $user = $st->fetch();
@@ -269,6 +269,13 @@ function requireAuth(bool $skipBanCheck = false): int {
                     jsonError('Session expired. Please sign in again.', 401);
                 }
             }
+        }
+        // Update last_seen — throttled: only if last update was >60 seconds ago
+        $lastSeen = $user['last_seen'] ?? null;
+        if (!$lastSeen || (time() - strtotime($lastSeen)) > 60) {
+            try {
+                $db->prepare('UPDATE users SET last_seen = NOW() WHERE id = ?')->execute([$uid]);
+            } catch(\Throwable $e) {}
         }
     }
     return $uid;
