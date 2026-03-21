@@ -440,6 +440,11 @@ window.API = window.API || {};
 // ── Redirect if already logged in ──────────────────────────
 if (Auth.isLoggedIn()) {
   const rd = new URLSearchParams(location.search).get('redirect') || 'index.html';
+  // Preserve affiliate ref across auth flow
+  (function() {
+    const ref = new URLSearchParams(location.search).get('ref');
+    if (ref) sessionStorage.setItem('sb_affiliate_ref', ref);
+  })();
   window.location.href = rd;
 }
 

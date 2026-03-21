@@ -108,6 +108,22 @@ function handleAffiliateApply(): void {
     try {
         $db->prepare("INSERT INTO affiliates (user_id, ref_code, status, is_active) VALUES (?,?,'pending',0)")
            ->execute([$uid, $refCode]);
+
+        // Notify admin about new affiliate application
+        try {
+            $userSt = $db->prepare('SELECT display_name, email FROM users WHERE id = ?');
+            $userSt->execute([$uid]);
+            $applicant = $userSt->fetch();
+            if ($applicant) {
+                $adminEmail = getenv('ADMIN_EMAIL') ?: getenv('SMTP_FROM') ?: 'noreply@sombazar.com';
+                Mailer::sendAffiliateApplicationNotification(
+                    $adminEmail,
+                    $applicant['display_name'],
+                    $applicant['email']
+                );
+            }
+        } catch(\Throwable $mailErr) { error_log('Affiliate apply email error: ' . $mailErr->getMessage()); }
+
         jsonSuccess(['status' => 'pending', 'message' => 'Application submitted. Admin will review within 24 hours.']);
     } catch(\Throwable $e) { jsonError('Database error: ' . $e->getMessage()); }
 }
@@ -136,11 +152,26 @@ function handleRegister(): void {
         if ($bl->fetch()) jsonError('This phone number cannot be used to register.');
     }
 
-    $hash = password_hash($pass, PASSWORD_DEFAULT);
-    $st   = $db->prepare('INSERT INTO users (display_name, email, password_hash) VALUES (?,?,?)');
+    $hash    = password_hash($pass, PASSWORD_DEFAULT);
+    $refCode = trim($data['ref'] ?? ''); // affiliate referral code
+
+    $st = $db->prepare('INSERT INTO users (display_name, email, password_hash) VALUES (?,?,?)');
     $st->execute([$name, $email, $hash]);
     $uid   = (int) $db->lastInsertId();
     $token = createToken($uid);
+
+    // Track referral: if user registered via affiliate link, record referred_by
+    if ($refCode) {
+        try {
+            $affSt = $db->prepare("SELECT id, user_id FROM affiliates WHERE ref_code = ? AND is_active = 1");
+            $affSt->execute([$refCode]);
+            $aff = $affSt->fetch();
+            if ($aff) {
+                $db->prepare("UPDATE users SET referred_by = ? WHERE id = ?")
+                   ->execute([$aff['user_id'], $uid]);
+            }
+        } catch(\Throwable $e) { error_log('Referral tracking error: ' . $e->getMessage()); }
+    }
 
     // Send welcome email
     try { Mailer::sendWelcome($email, $name); } catch(\Throwable $e) {}

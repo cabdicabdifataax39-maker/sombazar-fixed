@@ -768,7 +768,7 @@ function handleApprovePayment(): void {
     // Affiliate komisyon hesapla ve ekle
     try {
         if (!empty($pay['affiliate_id'])) {
-            $affSt = $db->prepare("SELECT id, commission_rate FROM affiliates WHERE id = ?");
+            $affSt = $db->prepare("SELECT a.*, u.email, u.display_name FROM affiliates a JOIN users u ON u.id=a.user_id WHERE a.id = ?");
             $affSt->execute([$pay['affiliate_id']]);
             $aff = $affSt->fetch();
             if ($aff) {
@@ -776,6 +776,17 @@ function handleApprovePayment(): void {
                 $db->prepare("UPDATE affiliates SET total_earned = total_earned + ?, pending_payout = pending_payout + ? WHERE id = ?")
                    ->execute([$commission, $commission, $aff['id']]);
                 logAction($uid, 'affiliate_commission', 'affiliates', $aff['id'], "Commission \$$commission for payment #$pid");
+                // Email affiliate about their commission
+                try {
+                    $newPending = (float)$aff['pending_payout'] + $commission;
+                    Mailer::sendAffiliateCommission(
+                        $aff['email'],
+                        $aff['display_name'],
+                        $commission,
+                        $newPending,
+                        $aff['ref_code']
+                    );
+                } catch(\Throwable $mailErr) { error_log('Affiliate commission email error: ' . $mailErr->getMessage()); }
             }
         }
     } catch(\Throwable $e) { error_log("admin.php affiliate commission error: " . $e->getMessage()); }

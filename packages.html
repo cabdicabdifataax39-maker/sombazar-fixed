@@ -604,6 +604,19 @@ function renderComparison() {
   `).join('');
 }
 
+// ─────────────────────────── AFFILIATE REF ───────────────────────────
+// Capture ?ref= from URL and persist in sessionStorage
+(function() {
+  const p = new URLSearchParams(location.search);
+  const ref = p.get('ref');
+  if (ref) sessionStorage.setItem('sb_affiliate_ref', ref);
+})();
+
+function _refParam() {
+  const ref = sessionStorage.getItem('sb_affiliate_ref');
+  return ref ? '&ref=' + encodeURIComponent(ref) : '';
+}
+
 // ─────────────────────────── PLAN CLICK ───────────────────────────
 async function handlePlanClick(plan, price) {
   if (!Auth.isLoggedIn()) {
@@ -644,13 +657,13 @@ async function handlePlanClick(plan, price) {
     document.getElementById('upgradeModal').classList.remove('hidden');
   } catch {
     // fallback direct
-    window.location.href = `payment.html?plan=${plan}&price=${price}`;
+    window.location.href = `payment.html?plan=${plan}&price=${price}${_refParam()}`;
   }
 }
 
 function proceedPayment() {
   closeModal();
-  if (pendingPlan) window.location.href = `payment.html?plan=${pendingPlan}&price=${pendingPrice}`;
+  if (pendingPlan) window.location.href = `payment.html?plan=${pendingPlan}&price=${pendingPrice}${_refParam()}`;
 }
 
 function closeModal() {

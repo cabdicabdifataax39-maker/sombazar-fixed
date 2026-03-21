@@ -326,6 +326,45 @@ class Mailer {
         return self::send($to, $name, "Receipt #{$receiptNo} — SomBazar {$planLabel} Plan", $html);
     }
 
+    public static function sendAffiliateCommission(string $to, string $name, float $commission, float $total, string $refCode): bool {
+        return self::send($to, $name,
+            "You earned \${$commission} commission — SomBazar Affiliate",
+            self::template(
+                "💰 Commission Earned!",
+                "<p>Hi <strong>{$name}</strong>,</p>
+                 <p>Great news! You just earned a commission from your referral link.</p>
+                 <table style='width:100%;border-collapse:collapse;margin:16px 0'>
+                   <tr><td style='padding:10px;background:#f8fafc;border-radius:6px;font-weight:600;color:#374151'>Commission Earned</td>
+                       <td style='padding:10px;background:#f8fafc;border-radius:6px;font-weight:800;color:#16a34a;text-align:right'>+\${$commission}</td></tr>
+                   <tr><td style='padding:10px;font-weight:600;color:#374151'>Total Pending Payout</td>
+                       <td style='padding:10px;font-weight:800;color:#ec5b13;text-align:right'>\${$total}</td></tr>
+                   <tr><td style='padding:10px;background:#f8fafc;border-radius:6px;font-weight:600;color:#374151'>Your Ref Code</td>
+                       <td style='padding:10px;background:#f8fafc;border-radius:6px;font-family:monospace;font-weight:700;text-align:right'>{$refCode}</td></tr>
+                 </table>
+                 <p style='color:#64748b;font-size:13px'>Once your balance reaches \$5, contact us via the support page and we'll send your payment via Zaad or eDahab within 48 hours.</p>"
+            )
+        );
+    }
+
+    public static function sendAffiliateApplicationNotification(string $adminEmail, string $applicantName, string $applicantEmail): bool {
+        return self::send($adminEmail, 'SomBazar Admin',
+            "New Affiliate Application — {$applicantName}",
+            self::template(
+                "New Affiliate Application",
+                "<p>A new user has applied for the affiliate program.</p>
+                 <table style='width:100%;border-collapse:collapse;margin:16px 0'>
+                   <tr><td style='padding:10px;background:#f8fafc;border-radius:6px;font-weight:600;color:#374151'>Name</td>
+                       <td style='padding:10px;background:#f8fafc;border-radius:6px;font-weight:700'>" . htmlspecialchars($applicantName) . "</td></tr>
+                   <tr><td style='padding:10px;font-weight:600;color:#374151'>Email</td>
+                       <td style='padding:10px;font-weight:700'>" . htmlspecialchars($applicantEmail) . "</td></tr>
+                 </table>
+                 <p><a href='https://sombazar-fixed-production.up.railway.app/admin.html#affiliates'
+                    style='background:#ec5b13;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:700;display:inline-block'>
+                    Review in Admin Panel →</a></p>"
+            )
+        );
+    }
+
     private static function template(string $heading, string $content): string {
         $year    = date('Y');
         $siteUrl = defined('SITE_URL') ? SITE_URL : 'https://sombazar.com';

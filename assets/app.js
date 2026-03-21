@@ -93,7 +93,7 @@ const CSRF = (() => {
 const API = {
   // Auth
   login:    (email, password) => apiFetch(`${API_BASE}/auth.php?action=login`, { method: 'POST', body: JSON.stringify({ email, password }) }),
-  register: (displayName, email, password) => apiFetch(`${API_BASE}/auth.php?action=register`, { method: 'POST', body: JSON.stringify({ displayName, email, password }) }),
+  register: (displayName, email, password) => apiFetch(`${API_BASE}/auth.php?action=register`, { method: 'POST', body: JSON.stringify({ displayName, email, password, ref: sessionStorage.getItem('sb_affiliate_ref') || undefined }) }),
   me:       () => apiFetch(`${API_BASE}/auth.php?action=me`),
   updateProfile: (data) => apiFetch(`${API_BASE}/auth.php?action=update`, { method: 'POST', body: JSON.stringify(data) }),
 
