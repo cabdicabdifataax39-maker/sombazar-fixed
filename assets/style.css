@@ -18,7 +18,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 /* ═══ DARK MODE — CSS VARIABLES ═══════════════════════════════ */
 :root {
   --bg-primary:    #ffffff;
-  --bg-secondary:  #f8fafc;
+  --bg-secondary:  #fef6ee;
   --bg-card:       #ffffff;
   --text-primary:  #0f172a;
   --text-secondary:#64748b;
@@ -120,7 +120,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   --bg: #ffffff;
   --zaad-color: #16a34a;
   --edahab-color: #0ea5e9;
-  --bg-page: #f8fafc;
+  --bg-page: #fef6ee;
   --bg-card: #ffffff;
   --bg-header: rgba(255,255,255,0.92);
   --text-main: #0f172a;
