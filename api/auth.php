@@ -64,8 +64,52 @@ switch ($action) {
     case 'check_deletion':
         handleCheckDeletion();
         break;
+    case 'my_affiliate':
+        handleMyAffiliate();
+        break;
+    case 'apply_for_affiliate':
+        if ($method !== 'POST') jsonError('Method not allowed', 405);
+        handleAffiliateApply();
+        break;
     default:
         jsonError('Unknown action', 404);
+}
+
+// ── Affiliate: get my affiliate status ────────────────────────
+function handleMyAffiliate(): void {
+    $uid = requireAuth();
+    $db  = getDB();
+    try { $db->exec("ALTER TABLE affiliates ADD COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending'"); } catch(\Throwable $e) {}
+    $st = $db->prepare("SELECT a.*, u.display_name, u.email FROM affiliates a JOIN users u ON u.id=a.user_id WHERE a.user_id=?");
+    $st->execute([$uid]);
+    $aff = $st->fetch();
+    if (!$aff) {
+        jsonSuccess(['affiliate' => null, 'status' => 'none']);
+    }
+    $status = $aff['status'] ?? ($aff['is_active'] ? 'approved' : 'pending');
+    jsonSuccess(['affiliate' => $aff, 'status' => $status]);
+}
+
+// ── Affiliate: apply to become affiliate ─────────────────────
+function handleAffiliateApply(): void {
+    $uid = requireAuth();
+    $db  = getDB();
+    try { $db->exec("ALTER TABLE affiliates ADD COLUMN status ENUM('pending','approved','rejected') DEFAULT 'pending'"); } catch(\Throwable $e) {}
+    try { $db->exec("ALTER TABLE affiliates ADD COLUMN is_active TINYINT(1) DEFAULT 0"); } catch(\Throwable $e) {}
+
+    $st = $db->prepare("SELECT id, status FROM affiliates WHERE user_id = ?");
+    $st->execute([$uid]);
+    $existing = $st->fetch();
+    if ($existing) {
+        jsonSuccess(['status' => $existing['status'], 'message' => 'Already applied. Status: ' . $existing['status']]);
+    }
+
+    $refCode = 'SB' . strtoupper(substr(md5($uid . time()), 0, 6));
+    try {
+        $db->prepare("INSERT INTO affiliates (user_id, ref_code, status, is_active) VALUES (?,?,'pending',0)")
+           ->execute([$uid, $refCode]);
+        jsonSuccess(['status' => 'pending', 'message' => 'Application submitted. Admin will review within 24 hours.']);
+    } catch(\Throwable $e) { jsonError('Database error: ' . $e->getMessage()); }
 }
 
 function handleRegister(): void {

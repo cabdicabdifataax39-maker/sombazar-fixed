@@ -764,6 +764,15 @@
               </div>
             </div>
           </div>
+          <div id="settingsAffiliateS" style="display:none;">
+            <div class="card" style="padding:24px;">
+              <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px;">Affiliate Program</h3>
+              <p style="font-size:13px;color:#64748b;margin-bottom:20px;">Earn commission by referring new users to SomBazar. Share your unique link and get paid for every successful plan purchase.</p>
+              <div id="affiliateDashboard">
+                <div style="text-align:center;padding:32px;color:#94a3b8;font-size:14px;">Loading…</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div><!-- /settings -->
@@ -836,17 +845,6 @@
 window.Auth=window.Auth||{getToken:()=>localStorage.getItem('sb_token')||'',getUser:()=>{try{return JSON.parse(localStorage.getItem('sb_user'));}catch(e){return null;}},isLoggedIn:()=>!!localStorage.getItem('sb_token'),setSession:(t,u)=>{localStorage.setItem('sb_token',t);localStorage.setItem('sb_user',JSON.stringify(u));},clearSession:()=>{localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');}};
 window.API=window.API||{};
 </script>
-
-          <div id="settingsAffiliateS" style="display:none;">
-            <div class="card" style="padding:24px;">
-              <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:4px;">Affiliate Program</h3>
-              <p style="font-size:13px;color:#64748b;margin-bottom:20px;">Earn commission by referring new users to SomBazar. Share your unique link and get paid for every successful plan purchase.</p>
-
-              <div id="affiliateDashboard">
-                <div style="text-align:center;padding:32px;color:#94a3b8;font-size:14px;">Loading…</div>
-              </div>
-            </div>
-          </div>
 
 <script src="assets/app.min.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-6H7F8Y980M"></script>
@@ -1123,7 +1121,7 @@ async function loadAffiliateSection() {
   el.innerHTML = '<div style="text-align:center;padding:32px;color:#94a3b8;font-size:14px;">Loading…</div>';
 
   try {
-    const r = await fetch('api/admin.php?action=my_affiliate', {
+    const r = await fetch('api/auth.php?action=my_affiliate', {
       headers: { Authorization: 'Bearer ' + Auth.getToken() }
     });
     const d = await r.json();
@@ -1214,7 +1212,7 @@ async function applyForAffiliate() {
   btn.disabled = true;
   btn.textContent = 'Submitting…';
   try {
-    const r = await fetch('api/admin.php?action=apply_for_affiliate', {
+    const r = await fetch('api/auth.php?action=apply_for_affiliate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
       body: JSON.stringify({})
