@@ -16,7 +16,7 @@ $isCLI = php_sapi_name() === 'cli';
 
 // Web'den çalıştırılıyorsa güvenlik kontrolü
 if (!$isCLI) {
-    $secret = $_GET['secret'] ?? '';
+    $secret = $_GET['token'] ?? $_GET['secret'] ?? '';
     $expectedSecret = getenv('CRON_SECRET') ?: 'changeme_cron_secret';
     if (!hash_equals($expectedSecret, $secret)) {
         http_response_code(403);
