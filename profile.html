@@ -215,7 +215,6 @@
 <!-- ═══════════ MAIN CONTENT ═══════════ -->
 <div id="profileContent" style="display:none;">
 <div style="max-width:1100px;margin:0 auto;padding:16px 12px 100px;display:grid;grid-template-columns:280px 1fr;gap:24px;" class="profile-grid" id="profileGrid">
-<div style="display:grid;grid-template-columns:280px 1fr;gap:24px;" class="profile-grid" id="profileGrid2">
 
   <!-- ═══════════ LEFT SIDEBAR ═══════════ -->
   <div class="sidebar-sticky" style="position:sticky;top:68px;align-self:start;">
@@ -239,18 +238,18 @@
       </div>
       <div id="verifyBadgeWrap" style="margin-bottom:10px;"></div>
       <!-- Stats -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #f1f5f9;padding-top:14px;margin-top:4px;gap:4px;">
-        <div>
-          <div id="statListings" style="font-size:18px;font-weight:900;color:#0f172a;">0</div>
-          <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;">LISTINGS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid #f1f5f9;padding-top:12px;margin-top:4px;">
+        <div style="padding:0 4px;">
+          <div id="statListings" style="font-size:17px;font-weight:900;color:#0f172a;">0</div>
+          <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;">LISTINGS</div>
         </div>
-        <div style="border-left:1px solid #f1f5f9;border-right:1px solid #f1f5f9;">
-          <div id="statReviews" style="font-size:18px;font-weight:900;color:#0f172a;">0</div>
-          <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;">REVIEWS</div>
+        <div style="border-left:1px solid #f1f5f9;border-right:1px solid #f1f5f9;padding:0 4px;">
+          <div id="statReviews" style="font-size:17px;font-weight:900;color:#0f172a;">0</div>
+          <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;">REVIEWS</div>
         </div>
-        <div>
-          <div id="statRating" style="font-size:18px;font-weight:900;color:#0f172a;">—</div>
-          <div style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;">RATING</div>
+        <div style="padding:0 4px;">
+          <div id="statRating" style="font-size:17px;font-weight:900;color:#0f172a;">—</div>
+          <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.3px;">RATING</div>
         </div>
       </div>
     </div>
@@ -897,7 +896,7 @@ if(!Auth.isLoggedIn()){
 // Responsive layout
 function applyLayout(){
   const isMobile=window.innerWidth<900;
-  const grid=document.getElementById('profileGrid2');
+  const grid=document.getElementById('profileGrid');
   if(grid){grid.style.gridTemplateColumns=isMobile?'1fr':'280px 1fr';}
   const mNav=document.getElementById('mobileNav');
   if(mNav)mNav.style.display=isMobile?'':'none';
