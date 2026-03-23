@@ -103,7 +103,7 @@
     /* Sort select */
     select.sort-sel{padding:6px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:700;outline:none;font-family:inherit;background:#fff;color:#374151;}
     /* Tab pill */
-    .tab-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 16px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .15s;}
+    .tab-pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap;flex-shrink:0;}
     .tab-pill.active{background:#ec5b13;color:#fff;}
     .tab-pill:not(.active){background:#f1f5f9;color:#374151;}
     .tab-pill:not(.active):hover{background:#e2e8f0;}
@@ -299,7 +299,7 @@
   <div>
 
     <!-- Mobile tab scroll -->
-    <div style="display:none;overflow-x:auto;gap:8px;padding-bottom:12px;scrollbar-width:none;" id="mobileTabBar" class="mobile-tabs">
+    <div style="display:none;overflow-x:auto;overflow-y:hidden;white-space:nowrap;gap:8px;padding-bottom:12px;scrollbar-width:none;-webkit-overflow-scrolling:touch;" id="mobileTabBar" class="mobile-tabs">
       <button onclick="switchTab('listings')" class="tab-pill active" id="mTabListings">My Listings</button>
       <button onclick="switchTab('favorites')" class="tab-pill" id="mTabFavorites">Favorites</button>
       <button onclick="switchTab('offers')" class="tab-pill" id="mTabOffers">Offers</button>

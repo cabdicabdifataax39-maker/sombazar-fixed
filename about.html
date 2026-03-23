@@ -28,6 +28,8 @@
     .nav-links a:hover{background:#f1f5f9;color:#0f172a}
     .nav-links a.btn-primary{background:#ec5b13;color:#fff;padding:7px 18px;border-radius:10px}
     .nav-links a.btn-primary:hover{background:#d94f10}
+    .nav-hide-mobile{display:none}
+    @media(min-width:640px){.nav-hide-mobile{display:block}}
 
     /* HERO */
     .hero{background:linear-gradient(135deg,#0c1445 0%,#1a0a3c 50%,#0c1445 100%);padding:80px 24px;text-align:center;position:relative;overflow:hidden}
@@ -133,9 +135,9 @@
 <nav>
   <a href="index.html" class="nav-logo">Som<span>Bazar</span></a>
   <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="listings.html">Browse</a>
-    <a href="contact.html">Contact</a>
+    <a href="index.html" class="nav-hide-mobile">Home</a>
+    <a href="listings.html" class="nav-hide-mobile">Browse</a>
+    <a href="contact.html" class="nav-hide-mobile">Contact</a>
     <a href="post.html" class="btn-primary">Post Ad</a>
   </div>
 </nav>
