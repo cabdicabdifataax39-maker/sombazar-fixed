@@ -93,7 +93,8 @@
       .sidebar-sticky{position:static!important;}
     }
     @media(max-width:640px){
-      .stat-grid-4{grid-template-columns:1fr 1fr!important;}
+      .stat-grid-4{grid-template-columns:repeat(2,1fr)!important;}
+      @media(min-width:768px){.stat-grid-4{grid-template-columns:repeat(4,1fr)!important;}}
       .listing-row-img,.listing-row-ph{width:100%;height:140px;}
       .similar-4col{grid-template-columns:repeat(2,1fr)!important;}
     }
@@ -160,44 +161,40 @@
 <body>
 
 <!-- ═══════════ HEADER ═══════════ -->
-<header style="background:#fff;border-bottom:1px solid #e2e8f0;height:56px;display:flex;align-items:center;padding:0 20px;position:sticky;top:0;z-index:100;">
-  <div style="max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;gap:14px;">
-    <a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;flex-shrink:0;">
-      <div style="background:#ec5b13;width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-        <span class="material-symbols-outlined" style="color:#fff;font-size:18px;">sell</span>
+<header style="background:#fff;border-bottom:1px solid #e2e8f0;height:56px;display:flex;align-items:center;padding:0 12px;position:sticky;top:0;z-index:100;">
+  <div style="max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;gap:8px;overflow:hidden;">
+    <a href="index.html" style="display:flex;align-items:center;gap:6px;text-decoration:none;flex-shrink:0;">
+      <div style="background:#ec5b13;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+        <span class="material-symbols-outlined" style="color:#fff;font-size:16px;">sell</span>
       </div>
-      <span style="font-size:17px;font-weight:900;color:#0f172a;">SomBazar</span>
+      <span style="font-size:16px;font-weight:900;color:#0f172a;">SomBazar</span>
     </a>
-    <form style="flex:1;max-width:460px;position:relative;" onsubmit="return hsSearch(event)">
-      <span class="material-symbols-outlined" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:17px;pointer-events:none;">search</span>
-      <input id="headerSearchInput" type="search" placeholder="Search your listings, orders..."
-        style="width:100%;padding:9px 12px 9px 36px;background:#f1f5f9;border:1.5px solid transparent;border-radius:12px;font-size:13px;outline:none;font-family:inherit;"
+    <form style="flex:1;min-width:0;max-width:300px;position:relative;display:none;" onsubmit="return hsSearch(event)" class="header-search-form">
+      <span class="material-symbols-outlined" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:15px;pointer-events:none;">search</span>
+      <input id="headerSearchInput" type="search" placeholder="Search..."
+        style="width:100%;padding:8px 10px 8px 32px;background:#f1f5f9;border:1.5px solid transparent;border-radius:10px;font-size:12px;outline:none;font-family:inherit;"
         onfocus="this.style.borderColor='#ec5b13';this.style.background='#fff'"
         onblur="this.style.borderColor='transparent';this.style.background='#f1f5f9'">
     </form>
-    <div style="display:flex;align-items:center;gap:4px;margin-left:auto;flex-shrink:0;">
-      <a href="post.html" style="background:#ec5b13;color:#fff;padding:7px 10px;border-radius:10px;font-size:12px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap;">
-        <span class="material-symbols-outlined" style="font-size:15px;">add</span> <span class="hide-xs">Post Ad</span>
+    <div style="display:flex;align-items:center;gap:3px;margin-left:auto;flex-shrink:0;">
+      <a href="post.html" style="background:#ec5b13;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;">
+        <span class="material-symbols-outlined" style="font-size:14px;">add</span> Post Ad
       </a>
-      <button id="langBtn" onclick="toggleLang()" title="Switch language" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 7px;font-size:10px;font-weight:800;color:#374151;cursor:pointer;display:flex;align-items:center;gap:3px;white-space:nowrap;font-family:inherit;flex-shrink:0;" onmouseover="this.style.background='#fef6ee';this.style.borderColor='#f97316'" onmouseout="this.style.background='#f1f5f9';this.style.borderColor='#e2e8f0'"><svg width="18" height="12" viewBox="0 0 22 15" xmlns="http://www.w3.org/2000/svg" style="border-radius:2px;flex-shrink:0;display:inline-block;vertical-align:middle"><rect width="22" height="15" fill="#009A44"/><rect y="5" width="22" height="5" fill="white"/><rect y="10" width="22" height="5" fill="#CE1126"/></svg> <span class="hide-xs">Somali</span></button>
-      <button onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:6px;color:#64748b;border-radius:8px;display:none;align-items:center;justify-content:center;" class="dark-mode-btn show-sm"><span class="material-symbols-outlined" style="font-size:18px;">dark_mode</span></button>
-        <div style="position:relative;" id="notifBellWrap">
-        <button onclick="toggleNotifDropdown()" id="notifBell" style="background:none;border:none;cursor:pointer;padding:7px;color:#64748b;position:relative;">
-          <span class="material-symbols-outlined" style="font-size:22px;">notifications</span>
-          <span id="notifBadge" style="display:none;position:absolute;top:7px;right:7px;width:8px;height:8px;background:#ec5b13;border-radius:50%;border:2px solid #fff;"></span>
+      <button id="langBtn" onclick="toggleLang()" title="Switch language" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 7px;font-size:10px;font-weight:800;color:#374151;cursor:pointer;display:flex;align-items:center;gap:2px;white-space:nowrap;font-family:inherit;flex-shrink:0;" onmouseover="this.style.background='#fef6ee';this.style.borderColor='#f97316'" onmouseout="this.style.background='#f1f5f9';this.style.borderColor='#e2e8f0'">🇸🇴</button>
+      <div style="position:relative;flex-shrink:0;" id="notifBellWrap">
+        <button onclick="toggleNotifDropdown()" id="notifBell" style="background:none;border:none;cursor:pointer;padding:5px;color:#64748b;position:relative;display:flex;align-items:center;">
+          <span class="material-symbols-outlined" style="font-size:20px;">notifications</span>
+          <span id="notifBadge" style="display:none;position:absolute;top:4px;right:4px;width:7px;height:7px;background:#ec5b13;border-radius:50%;border:2px solid #fff;"></span>
         </button>
-        <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:400px;overflow-y:auto;">
+        <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:min(300px,88vw);background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:400px;overflow-y:auto;">
           <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9;font-weight:800;font-size:14px;">Notifications</div>
           <div id="notifList" style="padding:12px 16px;font-size:13px;color:#94a3b8;">No new notifications</div>
         </div>
       </div>
-      <button onclick="switchTab('settings')" style="background:none;border:none;cursor:pointer;padding:8px;color:#64748b;border-radius:8px;transition:background .15s;" title="Settings" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background=''">
-        <span class="material-symbols-outlined" style="font-size:22px;">settings</span>
-      </button>
       <div id="header-user" style="display:none;">
-        <a href="profile.html" class="header-avatar" data-visual-avatar="1" style="width:34px;height:34px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:13px;text-decoration:none;overflow:hidden;"></a>
+        <a href="profile.html" class="header-avatar" data-visual-avatar="1" style="width:30px;height:30px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:12px;text-decoration:none;overflow:hidden;"></a>
       </div>
-      <a href="auth.html" id="header-signin" style="font-size:13px;font-weight:700;color:#374151;text-decoration:none;padding:7px 14px;border:1.5px solid #e2e8f0;border-radius:10px;">Sign In</a>
+      <a href="auth.html" id="header-signin" style="font-size:12px;font-weight:700;color:#374151;text-decoration:none;padding:6px 10px;border:1.5px solid #e2e8f0;border-radius:9px;white-space:nowrap;flex-shrink:0;">Sign In</a>
       <a href="admin.html" id="admin-btn" style="display:none;font-size:12px;font-weight:800;background:#0f172a;color:#fff;padding:6px 12px;border-radius:8px;text-decoration:none;">Admin</a>
     </div>
   </div>
@@ -326,7 +323,7 @@
       </div>
 
       <!-- Stat cards -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" class="stat-grid-4" id="listingStatsRow">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;" id="listingStatsRow">
         <div class="stat-box">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;">Total Views</span>
@@ -415,7 +412,7 @@
       <!-- Marketplace Performance -->
       <div class="card" style="padding:22px;margin-top:16px;">
         <h3 style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:16px;">Marketplace Performance</h3>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;" class="stat-grid-4">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;" class="stat-grid-4">
           <div>
             <div style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px;">VIEWS</div>
             <div id="perfViews" style="font-size:20px;font-weight:900;color:#0f172a;">—</div>
