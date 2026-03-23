@@ -210,7 +210,7 @@
               <span class="material-symbols-outlined text-xl">notifications</span>
               <span id="notifBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
             </button>
-            <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:320px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;overflow:hidden;max-height:480px;overflow-y:auto">
+            <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:min(320px,90vw);background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;overflow:hidden;max-height:480px;overflow-y:auto">
               <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
                 <span style="font-weight:800;font-size:14px">Notifications</span>
                 <button onclick="Notif.requestPushPermission()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;font-family:inherit">Enable push</button>

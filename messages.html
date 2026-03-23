@@ -54,7 +54,7 @@
     .app-body{display:flex;height:calc(100vh - 56px);overflow:hidden;}
 
     /* ── SIDEBAR ── */
-    .sidebar{width:272px;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0;}
+    .sidebar{width:272px;max-width:100%;background:#fff;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0;}
     .sidebar-header{padding:16px 16px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f1f5f9;}
     .sidebar-title{font-size:18px;font-weight:900;color:#0f172a;}
     .new-btn{display:flex;align-items:center;gap:5px;background:#ec5b13;color:#fff;border:none;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;}
@@ -283,7 +283,7 @@
         <span class="material-symbols-outlined" style="font-size:22px;">notifications</span>
         <span id="notifBadge" class="hdr-badge" style="display:none;"></span>
       </button>
-      <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:320px;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:480px;overflow-y:auto;">
+      <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:min(320px,90vw);background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:480px;overflow-y:auto;">
         <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center">
           <span style="font-weight:800;font-size:14px">Notifications</span>
           <button onclick="Notif.requestPushPermission()" style="background:none;border:none;cursor:pointer;font-size:11px;color:#94a3b8;font-family:inherit">Enable push</button>
