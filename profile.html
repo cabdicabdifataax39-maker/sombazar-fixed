@@ -89,15 +89,15 @@
     .pay-row{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
     /* Mobile */
     @media(max-width:900px){
-      .profile-grid{grid-template-columns:1fr!important;}
+      .profile-grid{grid-template-columns:1fr!important;padding:12px 12px 100px!important;}
       .sidebar-sticky{position:static!important;}
     }
     @media(max-width:640px){
+      .profile-grid{padding:8px 8px 100px!important;}
       .stat-grid-4{grid-template-columns:repeat(2,1fr)!important;}
       .listing-row-img,.listing-row-ph{width:100%;height:140px;}
       .similar-4col{grid-template-columns:repeat(2,1fr)!important;}
       .card{padding:14px!important;}
-      #profileGrid{padding:10px 10px 100px!important;}
     }
     @media(min-width:768px){
       .stat-grid-4{grid-template-columns:repeat(4,1fr)!important;}
@@ -326,7 +326,7 @@
       </div>
 
       <!-- Stat cards -->
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;" id="listingStatsRow">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;" id="listingStatsRow" class="stat-grid-4">
         <div class="stat-box">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <span style="font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.4px;">Total Views</span>
@@ -897,15 +897,26 @@ if(!Auth.isLoggedIn()){
 function applyLayout(){
   const isMobile=window.innerWidth<900;
   const grid=document.getElementById('profileGrid');
-  if(grid){grid.style.gridTemplateColumns=isMobile?'1fr':'280px 1fr';}
+  if(grid){
+    grid.style.gridTemplateColumns=isMobile?'1fr':'280px 1fr';
+    grid.style.padding=isMobile?(window.innerWidth<640?'8px 8px 100px':'12px 12px 100px'):'16px 20px 100px';
+    grid.style.gap=isMobile?'12px':'24px';
+  }
   const mNav=document.getElementById('mobileNav');
   if(mNav)mNav.style.display=isMobile?'':'none';
   const mTabBar=document.getElementById('mobileTabBar');
   if(mTabBar)mTabBar.style.display=isMobile?'flex':'none';
   const sidebar=document.querySelector('.sidebar-sticky');
-  if(sidebar&&isMobile){sidebar.style.position='static';}
+  if(sidebar){sidebar.style.position=isMobile?'static':'sticky';}
   const sGrid=document.getElementById('settingsGrid');
   if(sGrid){sGrid.style.gridTemplateColumns=isMobile?'1fr':'200px 1fr';}
+  // Fix stat grids
+  document.querySelectorAll('.stat-grid-4').forEach(el=>{
+    el.style.gridTemplateColumns=isMobile?'1fr 1fr':(window.innerWidth>=768?'1fr 1fr 1fr 1fr':'1fr 1fr');
+  });
+  // Ensure right content fills width
+  const rightCol=grid?grid.children[1]:null;
+  if(rightCol&&isMobile){rightCol.style.minWidth='0';rightCol.style.width='100%';}
 }
 applyLayout();
 window.addEventListener('resize',applyLayout);
