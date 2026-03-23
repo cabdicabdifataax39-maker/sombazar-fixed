@@ -94,9 +94,13 @@
     }
     @media(max-width:640px){
       .stat-grid-4{grid-template-columns:repeat(2,1fr)!important;}
-      @media(min-width:768px){.stat-grid-4{grid-template-columns:repeat(4,1fr)!important;}}
       .listing-row-img,.listing-row-ph{width:100%;height:140px;}
       .similar-4col{grid-template-columns:repeat(2,1fr)!important;}
+      .card{padding:14px!important;}
+      #profileGrid{padding:10px 10px 100px!important;}
+    }
+    @media(min-width:768px){
+      .stat-grid-4{grid-template-columns:repeat(4,1fr)!important;}
     }
     /* Settings sidebar */
     .settings-nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;transition:all .15s;border:none;background:none;width:100%;text-align:left;}
@@ -210,7 +214,7 @@
 
 <!-- ═══════════ MAIN CONTENT ═══════════ -->
 <div id="profileContent" style="display:none;">
-<div style="max-width:1100px;margin:0 auto;padding:24px 20px 100px;" class="profile-grid" id="profileGrid" style="display:grid;grid-template-columns:280px 1fr;gap:24px;">
+<div style="max-width:1100px;margin:0 auto;padding:16px 12px 100px;display:grid;grid-template-columns:280px 1fr;gap:24px;" class="profile-grid" id="profileGrid">
 <div style="display:grid;grid-template-columns:280px 1fr;gap:24px;" class="profile-grid" id="profileGrid2">
 
   <!-- ═══════════ LEFT SIDEBAR ═══════════ -->
