@@ -127,7 +127,8 @@
       theme: {
         extend: {
           colors: { primary: "#ec5b13" },
-          fontFamily: { sans: ["Public Sans","sans-serif"] }
+          fontFamily: { sans: ["Public Sans","sans-serif"] },
+          screens: { xs: "480px" }
         }
       }
     }
@@ -195,18 +196,18 @@
           <span>&#x1F1F8;&#x1F1F4;</span> <span class="hidden xs:inline">Somali</span>
         </button>
         <a href="auth.html" id="header-signin" class="hidden sm:block text-sm font-bold text-slate-700 hover:text-primary transition-colors px-3 py-1.5">Sign In</a>
-        <div id="header-user" style="display:none" class="flex items-center gap-1 sm:gap-2">
+        <div id="header-user" style="display:none" class="flex items-center gap-1">
           
-          <a href="messages.html" class="hidden sm:flex relative p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
+          <a href="messages.html" id="msgNavBtn" style="display:none" class="relative p-1.5 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
             <span class="material-symbols-outlined text-xl">chat_bubble</span>
             <span id="msgBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
           </a>
-          <a href="profile.html?tab=offers" id="offerNavBtn" class="hidden sm:flex relative p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
+          <a href="profile.html?tab=offers" id="offerNavBtn" style="display:none" class="relative p-1.5 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
             <span class="material-symbols-outlined text-xl">local_offer</span>
             <span id="offerNavBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-primary text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
           </a>
-          <div style="position:relative" id="notifBellWrap" class="hidden sm:block">
-            <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-2 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
+          <div style="position:relative;display:none;" id="notifBellWrap">
+            <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-1.5 rounded-full hover:bg-slate-100 transition-colors text-slate-600">
               <span class="material-symbols-outlined text-xl">notifications</span>
               <span id="notifBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
             </button>
@@ -220,16 +221,19 @@
           </div>
           <!-- Avatar + dropdown -->
           <div style="position:relative" id="avatarMenuWrap">
-            <button onclick="toggleAvatarMenu()" class="header-avatar w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm focus:outline-none" data-visual-avatar="1" aria-label="Account menu"></button>
-            <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:180px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid #e2e8f0;z-index:1001;overflow:hidden;">
-              <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;transition:background .15s" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
+            <button onclick="toggleAvatarMenu()" class="header-avatar w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm focus:outline-none flex-shrink-0" data-visual-avatar="1" aria-label="Account menu"></button>
+            <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:190px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid #e2e8f0;z-index:1001;overflow:hidden;">
+              <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
                 <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">person</span> My Profile
               </a>
-              <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;transition:background .15s" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
+              <a href="messages.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''" class="sm:hidden">
+                <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">chat_bubble</span> Messages
+              </a>
+              <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
                 <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">list_alt</span> My Listings
               </a>
               <div style="border-top:1px solid #f1f5f9;margin:2px 0"></div>
-              <button onclick="doLogout()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:700;color:#ef4444;background:none;border:none;cursor:pointer;width:100%;text-align:left;transition:background .15s;font-family:inherit" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">
+              <button onclick="doLogout()" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:700;color:#ef4444;background:none;border:none;cursor:pointer;width:100%;text-align:left;font-family:inherit" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background=''">
                 <span class="material-symbols-outlined" style="font-size:18px">logout</span> Sign Out
               </button>
             </div>

@@ -171,11 +171,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const user      = Auth.getUser();
   const signinBtn = document.getElementById('header-signin');
   const userArea  = document.getElementById('header-user');
+  const isDesktop = window.innerWidth >= 640;
 
   const adminBtn = document.getElementById('admin-btn');
   if (user && signinBtn && userArea) {
     signinBtn.style.display = 'none';
     userArea.style.display  = 'flex';
+    // Show desktop-only icons only on desktop
+    const msgBtn = document.getElementById('msgNavBtn');
+    const offerBtn = document.getElementById('offerNavBtn');
+    const notifWrap = document.getElementById('notifBellWrap');
+    if (msgBtn) msgBtn.style.display = isDesktop ? 'flex' : 'none';
+    if (offerBtn) offerBtn.style.display = isDesktop ? 'flex' : 'none';
+    if (notifWrap) notifWrap.style.display = isDesktop ? 'block' : 'none';
     const avatar = userArea.querySelector('.header-avatar');
     if (avatar) {
       if (user.photoURL) {
