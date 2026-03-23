@@ -235,8 +235,8 @@
 
 <!-- HEADER -->
 <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-14 gap-6">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-14 gap-2">
       <a href="index.html" class="flex items-center gap-2 flex-shrink-0">
         <div class="bg-primary p-1.5 rounded-lg text-white"><span class="material-symbols-outlined text-xl block">storefront</span></div>
         <span class="text-xl font-black tracking-tight text-slate-900">Som<span class="text-primary">Bazar</span></span>
@@ -250,34 +250,43 @@
           <div class="autocomplete-dropdown" id="headerAcDrop" style="display:none"></div>
         </div>
       </form>
-      <div class="flex items-center gap-2">
-        <button id="langBtn" onclick="toggleLang()" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:20px;padding:5px 10px;font-size:11px;font-weight:800;color:#374151;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;font-family:inherit;transition:all .15s;" onmouseover="this.style.background='#fef6ee';this.style.borderColor='#f97316'" onmouseout="this.style.background='#f1f5f9';this.style.borderColor='#e2e8f0'">
-          <span>&#x1F1F8;&#x1F1F4;</span> Somali
+      <!-- Actions: mobile = only flag + avatar + post -->
+      <div class="flex items-center gap-1" id="header-actions-wrap">
+        <!-- Language button: always visible, compact -->
+        <button id="langBtn" onclick="toggleLang()" style="background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 8px;font-size:10px;font-weight:800;color:#374151;cursor:pointer;display:flex;align-items:center;gap:3px;white-space:nowrap;font-family:inherit;flex-shrink:0;" onmouseover="this.style.background='#fef6ee';this.style.borderColor='#f97316'" onmouseout="this.style.background='#f1f5f9';this.style.borderColor='#e2e8f0'">
+          🇸🇴 <span class="hidden sm:inline">Somali</span>
         </button>
-        <a href="auth.html" id="header-signin" class="text-sm font-bold text-slate-700 hover:text-primary transition-colors px-2 py-1.5">Sign In</a>
-        <div id="header-user" style="display:none" class="flex items-center gap-1.5">
-          
-          <a href="messages.html" class="relative p-2 rounded-full hover:bg-slate-100 text-slate-600">
+        <!-- Sign in - desktop only -->
+        <a href="auth.html" id="header-signin" style="display:none" class="text-sm font-bold text-slate-700 hover:text-primary transition-colors px-2 py-1.5 whitespace-nowrap">Sign In</a>
+        <!-- Logged in user actions -->
+        <div id="header-user" style="display:none" class="flex items-center gap-1">
+          <!-- Desktop only -->
+          <a href="messages.html" id="msgNavBtn" style="display:none" class="relative p-1.5 rounded-full hover:bg-slate-100 text-slate-600">
             <span class="material-symbols-outlined text-xl">chat_bubble</span>
             <span id="msgBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
           </a>
-          <button onclick="toggleDarkMode()" title="Toggle dark mode" aria-label="Toggle dark mode" style="background:none;border:none;cursor:pointer;padding:7px;color:#64748b;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .15s" class="dark-mode-btn"><span class="material-symbols-outlined" style="font-size:20px">dark_mode</span></button>
-        <div style="position:relative" id="notifBellWrap">
-            <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-2 rounded-full hover:bg-slate-100 text-slate-600">
+          <button onclick="toggleDarkMode()" id="darkModeBtn" title="Toggle dark mode" style="display:none;background:none;border:none;cursor:pointer;padding:6px;color:#64748b;border-radius:8px;align-items:center;justify-content:center;" class="dark-mode-btn">
+            <span class="material-symbols-outlined" style="font-size:20px">dark_mode</span>
+          </button>
+          <div style="position:relative;display:none;" id="notifBellWrap">
+            <button id="notifBell" onclick="toggleNotifDropdown()" class="relative p-1.5 rounded-full hover:bg-slate-100 text-slate-600">
               <span class="material-symbols-outlined text-xl">notifications</span>
               <span id="notifBadge" style="display:none" class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center"></span>
             </button>
-            <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:300px;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;max-height:400px;overflow-y:auto">
+            <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:min(300px,90vw);background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:1000;max-height:400px;overflow-y:auto">
               <div style="padding:12px 14px;border-bottom:1px solid #f1f5f9"><span style="font-weight:800;font-size:14px">Notifications</span></div>
               <div id="notifList"></div>
             </div>
           </div>
-          <!-- Avatar dropdown -->
+          <!-- Avatar: always visible when logged in -->
           <div style="position:relative" id="avatarMenuWrap">
-            <button onclick="toggleAvatarMenu()" data-visual-avatar="1" class="header-avatar w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-xs border-none cursor-pointer" aria-label="Account menu"></button>
-            <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:180px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid #e2e8f0;z-index:1001;overflow:hidden;">
+            <button onclick="toggleAvatarMenu()" data-visual-avatar="1" class="header-avatar w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-black text-xs border-none cursor-pointer flex-shrink-0" aria-label="Account menu"></button>
+            <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:190px;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.14);border:1px solid #e2e8f0;z-index:1001;overflow:hidden;">
               <a href="profile.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
                 <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">person</span> My Profile
+              </a>
+              <a href="messages.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
+                <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">chat_bubble</span> Messages
               </a>
               <a href="profile.html?tab=listings" style="display:flex;align-items:center;gap:10px;padding:11px 14px;font-size:13px;font-weight:600;color:#0f172a;text-decoration:none;" onmouseover="this.style.background='#fef6ee'" onmouseout="this.style.background=''">
                 <span class="material-symbols-outlined" style="font-size:18px;color:#64748b">list_alt</span> My Listings
@@ -289,8 +298,9 @@
             </div>
           </div>
         </div>
-        <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-3 py-1.5 rounded-lg">Admin</a>
-        <a href="post.html" class="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg shadow-primary/20">
+        <a href="admin.html" id="admin-btn" style="display:none" class="text-xs font-bold bg-slate-900 text-white px-2 py-1.5 rounded-lg">Admin</a>
+        <!-- Post Ad: always visible -->
+        <a href="post.html" class="flex items-center gap-1 bg-primary text-white px-2 py-2 sm:px-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 flex-shrink-0">
           <span class="material-symbols-outlined text-lg">add</span>
           <span class="hidden sm:inline">Post Ad</span>
         </a>
@@ -869,6 +879,49 @@ function selectSuggestion(val, el) {
 }
 
 document.addEventListener("DOMContentLoaded",()=>{ 
+  // ── Auth header update ──────────────────────────────────
+  (function(){
+    const user = (()=>{ try{ return JSON.parse(localStorage.getItem('sb_user')); }catch(e){ return null; } })();
+    const isDesktop = window.innerWidth >= 640;
+    const signinBtn = document.getElementById('header-signin');
+    const userArea  = document.getElementById('header-user');
+    const adminBtn  = document.getElementById('admin-btn');
+    if(user && signinBtn && userArea){
+      signinBtn.style.display = 'none';
+      userArea.style.display  = 'flex';
+      // Desktop-only icons
+      const msgBtn    = document.getElementById('msgNavBtn');
+      const notifWrap = document.getElementById('notifBellWrap');
+      const darkBtn   = document.getElementById('darkModeBtn');
+      if(msgBtn)    msgBtn.style.display    = isDesktop ? 'flex'  : 'none';
+      if(notifWrap) notifWrap.style.display = isDesktop ? 'block' : 'none';
+      if(darkBtn)   darkBtn.style.display   = isDesktop ? 'flex'  : 'none';
+      // Avatar
+      const avatar = userArea.querySelector('.header-avatar');
+      if(avatar){
+        if(user.photoURL){
+          avatar.innerHTML = `<img src="${user.photoURL}" alt="U" style="width:32px;height:32px;border-radius:50%;object-fit:cover;display:block">`;
+        } else {
+          avatar.textContent = (user.displayName||'U')[0].toUpperCase();
+        }
+      }
+      if(adminBtn) adminBtn.style.display = user.isAdmin ? 'inline-flex' : 'none';
+    } else if(!user && signinBtn){
+      signinBtn.style.display = '';
+      if(userArea)  userArea.style.display  = 'none';
+      if(adminBtn)  adminBtn.style.display  = 'none';
+    }
+    // Re-apply on resize
+    window.addEventListener('resize', ()=>{
+      const desktop = window.innerWidth >= 640;
+      const msg2    = document.getElementById('msgNavBtn');
+      const notif2  = document.getElementById('notifBellWrap');
+      const dark2   = document.getElementById('darkModeBtn');
+      if(msg2)   msg2.style.display   = desktop ? 'flex'  : 'none';
+      if(notif2) notif2.style.display = desktop ? 'block' : 'none';
+      if(dark2)  dark2.style.display  = desktop ? 'flex'  : 'none';
+    });
+  })();
   initAutocomplete("searchInput","sidebarAcDrop"); 
   initAutocomplete("headerSearchInput","headerAcDrop");
   // catFilter and cityFilter select listeners
