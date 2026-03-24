@@ -1,59 +1,45 @@
-FROM ubuntu:22.04
+FROM php:8.2-fpm-alpine
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV APACHE_RUN_USER=www-data
-ENV APACHE_RUN_GROUP=www-data
-ENV APACHE_LOG_DIR=/var/log/apache2
-ENV APACHE_RUN_DIR=/var/run/apache2
-ENV APACHE_LOCK_DIR=/var/lock/apache2
-ENV APACHE_PID_FILE=/var/run/apache2/apache2.pid
+# Install dependencies
+RUN apk add --no-cache \
+    nginx \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    oniguruma-dev \
+    libzip-dev \
+    zip unzip \
+    dcron \
+    curl
 
-RUN apt-get update && apt-get install -y \
-    apache2 \
-    php8.1 \
-    php8.1-mysql \
-    php8.1-gd \
-    php8.1-mbstring \
-    php8.1-zip \
-    php8.1-exif \
-    php8.1-xml \
-    php8.1-curl \
-    libapache2-mod-php8.1 \
-    curl \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
+# PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql mysqli mbstring gd zip
 
-# Enable only what we need - prefork is default with mod_php
-RUN a2enmod rewrite php8.1 && \
-    a2dismod mpm_event mpm_worker 2>/dev/null || true && \
-    a2enmod mpm_prefork
+# Nginx config
+RUN mkdir -p /run/nginx
+COPY docker/nginx.conf /etc/nginx/nginx.conf
 
-# Apache virtual host config
-RUN echo '<VirtualHost *:80>\n\
-    DocumentRoot /var/www/html\n\
-    <Directory /var/www/html>\n\
-        Options Indexes FollowSymLinks\n\
-        AllowOverride All\n\
-        Require all granted\n\
-    </Directory>\n\
-    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
-    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+# PHP config
+RUN echo "upload_max_filesize=10M" > /usr/local/etc/php/conf.d/somabazar.ini && \
+    echo "post_max_size=10M" >> /usr/local/etc/php/conf.d/somabazar.ini && \
+    echo "memory_limit=256M" >> /usr/local/etc/php/conf.d/somabazar.ini && \
+    echo "max_execution_time=300" >> /usr/local/etc/php/conf.d/somabazar.ini
 
-RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+# Copy project
+COPY . /var/www/html/
+RUN chown -R www-data:www-data /var/www/html
 
-# PHP configuration
-RUN echo "upload_max_filesize=10M\npost_max_size=10M\nmemory_limit=256M\nmax_execution_time=300" \
-    > /etc/php/8.1/apache2/conf.d/somabazar.ini
+# Create upload dirs
+RUN mkdir -p /var/www/html/uploads/listings /var/www/html/uploads/avatars /var/www/html/uploads/stores && \
+    chown -R www-data:www-data /var/www/html/uploads
 
-WORKDIR /var/www/html
-
-COPY . .
-
-RUN mkdir -p uploads/listings uploads/avatars uploads/stores && \
-    chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 uploads
+# Cron job
+RUN echo "0 * * * * php /var/www/html/api/cron.php >> /var/log/sombazar_cron.log 2>&1" | crontab -
 
 EXPOSE 80
 
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost/api/health.php || exit 1
+
+CMD ["sh", "-c", "crond && php-fpm -D && nginx -g 'daemon off;'"]
