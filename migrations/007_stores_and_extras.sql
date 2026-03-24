@@ -1,7 +1,7 @@
--- SomBazar Migration 007: Stores, Reservations, Quick Replies, OTP, Rate Limits
--- Idempotent: CREATE TABLE IF NOT EXISTS + ALTER ... IF NOT EXISTS
+-- SomaBazar Migration 007: Stores, Reservations, Quick Replies, OTP, Views
+-- MySQL 5.7+ uyumlu (IF NOT EXISTS ALTER desteklenmez, ayri statement kullan)
 
--- ── 1. stores tablosu ─────────────────────────────────────────────────
+-- ── 1. stores tablosu ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS stores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     owner_id INT NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS stores (
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 2. store_followers tablosu ────────────────────────────────────────
+-- ── 2. store_followers ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS store_followers (
     store_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS store_followers (
     INDEX idx_user (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 3. store_hours_exceptions tablosu ────────────────────────────────
+-- ── 3. store_hours_exceptions ─────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS store_hours_exceptions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     store_id INT NOT NULL,
@@ -58,11 +58,10 @@ CREATE TABLE IF NOT EXISTS store_hours_exceptions (
     open_time TIME NULL,
     close_time TIME NULL,
     note VARCHAR(100) NULL,
-    INDEX idx_store (store_id),
-    INDEX idx_date (exception_date)
+    INDEX idx_store (store_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 4. verification_requests tablosu ─────────────────────────────────
+-- ── 4. verification_requests ──────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS verification_requests (
     id INT AUTO_INCREMENT PRIMARY KEY,
     store_id INT NOT NULL,
@@ -78,7 +77,7 @@ CREATE TABLE IF NOT EXISTS verification_requests (
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 5. reservations tablosu ───────────────────────────────────────────
+-- ── 5. reservations ───────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS reservations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     listing_id INT NOT NULL,
@@ -96,7 +95,7 @@ CREATE TABLE IF NOT EXISTS reservations (
     INDEX idx_expires (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 6. seller_quick_replies tablosu ──────────────────────────────────
+-- ── 6. seller_quick_replies ───────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS seller_quick_replies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     seller_id INT NOT NULL,
@@ -106,7 +105,7 @@ CREATE TABLE IF NOT EXISTS seller_quick_replies (
     INDEX idx_seller (seller_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 7. otp_codes tablosu ─────────────────────────────────────────────
+-- ── 7. otp_codes ──────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS otp_codes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     identifier VARCHAR(255) NOT NULL,
@@ -120,7 +119,7 @@ CREATE TABLE IF NOT EXISTS otp_codes (
     INDEX idx_expires (expires_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 8. listing_views tablosu ─────────────────────────────────────────
+-- ── 8. listing_views ──────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS listing_views (
     id INT AUTO_INCREMENT PRIMARY KEY,
     listing_id INT NOT NULL,
@@ -131,7 +130,7 @@ CREATE TABLE IF NOT EXISTS listing_views (
     INDEX idx_listing_date (listing_id, viewed_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 9. reports tablosu (yoksa oluştur) ───────────────────────────────
+-- ── 9. reports (yoksa olustur) ────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS reports (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reporter_id INT NOT NULL,
@@ -145,11 +144,10 @@ CREATE TABLE IF NOT EXISTS reports (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_reporter (reporter_id),
     INDEX idx_listing (reported_listing_id),
-    INDEX idx_user (reported_user_id),
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 10. blacklist tablosu (yoksa oluştur) ────────────────────────────
+-- ── 10. blacklist (yoksa olustur) ─────────────────────────────────────
 CREATE TABLE IF NOT EXISTS blacklist (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NULL,
@@ -161,47 +159,36 @@ CREATE TABLE IF NOT EXISTS blacklist (
     added_by INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_email (email),
-    INDEX idx_phone (phone),
-    INDEX idx_national_id (national_id),
-    INDEX idx_ip (ip_address)
+    INDEX idx_phone (phone)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- ── 11. Mevcut tablolara eksik kolonlar ekle ─────────────────────────
+-- ── 11. conversations tablosuna kolon ekle (varsa hata normal) ────────
+ALTER TABLE conversations ADD COLUMN status ENUM('active','closed','blocked') DEFAULT 'active';
+ALTER TABLE conversations ADD COLUMN archived_by_buyer TINYINT(1) DEFAULT 0;
+ALTER TABLE conversations ADD COLUMN archived_by_seller TINYINT(1) DEFAULT 0;
 
--- conversations: status + archived kolonları
-ALTER TABLE conversations
-    ADD COLUMN IF NOT EXISTS status ENUM('active','closed','blocked') DEFAULT 'active',
-    ADD COLUMN IF NOT EXISTS archived_by_buyer TINYINT(1) DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS archived_by_seller TINYINT(1) DEFAULT 0;
+-- ── 12. messages tablosuna kolon ekle ────────────────────────────────
+ALTER TABLE messages ADD COLUMN type ENUM('text','offer','counter_offer','system') DEFAULT 'text';
+ALTER TABLE messages ADD COLUMN offer_amount DECIMAL(12,2) NULL;
+ALTER TABLE messages ADD COLUMN offer_status ENUM('pending','accepted','rejected','countered','auto_rejected','expired') NULL;
 
--- messages: type kolonu
-ALTER TABLE messages
-    ADD COLUMN IF NOT EXISTS type ENUM('text','offer','counter_offer','system') DEFAULT 'text',
-    ADD COLUMN IF NOT EXISTS offer_amount DECIMAL(12,2) NULL,
-    ADD COLUMN IF NOT EXISTS offer_status ENUM('pending','accepted','rejected','countered','auto_rejected','expired') NULL;
+-- ── 13. offers tablosuna kolon ekle ──────────────────────────────────
+ALTER TABLE offers ADD COLUMN expires_at DATETIME NULL;
+ALTER TABLE offers ADD COLUMN conversation_id INT NULL;
 
--- offers: expires_at kolonu
-ALTER TABLE offers
-    ADD COLUMN IF NOT EXISTS expires_at DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS conversation_id INT NULL;
+-- ── 14. listings tablosuna kolon ekle ────────────────────────────────
+ALTER TABLE listings ADD COLUMN store_id INT NULL;
+ALTER TABLE listings ADD COLUMN price_type ENUM('fixed','negotiable') DEFAULT 'negotiable';
+ALTER TABLE listings ADD COLUMN min_offer_amount DECIMAL(12,2) NULL;
+ALTER TABLE listings ADD COLUMN expires_at DATETIME NULL;
 
--- listings: store_id + min_offer kolonları
-ALTER TABLE listings
-    ADD COLUMN IF NOT EXISTS store_id INT NULL,
-    ADD COLUMN IF NOT EXISTS price_type ENUM('fixed','negotiable') DEFAULT 'negotiable',
-    ADD COLUMN IF NOT EXISTS min_offer_amount DECIMAL(12,2) NULL,
-    ADD COLUMN IF NOT EXISTS expires_at DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS condition_label VARCHAR(20) NULL;
+-- ── 15. users tablosuna kolon ekle ───────────────────────────────────
+ALTER TABLE users ADD COLUMN store_id INT NULL;
+ALTER TABLE users ADD COLUMN phone_verified TINYINT(1) DEFAULT 0;
+ALTER TABLE users ADD COLUMN national_id VARCHAR(50) NULL;
+ALTER TABLE users ADD COLUMN last_seen DATETIME NULL;
+ALTER TABLE users ADD COLUMN banned TINYINT(1) DEFAULT 0;
+ALTER TABLE users ADD COLUMN ban_reason VARCHAR(255) NULL;
 
--- users: store_id referansı
-ALTER TABLE users
-    ADD COLUMN IF NOT EXISTS store_id INT NULL,
-    ADD COLUMN IF NOT EXISTS phone_verified TINYINT(1) DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS national_id VARCHAR(50) NULL,
-    ADD COLUMN IF NOT EXISTS last_seen DATETIME NULL,
-    ADD COLUMN IF NOT EXISTS banned TINYINT(1) DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS ban_reason VARCHAR(255) NULL;
-
--- reviews: status kolonu
-ALTER TABLE reviews
-    ADD COLUMN IF NOT EXISTS status ENUM('visible','hidden','flagged') DEFAULT 'visible';
+-- ── 16. reviews tablosuna kolon ekle ─────────────────────────────────
+ALTER TABLE reviews ADD COLUMN status ENUM('visible','hidden','flagged') DEFAULT 'visible';
