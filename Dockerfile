@@ -16,10 +16,12 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-jpeg --with-webp \
     && docker-php-ext-install gd pdo pdo_mysql mbstring zip exif
 
-# Enable Apache modules
-RUN a2enmod rewrite
+# Fix Apache MPM conflict — disable event/worker, enable prefork (required for PHP)
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+    && a2enmod mpm_prefork \
+    && a2enmod rewrite
 
-# Apache configuration
+# Apache Directory configuration for .htaccess
 RUN echo '<Directory /var/www/html>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
