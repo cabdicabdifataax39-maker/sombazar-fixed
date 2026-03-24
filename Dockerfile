@@ -1,31 +1,15 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.2-apache
 
-# Install dependencies
-RUN apk add --no-cache \
-    nginx \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    oniguruma-dev \
-    libzip-dev \
-    zip unzip \
-    dcron
+RUN apt-get update && apt-get install -y     libpng-dev     libjpeg-dev     libfreetype6-dev     libzip-dev     zip     unzip     && docker-php-ext-configure gd --with-freetype --with-jpeg     && docker-php-ext-install gd pdo pdo_mysql mbstring zip     && a2enmod rewrite     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mysqli mbstring gd zip
-
-# Nginx config
-RUN mkdir -p /run/nginx
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-
-# Copy project
 COPY . /var/www/html/
-RUN chown -R www-data:www-data /var/www/html
 
-# Cron job — her saat çalışır
-RUN echo "0 * * * * php /var/www/html/api/cron.php >> /var/log/sombazar_cron.log 2>&1" | crontab -
+RUN chown -R www-data:www-data /var/www/html     && find /var/www/html -type d -exec chmod 755 {} \;     && find /var/www/html -type f -exec chmod 644 {} \;
+
+RUN echo '<Directory /var/www/html>
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+</Directory>' > /etc/apache2/conf-available/app.conf     && a2enconf app
 
 EXPOSE 80
-
-CMD ["sh", "-c", "crond && php-fpm -D && nginx -g 'daemon off;'"]

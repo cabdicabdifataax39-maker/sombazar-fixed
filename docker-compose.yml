@@ -1,0 +1,76 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: somabazar_app
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=somabazar
+      - DB_USER=somabazar_user
+      - DB_PASS=somabazar_pass
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - somabazar_net
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: somabazar_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: somabazar
+      MYSQL_USER: somabazar_user
+      MYSQL_PASSWORD: somabazar_pass
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - somabazar_net
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: somabazar_pma
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      - db
+    networks:
+      - somabazar_net
+    restart: unless-stopped
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: somabazar_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - somabazar_net
+    restart: unless-stopped
+
+volumes:
+  db_data:
+
+networks:
+  somabazar_net:
+    driver: bridge
