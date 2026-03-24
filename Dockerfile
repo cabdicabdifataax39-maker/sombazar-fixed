@@ -1,33 +1,34 @@
-FROM php:8.2-apache
+FROM ubuntu:22.04
 
-# Install system dependencies
+ENV DEBIAN_FRONTEND=noninteractive
+ENV APACHE_RUN_USER=www-data
+ENV APACHE_RUN_GROUP=www-data
+ENV APACHE_LOG_DIR=/var/log/apache2
+ENV APACHE_RUN_DIR=/var/run/apache2
+ENV APACHE_LOCK_DIR=/var/lock/apache2
+ENV APACHE_PID_FILE=/var/run/apache2/apache2.pid
+
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    libjpeg-dev \
-    libwebp-dev \
-    libzip-dev \
-    libonig-dev \
-    zip \
-    unzip \
+    apache2 \
+    php8.1 \
+    php8.1-mysql \
+    php8.1-gd \
+    php8.1-mbstring \
+    php8.1-zip \
+    php8.1-exif \
+    php8.1-xml \
+    php8.1-curl \
+    libapache2-mod-php8.1 \
     curl \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-jpeg --with-webp \
-    && docker-php-ext-install gd pdo pdo_mysql mbstring zip exif
+# Enable only what we need - prefork is default with mod_php
+RUN a2enmod rewrite php8.1 && \
+    a2dismod mpm_event mpm_worker 2>/dev/null || true && \
+    a2enmod mpm_prefork
 
-# Completely replace Apache ports and main config to avoid MPM conflicts
-# Remove ALL enabled mods first, then selectively enable what we need
-RUN cd /etc/apache2/mods-enabled && \
-    rm -f mpm_event.load mpm_event.conf mpm_worker.load mpm_worker.conf \
-          mpm_prefork.load mpm_prefork.conf && \
-    ln -s ../mods-available/mpm_prefork.load mpm_prefork.load && \
-    ln -s ../mods-available/mpm_prefork.conf mpm_prefork.conf && \
-    ln -s ../mods-available/rewrite.load rewrite.load
-
-# Write clean Apache virtual host config
-RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
-
+# Apache virtual host config
 RUN echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html\n\
     <Directory /var/www/html>\n\
@@ -39,18 +40,20 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
+RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+
 # PHP configuration
-RUN echo "upload_max_filesize=10M" > /usr/local/etc/php/conf.d/somabazar.ini && \
-    echo "post_max_size=10M" >> /usr/local/etc/php/conf.d/somabazar.ini && \
-    echo "memory_limit=256M" >> /usr/local/etc/php/conf.d/somabazar.ini && \
-    echo "max_execution_time=300" >> /usr/local/etc/php/conf.d/somabazar.ini
+RUN echo "upload_max_filesize=10M\npost_max_size=10M\nmemory_limit=256M\nmax_execution_time=300" \
+    > /etc/php/8.1/apache2/conf.d/somabazar.ini
 
 WORKDIR /var/www/html
 
 COPY . .
 
 RUN mkdir -p uploads/listings uploads/avatars uploads/stores && \
-    chown -R www-data:www-data uploads && \
+    chown -R www-data:www-data /var/www/html && \
     chmod -R 755 uploads
 
 EXPOSE 80
+
+CMD ["apache2ctl", "-D", "FOREGROUND"]
