@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libwebp-dev \
     libzip-dev \
+    libonig-dev \
     zip \
     unzip \
     curl \
@@ -18,7 +19,7 @@ RUN docker-php-ext-configure gd --with-jpeg --with-webp \
 # Enable Apache modules
 RUN a2enmod rewrite
 
-# Apache configuration - AllowOverride for .htaccess
+# Apache configuration
 RUN echo '<Directory /var/www/html>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
@@ -27,18 +28,13 @@ RUN echo '<Directory /var/www/html>\n\
     && a2enconf somabazar
 
 # PHP configuration
-RUN echo "upload_max_filesize=10M\n\
-post_max_size=10M\n\
-memory_limit=256M\n\
-max_execution_time=300" > /usr/local/etc/php/conf.d/somabazar.ini
+RUN echo "upload_max_filesize=10M\npost_max_size=10M\nmemory_limit=256M\nmax_execution_time=300" \
+    > /usr/local/etc/php/conf.d/somabazar.ini
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
 COPY . .
 
-# Create uploads directory
 RUN mkdir -p uploads/listings uploads/avatars uploads/stores \
     && chown -R www-data:www-data uploads \
     && chmod -R 755 uploads
