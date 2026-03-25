@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>(function(){var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Store — SomBazar</title>
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:"#ec5b13"},fontFamily:{sans:["Public Sans","sans-serif"]}}}}</script>
+  <style>
+    .form-input{width:100%;border:1.5px solid var(--border-color);border-radius:10px;padding:10px 13px;font-size:14px;outline:none;font-family:inherit;background:var(--input-bg);color:var(--text-primary);}
+    .form-input:focus{border-color:#ec5b13;}
+    .form-label{display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+    .section-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:20px;margin-bottom:16px;}
+    .img-upload-area{border:2px dashed var(--border-color);border-radius:12px;padding:20px;text-align:center;cursor:pointer;transition:.15s;}
+    .img-upload-area:hover{border-color:#ec5b13;}
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <nav class="nav-container">
+    <a href="store-dashboard.html" class="logo" style="font-size:14px;">← Dashboard</a>
+    <span style="font-size:16px;font-weight:800;color:var(--text-primary);">Edit Store</span>
+  </nav>
+</header>
+
+<main style="max-width:600px;margin:24px auto;padding:0 16px 60px;">
+
+  <!-- Basic Info -->
+  <div class="section-card">
+    <h3 style="font-size:15px;font-weight:800;margin-bottom:16px;color:var(--text-primary);">Basic Information</h3>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label class="form-label">Store Name</label>
+        <input class="form-input" id="editName" placeholder="Store name" maxlength="100">
+      </div>
+      <div>
+        <label class="form-label">Store Type</label>
+        <select class="form-input" id="editType">
+          <option value="electronics">📱 Electronics</option>
+          <option value="auto">🚗 Auto</option>
+          <option value="real_estate">🏠 Real Estate</option>
+          <option value="fashion">👗 Fashion</option>
+          <option value="food">🍽️ Food</option>
+          <option value="services">🔧 Services</option>
+          <option value="other">🏪 Other</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Phone</label>
+        <input class="form-input" id="editPhone" placeholder="+252 63 000 0000" type="tel">
+      </div>
+      <div>
+        <label class="form-label">WhatsApp</label>
+        <input class="form-input" id="editWhatsapp" placeholder="+252 63 000 0000" type="tel">
+      </div>
+      <div>
+        <label class="form-label">City</label>
+        <select class="form-input" id="editCity">
+          <option value="Hargeisa">Hargeisa</option>
+          <option value="Borama">Borama</option>
+          <option value="Berbera">Berbera</option>
+          <option value="Burao">Burao</option>
+          <option value="Erigavo">Erigavo</option>
+          <option value="Las Anod">Las Anod</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Address</label>
+        <input class="form-input" id="editAddress" placeholder="Street address, landmark...">
+      </div>
+      <div>
+        <label class="form-label">Description</label>
+        <textarea class="form-input" id="editDesc" rows="4" maxlength="500" style="resize:none;"></textarea>
+        <div style="font-size:11px;color:#94a3b8;margin-top:3px;text-align:right;"><span id="descCount">0</span>/500</div>
+      </div>
+    </div>
+    <button onclick="saveBasicInfo()" id="saveBasicBtn" style="width:100%;margin-top:16px;background:#ec5b13;color:white;border:none;padding:12px;border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">Save Changes</button>
+    <p id="saveMsg" style="display:none;text-align:center;font-size:13px;font-weight:700;margin-top:10px;"></p>
+  </div>
+
+  <!-- Images -->
+  <div class="section-card">
+    <h3 style="font-size:15px;font-weight:800;margin-bottom:16px;color:var(--text-primary);">Store Images</h3>
+
+    <div style="margin-bottom:16px;">
+      <label class="form-label">Logo</label>
+      <div class="img-upload-area" onclick="document.getElementById('logoFile').click()">
+        <img id="logoPreview" style="display:none;width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 8px;">
+        <div id="logoPlaceholder"><span style="font-size:32px;">🏪</span><p style="font-size:12px;color:#94a3b8;margin-top:4px;">Click to change logo</p></div>
+        <input type="file" id="logoFile" accept="image/*" style="display:none;" onchange="uploadStoreImage(this,'logo')">
+      </div>
+    </div>
+
+    <div>
+      <label class="form-label">Cover Photo</label>
+      <div class="img-upload-area" onclick="document.getElementById('coverFile').click()" style="min-height:80px;">
+        <img id="coverPreview" style="display:none;width:100%;height:80px;object-fit:cover;border-radius:8px;">
+        <div id="coverPlaceholder"><span style="font-size:32px;">🖼️</span><p style="font-size:12px;color:#94a3b8;margin-top:4px;">Click to change cover</p></div>
+        <input type="file" id="coverFile" accept="image/*" style="display:none;" onchange="uploadStoreImage(this,'cover')">
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script src="assets/app.min.js"></script>
+<script>
+const user = JSON.parse(localStorage.getItem('sb_user') || 'null');
+if (!user) window.location.href = 'auth.html?redirect=store-edit.html';
+
+async function loadStore() {
+  try {
+    const res = await apiFetch('/api/stores.php?action=my_store');
+    if (!res.success) { window.location.href = 'store-setup.html'; return; }
+    const s = res.data;
+
+    document.getElementById('editName').value     = s.store_name || '';
+    document.getElementById('editType').value     = s.store_type || 'other';
+    document.getElementById('editPhone').value    = s.phone || '';
+    document.getElementById('editWhatsapp').value = s.whatsapp || '';
+    document.getElementById('editCity').value     = s.city || 'Hargeisa';
+    document.getElementById('editAddress').value  = s.address_text || '';
+    document.getElementById('editDesc').value     = s.description || '';
+    document.getElementById('descCount').textContent = (s.description || '').length;
+
+    if (s.logo_url) {
+      document.getElementById('logoPreview').src = s.logo_url;
+      document.getElementById('logoPreview').style.display = 'block';
+      document.getElementById('logoPlaceholder').style.display = 'none';
+    }
+    if (s.cover_url) {
+      document.getElementById('coverPreview').src = s.cover_url;
+      document.getElementById('coverPreview').style.display = 'block';
+      document.getElementById('coverPlaceholder').style.display = 'none';
+    }
+  } catch(e) { showToast('Failed to load store', 'error'); }
+}
+
+document.getElementById('editDesc').addEventListener('input', function() {
+  document.getElementById('descCount').textContent = this.value.length;
+});
+
+async function saveBasicInfo() {
+  const btn = document.getElementById('saveBasicBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  try {
+    const res = await apiFetch('/api/stores.php?action=update', {
+      method: 'POST',
+      body: JSON.stringify({
+        store_name:   document.getElementById('editName').value.trim(),
+        store_type:   document.getElementById('editType').value,
+        phone:        document.getElementById('editPhone').value.trim(),
+        whatsapp:     document.getElementById('editWhatsapp').value.trim(),
+        city:         document.getElementById('editCity').value,
+        address_text: document.getElementById('editAddress').value.trim(),
+        description:  document.getElementById('editDesc').value.trim(),
+      })
+    });
+    const msg = document.getElementById('saveMsg');
+    msg.textContent = res.success ? '✅ Changes saved!' : '❌ ' + (res.error || 'Error');
+    msg.style.color = res.success ? '#15803d' : '#dc2626';
+    msg.style.display = 'block';
+    if (res.success) showToast('Store updated!', 'success');
+  } catch(e) { showToast('Network error', 'error'); }
+
+  btn.disabled = false; btn.textContent = 'Save Changes';
+}
+
+async function uploadStoreImage(input, type) {
+  const file = input.files[0];
+  if (!file) return;
+
+  // Preview
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById(type + 'Preview');
+    const placeholder = document.getElementById(type + 'Placeholder');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+
+  showToast('Uploading...', '');
+
+  const form = new FormData();
+  form.append('file', file);
+  try {
+    const token = localStorage.getItem('sb_token') || '';
+    const res = await fetch('/api/store_upload.php?type=' + type, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: form
+    });
+    const data = await res.json();
+    showToast(data.success ? type.charAt(0).toUpperCase()+type.slice(1)+' updated! ✅' : (data.error || 'Upload failed'), data.success ? 'success' : 'error');
+  } catch(e) { showToast('Upload failed', 'error'); }
+}
+
+loadStore();
+</script>
+</body>
+</html>

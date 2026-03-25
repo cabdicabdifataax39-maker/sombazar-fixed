@@ -40,7 +40,7 @@ setInterval(updateClock, 1000);
 updateClock();
 
 // ── Tab system ────────────────────────────────────────────
-const ALL_TABS = ['dashboard','verifications','users','listings','payments','blacklist','log','offers','coupons','affiliates','settings','reviews','reports','analytics','revenue','messages','announcements','categories','push'];
+const ALL_TABS = ['dashboard','verifications','users','listings','payments','blacklist','log','offers','coupons','affiliates','settings','reviews','reports','analytics','revenue','messages','announcements','categories','push','stores'];
 const TAB_TITLES = {
   dashboard:'Dashboard', verifications:'Verifications', users:'Users',
   listings:'Listings', payments:'Payments', blacklist:'Blacklist',
@@ -48,7 +48,7 @@ const TAB_TITLES = {
   affiliates:'Affiliates', settings:'Settings',
   reviews:'Reviews', reports:'Reports', analytics:'Analytics',
   revenue:'Revenue', messages:'Messages', announcements:'Announcements',
-  categories:'Categories', push:'Push Notifications'
+  categories:'Categories', push:'Push Notifications', stores:'Store Management'
 };
 
 function showTab(tab) {
@@ -98,6 +98,7 @@ function loadTabContent(tab) {
     case 'announcements': loadAnnouncements();break;
     case 'categories':    loadCategories();   break;
     case 'push':          loadPushNotifs();   break;
+    case 'stores':        loadStores();       break;
   }
 }
 
@@ -1271,4 +1272,154 @@ function loadLastBackupTime() {
   const el = document.getElementById('lastBackupTime');
   const last = localStorage.getItem('sb_last_backup');
   if (el && last) el.textContent = new Date(last).toLocaleString();
+}
+
+
+// ── STORE MANAGEMENT ─────────────────────────────────────────────────────
+async function loadStores() {
+  const verif  = document.getElementById('storeVerifFilter')?.value || '';
+  const status = document.getElementById('storeStatusFilter')?.value || '';
+  const tableEl = document.getElementById('storesTable');
+  if (!tableEl) return;
+  tableEl.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px;">Loading...</div>';
+
+  try {
+    let url = '/api/admin_stores.php?action=admin_stores&per_page=30';
+    if (verif)  url += '&verification_status=' + encodeURIComponent(verif);
+    if (status) url += '&status=' + encodeURIComponent(status);
+
+    const res = await apiCall(url);
+    if (!res.success) { tableEl.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + (res.error||'Unknown') + '</div>'; return; }
+
+    const stores = res.data.stores || [];
+    if (!stores.length) {
+      tableEl.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px;">No stores found</div>';
+    } else {
+      tableEl.innerHTML = `
+        <div style="overflow-x:auto;">
+        <table class="admin-table" style="width:100%;border-collapse:collapse;font-size:13px;">
+          <thead><tr style="border-bottom:2px solid var(--border);">
+            <th style="padding:8px;text-align:left;">Store</th>
+            <th style="padding:8px;text-align:left;">Owner</th>
+            <th style="padding:8px;text-align:left;">Type</th>
+            <th style="padding:8px;text-align:left;">Verification</th>
+            <th style="padding:8px;text-align:left;">Status</th>
+            <th style="padding:8px;text-align:left;">Listings</th>
+            <th style="padding:8px;text-align:left;">Actions</th>
+          </tr></thead>
+          <tbody>${stores.map(s => `
+            <tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:8px;">
+                ${s.logo_url ? `<img src="${s.logo_url}" style="width:32px;height:32px;border-radius:8px;object-fit:cover;margin-right:8px;vertical-align:middle;">` : ''}
+                <a href="store.html?slug=${s.slug}" target="_blank" style="font-weight:700;color:var(--pr);">${s.store_name}</a>
+                <div style="font-size:11px;color:#94a3b8;">${s.city||''}</div>
+              </td>
+              <td style="padding:8px;font-size:12px;">${s.owner_name||''}<br><span style="color:#94a3b8;">${s.owner_email||''}</span></td>
+              <td style="padding:8px;font-size:12px;">${s.store_type||''}</td>
+              <td style="padding:8px;">
+                <span style="padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;
+                  background:${s.verification_status==='verified'?'#dcfce7':s.verification_status==='pending'?'#fef9c3':'#f1f5f9'};
+                  color:${s.verification_status==='verified'?'#15803d':s.verification_status==='pending'?'#854d0e':'#64748b'};">
+                  ${s.verification_status}
+                </span>
+              </td>
+              <td style="padding:8px;">
+                <span style="padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;
+                  background:${s.status==='active'?'#dcfce7':'#fee2e2'};
+                  color:${s.status==='active'?'#15803d':'#dc2626'};">
+                  ${s.status}
+                </span>
+              </td>
+              <td style="padding:8px;text-align:center;">${s.active_listings||0}</td>
+              <td style="padding:8px;">
+                <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                  ${s.status==='active'
+                    ? `<button onclick="suspendStore(${s.id},'suspend')" class="btn btn-sm" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Suspend</button>`
+                    : `<button onclick="suspendStore(${s.id},'activate')" class="btn btn-sm" style="background:#dcfce7;color:#15803d;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Activate</button>`
+                  }
+                  ${s.verification_status==='pending'
+                    ? `<button onclick="verifyStore(${s.id},'approve')" style="background:#dcfce7;color:#15803d;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">✓ Verify</button>
+                       <button onclick="verifyStore(${s.id},'reject')" style="background:#fee2e2;color:#dc2626;border:none;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">✗ Reject</button>`
+                    : ''
+                  }
+                </div>
+              </td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+        </div>`;
+    }
+
+    // Verification queue
+    loadVerifQueue();
+
+  } catch(e) {
+    tableEl.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + e.message + '</div>';
+  }
+}
+
+async function loadVerifQueue() {
+  const el = document.getElementById('verifQueueTable');
+  if (!el) return;
+  try {
+    const res = await apiCall('/api/admin_stores.php?action=admin_verification_queue&status=pending');
+    if (!res.success || !res.data.requests.length) {
+      el.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:13px;text-align:center;">No pending verification requests</div>';
+      return;
+    }
+    el.innerHTML = res.data.requests.map(r => `
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+        <div>
+          <div style="font-weight:800;font-size:14px;">${r.store_name}</div>
+          <div style="font-size:12px;color:#64748b;">${r.owner_name} · ${r.owner_email} · ${r.city||''}</div>
+          <div style="font-size:12px;margin-top:4px;">Level: <b>${r.level}</b> · Submitted: ${r.submitted_at?.substring(0,10)||''}</div>
+          ${r.documents && r.documents.length ? `<div style="font-size:12px;margin-top:4px;color:#3b82f6;">${r.documents.length} document(s) attached</div>` : ''}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button onclick="verifyStoreReq(${r.id},'approve')" style="background:#dcfce7;color:#15803d;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">✓ Approve</button>
+          <button onclick="verifyStoreReq(${r.id},'reject')" style="background:#fee2e2;color:#dc2626;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">✗ Reject</button>
+          <button onclick="verifyStoreReq(${r.id},'more_info')" style="background:#fef9c3;color:#854d0e;border:none;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">ℹ More Info</button>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="color:#dc2626;padding:16px;font-size:13px;">Error loading queue</div>';
+  }
+}
+
+async function suspendStore(storeId, action) {
+  if (!confirm(`Are you sure you want to ${action} this store?`)) return;
+  try {
+    const res = await apiCall('/api/admin_stores.php?action=admin_suspend_store', {
+      method: 'POST',
+      body: JSON.stringify({ store_id: storeId, action })
+    });
+    if (res.success) { showToast('Store ' + action + 'd successfully', 'success'); loadStores(); }
+    else showToast(res.error || 'Error', 'error');
+  } catch(e) { showToast('Network error', 'error'); }
+}
+
+async function verifyStore(storeId, action) {
+  const notes = action === 'reject' ? prompt('Rejection reason (optional):') : '';
+  if (notes === null) return; // iptal
+  try {
+    const res = await apiCall('/api/stores.php?action=verify_respond', {
+      method: 'POST',
+      body: JSON.stringify({ store_id: storeId, action, admin_notes: notes || '' })
+    });
+    if (res.success) { showToast('Store ' + action + 'd', 'success'); loadStores(); }
+    else showToast(res.error || 'Error', 'error');
+  } catch(e) { showToast('Network error', 'error'); }
+}
+
+async function verifyStoreReq(reqId, action) {
+  const notes = (action === 'reject' || action === 'more_info') ? prompt(action === 'reject' ? 'Rejection reason:' : 'What additional info is needed?') : '';
+  if (notes === null) return;
+  try {
+    const res = await apiCall('/api/stores.php?action=verify_respond', {
+      method: 'POST',
+      body: JSON.stringify({ request_id: reqId, action, admin_notes: notes || '' })
+    });
+    if (res.success) { showToast('Done: ' + action, 'success'); loadStores(); }
+    else showToast(res.error || 'Error', 'error');
+  } catch(e) { showToast('Network error', 'error'); }
 }

@@ -789,6 +789,9 @@ textarea.fi{resize:vertical}
   <div class="nav-item" onclick="showTab('analytics')" id="nav-analytics">
     <span class="ms">bar_chart</span>Platform Metrics
   </div>
+  <div class="nav-item" onclick="showTab('stores')" id="nav-stores">
+    <span class="ms">storefront</span>Stores
+  </div>
   <div class="nav-item" onclick="showTab('categories')" id="nav-categories">
     <span class="ms">grid_view</span>Categories
   </div>
@@ -2069,6 +2072,37 @@ textarea.fi{resize:vertical}
 </div>
 
 <!-- ═══ SETTINGS / DATABASE ══════════════════════════════════ -->
+
+<!-- STORES TAB -->
+<div id="tab-stores" class="tab-pane">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <h2 style="font-size:16px;font-weight:800;margin:0;">Store Management</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <select id="storeVerifFilter" onchange="loadStores()" class="select" style="font-size:12px;padding:5px 8px;border-radius:8px;border:1.5px solid var(--border);">
+        <option value="">All Verification</option>
+        <option value="unverified">Unverified</option>
+        <option value="pending">Pending</option>
+        <option value="verified">Verified</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <select id="storeStatusFilter" onchange="loadStores()" class="select" style="font-size:12px;padding:5px 8px;border-radius:8px;border:1.5px solid var(--border);">
+        <option value="">All Status</option>
+        <option value="active">Active</option>
+        <option value="suspended">Suspended</option>
+      </select>
+    </div>
+  </div>
+  <div id="storesTable">
+    <div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px;">Loading stores...</div>
+  </div>
+
+  <!-- Verification Queue -->
+  <h3 style="font-size:14px;font-weight:800;margin:24px 0 12px;">Pending Verification Requests</h3>
+  <div id="verifQueueTable">
+    <div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">Loading...</div>
+  </div>
+</div>
+
 <div id="tab-settings" class="tab-pane">
   <div class="ph">
     <div class="ph-left">
