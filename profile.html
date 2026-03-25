@@ -181,6 +181,12 @@
         onblur="this.style.borderColor='transparent';this.style.background='#f1f5f9'">
     </form>
     <div style="display:flex;align-items:center;gap:3px;margin-left:auto;flex-shrink:0;">
+      <a href="store-setup.html" id="openStoreBtn" style="display:none;background:#0f172a;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;">
+        <span class="material-symbols-outlined" style="font-size:14px;">storefront</span> Open Store
+      </a>
+      <a href="store.html?slug=" id="myStoreBtn" style="display:none;background:#0f172a;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;">
+        <span class="material-symbols-outlined" style="font-size:14px;">storefront</span> My Store
+      </a>
       <a href="post.html" style="background:#ec5b13;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;">
         <span class="material-symbols-outlined" style="font-size:14px;">add</span> Post Ad
       </a>
@@ -1784,6 +1790,34 @@ function doLogout() {
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
 </script>
 <script src="assets/notif.js"></script>
+
+<script>
+// Store butonlarini kontrol et
+async function checkUserStore() {
+  const user = JSON.parse(localStorage.getItem('sb_user') || 'null');
+  if (!user) return;
+  try {
+    const res = await apiFetch('/api/stores.php?action=my_store');
+    if (res.success && res.data) {
+      // Store var - My Store butonunu goster
+      const btn = document.getElementById('myStoreBtn');
+      if (btn) {
+        btn.href = 'store.html?slug=' + res.data.slug;
+        btn.style.display = 'flex';
+      }
+    } else {
+      // Store yok - Open Store butonunu goster
+      const btn = document.getElementById('openStoreBtn');
+      if (btn) btn.style.display = 'flex';
+    }
+  } catch(e) {
+    const btn = document.getElementById('openStoreBtn');
+    if (btn) btn.style.display = 'flex';
+  }
+}
+checkUserStore();
+</script>
+
 </body>
 </html>
 
