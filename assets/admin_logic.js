@@ -1288,10 +1288,8 @@ async function loadStores() {
     if (verif)  url += '&verification_status=' + encodeURIComponent(verif);
     if (status) url += '&status=' + encodeURIComponent(status);
 
-    const res = await apiFetch(url);
-    if (!res.success) { tableEl.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + (res.error||'Unknown') + '</div>'; return; }
-
-    const stores = res.data.stores || [];
+    const stores_data = await apiFetch(url);
+    const stores = (Array.isArray(stores_data) ? stores_data : stores_data?.stores) || [];
     if (!stores.length) {
       tableEl.innerHTML = '<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px;">No stores found</div>';
     } else {
@@ -1362,12 +1360,13 @@ async function loadVerifQueue() {
   const el = document.getElementById('verifQueueTable');
   if (!el) return;
   try {
-    const res = await apiFetch('/api/admin_stores.php?action=admin_verification_queue&status=pending');
-    if (!res.success || !res.data.requests.length) {
+    const verif_data = await apiFetch('/api/admin_stores.php?action=admin_verification_queue&status=pending');
+    const verif_requests = verif_data?.requests || [];
+    if (!verif_requests.length) {
       el.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:13px;text-align:center;">No pending verification requests</div>';
       return;
     }
-    el.innerHTML = res.data.requests.map(r => `
+    el.innerHTML = verif_requests.map(r => `
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <div>
           <div style="font-weight:800;font-size:14px;">${r.store_name}</div>
@@ -1389,12 +1388,12 @@ async function loadVerifQueue() {
 async function suspendStore(storeId, action) {
   if (!confirm(`Are you sure you want to ${action} this store?`)) return;
   try {
-    const res = await apiFetch('/api/admin_stores.php?action=admin_suspend_store', {
+    await apiFetch('/api/admin_stores.php?action=admin_suspend_store', {
       method: 'POST',
       body: JSON.stringify({ store_id: storeId, action })
     });
-    if (res.success) { showToast('Store ' + action + 'd successfully', 'success'); loadStores(); }
-    else showToast(res.error || 'Error', 'error');
+    showToast('Store ' + action + 'd successfully', 'success');
+    loadStores();
   } catch(e) { showToast('Network error', 'error'); }
 }
 
@@ -1402,12 +1401,12 @@ async function verifyStore(storeId, action) {
   const notes = action === 'reject' ? prompt('Rejection reason (optional):') : '';
   if (notes === null) return; // iptal
   try {
-    const res = await apiFetch('/api/stores.php?action=verify_respond', {
+    await apiFetch('/api/stores.php?action=verify_respond', {
       method: 'POST',
       body: JSON.stringify({ store_id: storeId, action, admin_notes: notes || '' })
     });
-    if (res.success) { showToast('Store ' + action + 'd', 'success'); loadStores(); }
-    else showToast(res.error || 'Error', 'error');
+    showToast('Store ' + action + 'd', 'success');
+    loadStores();
   } catch(e) { showToast('Network error', 'error'); }
 }
 
@@ -1415,11 +1414,11 @@ async function verifyStoreReq(reqId, action) {
   const notes = (action === 'reject' || action === 'more_info') ? prompt(action === 'reject' ? 'Rejection reason:' : 'What additional info is needed?') : '';
   if (notes === null) return;
   try {
-    const res = await apiFetch('/api/stores.php?action=verify_respond', {
+    await apiFetch('/api/stores.php?action=verify_respond', {
       method: 'POST',
       body: JSON.stringify({ request_id: reqId, action, admin_notes: notes || '' })
     });
-    if (res.success) { showToast('Done: ' + action, 'success'); loadStores(); }
-    else showToast(res.error || 'Error', 'error');
+    showToast('Done: ' + action, 'success');
+    loadStores();
   } catch(e) { showToast('Network error', 'error'); }
 }
