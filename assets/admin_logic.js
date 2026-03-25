@@ -1288,7 +1288,7 @@ async function loadStores() {
     if (verif)  url += '&verification_status=' + encodeURIComponent(verif);
     if (status) url += '&status=' + encodeURIComponent(status);
 
-    const res = await apiCall(url);
+    const res = await apiFetch(url);
     if (!res.success) { tableEl.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + (res.error||'Unknown') + '</div>'; return; }
 
     const stores = res.data.stores || [];
@@ -1362,7 +1362,7 @@ async function loadVerifQueue() {
   const el = document.getElementById('verifQueueTable');
   if (!el) return;
   try {
-    const res = await apiCall('/api/admin_stores.php?action=admin_verification_queue&status=pending');
+    const res = await apiFetch('/api/admin_stores.php?action=admin_verification_queue&status=pending');
     if (!res.success || !res.data.requests.length) {
       el.innerHTML = '<div style="padding:16px;color:#94a3b8;font-size:13px;text-align:center;">No pending verification requests</div>';
       return;
@@ -1389,7 +1389,7 @@ async function loadVerifQueue() {
 async function suspendStore(storeId, action) {
   if (!confirm(`Are you sure you want to ${action} this store?`)) return;
   try {
-    const res = await apiCall('/api/admin_stores.php?action=admin_suspend_store', {
+    const res = await apiFetch('/api/admin_stores.php?action=admin_suspend_store', {
       method: 'POST',
       body: JSON.stringify({ store_id: storeId, action })
     });
@@ -1402,7 +1402,7 @@ async function verifyStore(storeId, action) {
   const notes = action === 'reject' ? prompt('Rejection reason (optional):') : '';
   if (notes === null) return; // iptal
   try {
-    const res = await apiCall('/api/stores.php?action=verify_respond', {
+    const res = await apiFetch('/api/stores.php?action=verify_respond', {
       method: 'POST',
       body: JSON.stringify({ store_id: storeId, action, admin_notes: notes || '' })
     });
@@ -1415,7 +1415,7 @@ async function verifyStoreReq(reqId, action) {
   const notes = (action === 'reject' || action === 'more_info') ? prompt(action === 'reject' ? 'Rejection reason:' : 'What additional info is needed?') : '';
   if (notes === null) return;
   try {
-    const res = await apiCall('/api/stores.php?action=verify_respond', {
+    const res = await apiFetch('/api/stores.php?action=verify_respond', {
       method: 'POST',
       body: JSON.stringify({ request_id: reqId, action, admin_notes: notes || '' })
     });
