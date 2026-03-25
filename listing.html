@@ -423,6 +423,9 @@
         <button id="offerBtn" onclick="showOfferModal()" class="cta-btn btn-outline" style="display:none;">
           <span class="material-symbols-outlined" style="font-size:18px;">local_offer</span> Make an Offer
         </button>
+        <button id="reserveBtn" onclick="showReserveModal()" class="cta-btn" style="display:none;background:#0f172a;color:#fff;">
+          <span class="material-symbols-outlined" style="font-size:18px;">bookmark_add</span> Reserve Item
+        </button>
       </div>
 
       <!-- Save + Share -->
@@ -926,6 +929,7 @@ function renderListing(l) {
   const curUser    = Auth.getUser();
   const isOwn      = curUser && parseInt(curUser.id) === parseInt(l.userId);
   if (!isOwn && l.status === 'active') document.getElementById('offerBtn').style.display = 'flex';
+  if (!isOwn && l.status === 'active') initReserveBtn(l, isOwn);
 
   // Phone
   if (l.phone) {
@@ -1533,6 +1537,100 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <script src="assets/notif.js"></script>
+
+<!-- RESERVE MODAL -->
+<div id="reserveModal" class="modal-bg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div style="background:white;border-radius:20px;padding:24px;width:100%;max-width:400px;position:relative;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-size:17px;font-weight:900;color:#0f172a;">Reserve This Item</h3>
+      <button onclick="closeReserveModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;">✕</button>
+    </div>
+    <p style="font-size:13px;color:#64748b;margin-bottom:16px;">How long do you need to hold this item?</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+      <label style="display:flex;align-items:center;gap:10px;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;">
+        <input type="radio" name="duration" value="2h" style="accent-color:#ec5b13;"> <span style="font-size:13px;font-weight:600;">2 Hours</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;">
+        <input type="radio" name="duration" value="4h" style="accent-color:#ec5b13;"> <span style="font-size:13px;font-weight:600;">4 Hours</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;">
+        <input type="radio" name="duration" value="today" style="accent-color:#ec5b13;"> <span style="font-size:13px;font-weight:600;">Today</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;padding:12px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;">
+        <input type="radio" name="duration" value="tomorrow" style="accent-color:#ec5b13;"> <span style="font-size:13px;font-weight:600;">Tomorrow</span>
+      </label>
+    </div>
+    <div id="reserveError" style="display:none;background:#fee2e2;color:#dc2626;padding:8px 12px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeReserveModal()" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:11px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;">Cancel</button>
+      <button onclick="submitReservation()" id="reserveSubmitBtn" style="flex:1;background:#0f172a;color:#fff;border:none;padding:11px;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer;">Reserve</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Rezervasyon ──────────────────────────────────────────────────────────
+function showReserveModal() {
+  const modal = document.getElementById('reserveModal');
+  modal.style.display = 'flex';
+  // Ilk secenegi sec
+  const first = modal.querySelector('input[type=radio]');
+  if (first) first.checked = true;
+}
+
+function closeReserveModal() {
+  document.getElementById('reserveModal').style.display = 'none';
+  document.getElementById('reserveError').style.display = 'none';
+}
+
+async function submitReservation() {
+  const dur = document.querySelector('input[name=duration]:checked')?.value;
+  if (!dur) { showReserveError('Please select a duration'); return; }
+
+  const listingId = getParam('id');
+  if (!listingId) return;
+
+  const btn = document.getElementById('reserveSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  try {
+    const res = await apiFetch('/api/reservations.php?action=create', {
+      method: 'POST',
+      body: JSON.stringify({ listing_id: parseInt(listingId), duration_type: dur })
+    });
+    if (res.success) {
+      closeReserveModal();
+      showToast('Reservation request sent! Waiting for seller confirmation.', 'success');
+      document.getElementById('reserveBtn').style.display = 'none';
+    } else {
+      showReserveError(res.error || 'Failed to reserve');
+    }
+  } catch(e) {
+    showReserveError('Network error. Please try again.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Reserve';
+  }
+}
+
+function showReserveError(msg) {
+  const el = document.getElementById('reserveError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// reserveBtn'i goster (isOwn degilse ve active ise)
+// Bu fonksiyon listing yuklendikten sonra cagrilir
+function initReserveBtn(listing, isOwn) {
+  const btn = document.getElementById('reserveBtn');
+  if (!btn) return;
+  if (!isOwn && listing.status === 'active') {
+    btn.style.display = 'flex';
+  }
+}
+</script>
+
 </body>
 </html>
 

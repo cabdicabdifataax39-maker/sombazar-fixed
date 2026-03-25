@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    (function(){
+      var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open a Store — SomBazar</title>
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>tailwind.config={theme:{extend:{colors:{primary:"#ec5b13"},fontFamily:{sans:["Public Sans","sans-serif"]}}}}</script>
+  <style>
+    .step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:2px solid #e2e8f0;color:#94a3b8;background:white;transition:.2s;}
+    .step-dot.active{background:#ec5b13;color:white;border-color:#ec5b13;}
+    .step-dot.done{background:#dcfce7;color:#15803d;border-color:#15803d;}
+    .type-card{border:2px solid #e2e8f0;border-radius:14px;padding:16px;cursor:pointer;text-align:center;transition:.15s;}
+    .type-card:hover,.type-card.selected{border-color:#ec5b13;background:#fff7f5;}
+    .type-card.selected{box-shadow:0 0 0 3px rgba(236,91,19,.15);}
+    .form-input{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;font-family:inherit;background:var(--input-bg);color:var(--text-primary);}
+    .form-input:focus{border-color:#ec5b13;}
+    .form-label{display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+  </nav>
+</header>
+
+<main style="max-width:520px;margin:32px auto;padding:0 16px 60px;">
+
+  <!-- Progress -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:32px;">
+    <div class="step-dot active" id="dot1">1</div>
+    <div style="flex:1;max-width:60px;height:2px;background:#e2e8f0;" id="line1"></div>
+    <div class="step-dot" id="dot2">2</div>
+    <div style="flex:1;max-width:60px;height:2px;background:#e2e8f0;" id="line2"></div>
+    <div class="step-dot" id="dot3">3</div>
+    <div style="flex:1;max-width:60px;height:2px;background:#e2e8f0;" id="line3"></div>
+    <div class="step-dot" id="dot4">4</div>
+  </div>
+
+  <!-- Step 1: Store Type -->
+  <div id="step1">
+    <h2 style="font-size:22px;font-weight:900;color:var(--text-primary);margin-bottom:6px;">What type of store?</h2>
+    <p style="font-size:14px;color:#64748b;margin-bottom:20px;">Choose the category that best describes your business.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="typeGrid">
+      <div class="type-card" onclick="selectType('electronics',this)"><div style="font-size:28px;margin-bottom:6px;">📱</div><div style="font-size:13px;font-weight:700;">Electronics</div></div>
+      <div class="type-card" onclick="selectType('auto',this)"><div style="font-size:28px;margin-bottom:6px;">🚗</div><div style="font-size:13px;font-weight:700;">Auto</div></div>
+      <div class="type-card" onclick="selectType('real_estate',this)"><div style="font-size:28px;margin-bottom:6px;">🏠</div><div style="font-size:13px;font-weight:700;">Real Estate</div></div>
+      <div class="type-card" onclick="selectType('fashion',this)"><div style="font-size:28px;margin-bottom:6px;">👗</div><div style="font-size:13px;font-weight:700;">Fashion</div></div>
+      <div class="type-card" onclick="selectType('food',this)"><div style="font-size:28px;margin-bottom:6px;">🍽️</div><div style="font-size:13px;font-weight:700;">Food</div></div>
+      <div class="type-card" onclick="selectType('services',this)"><div style="font-size:28px;margin-bottom:6px;">🔧</div><div style="font-size:13px;font-weight:700;">Services</div></div>
+      <div class="type-card" onclick="selectType('other',this)" style="grid-column:span 2;"><div style="font-size:28px;margin-bottom:6px;">🏪</div><div style="font-size:13px;font-weight:700;">Other</div></div>
+    </div>
+    <p id="typeError" style="display:none;color:#dc2626;font-size:12px;font-weight:600;margin-top:10px;">Please select a store type</p>
+    <button onclick="nextStep(1)" style="width:100%;margin-top:20px;background:#ec5b13;color:white;border:none;padding:13px;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;">Continue →</button>
+  </div>
+
+  <!-- Step 2: Basic Info -->
+  <div id="step2" style="display:none;">
+    <h2 style="font-size:22px;font-weight:900;color:var(--text-primary);margin-bottom:6px;">Basic Information</h2>
+    <p style="font-size:14px;color:#64748b;margin-bottom:20px;">Tell buyers about your store.</p>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label class="form-label">Store Name *</label>
+        <input class="form-input" id="storeName" placeholder="e.g. Hargeisa Electronics" maxlength="100">
+      </div>
+      <div>
+        <label class="form-label">Phone Number</label>
+        <input class="form-input" id="storePhone" placeholder="+252 63 000 0000" type="tel">
+      </div>
+      <div>
+        <label class="form-label">City *</label>
+        <select class="form-input" id="storeCity">
+          <option value="Hargeisa">Hargeisa</option>
+          <option value="Borama">Borama</option>
+          <option value="Berbera">Berbera</option>
+          <option value="Burao">Burao</option>
+          <option value="Erigavo">Erigavo</option>
+          <option value="Las Anod">Las Anod</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-label">Description</label>
+        <textarea class="form-input" id="storeDesc" rows="3" placeholder="Tell buyers what you sell and why they should choose you..." maxlength="500" style="resize:none;"></textarea>
+      </div>
+    </div>
+    <p id="infoError" style="display:none;color:#dc2626;font-size:12px;font-weight:600;margin-top:10px;"></p>
+    <div style="display:flex;gap:8px;margin-top:20px;">
+      <button onclick="prevStep(2)" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">← Back</button>
+      <button onclick="nextStep(2)" style="flex:2;background:#ec5b13;color:white;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Images -->
+  <div id="step3" style="display:none;">
+    <h2 style="font-size:22px;font-weight:900;color:var(--text-primary);margin-bottom:6px;">Store Images</h2>
+    <p style="font-size:14px;color:#64748b;margin-bottom:20px;">Add a logo and cover photo to make your store stand out.</p>
+
+    <div style="margin-bottom:16px;">
+      <label class="form-label">Logo (Square, 400×400)</label>
+      <div id="logoUploadArea" onclick="document.getElementById('logoFile').click()" style="border:2px dashed #e2e8f0;border-radius:12px;padding:20px;text-align:center;cursor:pointer;position:relative;transition:.15s;" onmouseover="this.style.borderColor='#ec5b13'" onmouseout="this.style.borderColor='#e2e8f0'">
+        <img id="logoPreview" style="display:none;width:80px;height:80px;border-radius:12px;object-fit:cover;margin:0 auto 8px;">
+        <div id="logoPlaceholder"><span style="font-size:28px;">🏪</span><p style="font-size:12px;color:#94a3b8;margin-top:4px;">Click to upload logo</p></div>
+        <input type="file" id="logoFile" accept="image/*" style="display:none;" onchange="previewImage(this,'logoPreview','logoPlaceholder')">
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label class="form-label">Cover Photo (1200×300)</label>
+      <div onclick="document.getElementById('coverFile').click()" style="border:2px dashed #e2e8f0;border-radius:12px;overflow:hidden;cursor:pointer;min-height:100px;position:relative;display:flex;align-items:center;justify-content:center;transition:.15s;" onmouseover="this.style.borderColor='#ec5b13'" onmouseout="this.style.borderColor='#e2e8f0'">
+        <img id="coverPreview" style="display:none;width:100%;height:100px;object-fit:cover;">
+        <div id="coverPlaceholder" style="text-align:center;padding:20px;"><span style="font-size:28px;">🖼️</span><p style="font-size:12px;color:#94a3b8;margin-top:4px;">Click to upload cover</p></div>
+        <input type="file" id="coverFile" accept="image/*" style="display:none;" onchange="previewImage(this,'coverPreview','coverPlaceholder')">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:20px;">
+      <button onclick="prevStep(3)" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">← Back</button>
+      <button onclick="nextStep(3)" style="flex:2;background:#ec5b13;color:white;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;">Continue →</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Confirm -->
+  <div id="step4" style="display:none;">
+    <h2 style="font-size:22px;font-weight:900;color:var(--text-primary);margin-bottom:6px;">You're almost there!</h2>
+    <p style="font-size:14px;color:#64748b;margin-bottom:20px;">Review your store details before launching.</p>
+    <div style="background:var(--bg-secondary);border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div id="summaryContent" style="font-size:13px;color:var(--text-primary);line-height:2;"></div>
+    </div>
+    <p id="createError" style="display:none;color:#dc2626;font-size:13px;font-weight:600;margin-bottom:12px;"></p>
+    <div style="display:flex;gap:8px;">
+      <button onclick="prevStep(4)" style="flex:1;background:#f1f5f9;color:#374151;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">← Back</button>
+      <button onclick="createStore()" id="createBtn" style="flex:2;background:#ec5b13;color:white;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:800;cursor:pointer;">🚀 Launch Store</button>
+    </div>
+  </div>
+
+</main>
+
+<script src="assets/app.min.js"></script>
+<script>
+// Auth check
+const user = JSON.parse(localStorage.getItem('sb_user') || 'null');
+if (!user) window.location.href = 'auth.html?redirect=' + encodeURIComponent(location.href);
+
+let selectedType = '';
+let createdStoreId = null;
+let uploadedLogoUrl = '';
+let uploadedCoverUrl = '';
+
+function selectType(type, el) {
+  document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedType = type;
+  document.getElementById('typeError').style.display = 'none';
+}
+
+function previewImage(input, previewId, placeholderId) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById(previewId);
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById(placeholderId).style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function nextStep(from) {
+  if (from === 1) {
+    if (!selectedType) { document.getElementById('typeError').style.display = 'block'; return; }
+  }
+  if (from === 2) {
+    const name = document.getElementById('storeName').value.trim();
+    if (!name) { const el=document.getElementById('infoError'); el.textContent='Store name is required'; el.style.display='block'; return; }
+    document.getElementById('infoError').style.display = 'none';
+  }
+  if (from === 4) return;
+
+  if (from === 3) {
+    // Summary
+    const name = document.getElementById('storeName').value.trim();
+    const city = document.getElementById('storeCity').value;
+    const desc = document.getElementById('storeDesc').value.trim();
+    const typeLabel = {'electronics':'📱 Electronics','auto':'🚗 Auto','real_estate':'🏠 Real Estate','fashion':'👗 Fashion','food':'🍽️ Food','services':'🔧 Services','other':'🏪 Other'}[selectedType] || selectedType;
+    document.getElementById('summaryContent').innerHTML = `
+      <div><b>Type:</b> ${typeLabel}</div>
+      <div><b>Name:</b> ${name}</div>
+      <div><b>City:</b> ${city}</div>
+      ${desc ? `<div><b>Description:</b> ${desc.substring(0,80)}${desc.length>80?'...':''}</div>` : ''}
+    `;
+  }
+
+  document.getElementById('step' + from).style.display = 'none';
+  document.getElementById('step' + (from+1)).style.display = 'block';
+  document.getElementById('dot' + from).classList.remove('active');
+  document.getElementById('dot' + from).classList.add('done');
+  document.getElementById('dot' + from).textContent = '✓';
+  document.getElementById('dot' + (from+1)).classList.add('active');
+  document.getElementById('line' + from).style.background = '#ec5b13';
+}
+
+function prevStep(from) {
+  document.getElementById('step' + from).style.display = 'none';
+  document.getElementById('step' + (from-1)).style.display = 'block';
+  document.getElementById('dot' + from).classList.remove('active');
+  document.getElementById('dot' + (from-1)).classList.remove('done');
+  document.getElementById('dot' + (from-1)).textContent = String(from-1);
+  document.getElementById('dot' + (from-1)).classList.add('active');
+  document.getElementById('line' + (from-1)).style.background = '#e2e8f0';
+}
+
+async function uploadImage(fileInputId, type) {
+  const file = document.getElementById(fileInputId).files[0];
+  if (!file) return null;
+
+  const form = new FormData();
+  form.append('file', file);
+
+  try {
+    const token = localStorage.getItem('sb_token') || '';
+    const res = await fetch('/api/store_upload.php?type=' + type, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: form
+    });
+    const data = await res.json();
+    return data.success ? data.data.url : null;
+  } catch(e) { return null; }
+}
+
+async function createStore() {
+  const btn = document.getElementById('createBtn');
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+
+  const errEl = document.getElementById('createError');
+  errEl.style.display = 'none';
+
+  try {
+    // 1. Store olustur
+    const res = await apiFetch('/api/stores.php?action=create', {
+      method: 'POST',
+      body: JSON.stringify({
+        store_name:  document.getElementById('storeName').value.trim(),
+        store_type:  selectedType,
+        city:        document.getElementById('storeCity').value,
+        description: document.getElementById('storeDesc').value.trim(),
+        phone:       document.getElementById('storePhone').value.trim(),
+      })
+    });
+
+    if (!res.success) {
+      errEl.textContent = res.error || 'Failed to create store';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '🚀 Launch Store';
+      return;
+    }
+
+    createdStoreId = res.data.store_id;
+
+    // 2. Gorselleri yukle (store olustuktan sonra)
+    btn.textContent = 'Uploading images...';
+    if (document.getElementById('logoFile').files[0]) {
+      await uploadImage('logoFile', 'logo');
+    }
+    if (document.getElementById('coverFile').files[0]) {
+      await uploadImage('coverFile', 'cover');
+    }
+
+    // 3. Basari
+    showToast('Store created successfully! 🎉', 'success');
+    setTimeout(() => {
+      window.location.href = 'store.html?slug=' + res.data.slug;
+    }, 1200);
+
+  } catch(e) {
+    errEl.textContent = 'Network error. Please try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = '🚀 Launch Store';
+  }
+}
+</script>
+</body>
+</html>
