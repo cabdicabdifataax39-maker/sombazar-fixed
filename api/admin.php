@@ -1462,3 +1462,4 @@ function handleGet2FAStatus(): void {
         jsonSuccess(['totp_enabled' => false]);
     }
 }
+
