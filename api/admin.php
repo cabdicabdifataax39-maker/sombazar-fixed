@@ -18,7 +18,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? 'stats';
 
 // All admin actions require auth + admin role
-$uid = requireAuth(true); // admin panel - skip ban/token checks
+$uid = requireAuth(true);
 $db  = getDB();
 $st  = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
 $st->execute([$uid]);
@@ -1462,3 +1462,4 @@ function handleGet2FAStatus(): void {
         jsonSuccess(['totp_enabled' => false]);
     }
 }
+// SomaBazar-Admin-v2-fixed
