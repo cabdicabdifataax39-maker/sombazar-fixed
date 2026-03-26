@@ -1,46 +1,45 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', '0');
-ini_set('log_errors', '1');
+/**
+ * SomaBazar Admin — Store Yonetimi
+ * Bu dosya admin.php tarafindan include edilir.
+ * Standalone cagrildiginda da calisir.
+ */
 
-register_shutdown_function(function() {
-    $err = error_get_last();
-    if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
-        if (!headers_sent()) header('Content-Type: application/json; charset=UTF-8');
-        http_response_code(500);
-        echo json_encode(['success' => false, 'error' => 'PHP Error: ' . $err['message']]);
+// Direkt erisimde standalone mod
+if (!defined('SOMABAZAR_ADMIN_INCLUDED')) {
+    // Standalone mod - kendi auth ve switch'ini calistir
+    require_once __DIR__ . '/config.php';
+    
+    $uid = requireAuth(true);
+    $db  = getDB();
+    $st  = $db->prepare('SELECT role, is_admin FROM users WHERE id = ?');
+    $st->execute([$uid]);
+    $me  = $st->fetch();
+    if (!$me || (!$me['is_admin'] && $me['role'] !== 'admin')) {
+        jsonError('Forbidden — Admins only', 403);
     }
-});
-
-require_once __DIR__ . '/config.php';
-
-// Admin kontrolu
-$uid = requireAuth();
-$db  = getDB();
-$st  = $db->prepare('SELECT role, is_admin FROM users WHERE id = ?');
-$st->execute([$uid]);
-$me  = $st->fetch();
-if (!$me || (!$me['is_admin'] && $me['role'] !== 'admin')) {
-    jsonError('Forbidden — Admins only', 403);
+    
+    $action = $_GET['action'] ?? '';
+    $method = $_SERVER['REQUEST_METHOD'];
+    
+    switch ($action) {
+        case 'admin_stores':
+            handleAdminStores();
+            break;
+        case 'admin_suspend_store':
+            if ($method !== 'POST') jsonError('Method not allowed', 405);
+            handleAdminSuspendStore();
+            break;
+        case 'admin_verification_queue':
+            handleAdminVerificationQueue();
+            break;
+        default:
+            jsonError('Unknown action: ' . $action);
+    }
+    exit;
 }
 
-$action = $_GET['action'] ?? '';
-$method = $_SERVER['REQUEST_METHOD'];
-
-switch ($action) {
-    case 'admin_stores':
-        handleAdminStores();
-        break;
-    case 'admin_suspend_store':
-        if ($method !== 'POST') jsonError('Method not allowed', 405);
-        handleAdminSuspendStore();
-        break;
-    case 'admin_verification_queue':
-        handleAdminVerificationQueue();
-        break;
-    default:
-        jsonError('Unknown action: ' . $action);
-}
+// Include mod - sadece fonksiyonlar tanimlanir, switch calistirilmaz
 
 function handleAdminStores(): void {
     $db      = getDB();

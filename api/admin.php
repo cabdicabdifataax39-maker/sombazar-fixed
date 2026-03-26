@@ -12,13 +12,14 @@ register_shutdown_function(function() {
 });
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/mailer.php';
+define('SOMABAZAR_ADMIN_INCLUDED', true);
 if (file_exists(__DIR__ . '/admin_stores.php')) require_once __DIR__ . '/admin_stores.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? 'stats';
 
 // All admin actions require auth + admin role
-$uid = requireAuth(true);
+$uid = requireAuth();
 $db  = getDB();
 $st  = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
 $st->execute([$uid]);
@@ -1462,4 +1463,4 @@ function handleGet2FAStatus(): void {
         jsonSuccess(['totp_enabled' => false]);
     }
 }
-// SomaBazar-Admin-v2-fixed
+// SomaBazar-Admin-v3
