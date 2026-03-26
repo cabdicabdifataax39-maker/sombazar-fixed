@@ -18,7 +18,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? 'stats';
 
 // All admin actions require auth + admin role
-$uid = requireAuth();
+$uid = requireAuth(true); // admin panel - skip ban/token checks
 $db  = getDB();
 $st  = $db->prepare('SELECT is_admin FROM users WHERE id = ?');
 $st->execute([$uid]);
