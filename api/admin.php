@@ -12,7 +12,7 @@ register_shutdown_function(function() {
 });
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/mailer.php';
-require_once __DIR__ . '/admin_stores.php';
+if (file_exists(__DIR__ . '/admin_stores.php')) require_once __DIR__ . '/admin_stores.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? 'stats';
@@ -106,9 +106,9 @@ switch ($action) {
     case 'push_stats':        handlePushStats();        break;
     case 'send_push':         handleSendPush();         break;
     case 'list_categories':   handleListCategories();   break;
-    case 'admin_stores':             handleAdminStores();             break;
-    case 'admin_suspend_store':      handleAdminSuspendStore();       break;
-    case 'admin_verification_queue': handleAdminVerificationQueue();  break;
+    case 'admin_stores':             if(function_exists('handleAdminStores')) handleAdminStores(); else jsonError('Not found',404); break;
+    case 'admin_suspend_store':      if(function_exists('handleAdminSuspendStore')) handleAdminSuspendStore(); else jsonError('Not found',404); break;
+    case 'admin_verification_queue': if(function_exists('handleAdminVerificationQueue')) handleAdminVerificationQueue(); else jsonError('Not found',404); break;
     default: jsonError('Unknown action', 404);
 }
 
@@ -1462,4 +1462,3 @@ function handleGet2FAStatus(): void {
         jsonSuccess(['totp_enabled' => false]);
     }
 }
-
