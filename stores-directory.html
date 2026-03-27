@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>
+    (function(){
+      var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+      document.documentElement.setAttribute('data-theme',t);
+    })();
+  </script>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ec5b13">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stores Directory — SomBazar</title>
+  <meta name="description" content="Browse all stores on SomBazar — Somaliland marketplace">
+  <link rel="preload" href="assets/style.min.css" as="style">
+  <link rel="preload" href="assets/app.min.js" as="script">
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <style>
+    .store-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      text-decoration: none;
+      display: block;
+      transition: transform .15s, box-shadow .15s, border-color .15s;
+    }
+    .store-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--shadow-color);
+      border-color: #ec5b13;
+    }
+    .store-cover {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #ec5b13 0%, #f97316 100%);
+    }
+    .store-cover-placeholder {
+      width: 100%;
+      height: 90px;
+      background: linear-gradient(135deg, #ec5b13 0%, #f97316 100%);
+    }
+    .store-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid var(--bg-card);
+      margin-top: -24px;
+      flex-shrink: 0;
+    }
+    .store-logo-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: var(--bg-secondary);
+      border: 2px solid var(--bg-card);
+      margin-top: -24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .stores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 480px) {
+      .stores-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    }
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: .15s;
+      white-space: nowrap;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: #ec5b13;
+      color: white;
+      border-color: #ec5b13;
+    }
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+    .open-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    [data-theme="dark"] .store-logo-placeholder { background: #1e293b; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+    <form class="header-search" id="headerSearchForm" onsubmit="return false;">
+      <input class="header-search-input" type="search" id="storeSearch" placeholder="Search stores..." oninput="debounceSearch(this.value)">
+      <button type="submit" class="header-search-btn" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </form>
+    <div class="header-actions" id="headerActions"></div>
+  </nav>
+</header>
+
+<main style="max-width:1100px;margin:0 auto;padding:20px 16px 60px;">
+
+  <!-- Page Title -->
+  <div style="margin-bottom:20px;">
+    <h1 style="font-size:24px;font-weight:900;color:var(--text-primary);margin:0 0 4px;">Stores Directory</h1>
+    <p style="font-size:13px;color:#64748b;margin:0;">Browse verified sellers and businesses in Somaliland</p>
+  </div>
+
+  <!-- Filters -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+    <!-- Type filters -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;" id="typeFilters">
+      <button class="filter-btn active" onclick="setType('',this)">All</button>
+      <button class="filter-btn" onclick="setType('electronics',this)">📱 Electronics</button>
+      <button class="filter-btn" onclick="setType('auto',this)">🚗 Auto</button>
+      <button class="filter-btn" onclick="setType('real_estate',this)">🏠 Real Estate</button>
+      <button class="filter-btn" onclick="setType('fashion',this)">👗 Fashion</button>
+      <button class="filter-btn" onclick="setType('food',this)">🍽️ Food</button>
+      <button class="filter-btn" onclick="setType('services',this)">🔧 Services</button>
+    </div>
+    <!-- City filter -->
+    <select id="cityFilter" onchange="setCity(this.value)" style="padding:6px 10px;border-radius:20px;border:1.5px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;outline:none;">
+      <option value="">All Cities</option>
+      <option value="Hargeisa">Hargeisa</option>
+      <option value="Borama">Borama</option>
+      <option value="Berbera">Berbera</option>
+      <option value="Burao">Burao</option>
+      <option value="Erigavo">Erigavo</option>
+      <option value="Las Anod">Las Anod</option>
+    </select>
+    <!-- Verified only -->
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-secondary);cursor:pointer;">
+      <input type="checkbox" id="verifiedOnly" onchange="loadStores(1)" style="accent-color:#ec5b13;"> Verified only
+    </label>
+  </div>
+
+  <!-- Results count -->
+  <div style="font-size:13px;color:#64748b;margin-bottom:14px;" id="resultsCount"></div>
+
+  <!-- Grid -->
+  <div class="stores-grid" id="storesGrid"></div>
+
+  <!-- Loading -->
+  <div id="storesLoading" style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;">
+    <div style="font-size:32px;margin-bottom:8px;">🏪</div>
+    Loading stores...
+  </div>
+
+  <!-- Empty -->
+  <div id="storesEmpty" style="display:none;text-align:center;padding:60px 20px;">
+    <div style="font-size:48px;margin-bottom:12px;">🔍</div>
+    <h3 style="font-size:16px;font-weight:800;color:var(--text-primary);margin-bottom:6px;">No stores found</h3>
+    <p style="font-size:13px;color:#64748b;">Try different filters or search terms</p>
+  </div>
+
+  <!-- Load More -->
+  <div id="loadMoreWrap" style="display:none;text-align:center;margin-top:24px;">
+    <button onclick="loadMore()" style="padding:11px 32px;border-radius:12px;border:1.5px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">
+      Load More Stores
+    </button>
+  </div>
+
+  <!-- Open Store CTA -->
+  <div style="margin-top:40px;background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:20px;padding:32px;text-align:center;">
+    <div style="font-size:36px;margin-bottom:10px;">🚀</div>
+    <h3 style="font-size:18px;font-weight:900;color:white;margin-bottom:8px;">Ready to open your store?</h3>
+    <p style="font-size:13px;color:#94a3b8;margin-bottom:16px;">Join hundreds of sellers on SomBazar</p>
+    <a href="store-setup.html" style="display:inline-block;background:#ec5b13;color:white;padding:11px 28px;border-radius:12px;font-size:14px;font-weight:800;text-decoration:none;">Open a Store →</a>
+  </div>
+
+</main>
+
+<footer class="footer" style="margin-top:40px;">
+  <div class="footer-grid">
+    <div><span class="footer-brand">SomBazar</span></div>
+  </div>
+  <p class="footer-copy">© 2025 SomBazar</p>
+</footer>
+
+<script src="assets/app.min.js"></script>
+<script>
+let currentPage = 1;
+let totalPages = 1;
+let currentType = '';
+let currentCity = '';
+let searchQuery = '';
+let searchTimer = null;
+
+function debounceSearch(val) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchQuery = val.trim();
+    loadStores(1);
+  }, 350);
+}
+
+function setType(type, btn) {
+  document.querySelectorAll('#typeFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentType = type;
+  loadStores(1);
+}
+
+function setCity(city) {
+  currentCity = city;
+  loadStores(1);
+}
+
+async function loadStores(page = 1) {
+  if (page === 1) {
+    document.getElementById('storesGrid').innerHTML = '';
+    document.getElementById('storesLoading').style.display = 'block';
+    document.getElementById('storesEmpty').style.display = 'none';
+    document.getElementById('loadMoreWrap').style.display = 'none';
+  }
+
+  const verifiedOnly = document.getElementById('verifiedOnly').checked;
+
+  let url = `/api/stores.php?action=all&page=${page}&per_page=16`;
+  if (currentType) url += `&store_type=${encodeURIComponent(currentType)}`;
+  if (currentCity) url += `&city=${encodeURIComponent(currentCity)}`;
+  if (verifiedOnly) url += `&verification_status=verified`;
+  if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+
+  try {
+    const data = await apiFetch(url);
+    document.getElementById('storesLoading').style.display = 'none';
+
+    const stores = data?.stores || (Array.isArray(data) ? data : []);
+    const total = data?.total || stores.length;
+    totalPages = data?.total_pages || 1;
+    currentPage = page;
+
+    document.getElementById('resultsCount').textContent = total + ' store' + (total !== 1 ? 's' : '') + ' found';
+
+    if (page === 1 && !stores.length) {
+      document.getElementById('storesEmpty').style.display = 'block';
+      return;
+    }
+
+    const grid = document.getElementById('storesGrid');
+    stores.forEach(s => grid.insertAdjacentHTML('beforeend', storeCardHTML(s)));
+
+    document.getElementById('loadMoreWrap').style.display = currentPage < totalPages ? 'block' : 'none';
+
+  } catch(e) {
+    document.getElementById('storesLoading').style.display = 'none';
+    document.getElementById('storesEmpty').style.display = 'block';
+  }
+}
+
+function loadMore() { loadStores(currentPage + 1); }
+
+function storeCardHTML(s) {
+  const cover = s.cover_url
+    ? `<img src="${s.cover_url}" alt="${s.store_name}" class="store-cover" loading="lazy">`
+    : `<div class="store-cover-placeholder"></div>`;
+
+  const logo = s.logo_url
+    ? `<img src="${s.logo_url}" alt="logo" class="store-logo">`
+    : `<div class="store-logo-placeholder">🏪</div>`;
+
+  const verified = s.verification_status === 'verified'
+    ? `<span class="verified-badge">✅ Verified</span>` : '';
+
+  const openStatus = s.open_status?.is_open === true
+    ? `<span class="open-dot" style="background:#22c55e;"></span><span style="font-size:11px;color:#15803d;font-weight:700;">Open</span>`
+    : s.open_status?.is_open === false
+    ? `<span class="open-dot" style="background:#ef4444;"></span><span style="font-size:11px;color:#dc2626;font-weight:700;">Closed</span>`
+    : '';
+
+  const typeEmoji = {
+    electronics:'📱', auto:'🚗', real_estate:'🏠',
+    fashion:'👗', food:'🍽️', services:'🔧', other:'🏪'
+  }[s.store_type] || '🏪';
+
+  return `
+    <a href="store.html?slug=${s.slug}" class="store-card">
+      ${cover}
+      <div style="padding:10px 12px 12px;">
+        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;">
+          ${logo}
+          <div style="min-width:0;margin-top:4px;">
+            <div style="font-weight:800;font-size:13px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${s.store_name}</div>
+            <div style="display:flex;align-items:center;gap:4px;margin-top:2px;flex-wrap:wrap;">
+              ${verified}
+              ${openStatus ? `<div style="display:flex;align-items:center;gap:3px;">${openStatus}</div>` : ''}
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:11px;color:#64748b;">
+            ${typeEmoji} ${s.city || ''}
+          </div>
+          <div style="font-size:11px;color:#64748b;font-weight:600;">
+            ${s.listing_count || 0} listings
+          </div>
+        </div>
+        ${s.avg_rating > 0 ? `<div style="font-size:11px;color:#f59e0b;margin-top:4px;font-weight:700;">★ ${parseFloat(s.avg_rating).toFixed(1)}</div>` : ''}
+      </div>
+    </a>`;
+}
+
+// Init
+loadStores(1);
+</script>
+</body>
+</html>
