@@ -17,6 +17,19 @@ require_once __DIR__ . '/config.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
+// Auto-create store_followers tablosu yoksa
+try {
+    getDB()->exec("CREATE TABLE IF NOT EXISTS store_followers (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        store_id INT NOT NULL,
+        user_id INT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE KEY unique_follow (store_id, user_id),
+        INDEX idx_store (store_id),
+        INDEX idx_user (user_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+} catch (\Throwable $e) {}
+
 switch ($action) {
     case 'create':         if ($method !== 'POST') jsonError('Method not allowed', 405); handleCreate();        break;
     case 'update':         if ($method !== 'POST') jsonError('Method not allowed', 405); handleUpdate();        break;
@@ -177,9 +190,11 @@ function handleGet(): void {
     // Takip ediyor mu?
     $isFollowing = false;
     if ($uid) {
-        $fst = $db->prepare("SELECT 1 FROM store_followers WHERE store_id = ? AND user_id = ?");
-        $fst->execute([$store['id'], $uid]);
-        $isFollowing = (bool)$fst->fetch();
+        try {
+            $fst = $db->prepare("SELECT 1 FROM store_followers WHERE store_id = ? AND user_id = ?");
+            $fst->execute([$store['id'], $uid]);
+            $isFollowing = (bool)$fst->fetch();
+        } catch (\Throwable $e) { $isFollowing = false; }
     }
 
     // Aktif ilan sayisi
@@ -493,8 +508,8 @@ function handleAll(): void {
     $stores = $st->fetchAll();
 
     foreach ($stores as &$s) {
-        $s['working_hours'] = $s['working_hours'] ? json_decode($s['working_hours'], true) : null;
-        $s['open_status']   = getOpenStatus($s);
+        try { $s['working_hours'] = $s['working_hours'] ? json_decode($s['working_hours'], true) : null; } catch (\Throwable $e) { $s['working_hours'] = null; }
+        try { $s['open_status'] = getOpenStatus($s); } catch (\Throwable $e) { $s['open_status'] = ['is_open' => null, 'label' => '']; }
     }
 
     header('X-Total-Count: ' . $total);
