@@ -96,12 +96,12 @@ let storeData = null;
 
 async function loadDashboard() {
   try {
-    const res = await apiFetch('/api/stores.php?action=my_store');
-    if (!res.success) {
+    const store = await apiFetch('/api/stores.php?action=my_store');
+    if (!store || !store.id) {
       document.querySelector('main').innerHTML = '<div style="text-align:center;padding:60px;"><h2>No store found</h2><a href="store-setup.html" style="color:#ec5b13;font-weight:700;">Create a Store →</a></div>';
       return;
     }
-    storeData = res.data;
+    storeData = store;
 
     // Header
     if (storeData.logo_url) document.getElementById('dashLogo').src = storeData.logo_url;
@@ -151,9 +151,8 @@ async function loadDashboard() {
 
 async function loadAnalytics() {
   try {
-    const res = await apiFetch('/api/stores.php?action=analytics');
-    if (!res.success) return;
-    const d = res.data;
+    const d = await apiFetch('/api/stores.php?action=analytics');
+    if (!d) return;
     document.getElementById('sActive').textContent = d.active_listings || 0;
     document.getElementById('sWeekViews').textContent = d.weekly_views || 0;
     document.getElementById('sMonthOffers').textContent = d.monthly_offers || 0;
@@ -224,7 +223,7 @@ async function saveHours() {
       method: 'POST',
       body: JSON.stringify({ hours })
     });
-    showToast(res.success ? 'Working hours saved! ✅' : (res.error || 'Error'), res.success ? 'success' : 'error');
+    showToast('Working hours saved! ✅', 'success');
   } catch(e) { showToast('Network error', 'error'); }
 
   btn.disabled = false; btn.textContent = 'Save Hours';
@@ -253,8 +252,8 @@ async function requestVerification() {
       method: 'POST',
       body: JSON.stringify({ level: 'business' })
     });
-    showToast(res.success ? 'Verification request submitted! ✅' : (res.error || 'Error'), res.success ? 'success' : 'error');
-    if (res.success) { storeData.verification_status = 'pending'; renderVerifCard(); }
+    showToast('Verification request submitted! ✅', 'success');
+    storeData.verification_status = 'pending'; renderVerifCard();
   } catch(e) { showToast('Network error', 'error'); }
 }
 

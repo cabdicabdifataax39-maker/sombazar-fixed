@@ -158,10 +158,8 @@ async function loadStore() {
 
   try {
     const paramKey = isNaN(slug) ? 'slug' : 'id';
-    const res = await apiFetch(`${API}?action=get&${paramKey}=${encodeURIComponent(slug)}`);
-    if (!res.success) { showError('Store not found'); return; }
-
-    const s = res.data;
+    const s = await apiFetch(`${API}?action=get&${paramKey}=${encodeURIComponent(slug)}`);
+    if (!s || !s.id) { showError('Store not found'); return; }
     storeId = s.id;
     storeOwnerId = s.owner_id;
 
@@ -234,11 +232,11 @@ async function loadListings(page = 1) {
   if (page === 1) document.getElementById('listingsLoading').style.display = 'block';
 
   try {
-    const res = await apiFetch(`${API}?action=listings&store_id=${storeId}&page=${page}&per_page=12`);
+    const listData = await apiFetch(`${API}?action=listings&store_id=${storeId}&page=${page}&per_page=12`);
     document.getElementById('listingsLoading').style.display = 'none';
-
-    if (!res.success) return;
-    const { listings, total_pages } = res.data;
+    if (!listData) return;
+    const listings = listData.listings || [];
+    const total_pages = listData.total_pages || 1;
     totalPages = total_pages || 1;
     currentPage = page;
 
@@ -287,7 +285,7 @@ async function toggleFollow() {
       method: 'POST',
       body: JSON.stringify({ store_id: storeId })
     });
-    if (res.success) {
+    {
       const nowFollowing = !isFollowing;
       btn.textContent = nowFollowing ? 'Unfollow' : 'Follow';
       btn.style.background = nowFollowing ? '#fee2e2' : 'white';

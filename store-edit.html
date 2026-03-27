@@ -115,9 +115,8 @@ if (!user) window.location.href = 'auth.html?redirect=store-edit.html';
 
 async function loadStore() {
   try {
-    const res = await apiFetch('/api/stores.php?action=my_store');
-    if (!res.success) { window.location.href = 'store-setup.html'; return; }
-    const s = res.data;
+    const s = await apiFetch('/api/stores.php?action=my_store');
+    if (!s || !s.id) { window.location.href = 'store-setup.html'; return; }
 
     document.getElementById('editName').value     = s.store_name || '';
     document.getElementById('editType').value     = s.store_type || 'other';
@@ -163,10 +162,10 @@ async function saveBasicInfo() {
       })
     });
     const msg = document.getElementById('saveMsg');
-    msg.textContent = res.success ? '✅ Changes saved!' : '❌ ' + (res.error || 'Error');
-    msg.style.color = res.success ? '#15803d' : '#dc2626';
+    msg.textContent = '✅ Changes saved!';
+    msg.style.color = '#15803d';
     msg.style.display = 'block';
-    if (res.success) showToast('Store updated!', 'success');
+    showToast('Store updated!', 'success');
   } catch(e) { showToast('Network error', 'error'); }
 
   btn.disabled = false; btn.textContent = 'Save Changes';
