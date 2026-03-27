@@ -17,18 +17,23 @@ require_once __DIR__ . '/config.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-// Auto-create store_followers tablosu yoksa
+// Auto-migrate: stores tablosunda eksik kolonlari ekle
+$_sdb = getDB();
+foreach ([
+    "ALTER TABLE stores ADD COLUMN follower_count INT DEFAULT 0",
+    "ALTER TABLE stores ADD COLUMN whatsapp VARCHAR(30) NULL",
+    "ALTER TABLE stores ADD COLUMN district VARCHAR(50) NULL",
+    "ALTER TABLE stores ADD COLUMN latitude DECIMAL(10,8) NULL",
+    "ALTER TABLE stores ADD COLUMN longitude DECIMAL(11,8) NULL",
+] as $_ssql) { try { $_sdb->exec($_ssql); } catch(\Throwable $e) {} }
+
+// Auto-create store_followers
 try {
-    getDB()->exec("CREATE TABLE IF NOT EXISTS store_followers (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        store_id INT NOT NULL,
-        user_id INT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_follow (store_id, user_id),
-        INDEX idx_store (store_id),
-        INDEX idx_user (user_id)
+    $_sdb->exec("CREATE TABLE IF NOT EXISTS store_followers (
+        store_id INT NOT NULL, user_id INT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (store_id, user_id), INDEX idx_user (user_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-} catch (\Throwable $e) {}
+} catch(\Throwable $e) {}
 
 switch ($action) {
     case 'create':         if ($method !== 'POST') jsonError('Method not allowed', 405); handleCreate();        break;
@@ -190,11 +195,9 @@ function handleGet(): void {
     // Takip ediyor mu?
     $isFollowing = false;
     if ($uid) {
-        try {
-            $fst = $db->prepare("SELECT 1 FROM store_followers WHERE store_id = ? AND user_id = ?");
-            $fst->execute([$store['id'], $uid]);
-            $isFollowing = (bool)$fst->fetch();
-        } catch (\Throwable $e) { $isFollowing = false; }
+        $fst = $db->prepare("SELECT 1 FROM store_followers WHERE store_id = ? AND user_id = ?");
+        $fst->execute([$store['id'], $uid]);
+        $isFollowing = (bool)$fst->fetch();
     }
 
     // Aktif ilan sayisi
@@ -204,10 +207,11 @@ function handleGet(): void {
 
     $store['is_following']   = $isFollowing;
     $store['listing_count']  = $listingCount;
-    $store['working_hours']  = $store['working_hours'] ? json_decode($store['working_hours'], true) : null;
-    $store['open_status']    = getOpenStatus($store);
+    $store['follower_count'] = (int)($store['follower_count'] ?? 0);
+    try { $store['working_hours'] = $store['working_hours'] ? json_decode($store['working_hours'], true) : null; } catch(\Throwable \$e) { \$store['working_hours'] = null; }
+    try { \$store['open_status'] = getOpenStatus(\$store); } catch(\Throwable \$e) { \$store['open_status'] = ['is_open' => null, 'label' => '']; }
 
-    jsonSuccess($store);
+    jsonSuccess(\$store);
 }
 
 // ── Kendi dukkanim ───────────────────────────────────────────────────────
@@ -282,8 +286,7 @@ function handleFollow(): void {
     try {
         $db->prepare("INSERT IGNORE INTO store_followers (store_id, user_id) VALUES (?, ?)")
            ->execute([$sid, $uid]);
-        $db->prepare("UPDATE stores SET follower_count = (SELECT COUNT(*) FROM store_followers WHERE store_id = ?) WHERE id = ?")
-           ->execute([$sid, $sid]);
+        try { $db->prepare("UPDATE stores SET follower_count = follower_count + 1 WHERE id = ?")->execute([$sid]); } catch(\Throwable $e) {}
         jsonSuccess(['following' => true]);
     } catch (\Throwable $e) {
         jsonError('Error: ' . $e->getMessage());
@@ -299,8 +302,7 @@ function handleUnfollow(): void {
     $db = getDB();
     $db->prepare("DELETE FROM store_followers WHERE store_id = ? AND user_id = ?")
        ->execute([$sid, $uid]);
-    $db->prepare("UPDATE stores SET follower_count = (SELECT COUNT(*) FROM store_followers WHERE store_id = ?) WHERE id = ?")
-       ->execute([$sid, $sid]);
+    try { $db->prepare("UPDATE stores SET follower_count = GREATEST(0, follower_count - 1) WHERE id = ?")->execute([$sid]); } catch(\Throwable $e) {}
     jsonSuccess(['following' => false]);
 }
 
@@ -508,8 +510,8 @@ function handleAll(): void {
     $stores = $st->fetchAll();
 
     foreach ($stores as &$s) {
-        try { $s['working_hours'] = $s['working_hours'] ? json_decode($s['working_hours'], true) : null; } catch (\Throwable $e) { $s['working_hours'] = null; }
-        try { $s['open_status'] = getOpenStatus($s); } catch (\Throwable $e) { $s['open_status'] = ['is_open' => null, 'label' => '']; }
+        $s['working_hours'] = $s['working_hours'] ? json_decode($s['working_hours'], true) : null;
+        $s['open_status']   = getOpenStatus($s);
     }
 
     header('X-Total-Count: ' . $total);
