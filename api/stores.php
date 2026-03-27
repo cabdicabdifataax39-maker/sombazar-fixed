@@ -208,10 +208,10 @@ function handleGet(): void {
     $store['is_following']   = $isFollowing;
     $store['listing_count']  = $listingCount;
     $store['follower_count'] = (int)($store['follower_count'] ?? 0);
-    try { $store['working_hours'] = $store['working_hours'] ? json_decode($store['working_hours'], true) : null; } catch(\Throwable \$e) { \$store['working_hours'] = null; }
-    try { \$store['open_status'] = getOpenStatus(\$store); } catch(\Throwable \$e) { \$store['open_status'] = ['is_open' => null, 'label' => '']; }
+    try { $store['working_hours'] = $store['working_hours'] ? json_decode($store['working_hours'], true) : null; } catch(\Throwable $e) { $store['working_hours'] = null; }
+    try { $store['open_status'] = getOpenStatus($store); } catch(\Throwable $e) { $store['open_status'] = ['is_open' => null, 'label' => '']; }
 
-    jsonSuccess(\$store);
+    jsonSuccess($store);
 }
 
 // ── Kendi dukkanim ───────────────────────────────────────────────────────
