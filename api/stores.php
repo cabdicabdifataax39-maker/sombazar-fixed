@@ -17,23 +17,14 @@ require_once __DIR__ . '/config.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-// Auto-migrate: stores tablosunda eksik kolonlari ekle
-$_sdb = getDB();
-foreach ([
-    "ALTER TABLE stores ADD COLUMN follower_count INT DEFAULT 0",
-    "ALTER TABLE stores ADD COLUMN whatsapp VARCHAR(30) NULL",
-    "ALTER TABLE stores ADD COLUMN district VARCHAR(50) NULL",
-    "ALTER TABLE stores ADD COLUMN latitude DECIMAL(10,8) NULL",
-    "ALTER TABLE stores ADD COLUMN longitude DECIMAL(11,8) NULL",
-] as $_ssql) { try { $_sdb->exec($_ssql); } catch(\Throwable $e) {} }
-
-// Auto-create store_followers
+// store_followers tablosu yoksa olustur
 try {
-    $_sdb->exec("CREATE TABLE IF NOT EXISTS store_followers (
-        store_id INT NOT NULL, user_id INT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    getDB()->exec("CREATE TABLE IF NOT EXISTS store_followers (
+        store_id INT NOT NULL, user_id INT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (store_id, user_id), INDEX idx_user (user_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-} catch(\Throwable $e) {}
+} catch (\Throwable $e) {}
 
 switch ($action) {
     case 'create':         if ($method !== 'POST') jsonError('Method not allowed', 405); handleCreate();        break;
@@ -195,9 +186,11 @@ function handleGet(): void {
     // Takip ediyor mu?
     $isFollowing = false;
     if ($uid) {
-        $fst = $db->prepare("SELECT 1 FROM store_followers WHERE store_id = ? AND user_id = ?");
-        $fst->execute([$store['id'], $uid]);
-        $isFollowing = (bool)$fst->fetch();
+        try {
+            $fst = $db->prepare("SELECT 1 FROM store_followers WHERE store_id = ? AND user_id = ?");
+            $fst->execute([$store['id'], $uid]);
+            $isFollowing = (bool)$fst->fetch();
+        } catch (\Throwable $e) { $isFollowing = false; }
     }
 
     // Aktif ilan sayisi
@@ -207,9 +200,8 @@ function handleGet(): void {
 
     $store['is_following']   = $isFollowing;
     $store['listing_count']  = $listingCount;
-    $store['follower_count'] = (int)($store['follower_count'] ?? 0);
-    try { $store['working_hours'] = $store['working_hours'] ? json_decode($store['working_hours'], true) : null; } catch(\Throwable $e) { $store['working_hours'] = null; }
-    try { $store['open_status'] = getOpenStatus($store); } catch(\Throwable $e) { $store['open_status'] = ['is_open' => null, 'label' => '']; }
+    $store['working_hours']  = $store['working_hours'] ? json_decode($store['working_hours'], true) : null;
+    $store['open_status']    = getOpenStatus($store);
 
     jsonSuccess($store);
 }
@@ -286,7 +278,7 @@ function handleFollow(): void {
     try {
         $db->prepare("INSERT IGNORE INTO store_followers (store_id, user_id) VALUES (?, ?)")
            ->execute([$sid, $uid]);
-        try { $db->prepare("UPDATE stores SET follower_count = follower_count + 1 WHERE id = ?")->execute([$sid]); } catch(\Throwable $e) {}
+        try { $db->prepare("UPDATE stores SET follower_count = follower_count + 1 WHERE id = ?")->execute([$sid]); } catch (\Throwable $e) {}
         jsonSuccess(['following' => true]);
     } catch (\Throwable $e) {
         jsonError('Error: ' . $e->getMessage());
@@ -302,7 +294,7 @@ function handleUnfollow(): void {
     $db = getDB();
     $db->prepare("DELETE FROM store_followers WHERE store_id = ? AND user_id = ?")
        ->execute([$sid, $uid]);
-    try { $db->prepare("UPDATE stores SET follower_count = GREATEST(0, follower_count - 1) WHERE id = ?")->execute([$sid]); } catch(\Throwable $e) {}
+    try { $db->prepare("UPDATE stores SET follower_count = GREATEST(0, follower_count - 1) WHERE id = ?")->execute([$sid]); } catch (\Throwable $e) {}
     jsonSuccess(['following' => false]);
 }
 
