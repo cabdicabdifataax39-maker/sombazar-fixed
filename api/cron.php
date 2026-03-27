@@ -76,7 +76,8 @@ foreach ($tasks as $t) {
         match($t) {
             'expire_offers'    => task_expire_offers(),
             'expire_plans'     => task_expire_plans(),
-            'expire_listings'  => task_expire_listings(),
+            'expire_listings'      => task_expire_listings(),
+            'expire_reservations'  => task_expire_reservations(),
             'cleanup_temp'     => task_cleanup_temp(),
             'cleanup_rate_limit' => task_cleanup_rate_limit(),
             'sitemap_ping'     => task_sitemap_ping(),
@@ -210,6 +211,67 @@ function task_expire_listings(): void {
 /**
  * 7 günden eski temp dosyaları temizle
  */
+
+
+/**
+ * Suresi dolan rezervasyonlari expire et
+ */
+function task_expire_reservations(): void {
+    $db = getDB();
+
+    // Pending - 2 saatten eski
+    $db->prepare("
+        UPDATE reservations
+        SET status = 'expired', updated_at = NOW()
+        WHERE status = 'pending'
+          AND created_at < DATE_SUB(NOW(), INTERVAL 2 HOUR)
+    ")->execute();
+
+    // Confirmed - expires_at gecmis
+    $toExpire = $db->prepare("
+        SELECT r.id, r.buyer_id, r.seller_id, r.listing_id, l.title
+        FROM reservations r
+        JOIN listings l ON r.listing_id = l.id
+        WHERE r.status = 'confirmed'
+          AND r.expires_at < NOW()
+    ");
+    $toExpire->execute();
+    $expiring = $toExpire->fetchAll();
+
+    if (!empty($expiring)) {
+        $db->prepare("
+            UPDATE reservations
+            SET status = 'expired', updated_at = NOW()
+            WHERE status = 'confirmed' AND expires_at < NOW()
+        ")->execute();
+
+        // listing'i tekrar active yap
+        foreach ($expiring as $r) {
+            try {
+                $db->prepare("UPDATE listings SET status = 'active' WHERE id = ? AND status = 'reserved'")
+                   ->execute([$r['listing_id']]);
+
+                // Aliciya bildirim
+                $db->prepare("INSERT INTO notifications (user_id,type,title,body,url) VALUES (?,?,?,?,?)")
+                   ->execute([$r['buyer_id'], 'reservation',
+                       'Reservation expired',
+                       "Your reservation for "{$r['title']}" has expired.",
+                       '/listing.html?id=' . $r['listing_id']]);
+
+                // Saticiya bildirim
+                $db->prepare("INSERT INTO notifications (user_id,type,title,body,url) VALUES (?,?,?,?,?)")
+                   ->execute([$r['seller_id'], 'reservation',
+                       'Reservation expired',
+                       "Reservation for "{$r['title']}" expired. Item is active again.",
+                       '/listing.html?id=' . $r['listing_id']]);
+            } catch (\Throwable $e) {}
+        }
+    }
+
+    $count = count($expiring);
+    log_cron('expire_reservations', "{$count} reservations expired");
+}
+
 function task_cleanup_temp(): void {
     $uploadDir = __DIR__ . '/../uploads/temp/';
     if (!is_dir($uploadDir)) { log_cron('cleanup_temp', 'No temp dir'); return; }
