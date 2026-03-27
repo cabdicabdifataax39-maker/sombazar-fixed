@@ -262,15 +262,14 @@ async function createStore() {
       })
     });
 
-    if (!res.success) {
-      errEl.textContent = res.error || 'Failed to create store';
-      errEl.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = '🚀 Launch Store';
+    // Zaten dukkan varsa direkt yonlendir
+    if (res.already_exists) {
+      showToast('Store already exists! Redirecting...', 'success');
+      setTimeout(() => { window.location.href = 'store-dashboard.html'; }, 1000);
       return;
     }
 
-    createdStoreId = res.data.store_id;
+    createdStoreId = res.store_id;
 
     // 2. Gorselleri yukle (store olustuktan sonra)
     btn.textContent = 'Uploading images...';
@@ -284,7 +283,7 @@ async function createStore() {
     // 3. Basari
     showToast('Store created successfully! 🎉', 'success');
     setTimeout(() => {
-      window.location.href = 'store.html?slug=' + res.data.slug;
+      window.location.href = 'store-dashboard.html';
     }, 1200);
 
   } catch(e) {
