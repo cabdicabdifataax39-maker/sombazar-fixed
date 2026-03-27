@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sombazar-v2';
+const CACHE_NAME = 'sombazar-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -31,6 +31,8 @@ self.addEventListener('fetch', e => {
   // API isteklerini cache'leme
   if (e.request.url.includes('/api/')) return;
   if (e.request.method !== 'GET') return;
+  // Store sayfalarini cache'leme - her zaman network'ten al
+  if (e.request.url.includes('store')) return;
 
   e.respondWith(
     fetch(e.request)
