@@ -158,10 +158,10 @@ async function loadStore() {
 
   try {
     const paramKey = isNaN(slug) ? 'slug' : 'id';
-    const res = await apiFetch(`${STORE_API}?action=get&${paramKey}=${encodeURIComponent(slug)}`);
-    if (!res.success) { showError('Store not found'); return; }
-
-    const s = res.data;
+    const _r = await fetch('/api/stores.php?action=get&' + paramKey + '=' + encodeURIComponent(slug));
+    const _j = await _r.json();
+    if (!_j.success) { showError('Store not found'); return; }
+    const s = _j.data;
     storeId = s.id;
     storeOwnerId = s.owner_id;
 
@@ -234,11 +234,12 @@ async function loadListings(page = 1) {
   if (page === 1) document.getElementById('listingsLoading').style.display = 'block';
 
   try {
-    const res = await apiFetch(`${STORE_API}?action=listings&store_id=${storeId}&page=${page}&per_page=12`);
+    const _lr = await fetch('/api/stores.php?action=listings&store_id=' + storeId + '&page=' + page + '&per_page=12');
+    const _lj = await _lr.json();
     document.getElementById('listingsLoading').style.display = 'none';
-
-    if (!res.success) return;
-    const { listings, total_pages } = res.data;
+    if (!_lj.success) return;
+    const listings = _lj.data.listings || [];
+    const total_pages = _lj.data.total_pages || 1;
     totalPages = total_pages || 1;
     currentPage = page;
 
@@ -287,7 +288,7 @@ async function toggleFollow() {
       method: 'POST',
       body: JSON.stringify({ store_id: storeId })
     });
-    {
+    if (res.success) {
       const nowFollowing = !isFollowing;
       btn.textContent = nowFollowing ? 'Unfollow' : 'Follow';
       btn.style.background = nowFollowing ? '#fee2e2' : 'white';
