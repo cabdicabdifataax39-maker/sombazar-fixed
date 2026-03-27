@@ -17,16 +17,16 @@ require_once __DIR__ . '/config.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
-// store_followers tablosu yoksa olustur
-try {
-    getDB()->exec("CREATE TABLE IF NOT EXISTS store_followers (
-        store_id INT NOT NULL, user_id INT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (store_id, user_id), INDEX idx_user (user_id)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-} catch (\Throwable $e) {}
-
 switch ($action) {
+    case 'ping': jsonSuccess(['pong' => true, 'time' => date('H:i:s')]); break;
+    case 'db_test':
+        try {
+            $r = getDB()->query('SELECT COUNT(*) FROM stores')->fetchColumn();
+            jsonSuccess(['stores_count' => $r]);
+        } catch (\Throwable $e) {
+            jsonError('DB error: ' . $e->getMessage());
+        }
+        break;
     case 'create':         if ($method !== 'POST') jsonError('Method not allowed', 405); handleCreate();        break;
     case 'update':         if ($method !== 'POST') jsonError('Method not allowed', 405); handleUpdate();        break;
     case 'get':            handleGet();           break;
@@ -186,11 +186,9 @@ function handleGet(): void {
     // Takip ediyor mu?
     $isFollowing = false;
     if ($uid) {
-        try {
-            $fst = $db->prepare("SELECT 1 FROM store_followers WHERE store_id = ? AND user_id = ?");
-            $fst->execute([$store['id'], $uid]);
-            $isFollowing = (bool)$fst->fetch();
-        } catch (\Throwable $e) { $isFollowing = false; }
+        $fst = $db->prepare("SELECT 1 FROM store_followers WHERE store_id = ? AND user_id = ?");
+        $fst->execute([$store['id'], $uid]);
+        $isFollowing = (bool)$fst->fetch();
     }
 
     // Aktif ilan sayisi
@@ -278,7 +276,8 @@ function handleFollow(): void {
     try {
         $db->prepare("INSERT IGNORE INTO store_followers (store_id, user_id) VALUES (?, ?)")
            ->execute([$sid, $uid]);
-        try { $db->prepare("UPDATE stores SET follower_count = follower_count + 1 WHERE id = ?")->execute([$sid]); } catch (\Throwable $e) {}
+        $db->prepare("UPDATE stores SET follower_count = (SELECT COUNT(*) FROM store_followers WHERE store_id = ?) WHERE id = ?")
+           ->execute([$sid, $sid]);
         jsonSuccess(['following' => true]);
     } catch (\Throwable $e) {
         jsonError('Error: ' . $e->getMessage());
@@ -294,7 +293,8 @@ function handleUnfollow(): void {
     $db = getDB();
     $db->prepare("DELETE FROM store_followers WHERE store_id = ? AND user_id = ?")
        ->execute([$sid, $uid]);
-    try { $db->prepare("UPDATE stores SET follower_count = GREATEST(0, follower_count - 1) WHERE id = ?")->execute([$sid]); } catch (\Throwable $e) {}
+    $db->prepare("UPDATE stores SET follower_count = (SELECT COUNT(*) FROM store_followers WHERE store_id = ?) WHERE id = ?")
+       ->execute([$sid, $sid]);
     jsonSuccess(['following' => false]);
 }
 
