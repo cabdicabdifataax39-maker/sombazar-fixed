@@ -184,7 +184,7 @@
       <a href="store-setup.html" id="openStoreBtn" style="display:none;background:#0f172a;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;">
         <span class="material-symbols-outlined" style="font-size:14px;">storefront</span> Open Store
       </a>
-      <a href="store-dashboard.html" id="myStoreBtn" style="display:none;background:#0f172a;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;">
+      <a href="store.html?slug=" id="myStoreBtn" style="display:none;background:#0f172a;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;">
         <span class="material-symbols-outlined" style="font-size:14px;">storefront</span> My Store
       </a>
       <a href="post.html" style="background:#ec5b13;color:#fff;padding:6px 10px;border-radius:9px;font-size:12px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;">
@@ -1797,20 +1797,24 @@ async function checkUserStore() {
   const user = JSON.parse(localStorage.getItem('sb_user') || 'null');
   if (!user) return;
   try {
-    const res = await apiFetch('/api/stores.php?action=my_store');
-    if (res.success && res.data) {
+    // apiFetch direkt data'yi donduruyor (res = store objesi)
+    const store = await apiFetch('/api/stores.php?action=my_store');
+    if (store && store.id) {
       // Store var - My Store butonunu goster
       const btn = document.getElementById('myStoreBtn');
       if (btn) {
         btn.href = 'store-dashboard.html';
         btn.style.display = 'flex';
       }
+      // Open Store butonunu gizle
+      const openBtn = document.getElementById('openStoreBtn');
+      if (openBtn) openBtn.style.display = 'none';
     } else {
-      // Store yok - Open Store butonunu goster
       const btn = document.getElementById('openStoreBtn');
       if (btn) btn.style.display = 'flex';
     }
   } catch(e) {
+    // Store yok (404) - Open Store goster
     const btn = document.getElementById('openStoreBtn');
     if (btn) btn.style.display = 'flex';
   }
