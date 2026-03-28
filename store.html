@@ -6,7 +6,7 @@
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#ec5b13">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Store — SomBazar</title>
   <meta name="description" content="Browse this store on SomBazar" id="metaDesc">
   <meta id="ogTitle" property="og:title" content="SomBazar Store">
@@ -16,347 +16,397 @@
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <style>
-    /* ── Reset & Base ─────────────────────────── */
-    * { box-sizing: border-box; }
+    *{box-sizing:border-box;}
 
-    /* ── Hero Cover ─────────────────────────────── */
-    .sp-hero {
-      position: relative;
-      width: 100%;
-      height: 300px;
-      overflow: hidden;
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    /* ── HERO ── */
+    .sp-hero{
+      position:relative;
+      width:100%;
+      height:320px;
+      overflow:hidden;
+      background:linear-gradient(160deg,#1a0e00 0%,#3d1f00 40%,#5c3210 70%,#2a1500 100%);
     }
-    @media(max-width:640px){ .sp-hero { height: 210px; } }
-
-    .sp-hero-img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
+    @media(max-width:640px){.sp-hero{height:240px;}}
+    .sp-hero-img{
+      position:absolute;inset:0;
+      width:100%;height:100%;
+      object-fit:cover;
+      mix-blend-mode:overlay;
+      opacity:.6;
     }
-    .sp-hero-gradient {
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.55) 100%);
-      pointer-events: none;
-    }
-
-    /* ── Avatar ─────────────────────────────────── */
-    .sp-avatar-wrap {
-      position: absolute;
-      bottom: -40px; left: 28px;
-      z-index: 5;
-    }
-    @media(max-width:640px){ .sp-avatar-wrap { left: 16px; bottom: -34px; } }
-
-    .sp-avatar {
-      width: 96px; height: 96px;
-      border-radius: 50%;
-      border: 4px solid var(--bg-primary, #fff);
-      object-fit: cover;
-      background: #e2e8f0;
-      display: block;
-      box-shadow: 0 4px 20px rgba(0,0,0,.2);
-    }
-    .sp-avatar-fallback {
-      width: 96px; height: 96px;
-      border-radius: 50%;
-      border: 4px solid var(--bg-primary, #fff);
-      background: linear-gradient(135deg, #ec5b13, #f97316);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 36px; font-weight: 900; color: white;
-      box-shadow: 0 4px 20px rgba(0,0,0,.2);
-    }
-    @media(max-width:640px){ .sp-avatar, .sp-avatar-fallback { width: 80px; height: 80px; } }
-    [data-theme="dark"] .sp-avatar,
-    [data-theme="dark"] .sp-avatar-fallback { border-color: #0f172a; }
-
-    /* ── Header actions (Follow/Share) on hero ──── */
-    .sp-hero-actions {
-      position: absolute;
-      bottom: 16px; right: 20px;
-      display: flex; gap: 8px;
-      z-index: 5;
+    .sp-hero-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to right,rgba(0,0,0,.55) 0%,rgba(0,0,0,.1) 60%,transparent 100%);
     }
 
-    .sp-btn-follow {
-      padding: 9px 20px; border-radius: 8px;
-      font-size: 13px; font-weight: 800;
-      cursor: pointer; border: none;
-      background: #ec5b13; color: white;
-      display: none; align-items: center; gap: 6px;
-      font-family: inherit; transition: opacity .15s;
-      letter-spacing: .2px;
+    /* Avatar + Info block inside hero */
+    .sp-hero-content{
+      position:absolute;
+      bottom:28px;left:28px;right:200px;
+      display:flex;align-items:flex-end;gap:20px;
     }
-    .sp-btn-follow:hover { opacity: .88; }
-    .sp-btn-follow.following {
-      background: rgba(255,255,255,.15);
-      border: 1.5px solid rgba(255,255,255,.4);
-      backdrop-filter: blur(8px);
+    @media(max-width:640px){
+      .sp-hero-content{bottom:16px;left:16px;right:130px;gap:12px;}
     }
 
-    .sp-btn-share {
-      width: 38px; height: 38px;
-      border-radius: 8px; border: 1.5px solid rgba(255,255,255,.4);
-      background: rgba(255,255,255,.12); color: white;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; backdrop-filter: blur(8px);
-      transition: background .15s;
+    .sp-avatar{
+      width:100px;height:100px;
+      border-radius:12px;
+      border:3px solid rgba(255,255,255,.3);
+      object-fit:cover;
+      background:#2a1500;
+      flex-shrink:0;
+      box-shadow:0 4px 20px rgba(0,0,0,.4);
+      display:block;
     }
-    .sp-btn-share:hover { background: rgba(255,255,255,.25); }
-
-    .sp-btn-msg {
-      padding: 9px 18px; border-radius: 8px;
-      font-size: 13px; font-weight: 800;
-      cursor: pointer;
-      border: 1.5px solid rgba(255,255,255,.4);
-      background: rgba(255,255,255,.12); color: white;
-      display: none; align-items: center; gap: 6px;
-      font-family: inherit; backdrop-filter: blur(8px);
-      transition: background .15s;
+    .sp-avatar-fb{
+      width:100px;height:100px;
+      border-radius:12px;
+      border:3px solid rgba(255,255,255,.3);
+      background:linear-gradient(135deg,#ec5b13,#f97316);
+      display:flex;align-items:center;justify-content:center;
+      font-size:38px;font-weight:900;color:white;
+      flex-shrink:0;
+      box-shadow:0 4px 20px rgba(0,0,0,.4);
     }
-    .sp-btn-msg:hover { background: rgba(255,255,255,.25); }
-
-    /* ── Body wrapper ───────────────────────────── */
-    .sp-body {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 24px 80px;
-    }
-    @media(max-width:640px){ .sp-body { padding: 0 14px 80px; } }
-
-    /* ── Info Section ───────────────────────────── */
-    .sp-info {
-      padding-top: 52px;
-      margin-bottom: 20px;
-    }
-    @media(max-width:640px){ .sp-info { padding-top: 44px; } }
-
-    .sp-name {
-      font-size: 28px; font-weight: 900;
-      color: var(--text-primary);
-      letter-spacing: -.5px; line-height: 1.15;
-      margin: 0 0 6px;
-    }
-    @media(max-width:640px){ .sp-name { font-size: 22px; } }
-
-    .sp-verified {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: #dcfce7; color: #16a34a;
-      font-size: 11px; font-weight: 700;
-      padding: 2px 8px; border-radius: 20px;
-      vertical-align: middle; margin-left: 8px;
+    @media(max-width:640px){
+      .sp-avatar,.sp-avatar-fb{width:72px;height:72px;border-radius:10px;}
     }
 
-    .sp-meta {
-      display: flex; flex-wrap: wrap; gap: 12px;
-      font-size: 12px; color: #64748b;
-      margin-bottom: 8px;
+    .sp-hero-text{flex:1;min-width:0;}
+    .sp-hero-name{
+      font-size:32px;font-weight:900;color:#fff;
+      letter-spacing:-.5px;line-height:1.1;
+      margin:0 0 6px;
+      text-shadow:0 2px 8px rgba(0,0,0,.3);
     }
-    .sp-meta-item { display: flex; align-items: center; gap: 4px; }
-
-    .sp-open {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 12px; font-weight: 700;
-      padding: 3px 10px; border-radius: 20px;
-      margin-bottom: 12px;
+    @media(max-width:640px){.sp-hero-name{font-size:20px;}}
+    .sp-hero-desc{
+      font-size:13px;color:rgba(255,255,255,.75);
+      line-height:1.5;margin:0;
+      display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
     }
-    .sp-open.open  { background: #dcfce7; color: #16a34a; }
-    .sp-open.closed{ background: #fee2e2; color: #dc2626; }
-
-    .sp-desc {
-      font-size: 14px; color: #64748b;
-      line-height: 1.6; margin-bottom: 18px;
-      max-width: 560px;
-    }
-
-    /* ── Stats Row ─────────────────────────────── */
-    .sp-stats {
-      display: flex; gap: 0;
-      border: 1px solid var(--border-color);
-      border-radius: 14px; overflow: hidden;
-      margin-bottom: 22px;
-      background: var(--bg-card);
-    }
-    .sp-stat {
-      flex: 1; text-align: center;
-      padding: 16px 8px;
-      border-right: 1px solid var(--border-color);
-    }
-    .sp-stat:last-child { border-right: none; }
-    .sp-stat-num {
-      display: block;
-      font-size: 24px; font-weight: 900;
-      color: var(--text-primary); line-height: 1.1;
-    }
-    .sp-stat-lbl {
-      display: block;
-      font-size: 10px; font-weight: 700;
-      color: #94a3b8; text-transform: uppercase;
-      letter-spacing: .8px; margin-top: 3px;
+    .sp-verified{
+      display:inline-flex;align-items:center;gap:3px;
+      background:rgba(22,163,74,.25);
+      border:1px solid rgba(22,163,74,.4);
+      color:#4ade80;
+      font-size:10px;font-weight:700;
+      padding:2px 7px;border-radius:20px;
+      margin-left:8px;vertical-align:middle;
     }
 
-    /* ── Tabs ──────────────────────────────────── */
-    .sp-tabs {
-      display: flex; gap: 4px;
-      border-bottom: 2px solid var(--border-color);
-      margin-bottom: 22px;
+    /* Action buttons in hero - right side */
+    .sp-hero-actions{
+      position:absolute;
+      bottom:28px;right:24px;
+      display:flex;gap:10px;align-items:center;
     }
-    .sp-tab {
-      padding: 10px 18px;
-      font-size: 13px; font-weight: 700;
-      border: none; background: transparent;
-      color: #94a3b8; cursor: pointer;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-      font-family: inherit;
-      transition: color .15s, border-color .15s;
-    }
-    .sp-tab.active { color: #ec5b13; border-bottom-color: #ec5b13; }
-    .sp-tab:hover:not(.active) { color: var(--text-primary); }
+    @media(max-width:640px){.sp-hero-actions{bottom:16px;right:12px;gap:6px;}}
 
-    /* ── Listings Grid ─────────────────────────── */
-    .sp-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+    .sp-btn-follow{
+      padding:10px 22px;border-radius:8px;
+      font-size:13px;font-weight:800;
+      cursor:pointer;border:none;
+      background:#ec5b13;color:white;
+      font-family:inherit;
+      display:none;align-items:center;gap:6px;
+      letter-spacing:.3px;
+      transition:opacity .15s;
     }
-    @media(max-width:700px){ .sp-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+    .sp-btn-follow:hover{opacity:.88;}
+    .sp-btn-follow.following{
+      background:transparent;
+      border:1.5px solid rgba(255,255,255,.5);
+      color:white;
+    }
+    @media(max-width:640px){.sp-btn-follow{padding:8px 14px;font-size:12px;}}
 
-    .sp-card {
-      border-radius: 14px; overflow: hidden;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      text-decoration: none; display: block;
-      transition: transform .2s, box-shadow .2s;
-      position: relative;
+    .sp-btn-share{
+      width:40px;height:40px;border-radius:8px;
+      border:1.5px solid rgba(255,255,255,.4);
+      background:rgba(0,0,0,.25);color:white;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;backdrop-filter:blur(8px);
+      transition:background .15s;
     }
-    .sp-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
+    .sp-btn-share:hover{background:rgba(255,255,255,.15);}
 
-    .sp-card-img-wrap { position: relative; overflow: hidden; }
-    .sp-card-img {
-      width: 100%; aspect-ratio: 4/3;
-      object-fit: cover; display: block;
-      transition: transform .4s;
+    .sp-btn-msg{
+      padding:10px 18px;border-radius:8px;
+      font-size:13px;font-weight:800;
+      cursor:pointer;
+      border:1.5px solid rgba(255,255,255,.4);
+      background:rgba(0,0,0,.25);color:white;
+      font-family:inherit;
+      display:none;align-items:center;gap:6px;
+      backdrop-filter:blur(8px);
+      transition:background .15s;
     }
-    .sp-card:hover .sp-card-img { transform: scale(1.04); }
-    .sp-card-img-placeholder {
-      width: 100%; aspect-ratio: 4/3;
-      background: var(--bg-secondary);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 40px;
-    }
+    .sp-btn-msg:hover{background:rgba(255,255,255,.15);}
 
-    .sp-price-badge {
-      position: absolute; bottom: 10px; right: 10px;
-      background: #ec5b13; color: white;
-      font-size: 13px; font-weight: 800;
-      padding: 4px 10px; border-radius: 8px;
-    }
-    .sp-featured-badge {
-      position: absolute; top: 8px; left: 8px;
-      background: #f59e0b; color: white;
-      font-size: 9px; font-weight: 800;
-      padding: 3px 7px; border-radius: 5px;
-      text-transform: uppercase; letter-spacing: .4px;
-    }
-    .sp-heart {
-      position: absolute; top: 8px; right: 8px;
-      width: 30px; height: 30px; border-radius: 50%;
-      background: rgba(255,255,255,.9);
-      border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; transition: transform .15s;
-      backdrop-filter: blur(4px); color: #64748b;
-    }
-    .sp-heart:hover { transform: scale(1.2); color: #ec5b13; }
-    .sp-heart.faved { color: #ec5b13; }
+    /* ── BODY ── */
+    .sp-wrap{max-width:960px;margin:0 auto;padding:0 24px 80px;}
+    @media(max-width:640px){.sp-wrap{padding:0 14px 60px;}}
 
-    .sp-card-body { padding: 10px 12px 12px; }
-    .sp-card-title {
-      font-size: 13px; font-weight: 700;
-      color: var(--text-primary); line-height: 1.3;
-      margin-bottom: 4px;
-      display: -webkit-box; -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical; overflow: hidden;
+    /* ── STATS ── */
+    .sp-stats{
+      display:flex;gap:40px;
+      padding:24px 0;
+      border-bottom:1px solid var(--border-color);
+      margin-bottom:0;
     }
-    .sp-card-location {
-      font-size: 11px; color: #94a3b8;
-      display: flex; align-items: center; gap: 3px;
+    @media(max-width:640px){.sp-stats{gap:24px;padding:16px 0;}}
+    .sp-stat-num{
+      font-size:28px;font-weight:900;
+      color:var(--text-primary);
+      display:block;line-height:1;
+    }
+    @media(max-width:640px){.sp-stat-num{font-size:22px;}}
+    .sp-stat-lbl{
+      font-size:10px;font-weight:700;
+      color:#94a3b8;
+      text-transform:uppercase;letter-spacing:.8px;
+      display:block;margin-top:4px;
     }
 
-    /* ── Load More ─────────────────────────────── */
-    .sp-load-more {
-      display: block; width: 100%;
-      padding: 13px; margin-top: 20px;
-      border: 1.5px solid var(--border-color);
-      border-radius: 12px; background: var(--bg-card);
-      color: var(--text-primary); font-size: 13px;
-      font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: border-color .15s, color .15s;
+    /* ── TABS ── */
+    .sp-tabs{
+      display:flex;justify-content:flex-end;
+      gap:0;padding:12px 0;
+      border-bottom:1px solid var(--border-color);
+      margin-bottom:28px;
     }
-    .sp-load-more:hover { border-color: #ec5b13; color: #ec5b13; }
+    .sp-tab{
+      padding:8px 20px;
+      font-size:12px;font-weight:800;
+      text-transform:uppercase;letter-spacing:.8px;
+      border:none;background:transparent;
+      color:#94a3b8;cursor:pointer;
+      border-bottom:2px solid transparent;
+      margin-bottom:-1px;font-family:inherit;
+      transition:color .15s,border-color .15s;
+    }
+    .sp-tab.active{color:#ec5b13;border-bottom-color:#ec5b13;}
+    .sp-tab:hover:not(.active){color:var(--text-primary);}
 
-    /* ── About Tab ─────────────────────────────── */
-    .sp-about-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 14px; padding: 20px;
-      margin-bottom: 14px;
+    /* ── SECTION HEADER ── */
+    .sp-section-head{
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:20px;
     }
-    .sp-about-card h3 {
-      font-size: 12px; font-weight: 800;
-      color: #94a3b8; margin: 0 0 14px;
-      text-transform: uppercase; letter-spacing: .7px;
+    .sp-avail-label{
+      font-size:11px;font-weight:800;
+      color:#ec5b13;text-transform:uppercase;letter-spacing:1px;
+      margin-bottom:4px;
     }
-    .sp-hours-row {
-      display: flex; justify-content: space-between;
-      align-items: center; padding: 7px 0;
-      font-size: 13px;
-      border-bottom: 1px solid var(--border-color);
+    .sp-section-title{
+      font-size:26px;font-weight:900;
+      color:var(--text-primary);margin:0;
     }
-    .sp-hours-row:last-child { border-bottom: none; }
-    .sp-hours-row.today { font-weight: 800; }
+    @media(max-width:640px){.sp-section-title{font-size:20px;}}
 
-    /* ── Loading spinner ───────────────────────── */
-    .sp-spinner {
-      display: flex; justify-content: center;
-      align-items: center; padding: 50px;
+    .sp-view-toggle{display:flex;gap:4px;}
+    .sp-view-btn{
+      width:34px;height:34px;border-radius:8px;
+      border:1.5px solid var(--border-color);
+      background:var(--bg-card);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:#94a3b8;transition:.15s;
     }
-    .sp-spinner-dot {
-      width: 22px; height: 22px;
-      border: 2.5px solid #ec5b13;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: sp-spin .7s linear infinite;
-    }
-    @keyframes sp-spin { to { transform: rotate(360deg); } }
+    .sp-view-btn.active{background:#ec5b13;color:white;border-color:#ec5b13;}
+    .sp-view-btn:hover:not(.active){color:var(--text-primary);border-color:var(--text-primary);}
 
-    /* ── Empty State ───────────────────────────── */
-    .sp-empty {
-      text-align: center; padding: 60px 20px;
+    /* ── LISTING GRID ── */
+    .sp-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:20px;
     }
-    .sp-empty-icon { font-size: 48px; margin-bottom: 12px; }
-    .sp-empty h3 {
-      font-size: 16px; font-weight: 800;
-      color: var(--text-primary); margin-bottom: 6px;
-    }
-    .sp-empty p { font-size: 13px; color: #64748b; }
+    @media(max-width:700px){.sp-grid{grid-template-columns:repeat(2,1fr);gap:12px;}}
 
-    /* ── Scroll to top ─────────────────────────── */
-    #scrollTopBtn {
-      position: fixed; bottom: 24px; right: 24px;
-      width: 40px; height: 40px; border-radius: 50%;
-      background: #ec5b13; color: white; border: none;
-      cursor: pointer; display: none;
-      align-items: center; justify-content: center;
-      font-size: 18px; box-shadow: 0 4px 16px rgba(236,91,19,.35);
-      z-index: 99; transition: opacity .2s;
+    .sp-card{
+      border-radius:0;overflow:hidden;
+      background:transparent;
+      text-decoration:none;display:block;
+      transition:transform .2s;
     }
-    #scrollTopBtn:hover { opacity: .85; }
+    .sp-card:hover{transform:translateY(-2px);}
+
+    .sp-card-img-wrap{
+      position:relative;overflow:hidden;
+      border-radius:0;margin-bottom:12px;
+    }
+    .sp-card-img{
+      width:100%;aspect-ratio:4/3;
+      object-fit:cover;display:block;
+      transition:transform .4s;
+      border-radius:0;
+    }
+    .sp-card:hover .sp-card-img{transform:scale(1.03);}
+    .sp-card-placeholder{
+      width:100%;aspect-ratio:4/3;
+      background:var(--bg-secondary);
+      display:flex;align-items:center;justify-content:center;
+      font-size:44px;
+    }
+
+    .sp-price-badge{
+      position:absolute;bottom:10px;right:10px;
+      background:#ec5b13;color:white;
+      font-size:14px;font-weight:800;
+      padding:5px 12px;border-radius:6px;
+    }
+    .sp-featured-badge{
+      position:absolute;top:10px;left:10px;
+      background:#ec5b13;color:white;
+      font-size:9px;font-weight:800;
+      padding:3px 8px;border-radius:4px;
+      text-transform:uppercase;letter-spacing:.5px;
+    }
+    .sp-premium-badge{
+      position:absolute;top:10px;right:10px;
+      background:rgba(0,0,0,.6);color:white;
+      font-size:9px;font-weight:800;
+      padding:3px 8px;border-radius:4px;
+      text-transform:uppercase;letter-spacing:.5px;
+    }
+
+    .sp-card-title{
+      font-size:15px;font-weight:700;
+      color:var(--text-primary);margin:0 0 4px;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+    }
+    .sp-card-title span:first-child{
+      display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
+    }
+    .sp-heart{
+      background:none;border:none;cursor:pointer;
+      color:#94a3b8;font-size:18px;flex-shrink:0;
+      padding:0;line-height:1;
+      transition:color .15s,transform .15s;
+    }
+    .sp-heart:hover{color:#ec5b13;transform:scale(1.2);}
+    .sp-heart.faved{color:#ec5b13;}
+
+    .sp-card-location{
+      font-size:12px;color:#94a3b8;
+      display:flex;align-items:center;gap:3px;
+      margin-bottom:8px;
+    }
+    .sp-card-specs{
+      display:flex;gap:12px;flex-wrap:wrap;
+    }
+    .sp-spec{
+      font-size:11px;color:#64748b;
+      display:flex;align-items:center;gap:4px;
+      background:var(--bg-secondary);
+      padding:3px 8px;border-radius:4px;
+    }
+
+    /* ── LOAD MORE ── */
+    .sp-load-more{
+      display:block;
+      width:fit-content;
+      margin:40px auto;
+      padding:12px 36px;
+      border:1.5px solid var(--border-color);
+      border-radius:6px;
+      background:var(--bg-card);
+      color:#94a3b8;
+      font-size:11px;font-weight:800;
+      cursor:pointer;font-family:inherit;
+      text-transform:uppercase;letter-spacing:1px;
+      transition:border-color .15s,color .15s;
+    }
+    .sp-load-more:hover{border-color:#ec5b13;color:#ec5b13;}
+
+    /* ── SPINNER ── */
+    .sp-spinner{display:flex;justify-content:center;padding:50px;}
+    .sp-spin{
+      width:24px;height:24px;
+      border:2.5px solid #ec5b13;
+      border-top-color:transparent;
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* ── EMPTY ── */
+    .sp-empty{text-align:center;padding:60px 20px;}
+    .sp-empty-icon{font-size:48px;margin-bottom:12px;}
+    .sp-empty h3{font-size:16px;font-weight:800;color:var(--text-primary);margin-bottom:6px;}
+    .sp-empty p{font-size:13px;color:#64748b;}
+
+    /* ── ABOUT ── */
+    .sp-about-card{
+      background:var(--bg-card);border:1px solid var(--border-color);
+      border-radius:12px;padding:20px;margin-bottom:14px;
+    }
+    .sp-about-card h3{
+      font-size:11px;font-weight:800;color:#94a3b8;
+      text-transform:uppercase;letter-spacing:.8px;margin:0 0 14px;
+    }
+    .sp-hour-row{
+      display:flex;justify-content:space-between;
+      padding:7px 0;font-size:13px;
+      border-bottom:1px solid var(--border-color);
+    }
+    .sp-hour-row:last-child{border-bottom:none;}
+    .sp-hour-row.today{font-weight:800;}
+
+    /* ── FOOTER ── */
+    .sp-footer{
+      background:var(--bg-card);
+      border-top:1px solid var(--border-color);
+      padding:48px 24px 24px;
+      margin-top:60px;
+    }
+    .sp-footer-grid{
+      max-width:960px;margin:0 auto;
+      display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;
+      gap:32px;margin-bottom:32px;
+    }
+    @media(max-width:700px){.sp-footer-grid{grid-template-columns:1fr 1fr;gap:24px;}}
+    @media(max-width:400px){.sp-footer-grid{grid-template-columns:1fr;}}
+    .sp-footer-brand{
+      font-size:22px;font-weight:900;color:#ec5b13;
+      display:block;margin-bottom:12px;
+    }
+    .sp-footer-desc{font-size:12px;color:#94a3b8;line-height:1.6;margin:0;}
+    .sp-footer-col h4{
+      font-size:11px;font-weight:800;color:var(--text-primary);
+      text-transform:uppercase;letter-spacing:.8px;margin:0 0 14px;
+    }
+    .sp-footer-col a{
+      display:block;font-size:12px;color:#64748b;
+      text-decoration:none;margin-bottom:8px;
+      transition:color .15s;
+    }
+    .sp-footer-col a:hover{color:#ec5b13;}
+    .sp-footer-connect{display:flex;gap:10px;margin-top:4px;}
+    .sp-footer-icon{
+      width:32px;height:32px;border-radius:6px;
+      border:1px solid var(--border-color);
+      display:flex;align-items:center;justify-content:center;
+      color:#64748b;font-size:14px;text-decoration:none;
+      transition:.15s;
+    }
+    .sp-footer-icon:hover{border-color:#ec5b13;color:#ec5b13;}
+    .sp-footer-bottom{
+      max-width:960px;margin:0 auto;
+      display:flex;justify-content:space-between;align-items:center;
+      padding-top:20px;border-top:1px solid var(--border-color);
+      font-size:11px;color:#94a3b8;flex-wrap:wrap;gap:8px;
+    }
+    .sp-footer-links{display:flex;gap:16px;}
+    .sp-footer-links a{font-size:11px;color:#94a3b8;text-decoration:none;}
+    .sp-footer-links a:hover{color:#ec5b13;}
   </style>
 </head>
 <body>
 
-<!-- Navbar -->
+<!-- Header -->
 <header class="header">
   <nav class="nav-container">
     <a href="index.html" class="logo">SomBazar</a>
@@ -367,23 +417,27 @@
 <!-- Hero -->
 <div class="sp-hero" id="storeHero">
   <img id="storeCoverImg" class="sp-hero-img" src="" alt="" style="display:none;" onerror="this.style.display='none'">
-  <div class="sp-hero-gradient"></div>
+  <div class="sp-hero-overlay"></div>
 
-  <!-- Avatar -->
-  <div class="sp-avatar-wrap">
-    <img id="storeLogoImg" class="sp-avatar" src="" alt="logo" style="display:none;">
-    <div id="storeLogoFb" class="sp-avatar-fallback" style="display:none;"></div>
+  <div class="sp-hero-content">
+    <img id="storeLogoImg" class="sp-avatar" src="" alt="logo" style="display:none;" onerror="this.style.display='none';document.getElementById('storeLogoFb').style.display='flex'">
+    <div id="storeLogoFb" class="sp-avatar-fb" style="display:none;"></div>
+    <div class="sp-hero-text">
+      <h1 class="sp-hero-name">
+        <span id="storeNameText"></span>
+        <span id="storeVerifiedBadge" class="sp-verified" style="display:none;">✅ Verified</span>
+      </h1>
+      <p class="sp-hero-desc" id="storeDesc"></p>
+    </div>
   </div>
 
-  <!-- Action buttons on hero -->
   <div class="sp-hero-actions">
     <button id="msgStoreBtn" class="sp-btn-msg" onclick="startStoreChat()">
-      <span class="material-symbols-outlined" style="font-size:16px;">chat</span>
+      <span class="material-symbols-outlined" style="font-size:15px;">chat</span>
       Message
     </button>
     <button id="followBtn" class="sp-btn-follow" onclick="toggleFollow()">
-      <span class="material-symbols-outlined" style="font-size:16px;" id="followIcon">add</span>
-      <span id="followText">Follow</span>
+      <span id="followText">FOLLOW</span>
     </button>
     <button class="sp-btn-share" onclick="shareStore()" title="Share">
       <span class="material-symbols-outlined" style="font-size:18px;">share</span>
@@ -392,30 +446,19 @@
 </div>
 
 <!-- Body -->
-<div class="sp-body">
-
-  <!-- Info -->
-  <div class="sp-info">
-    <h1 class="sp-name">
-      <span id="storeNameText"></span>
-      <span id="storeVerifiedBadge" class="sp-verified" style="display:none;">✅ Verified</span>
-    </h1>
-    <div class="sp-meta" id="storeMeta"></div>
-    <div id="storeOpenStatus"></div>
-    <p class="sp-desc" id="storeDesc"></p>
-  </div>
+<div class="sp-wrap">
 
   <!-- Stats -->
   <div class="sp-stats">
-    <div class="sp-stat">
+    <div>
       <span class="sp-stat-num" id="statListings">—</span>
       <span class="sp-stat-lbl">Listings</span>
     </div>
-    <div class="sp-stat">
+    <div>
       <span class="sp-stat-num" id="statFollowers">—</span>
       <span class="sp-stat-lbl">Followers</span>
     </div>
-    <div class="sp-stat">
+    <div>
       <span class="sp-stat-num" id="statRating">—</span>
       <span class="sp-stat-lbl">Rating</span>
     </div>
@@ -429,8 +472,23 @@
 
   <!-- Listings -->
   <div id="tabListings">
+    <div class="sp-section-head">
+      <div>
+        <div class="sp-avail-label">Available Now</div>
+        <h2 class="sp-section-title">Active Listings</h2>
+      </div>
+      <div class="sp-view-toggle">
+        <button class="sp-view-btn active" title="Grid" onclick="setView('grid',this)">
+          <span class="material-symbols-outlined" style="font-size:16px;">grid_view</span>
+        </button>
+        <button class="sp-view-btn" title="List" onclick="setView('list',this)">
+          <span class="material-symbols-outlined" style="font-size:16px;">view_list</span>
+        </button>
+      </div>
+    </div>
+
     <div class="sp-grid" id="listingsGrid"></div>
-    <div class="sp-spinner" id="listingsLoading"><div class="sp-spinner-dot"></div></div>
+    <div class="sp-spinner" id="listingsLoading"><div class="sp-spin"></div></div>
     <div class="sp-empty" id="listingsEmpty" style="display:none;">
       <div class="sp-empty-icon">📦</div>
       <h3>No active listings</h3>
@@ -455,8 +513,44 @@
 
 </div>
 
-<!-- Scroll to top -->
-<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<!-- Footer -->
+<footer class="sp-footer">
+  <div class="sp-footer-grid">
+    <div>
+      <span class="sp-footer-brand">SomBazar</span>
+      <p class="sp-footer-desc">SomBazar is the premier destination for high-value heritage and luxury assets in the Horn of Africa. Curating trust through modern commerce.</p>
+    </div>
+    <div class="sp-footer-col">
+      <h4>Platform</h4>
+      <a href="index.html">Marketplace</a>
+      <a href="#">Auction House</a>
+      <a href="#">Concierge Services</a>
+      <a href="stores-directory.html">Verified Sellers</a>
+    </div>
+    <div class="sp-footer-col">
+      <h4>Resources</h4>
+      <a href="#">Heritage Guide</a>
+      <a href="#">Editorial Journal</a>
+      <a href="#">Shipping &amp; Logistics</a>
+      <a href="safety.html">Escrow Protection</a>
+    </div>
+    <div class="sp-footer-col">
+      <h4>Connect</h4>
+      <div class="sp-footer-connect">
+        <a class="sp-footer-icon" href="#" title="Website">🌐</a>
+        <a class="sp-footer-icon" href="#" title="Social">📷</a>
+        <a class="sp-footer-icon" href="contact.html" title="Email">✉️</a>
+      </div>
+    </div>
+  </div>
+  <div class="sp-footer-bottom">
+    <span>© 2024 SomBazar. All rights reserved.</span>
+    <div class="sp-footer-links">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+    </div>
+  </div>
+</footer>
 
 <script src="assets/app.min.js"></script>
 <script>
@@ -610,27 +704,46 @@ async function loadListings(page = 1) {
     listings.forEach(l => {
       const imgs = Array.isArray(l.images) ? l.images : [];
       const img = imgs[0] || null;
-      const price = l.price ? ('USD ' + parseFloat(l.price).toLocaleString()) : '';
+      const priceNum = l.price ? parseFloat(l.price) : 0;
+      const price = priceNum > 0 ? ('$' + priceNum.toLocaleString('en-US')) : '';
       const isFeatured = l.featured || l.is_featured;
+      const isPremium = l.is_premium || l.plan === 'pro';
+      const specs = l.specs || {};
+      const km = specs.mileage || l.mileage || '';
+      const fuel = specs.fuel_type || l.fuel_type || '';
+      const transmission = specs.transmission || l.transmission || '';
+      const rooms = specs.rooms || '';
+      const area = specs.area || '';
+
       const card = document.createElement('a');
       card.href = 'listing.html?id=' + l.id;
-      card.className = 'listing-card-store';
+      card.className = 'sp-card';
       card.innerHTML = `
-        <div class="listing-img-wrap">
+        <div class="sp-card-img-wrap">
           ${img
-            ? `<img src="${img}" alt="${l.title || ''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'listing-img-placeholder\'>${catEmoji(l.category)}</div>'">`
-            : `<div class="listing-img-placeholder">${catEmoji(l.category)}</div>`
+            ? `<img class="sp-card-img" src="${img}" alt="${l.title || ''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'sp-card-placeholder\'>${catEmoji(l.category)}</div>'">`
+            : `<div class="sp-card-placeholder">${catEmoji(l.category)}</div>`
           }
-          ${isFeatured ? '<div class="listing-featured-badge">FEATURED</div>' : ''}
-          ${price ? `<div class="listing-price-badge">${price}</div>` : ''}
-          <button class="heart-btn" onclick="event.preventDefault();toggleFav(${l.id},this)" title="Save">♡</button>
+          ${isFeatured ? '<div class="sp-featured-badge">Featured</div>' : ''}
+          ${isPremium ? '<div class="sp-premium-badge">Premium</div>' : ''}
+          ${price ? `<div class="sp-price-badge">${price}</div>` : ''}
         </div>
-        <div class="listing-card-body">
-          <div class="listing-card-title">${l.title || ''}</div>
-          <div class="listing-card-meta">
-            ${l.city ? `<span>📍 ${l.city}</span>` : ''}
-            ${l.condition ? `<span>• ${l.condition}</span>` : ''}
+        <div>
+          <div class="sp-card-title">
+            <span>${l.title || ''}</span>
+            <button class="sp-heart" onclick="event.preventDefault();toggleFav(${l.id},this)" title="Save">♡</button>
           </div>
+          <div class="sp-card-location">
+            ${l.city ? `<span>📍 ${l.city}${l.country ? ', ' + l.country : ''}</span>` : ''}
+          </div>
+          ${(km || fuel || transmission || rooms || area) ? `
+          <div class="sp-card-specs">
+            ${km ? `<span class="sp-spec">🔴 ${km} km</span>` : ''}
+            ${fuel ? `<span class="sp-spec">⚙️ ${fuel}</span>` : ''}
+            ${transmission ? `<span class="sp-spec">⚙️ ${transmission}</span>` : ''}
+            ${rooms ? `<span class="sp-spec">🛏 ${rooms} rooms</span>` : ''}
+            ${area ? `<span class="sp-spec">📐 ${area} m²</span>` : ''}
+          </div>` : ''}
         </div>`;
       grid.appendChild(card);
     });
@@ -739,6 +852,30 @@ window.addEventListener('scroll', () => {
   const btn = document.getElementById('scrollTopBtn');
   if (btn) btn.style.display = window.scrollY > 400 ? 'flex' : 'none';
 });
+
+// View toggle
+function setView(v, btn) {
+  document.querySelectorAll('.sp-view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('listingsGrid');
+  if (v === 'list') {
+    grid.style.gridTemplateColumns = '1fr';
+    grid.querySelectorAll('.sp-card-img-wrap').forEach(w => {
+      w.style.float = 'left';
+      w.style.width = '200px';
+      w.style.marginRight = '16px';
+    });
+  } else {
+    grid.style.gridTemplateColumns = '';
+    grid.querySelectorAll('.sp-card-img-wrap').forEach(w => {
+      w.style.float = '';
+      w.style.width = '';
+      w.style.marginRight = '';
+    });
+  }
+}
+
+window.addEventListener('scroll', () => {});
 </script>
 </body>
 </html>
