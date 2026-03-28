@@ -1776,10 +1776,7 @@ async function loadVerifyStatus(){
 }
 
 // ── Notif dropdown ────────────────────────────
-document.addEventListener('click',e=>{
-  const w=document.getElementById('notifBellWrap');
-  if(w&&!w.contains(e.target)){const dd=document.getElementById('notifDropdown');if(dd)dd.style.display='none';}
-});
+/* notif click listener - app.min.js icerisinde yonetiliyor */
 
 function doLogout() {
   if (typeof Auth !== 'undefined' && Auth.logout) { Auth.logout(); }
