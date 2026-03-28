@@ -129,8 +129,26 @@ function handleGetSeller(): void {
         $avg->execute([$sellerId]);
         $stats = $avg->fetch();
 
+        // Seller bilgisi
+        $sellerSt = $db->prepare('SELECT id, display_name, avatar_url, photo_url, city FROM users WHERE id=?');
+        $sellerSt->execute([$sellerId]);
+        $seller = $sellerSt->fetch();
+
+        // Rating breakdown
+        $brkSt = $db->prepare('SELECT rating, COUNT(*) as cnt FROM reviews WHERE seller_id=? GROUP BY rating');
+        $brkSt->execute([$sellerId]);
+        $breakdown = [];
+        foreach ($brkSt->fetchAll() as $b) {
+            $breakdown[(int)$b['rating']] = (int)$b['cnt'];
+        }
+
         jsonSuccess([
+            'seller'     => $seller ?: null,
             'reviews'    => array_map('fmtReview', $reviews),
+            'average'    => $stats['avg'] ? round((float)$stats['avg'], 1) : null,
+            'count'      => (int)$stats['total'],
+            'breakdown'  => $breakdown,
+            // backwards compat
             'avg_rating' => $stats['avg'] ? round((float)$stats['avg'], 1) : null,
             'total'      => (int)$stats['total'],
         ]);
@@ -160,8 +178,26 @@ function handleGetListing(): void {
         $avg->execute([$listingId]);
         $stats = $avg->fetch();
 
+        // Seller bilgisi
+        $sellerSt = $db->prepare('SELECT id, display_name, avatar_url, photo_url, city FROM users WHERE id=?');
+        $sellerSt->execute([$sellerId]);
+        $seller = $sellerSt->fetch();
+
+        // Rating breakdown
+        $brkSt = $db->prepare('SELECT rating, COUNT(*) as cnt FROM reviews WHERE seller_id=? GROUP BY rating');
+        $brkSt->execute([$sellerId]);
+        $breakdown = [];
+        foreach ($brkSt->fetchAll() as $b) {
+            $breakdown[(int)$b['rating']] = (int)$b['cnt'];
+        }
+
         jsonSuccess([
+            'seller'     => $seller ?: null,
             'reviews'    => array_map('fmtReview', $reviews),
+            'average'    => $stats['avg'] ? round((float)$stats['avg'], 1) : null,
+            'count'      => (int)$stats['total'],
+            'breakdown'  => $breakdown,
+            // backwards compat
             'avg_rating' => $stats['avg'] ? round((float)$stats['avg'], 1) : null,
             'total'      => (int)$stats['total'],
         ]);
