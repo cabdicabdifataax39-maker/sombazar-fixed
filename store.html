@@ -18,8 +18,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'DM Sans',sans-serif;background:#fafafa;color:#0f172a;}
+    body{font-family:'DM Sans',sans-serif!important;background:#fafafa;color:#0f172a;}
     [data-theme="dark"] body{background:#0f172a;color:#f1f5f9;}
+    /* Force DM Sans on all elements */
+    body,body *:not(.material-symbols-outlined){font-family:'DM Sans',sans-serif!important;}
+    /* Syne only for headings */
+    .s-hero-name,.s-sec-title,.s-stat-num,.s-footer-brand,.s-empty h3{font-family:'Syne',sans-serif!important;}
 
     /* ─── HERO ──────────────────────────────────── */
     .s-hero{
