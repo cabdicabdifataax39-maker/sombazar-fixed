@@ -13,13 +13,10 @@
   <meta id="ogDesc" property="og:description" content="Browse listings on SomBazar">
   <link rel="preload" href="assets/style.min.css" as="style">
   <link rel="stylesheet" href="assets/style.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <style>
     *{box-sizing:border-box;}
-    body{font-family:'DM Sans',sans-serif;}
-    h1,h2,h3,.sp-hero-name{font-family:'Syne',sans-serif;}
 
     /* ── HERO ── */
     .sp-hero{
@@ -430,6 +427,8 @@
         <span id="storeNameText"></span>
         <span id="storeVerifiedBadge" class="sp-verified" style="display:none;">✅ Verified</span>
       </h1>
+      <div id="storeMeta" style="display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px;"></div>
+      <div id="storeOpenStatus" style="margin-bottom:6px;"></div>
       <p class="sp-hero-desc" id="storeDesc"></p>
     </div>
   </div>
@@ -682,7 +681,7 @@ function updateFollowBtn(following) {
 }
 
 async function loadListings(page = 1) {
-  if (!storeId) { document.getElementById('listingsLoading').style.display = 'none'; return; }
+  if (!storeId) return;
   if (page === 1) {
     document.getElementById('listingsLoading').style.display = 'block';
     document.getElementById('listingsGrid').innerHTML = '';
@@ -694,8 +693,9 @@ async function loadListings(page = 1) {
     document.getElementById('listingsLoading').style.display = 'none';
     if (!_lj.success) return;
 
-    const listings = (_lj.data && _lj.data.listings) ? _lj.data.listings : (_lj.data || []);
-    const tp = (_lj.data && _lj.data.total_pages) ? _lj.data.total_pages : 1;
+    const d = _lj.data;
+    const listings = Array.isArray(d) ? d : (d.listings || []);
+    const tp = (d && d.total_pages) ? d.total_pages : 1;
     totalPages = tp;
     currentPage = page;
 
