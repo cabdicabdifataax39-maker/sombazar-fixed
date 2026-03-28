@@ -734,12 +734,17 @@ async function loadListings(page = 1) {
       const price = priceNum > 0 ? ('$' + priceNum.toLocaleString('en-US')) : '';
       const isFeatured = l.featured || l.is_featured;
       const isPremium = l.is_premium || l.plan === 'pro';
-      const specs = l.specs || {};
-      const km = specs.mileage || l.mileage || '';
-      const fuel = specs.fuel_type || l.fuel_type || '';
-      const transmission = specs.transmission || l.transmission || '';
-      const rooms = specs.rooms || '';
-      const area = specs.area || '';
+
+      // specs - API'den farkli kolonlarda gelebilir
+      let sp = {};
+      try { sp = l.specs ? (typeof l.specs==='string' ? JSON.parse(l.specs) : l.specs) : {}; } catch(e){}
+      const km           = sp.mileage || l.mileage || sp.km || '';
+      const fuel         = sp.fuel_type || l.fuel_type || '';
+      const transmission = sp.transmission || l.transmission || '';
+      const rooms        = sp.rooms || l.rooms || '';
+      const area         = sp.area || l.area || '';
+      const year         = l.year || sp.year || '';
+      const loc          = [l.city, l.country_code || l.country].filter(Boolean).join(', ');
 
       const card = document.createElement('a');
       card.href = 'listing.html?id=' + l.id;
@@ -747,27 +752,26 @@ async function loadListings(page = 1) {
       card.innerHTML = `
         <div class="s-card-img-wrap">
           ${img
-            ? `<img class="s-card-img" src="${img}" alt="${l.title || ''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'s-card-ph\'>${catEmoji(l.category)}</div>'">`
+            ? `<img class="s-card-img" src="${img}" alt="${(l.title||'').replace(/"/g,'&quot;')}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'s-card-ph\'>${catEmoji(l.category)}</div>'">`
             : `<div class="s-card-ph">${catEmoji(l.category)}</div>`
           }
-          ${isFeatured ? '<div class="s-badge-feat">Featured</div>' : ''}
-          ${isPremium ? '<div class="s-badge-prem">Premium</div>' : ''}
+          ${isFeatured ? '<div class="s-badge-feat">FEATURED</div>' : ''}
+          ${isPremium ? '<div class="s-badge-prem">PREMIUM</div>' : ''}
           ${price ? `<div class="s-price">${price}</div>` : ''}
         </div>
-        <div>
+        <div class="s-card-body">
           <div class="s-card-row1">
             <div class="s-card-title">${l.title || ''}</div>
-            <button class="s-heart" onclick="event.preventDefault();toggleFav(${l.id},this)" title="Save">♡</button>
+            <button class="s-heart" onclick="event.preventDefault();toggleFav(${l.id},this)">♡</button>
           </div>
-          <div class="s-card-loc">
-            ${l.city ? `<span>📍 ${l.city}${l.country ? ', ' + l.country : ''}</span>` : ''}
-          </div>
-          ${(km || fuel || transmission || rooms || area) ? `
+          ${loc ? `<div class="s-card-loc">📍 ${loc}</div>` : (l.city ? `<div class="s-card-loc">📍 ${l.city}</div>` : '')}
+          ${(km||fuel||transmission||rooms||area||year) ? `
           <div class="s-card-specs">
-            ${km ? `<span class="s-spec">🔴 ${km} km</span>` : ''}
-            ${fuel ? `<span class="s-spec">⚙️ ${fuel}</span>` : ''}
-            ${transmission ? `<span class="s-spec">⚙️ ${transmission}</span>` : ''}
-            ${rooms ? `<span class="s-spec">🛏 ${rooms} rooms</span>` : ''}
+            ${year ? `<span class="s-spec">${year}</span>` : ''}
+            ${km ? `<span class="s-spec"><span style="color:#ef4444;font-size:9px;">●</span> ${km}k km</span>` : ''}
+            ${fuel ? `<span class="s-spec"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='%2364748b'%3E%3Cpath d='M20 11h-1V7l-4-4H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-1h1c1.1 0 2-.9 2-2v-3c0-1.1-.9-2-2-2zM5 19V5h9l3 3v3H5v8zm14 0h-1v-3h1v3z'/%3E%3C/svg%3E" style="width:10px;height:10px;"> ${fuel}</span>` : ''}
+            ${transmission ? `<span class="s-spec"><span style="font-size:10px;">⚙</span> ${transmission}</span>` : ''}
+            ${rooms ? `<span class="s-spec">🛏 ${rooms}</span>` : ''}
             ${area ? `<span class="s-spec">📐 ${area} m²</span>` : ''}
           </div>` : ''}
         </div>`;
