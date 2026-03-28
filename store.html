@@ -152,20 +152,20 @@
 
     /* ─── STATS ─────────────────────────────────── */
     .s-stats{
-      display:flex;gap:40px;
-      padding:24px 0 20px;
+      display:flex;gap:52px;
+      padding:28px 0 24px;
       border-bottom:1px solid #e8e8e8;
     }
     [data-theme="dark"] .s-stats{border-bottom-color:#1e293b;}
-    @media(max-width:640px){.s-stats{gap:28px;padding:18px 0 16px;}}
+    @media(max-width:640px){.s-stats{gap:52px;padding:28px 0 24px;}}
 
     .s-stat-num{
       font-family:'Syne',sans-serif;
-      font-size:28px;font-weight:800;color:#0f172a;
+      font-size:32px;font-weight:800;color:#0f172a;
       display:block;line-height:1;
     }
     [data-theme="dark"] .s-stat-num{color:#f1f5f9;}
-    @media(max-width:640px){.s-stat-num{font-size:22px;}}
+    @media(max-width:640px){.s-stat-num{font-size:32px;}}
 
     .s-stat-lbl{
       font-size:10px;font-weight:600;color:#94a3b8;
@@ -223,9 +223,9 @@
     .s-grid{
       display:grid;
       grid-template-columns:repeat(3,1fr);
-      gap:28px;
+      gap:20px 24px;
     }
-    @media(max-width:700px){.s-grid{grid-template-columns:repeat(2,1fr);gap:16px;}}
+    @media(max-width:700px){.s-grid{grid-template-columns:repeat(2,1fr);gap:20px 24px;}}
 
     /* Card */
     .s-card{
@@ -240,13 +240,13 @@
       margin-bottom:14px;
     }
     .s-card-img{
-      width:100%;aspect-ratio:4/3;object-fit:cover;
+      width:100%;aspect-ratio:16/11;object-fit:cover;
       display:block;
       transition:transform .4s;
     }
     .s-card:hover .s-card-img{transform:scale(1.04);}
     .s-card-ph{
-      width:100%;aspect-ratio:4/3;
+      width:100%;aspect-ratio:16/11;
       background:#f1f5f9;
       display:flex;align-items:center;justify-content:center;
       font-size:44px;
