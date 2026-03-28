@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script>(function(){var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
+  <link rel="icon" href="assets/favicon.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications — SomBazar</title>
+  <link rel="preload" href="assets/style.min.css" as="style">
+  <link rel="preload" href="assets/app.min.js" as="script">
+  <link rel="stylesheet" href="assets/style.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <style>
+    .notif-item { display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border-color);text-decoration:none;color:inherit;transition:background .15s;align-items:flex-start;cursor:pointer; }
+    .notif-item:hover { background:var(--bg-secondary); }
+    .notif-item.unread { background:#fafbff; }
+    [data-theme="dark"] .notif-item.unread { background:#1a2540; }
+    .notif-icon { width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px; }
+    .filter-pill { padding:6px 14px;border-radius:20px;border:1.5px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s; }
+    .filter-pill.active { background:#ec5b13;color:white;border-color:#ec5b13; }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+      <button onclick="markAllRead()" id="markAllBtn" style="display:none;padding:7px 14px;border-radius:9px;border:1.5px solid var(--border-color);background:var(--bg-card);color:var(--text-secondary);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+        ✓ Mark all read
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main style="max-width:680px;margin:0 auto;padding:20px 16px 60px;">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <h1 style="font-size:22px;font-weight:900;color:var(--text-primary);margin:0;">Notifications</h1>
+    <span id="unreadBadge" style="display:none;background:#ec5b13;color:white;font-size:11px;font-weight:800;padding:3px 8px;border-radius:20px;"></span>
+  </div>
+
+  <!-- Filters -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;">
+    <button class="filter-pill active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-pill" onclick="setFilter('message',this)">💬 Messages</button>
+    <button class="filter-pill" onclick="setFilter('offer',this)">💰 Offers</button>
+    <button class="filter-pill" onclick="setFilter('review',this)">⭐ Reviews</button>
+    <button class="filter-pill" onclick="setFilter('listing',this)">📦 Listings</button>
+    <button class="filter-pill" onclick="setFilter('reservation',this)">🔖 Reservations</button>
+  </div>
+
+  <!-- List -->
+  <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;" id="notifContainer">
+    <div id="notifLoading" style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;">Loading...</div>
+    <div id="notifList" style="display:none;"></div>
+    <div id="notifEmpty" style="display:none;text-align:center;padding:60px 20px;">
+      <div style="font-size:48px;margin-bottom:12px;">🔔</div>
+      <h3 style="font-size:16px;font-weight:800;color:var(--text-primary);margin-bottom:6px;">No notifications</h3>
+      <p style="font-size:13px;color:#64748b;">You're all caught up!</p>
+    </div>
+  </div>
+
+  <!-- Load More -->
+  <div id="loadMoreWrap" style="display:none;text-align:center;margin-top:16px;">
+    <button onclick="loadMore()" style="padding:10px 28px;border-radius:10px;border:1.5px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">
+      Load More
+    </button>
+  </div>
+
+</main>
+
+<script src="assets/app.min.js"></script>
+<script>
+const user = JSON.parse(localStorage.getItem('sb_user') || 'null');
+if (!user) window.location.href = 'auth.html?redirect=notifications.html';
+
+let allNotifs = [];
+let currentFilter = 'all';
+let page = 1;
+const PAGE_SIZE = 30;
+
+const typeConfig = {
+  message:          { emoji:'💬', bg:'#eff6ff', color:'#3b82f6', label:'Message' },
+  offer:            { emoji:'💰', bg:'#fff7ed', color:'#f97316', label:'Offer' },
+  offer_accepted:   { emoji:'✅', bg:'#f0fdf4', color:'#22c55e', label:'Offer Accepted' },
+  offer_rejected:   { emoji:'❌', bg:'#fef2f2', color:'#ef4444', label:'Offer Rejected' },
+  offer_counter:    { emoji:'↩️', bg:'#faf5ff', color:'#a855f7', label:'Counter Offer' },
+  review:           { emoji:'⭐', bg:'#fffbeb', color:'#f59e0b', label:'Review' },
+  listing:          { emoji:'📦', bg:'#f0fdf4', color:'#10b981', label:'Listing' },
+  reservation:      { emoji:'🔖', bg:'#fef6ee', color:'#ec5b13', label:'Reservation' },
+  reservation_confirmed: { emoji:'✅', bg:'#f0fdf4', color:'#22c55e', label:'Reservation' },
+  reservation_rejected:  { emoji:'❌', bg:'#fef2f2', color:'#ef4444', label:'Reservation' },
+  store_verification:    { emoji:'🏪', bg:'#fef6ee', color:'#ec5b13', label:'Store' },
+  store_status:          { emoji:'🏪', bg:'#fef6ee', color:'#ec5b13', label:'Store' },
+  system:           { emoji:'ℹ️', bg:'#f8fafc', color:'#64748b', label:'System' },
+};
+
+function getTypeConfig(type) {
+  // Prefix match
+  const key = Object.keys(typeConfig).find(k => type === k || type?.startsWith(k.split('_')[0]));
+  return typeConfig[type] || typeConfig[key] || typeConfig.system;
+}
+
+async function loadNotifications() {
+  document.getElementById('notifLoading').style.display = 'block';
+  document.getElementById('notifList').style.display = 'none';
+  document.getElementById('notifEmpty').style.display = 'none';
+
+  try {
+    const token = localStorage.getItem('sb_token') || '';
+    const r = await fetch('/api/notifications.php?action=list&limit=100', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const d = await r.json();
+
+    document.getElementById('notifLoading').style.display = 'none';
+
+    if (!d.success) { document.getElementById('notifEmpty').style.display = 'block'; return; }
+
+    allNotifs = d.data.notifications || [];
+    const unread = allNotifs.filter(n => !n.isRead).length;
+
+    if (unread > 0) {
+      const badge = document.getElementById('unreadBadge');
+      badge.textContent = unread + ' unread';
+      badge.style.display = 'inline-block';
+      document.getElementById('markAllBtn').style.display = 'block';
+    }
+
+    renderNotifs();
+
+  } catch(e) {
+    document.getElementById('notifLoading').style.display = 'none';
+    document.getElementById('notifEmpty').style.display = 'block';
+  }
+}
+
+function renderNotifs() {
+  const filtered = currentFilter === 'all'
+    ? allNotifs
+    : allNotifs.filter(n => n.type?.includes(currentFilter));
+
+  const listEl = document.getElementById('notifList');
+  listEl.innerHTML = '';
+
+  if (!filtered.length) {
+    listEl.style.display = 'none';
+    document.getElementById('notifEmpty').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('notifEmpty').style.display = 'none';
+  listEl.style.display = 'block';
+
+  filtered.slice(0, page * PAGE_SIZE).forEach(n => {
+    const cfg = getTypeConfig(n.type);
+    const el = document.createElement('a');
+    el.href = n.link || '#';
+    el.className = 'notif-item' + (n.isRead ? '' : ' unread');
+    el.onclick = () => markRead(n.id);
+    el.innerHTML = `
+      <div class="notif-icon" style="background:${cfg.bg};color:${cfg.color};">${cfg.emoji}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:${n.isRead?'600':'800'};color:var(--text-primary);margin-bottom:2px;">${n.title || ''}</div>
+        ${n.body ? `<div style="font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${n.body}</div>` : ''}
+        <div style="font-size:11px;color:#94a3b8;margin-top:4px;">${n.timeAgo || ''}</div>
+      </div>
+      ${!n.isRead ? '<div style="width:8px;height:8px;background:#ec5b13;border-radius:50%;flex-shrink:0;margin-top:6px;"></div>' : ''}
+    `;
+    listEl.appendChild(el);
+  });
+
+  const total = filtered.length;
+  document.getElementById('loadMoreWrap').style.display = total > page * PAGE_SIZE ? 'block' : 'none';
+}
+
+function setFilter(filter, btn) {
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = filter;
+  page = 1;
+  renderNotifs();
+}
+
+function loadMore() {
+  page++;
+  renderNotifs();
+}
+
+async function markRead(id) {
+  const token = localStorage.getItem('sb_token') || '';
+  await fetch('/api/notifications.php?action=mark_read', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+    body: JSON.stringify({ notification_id: id })
+  }).catch(() => {});
+  const n = allNotifs.find(x => x.id === id);
+  if (n) n.isRead = true;
+}
+
+async function markAllRead() {
+  const token = localStorage.getItem('sb_token') || '';
+  await fetch('/api/notifications.php?action=mark_all_read', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  allNotifs.forEach(n => n.isRead = true);
+  document.getElementById('unreadBadge').style.display = 'none';
+  document.getElementById('markAllBtn').style.display = 'none';
+  renderNotifs();
+  showToast('All notifications marked as read', 'success');
+}
+
+loadNotifications();
+</script>
+</body>
+</html>
