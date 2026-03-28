@@ -29,8 +29,14 @@ if (!defined('PLANS_DEFINED')) {
         'agency'   => ['price' => 50, 'label' => 'Agency',    'listing_limit' => 999, 'photo_limit' => 20, 'boost_credits' => 5],
     ]);
     define('PAYMENT_NUMBERS', [
-        'zaad'   => ['number' => '063XXXXXXX', 'name' => 'SomBazar Ltd'],
-        'edahab' => ['number' => '077XXXXXXX', 'name' => 'SomBazar Ltd'],
+        'zaad'   => [
+            'number' => getenv('ZAAD_NUMBER')   ?: '063XXXXXXX',
+            'name'   => getenv('PAYMENT_NAME')  ?: 'SomBazar Ltd',
+        ],
+        'edahab' => [
+            'number' => getenv('EDAHAB_NUMBER') ?: '077XXXXXXX',
+            'name'   => getenv('PAYMENT_NAME')  ?: 'SomBazar Ltd',
+        ],
     ]);
 }
 
