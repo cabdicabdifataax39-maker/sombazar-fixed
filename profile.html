@@ -196,7 +196,7 @@
           <span class="material-symbols-outlined" style="font-size:20px;">notifications</span>
           <span id="notifBadge" style="display:none;position:absolute;top:4px;right:4px;width:7px;height:7px;background:#ec5b13;border-radius:50%;border:2px solid #fff;"></span>
         </button>
-        <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:min(300px,88vw);background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.15);border:1px solid #e2e8f0;z-index:200;max-height:400px;overflow-y:auto;">
+        <div id="notifDropdown" style="display:none;position:absolute;right:0;top:calc(100% + 8px);width:min(300px,88vw);background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.25);border:1px solid #e2e8f0;z-index:9998;max-height:480px;overflow-y:auto;">
           <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9;font-weight:800;font-size:14px;">Notifications</div>
           <div id="notifList" style="padding:12px 16px;font-size:13px;color:#94a3b8;">No new notifications</div>
         </div>
@@ -1823,89 +1823,41 @@ checkUserStore();
 </script>
 
 
-<script>
-// Notification bell - inline onclick yerine addEventListener
-(function() {
-  function initNotifBell() {
-    const bell = document.getElementById('notifBell');
-    const dd   = document.getElementById('notifDropdown');
-    if (!bell || !dd) return;
 
-    bell.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const isOpen = dd.style.display === 'block';
-      if (isOpen) {
+
+
+
+<script>
+window.toggleNotifDropdown = function() {
+  var dd = document.getElementById('notifDropdown');
+  var bell = document.getElementById('notifBell');
+  if (!dd || !bell) return;
+  if (dd.style.display === 'block') {
+    dd.style.display = 'none';
+    return;
+  }
+  var rect = bell.getBoundingClientRect();
+  dd.style.position = 'fixed';
+  dd.style.top = (rect.bottom + 6) + 'px';
+  dd.style.right = (window.innerWidth - rect.right - 8) + 'px';
+  dd.style.left = 'auto';
+  dd.style.width = '320px';
+  dd.style.zIndex = '99999';
+  dd.style.display = 'block';
+  if (typeof Notif !== 'undefined' && Notif.loadDropdown) {
+    try { Notif.loadDropdown(); } catch(e) {}
+  }
+  setTimeout(function() {
+    function closeDD(e) {
+      if (!dd.contains(e.target) && !bell.contains(e.target)) {
         dd.style.display = 'none';
-      } else {
-        dd.style.display = 'block';
-        if (typeof Notif !== 'undefined' && Notif.loadDropdown) {
-          Notif.loadDropdown();
-        }
-        // Disari tiklaninca kapat
-        setTimeout(function() {
-          document.addEventListener('click', function _close(e) {
-            if (!dd.contains(e.target) && e.target !== bell) {
-              dd.style.display = 'none';
-              document.removeEventListener('click', _close);
-            }
-          });
-        }, 50);
+        document.removeEventListener('click', closeDD);
       }
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initNotifBell);
-  } else {
-    initNotifBell();
-  }
-})();
-</script>
-
-
-<script>
-// Notification bell - fixed pozisyon ile override
-(function() {
-  function openNotifDropdown() {
-    const dd = document.getElementById('notifDropdown');
-    const bell = document.getElementById('notifBell');
-    if (!dd || !bell) return;
-
-    const isOpen = dd.style.display === 'block';
-
-    if (isOpen) {
-      dd.style.display = 'none';
-      return;
     }
-
-    // Bell'in ekran koordinatlarini al
-    const rect = bell.getBoundingClientRect();
-    dd.style.position = 'fixed';
-    dd.style.top = (rect.bottom + 8) + 'px';
-    dd.style.right = (window.innerWidth - rect.right) + 'px';
-    dd.style.left = 'auto';
-    dd.style.zIndex = '999999';
-    dd.style.display = 'block';
-
-    if (typeof Notif !== 'undefined' && Notif.loadDropdown) {
-      try { Notif.loadDropdown(); } catch(e) {}
-    }
-
-    setTimeout(function() {
-      document.addEventListener('click', function _close(e) {
-        if (!dd.contains(e.target) && !bell.contains(e.target)) {
-          dd.style.display = 'none';
-          document.removeEventListener('click', _close);
-        }
-      });
-    }, 100);
-  }
-
-  // toggleNotifDropdown'u override et
-  window.toggleNotifDropdown = openNotifDropdown;
-})();
+    document.addEventListener('click', closeDD);
+  }, 150);
+};
 </script>
-
 </body>
 </html>
 
