@@ -16,295 +16,347 @@
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <style>
-    /* ── Cover & Hero ─────────────────────────────────── */
-    .store-hero {
+    /* ── Reset & Base ─────────────────────────── */
+    * { box-sizing: border-box; }
+
+    /* ── Hero Cover ─────────────────────────────── */
+    .sp-hero {
       position: relative;
       width: 100%;
-      height: 280px;
+      height: 300px;
       overflow: hidden;
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
     }
-    @media(max-width:640px){ .store-hero { height: 200px; } }
-    .store-hero-img {
+    @media(max-width:640px){ .sp-hero { height: 210px; } }
+
+    .sp-hero-img {
       width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
+      object-fit: cover; display: block;
     }
-    .store-hero-overlay {
+    .sp-hero-gradient {
       position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.65) 100%);
+      background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,.55) 100%);
+      pointer-events: none;
     }
 
-    /* ── Avatar ───────────────────────────────────────── */
-    .store-avatar-wrap {
+    /* ── Avatar ─────────────────────────────────── */
+    .sp-avatar-wrap {
       position: absolute;
-      bottom: -44px; left: 28px;
-      z-index: 10;
+      bottom: -40px; left: 28px;
+      z-index: 5;
     }
-    .store-avatar {
-      width: 88px; height: 88px;
-      border-radius: 20px;
-      border: 4px solid var(--bg-card, #fff);
+    @media(max-width:640px){ .sp-avatar-wrap { left: 16px; bottom: -34px; } }
+
+    .sp-avatar {
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      border: 4px solid var(--bg-primary, #fff);
       object-fit: cover;
-      background: #f1f5f9;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      background: #e2e8f0;
       display: block;
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
     }
-    .store-avatar-fallback {
-      width: 88px; height: 88px;
-      border-radius: 20px;
-      border: 4px solid var(--bg-card, #fff);
+    .sp-avatar-fallback {
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      border: 4px solid var(--bg-primary, #fff);
       background: linear-gradient(135deg, #ec5b13, #f97316);
       display: flex; align-items: center; justify-content: center;
-      font-size: 32px; font-weight: 900; color: white;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      font-size: 36px; font-weight: 900; color: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
     }
-    [data-theme="dark"] .store-avatar { border-color: #1e293b; }
-    [data-theme="dark"] .store-avatar-fallback { border-color: #1e293b; }
+    @media(max-width:640px){ .sp-avatar, .sp-avatar-fallback { width: 80px; height: 80px; } }
+    [data-theme="dark"] .sp-avatar,
+    [data-theme="dark"] .sp-avatar-fallback { border-color: #0f172a; }
 
-    /* ── Info Area ────────────────────────────────────── */
-    .store-info {
-      padding: 56px 24px 0;
+    /* ── Header actions (Follow/Share) on hero ──── */
+    .sp-hero-actions {
+      position: absolute;
+      bottom: 16px; right: 20px;
+      display: flex; gap: 8px;
+      z-index: 5;
+    }
+
+    .sp-btn-follow {
+      padding: 9px 20px; border-radius: 8px;
+      font-size: 13px; font-weight: 800;
+      cursor: pointer; border: none;
+      background: #ec5b13; color: white;
+      display: none; align-items: center; gap: 6px;
+      font-family: inherit; transition: opacity .15s;
+      letter-spacing: .2px;
+    }
+    .sp-btn-follow:hover { opacity: .88; }
+    .sp-btn-follow.following {
+      background: rgba(255,255,255,.15);
+      border: 1.5px solid rgba(255,255,255,.4);
+      backdrop-filter: blur(8px);
+    }
+
+    .sp-btn-share {
+      width: 38px; height: 38px;
+      border-radius: 8px; border: 1.5px solid rgba(255,255,255,.4);
+      background: rgba(255,255,255,.12); color: white;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; backdrop-filter: blur(8px);
+      transition: background .15s;
+    }
+    .sp-btn-share:hover { background: rgba(255,255,255,.25); }
+
+    .sp-btn-msg {
+      padding: 9px 18px; border-radius: 8px;
+      font-size: 13px; font-weight: 800;
+      cursor: pointer;
+      border: 1.5px solid rgba(255,255,255,.4);
+      background: rgba(255,255,255,.12); color: white;
+      display: none; align-items: center; gap: 6px;
+      font-family: inherit; backdrop-filter: blur(8px);
+      transition: background .15s;
+    }
+    .sp-btn-msg:hover { background: rgba(255,255,255,.25); }
+
+    /* ── Body wrapper ───────────────────────────── */
+    .sp-body {
       max-width: 960px;
       margin: 0 auto;
+      padding: 0 24px 80px;
     }
-    .store-name {
-      font-size: 26px; font-weight: 900;
+    @media(max-width:640px){ .sp-body { padding: 0 14px 80px; } }
+
+    /* ── Info Section ───────────────────────────── */
+    .sp-info {
+      padding-top: 52px;
+      margin-bottom: 20px;
+    }
+    @media(max-width:640px){ .sp-info { padding-top: 44px; } }
+
+    .sp-name {
+      font-size: 28px; font-weight: 900;
       color: var(--text-primary);
-      letter-spacing: -0.5px;
-      line-height: 1.2;
-      margin: 0 0 4px;
+      letter-spacing: -.5px; line-height: 1.15;
+      margin: 0 0 6px;
     }
-    @media(max-width:640px){ .store-name { font-size: 20px; } }
-    .store-tagline {
-      font-size: 13px; color: #64748b;
-      line-height: 1.6; margin-bottom: 16px;
-      max-width: 480px;
-    }
-    .verified-badge {
+    @media(max-width:640px){ .sp-name { font-size: 22px; } }
+
+    .sp-verified {
       display: inline-flex; align-items: center; gap: 4px;
-      background: #dcfce7; color: #15803d;
+      background: #dcfce7; color: #16a34a;
       font-size: 11px; font-weight: 700;
-      padding: 3px 9px; border-radius: 20px;
-      margin-left: 6px; vertical-align: middle;
+      padding: 2px 8px; border-radius: 20px;
+      vertical-align: middle; margin-left: 8px;
     }
-    .store-meta-row {
+
+    .sp-meta {
       display: flex; flex-wrap: wrap; gap: 12px;
       font-size: 12px; color: #64748b;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
-    .store-meta-item { display: flex; align-items: center; gap: 4px; }
-    .open-badge {
+    .sp-meta-item { display: flex; align-items: center; gap: 4px; }
+
+    .sp-open {
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 12px; font-weight: 700;
       padding: 3px 10px; border-radius: 20px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
-    .open-badge.open { background: #dcfce7; color: #15803d; }
-    .open-badge.closed { background: #fee2e2; color: #dc2626; }
+    .sp-open.open  { background: #dcfce7; color: #16a34a; }
+    .sp-open.closed{ background: #fee2e2; color: #dc2626; }
 
-    /* ── Action Buttons ───────────────────────────────── */
-    .store-actions {
-      display: flex; gap: 8px; flex-wrap: wrap;
-      margin-bottom: 20px;
+    .sp-desc {
+      font-size: 14px; color: #64748b;
+      line-height: 1.6; margin-bottom: 18px;
+      max-width: 560px;
     }
-    .btn-follow {
-      padding: 9px 20px; border-radius: 10px;
-      font-size: 13px; font-weight: 700;
-      cursor: pointer; border: 1.5px solid #e2e8f0;
-      background: var(--bg-card); color: var(--text-primary);
-      display: inline-flex; align-items: center; gap: 6px;
-      transition: all .15s;
-    }
-    .btn-follow:hover { border-color: #ec5b13; color: #ec5b13; }
-    .btn-follow.following { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
-    .btn-message {
-      padding: 9px 20px; border-radius: 10px;
-      font-size: 13px; font-weight: 700;
-      cursor: pointer; border: none;
-      background: #ec5b13; color: white;
-      display: inline-flex; align-items: center; gap: 6px;
-      transition: opacity .15s;
-    }
-    .btn-message:hover { opacity: .88; }
-    .btn-share {
-      width: 38px; height: 38px; border-radius: 10px;
-      border: 1.5px solid #e2e8f0; background: var(--bg-card);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: border-color .15s; color: #64748b;
-    }
-    .btn-share:hover { border-color: #ec5b13; color: #ec5b13; }
 
-    /* ── Stats ────────────────────────────────────────── */
-    .store-stats {
+    /* ── Stats Row ─────────────────────────────── */
+    .sp-stats {
       display: flex; gap: 0;
-      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+      border-radius: 14px; overflow: hidden;
+      margin-bottom: 22px;
+      background: var(--bg-card);
     }
-    .stat-item {
+    .sp-stat {
       flex: 1; text-align: center;
-      padding: 14px 8px;
+      padding: 16px 8px;
       border-right: 1px solid var(--border-color);
     }
-    .stat-item:last-child { border-right: none; }
-    .stat-num {
-      font-size: 22px; font-weight: 900;
-      color: var(--text-primary); display: block;
-      line-height: 1.1;
+    .sp-stat:last-child { border-right: none; }
+    .sp-stat-num {
+      display: block;
+      font-size: 24px; font-weight: 900;
+      color: var(--text-primary); line-height: 1.1;
     }
-    .stat-lbl {
-      font-size: 10px; color: #94a3b8;
-      font-weight: 700; text-transform: uppercase;
-      letter-spacing: .6px; margin-top: 2px; display: block;
-    }
-    .stats-card {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 14px;
-      overflow: hidden;
-      margin-bottom: 20px;
+    .sp-stat-lbl {
+      display: block;
+      font-size: 10px; font-weight: 700;
+      color: #94a3b8; text-transform: uppercase;
+      letter-spacing: .8px; margin-top: 3px;
     }
 
-    /* ── Tabs ─────────────────────────────────────────── */
-    .store-tabs {
-      display: flex; gap: 0;
+    /* ── Tabs ──────────────────────────────────── */
+    .sp-tabs {
+      display: flex; gap: 4px;
       border-bottom: 2px solid var(--border-color);
-      margin-bottom: 20px;
+      margin-bottom: 22px;
     }
-    .tab-btn {
-      padding: 10px 20px;
+    .sp-tab {
+      padding: 10px 18px;
       font-size: 13px; font-weight: 700;
       border: none; background: transparent;
       color: #94a3b8; cursor: pointer;
       border-bottom: 2px solid transparent;
       margin-bottom: -2px;
-      transition: all .15s;
+      font-family: inherit;
+      transition: color .15s, border-color .15s;
     }
-    .tab-btn.active { color: #ec5b13; border-bottom-color: #ec5b13; }
-    .tab-btn:hover:not(.active) { color: var(--text-primary); }
+    .sp-tab.active { color: #ec5b13; border-bottom-color: #ec5b13; }
+    .sp-tab:hover:not(.active) { color: var(--text-primary); }
 
-    /* ── Listing Grid ─────────────────────────────────── */
-    .listings-grid {
+    /* ── Listings Grid ─────────────────────────── */
+    .sp-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
     }
-    @media(max-width:640px){
-      .listings-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    }
-    @media(min-width:960px){
-      .listings-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-    .listing-card-store {
-      border-radius: 14px;
-      overflow: hidden;
+    @media(max-width:700px){ .sp-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+
+    .sp-card {
+      border-radius: 14px; overflow: hidden;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
-      text-decoration: none;
-      display: block;
+      text-decoration: none; display: block;
       transition: transform .2s, box-shadow .2s;
       position: relative;
     }
-    .listing-card-store:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
-    .listing-img-wrap { position: relative; }
-    .listing-img-wrap img {
+    .sp-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,.1); }
+
+    .sp-card-img-wrap { position: relative; overflow: hidden; }
+    .sp-card-img {
       width: 100%; aspect-ratio: 4/3;
       object-fit: cover; display: block;
+      transition: transform .4s;
     }
-    .listing-img-placeholder {
+    .sp-card:hover .sp-card-img { transform: scale(1.04); }
+    .sp-card-img-placeholder {
       width: 100%; aspect-ratio: 4/3;
       background: var(--bg-secondary);
       display: flex; align-items: center; justify-content: center;
-      font-size: 36px;
+      font-size: 40px;
     }
-    .listing-price-badge {
+
+    .sp-price-badge {
       position: absolute; bottom: 10px; right: 10px;
-      background: rgba(0,0,0,0.75);
-      color: white; font-weight: 800; font-size: 13px;
-      padding: 4px 10px; border-radius: 8px;
-      backdrop-filter: blur(4px);
-    }
-    .listing-featured-badge {
-      position: absolute; top: 8px; left: 8px;
       background: #ec5b13; color: white;
-      font-size: 9px; font-weight: 800;
-      padding: 3px 8px; border-radius: 6px;
-      letter-spacing: .5px; text-transform: uppercase;
+      font-size: 13px; font-weight: 800;
+      padding: 4px 10px; border-radius: 8px;
     }
-    .listing-card-body { padding: 10px 12px 12px; }
-    .listing-card-title {
+    .sp-featured-badge {
+      position: absolute; top: 8px; left: 8px;
+      background: #f59e0b; color: white;
+      font-size: 9px; font-weight: 800;
+      padding: 3px 7px; border-radius: 5px;
+      text-transform: uppercase; letter-spacing: .4px;
+    }
+    .sp-heart {
+      position: absolute; top: 8px; right: 8px;
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,.9);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; transition: transform .15s;
+      backdrop-filter: blur(4px); color: #64748b;
+    }
+    .sp-heart:hover { transform: scale(1.2); color: #ec5b13; }
+    .sp-heart.faved { color: #ec5b13; }
+
+    .sp-card-body { padding: 10px 12px 12px; }
+    .sp-card-title {
       font-size: 13px; font-weight: 700;
-      color: var(--text-primary);
-      line-height: 1.3; margin-bottom: 4px;
+      color: var(--text-primary); line-height: 1.3;
+      margin-bottom: 4px;
       display: -webkit-box; -webkit-line-clamp: 2;
       -webkit-box-orient: vertical; overflow: hidden;
     }
-    .listing-card-meta {
+    .sp-card-location {
       font-size: 11px; color: #94a3b8;
-      display: flex; align-items: center; gap: 6px;
+      display: flex; align-items: center; gap: 3px;
     }
 
-    /* ── Heart Btn ────────────────────────────────────── */
-    .heart-btn {
-      position: absolute; top: 8px; right: 8px;
-      width: 28px; height: 28px; border-radius: 50%;
-      background: rgba(255,255,255,0.9);
-      border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; transition: transform .15s;
-      backdrop-filter: blur(4px);
+    /* ── Load More ─────────────────────────────── */
+    .sp-load-more {
+      display: block; width: 100%;
+      padding: 13px; margin-top: 20px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px; background: var(--bg-card);
+      color: var(--text-primary); font-size: 13px;
+      font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: border-color .15s, color .15s;
     }
-    .heart-btn:hover { transform: scale(1.2); }
+    .sp-load-more:hover { border-color: #ec5b13; color: #ec5b13; }
 
-    /* ── About Tab ────────────────────────────────────── */
-    .about-card {
+    /* ── About Tab ─────────────────────────────── */
+    .sp-about-card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 14px; padding: 20px;
       margin-bottom: 14px;
     }
-    .about-card h3 {
-      font-size: 13px; font-weight: 800;
-      color: var(--text-primary); margin: 0 0 12px;
-      text-transform: uppercase; letter-spacing: .5px;
+    .sp-about-card h3 {
+      font-size: 12px; font-weight: 800;
+      color: #94a3b8; margin: 0 0 14px;
+      text-transform: uppercase; letter-spacing: .7px;
     }
-    .hours-row {
+    .sp-hours-row {
       display: flex; justify-content: space-between;
-      padding: 6px 0; font-size: 13px;
+      align-items: center; padding: 7px 0;
+      font-size: 13px;
       border-bottom: 1px solid var(--border-color);
     }
-    .hours-row:last-child { border-bottom: none; }
-    .hours-row.today { font-weight: 800; }
+    .sp-hours-row:last-child { border-bottom: none; }
+    .sp-hours-row.today { font-weight: 800; }
 
-    /* ── Load More ────────────────────────────────────── */
-    .load-more-btn {
-      display: block; width: 100%;
-      padding: 13px; margin: 20px 0;
-      border: 1.5px solid var(--border-color);
-      border-radius: 12px; background: var(--bg-card);
-      color: var(--text-primary); font-size: 13px;
-      font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: border-color .15s;
-      text-align: center;
+    /* ── Loading spinner ───────────────────────── */
+    .sp-spinner {
+      display: flex; justify-content: center;
+      align-items: center; padding: 50px;
     }
-    .load-more-btn:hover { border-color: #ec5b13; color: #ec5b13; }
+    .sp-spinner-dot {
+      width: 22px; height: 22px;
+      border: 2.5px solid #ec5b13;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: sp-spin .7s linear infinite;
+    }
+    @keyframes sp-spin { to { transform: rotate(360deg); } }
 
-    /* ── Empty / Loading ──────────────────────────────── */
-    .empty-state {
+    /* ── Empty State ───────────────────────────── */
+    .sp-empty {
       text-align: center; padding: 60px 20px;
     }
-    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-    .empty-state h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px; }
-    .empty-state p { font-size: 13px; color: #64748b; }
+    .sp-empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .sp-empty h3 {
+      font-size: 16px; font-weight: 800;
+      color: var(--text-primary); margin-bottom: 6px;
+    }
+    .sp-empty p { font-size: 13px; color: #64748b; }
 
-    /* ── Dark mode ────────────────────────────────────── */
-    [data-theme="dark"] .listing-price-badge { background: rgba(0,0,0,0.85); }
-    [data-theme="dark"] .btn-follow { border-color: #334155; }
-    [data-theme="dark"] .btn-share { border-color: #334155; }
-    [data-theme="dark"] .heart-btn { background: rgba(30,41,59,0.9); color: white; }
+    /* ── Scroll to top ─────────────────────────── */
+    #scrollTopBtn {
+      position: fixed; bottom: 24px; right: 24px;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #ec5b13; color: white; border: none;
+      cursor: pointer; display: none;
+      align-items: center; justify-content: center;
+      font-size: 18px; box-shadow: 0 4px 16px rgba(236,91,19,.35);
+      z-index: 99; transition: opacity .2s;
+    }
+    #scrollTopBtn:hover { opacity: .85; }
   </style>
 </head>
 <body>
 
+<!-- Navbar -->
 <header class="header">
   <nav class="nav-container">
     <a href="index.html" class="logo">SomBazar</a>
@@ -312,115 +364,99 @@
   </nav>
 </header>
 
-<div style="max-width:960px;margin:0 auto;padding-bottom:60px;">
+<!-- Hero -->
+<div class="sp-hero" id="storeHero">
+  <img id="storeCoverImg" class="sp-hero-img" src="" alt="" style="display:none;" onerror="this.style.display='none'">
+  <div class="sp-hero-gradient"></div>
 
-  <!-- Hero Cover -->
-  <div class="store-hero" id="storeHero">
-    <img id="storeCoverImg" class="store-hero-img" src="" alt="Store cover" style="display:none;" onerror="this.style.display='none'">
-    <div class="store-hero-overlay"></div>
-    <!-- Avatar -->
-    <div class="store-avatar-wrap">
-      <img id="storeLogoImg" class="store-avatar" src="" alt="Store logo" style="display:none;" onerror="this.style.display='none'">
-      <div id="storeLogoFallback" class="store-avatar-fallback" style="display:none;"></div>
-    </div>
+  <!-- Avatar -->
+  <div class="sp-avatar-wrap">
+    <img id="storeLogoImg" class="sp-avatar" src="" alt="logo" style="display:none;">
+    <div id="storeLogoFb" class="sp-avatar-fallback" style="display:none;"></div>
   </div>
 
-  <!-- Info -->
-  <div class="store-info">
-
-    <!-- Name row -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-      <div style="flex:1;min-width:0;">
-        <h1 class="store-name" id="storeName">
-          <span id="storeNameText"></span>
-          <span id="storeVerifiedBadge" class="verified-badge" style="display:none;">✅ Verified</span>
-        </h1>
-        <div class="store-meta-row" id="storeMeta"></div>
-        <div id="storeOpenStatus" style="margin-bottom:10px;"></div>
-        <p class="store-tagline" id="storeDesc"></p>
-      </div>
-      <!-- Actions -->
-      <div class="store-actions" style="flex-shrink:0;">
-        <button id="followBtn" class="btn-follow" onclick="toggleFollow()" style="display:none;">
-          <span class="material-symbols-outlined" style="font-size:16px;">add</span>
-          Follow
-        </button>
-        <button id="msgStoreBtn" class="btn-message" onclick="startStoreChat()" style="display:none;">
-          <span class="material-symbols-outlined" style="font-size:16px;">chat</span>
-          Message
-        </button>
-        <button class="btn-share" onclick="shareStore()" title="Share">
-          <span class="material-symbols-outlined" style="font-size:18px;">share</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="stats-card">
-      <div class="store-stats">
-        <div class="stat-item">
-          <span class="stat-num" id="statListings">—</span>
-          <span class="stat-lbl">Listings</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num" id="statFollowers">—</span>
-          <span class="stat-lbl">Followers</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-num" id="statRating">—</span>
-          <span class="stat-lbl">Rating</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="store-tabs">
-      <button class="tab-btn active" onclick="switchTab('listings',this)" id="tabBtnListings">Listings</button>
-      <button class="tab-btn" onclick="switchTab('about',this)" id="tabBtnAbout">About</button>
-    </div>
-
-    <!-- Listings Tab -->
-    <div id="tabListings">
-      <div class="listings-grid" id="listingsGrid"></div>
-      <div id="listingsLoading" style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;">
-        <div style="display:inline-block;width:20px;height:20px;border:2px solid #ec5b13;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;"></div>
-      </div>
-      <div id="listingsEmpty" class="empty-state" style="display:none;">
-        <div class="icon">📦</div>
-        <h3>No active listings</h3>
-        <p>This store hasn't posted any listings yet.</p>
-      </div>
-      <button id="loadMoreBtn" class="load-more-btn" onclick="loadMoreListings()" style="display:none;">
-        Load More Listings
-      </button>
-    </div>
-
-    <!-- About Tab -->
-    <div id="tabAbout" style="display:none;">
-      <div class="about-card">
-        <h3>Working Hours</h3>
-        <div id="workingHoursTable"></div>
-      </div>
-      <div class="about-card" id="locationCard" style="display:none;">
-        <h3>Location</h3>
-        <p id="storeAddressText" style="font-size:13px;color:#64748b;margin:0;"></p>
-      </div>
-    </div>
-
+  <!-- Action buttons on hero -->
+  <div class="sp-hero-actions">
+    <button id="msgStoreBtn" class="sp-btn-msg" onclick="startStoreChat()">
+      <span class="material-symbols-outlined" style="font-size:16px;">chat</span>
+      Message
+    </button>
+    <button id="followBtn" class="sp-btn-follow" onclick="toggleFollow()">
+      <span class="material-symbols-outlined" style="font-size:16px;" id="followIcon">add</span>
+      <span id="followText">Follow</span>
+    </button>
+    <button class="sp-btn-share" onclick="shareStore()" title="Share">
+      <span class="material-symbols-outlined" style="font-size:18px;">share</span>
+    </button>
   </div>
 </div>
 
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-grid">
-    <div><span class="footer-brand">SomBazar</span></div>
-  </div>
-  <p class="footer-copy">© 2025 SomBazar</p>
-</footer>
+<!-- Body -->
+<div class="sp-body">
 
-<style>
-@keyframes spin { to { transform: rotate(360deg); } }
-</style>
+  <!-- Info -->
+  <div class="sp-info">
+    <h1 class="sp-name">
+      <span id="storeNameText"></span>
+      <span id="storeVerifiedBadge" class="sp-verified" style="display:none;">✅ Verified</span>
+    </h1>
+    <div class="sp-meta" id="storeMeta"></div>
+    <div id="storeOpenStatus"></div>
+    <p class="sp-desc" id="storeDesc"></p>
+  </div>
+
+  <!-- Stats -->
+  <div class="sp-stats">
+    <div class="sp-stat">
+      <span class="sp-stat-num" id="statListings">—</span>
+      <span class="sp-stat-lbl">Listings</span>
+    </div>
+    <div class="sp-stat">
+      <span class="sp-stat-num" id="statFollowers">—</span>
+      <span class="sp-stat-lbl">Followers</span>
+    </div>
+    <div class="sp-stat">
+      <span class="sp-stat-num" id="statRating">—</span>
+      <span class="sp-stat-lbl">Rating</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="switchTab('listings',this)">Listings</button>
+    <button class="sp-tab" onclick="switchTab('about',this)">About</button>
+  </div>
+
+  <!-- Listings -->
+  <div id="tabListings">
+    <div class="sp-grid" id="listingsGrid"></div>
+    <div class="sp-spinner" id="listingsLoading"><div class="sp-spinner-dot"></div></div>
+    <div class="sp-empty" id="listingsEmpty" style="display:none;">
+      <div class="sp-empty-icon">📦</div>
+      <h3>No active listings</h3>
+      <p>This store hasn't posted any listings yet.</p>
+    </div>
+    <button class="sp-load-more" id="loadMoreBtn" onclick="loadMoreListings()" style="display:none;">
+      Load More Listings
+    </button>
+  </div>
+
+  <!-- About -->
+  <div id="tabAbout" style="display:none;">
+    <div class="sp-about-card">
+      <h3>Working Hours</h3>
+      <div id="workingHoursTable"></div>
+    </div>
+    <div class="sp-about-card" id="locationCard" style="display:none;">
+      <h3>Location</h3>
+      <p id="storeAddressText" style="font-size:13px;color:#64748b;margin:0;"></p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Scroll to top -->
+<button id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script src="assets/app.min.js"></script>
 <script>
@@ -699,6 +735,10 @@ function showError(msg) {
 }
 
 loadStore();
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTopBtn');
+  if (btn) btn.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
 </script>
 </body>
 </html>
