@@ -8,405 +8,420 @@
   <meta name="theme-color" content="#ec5b13">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Store — SomBazar</title>
-  <meta name="description" content="Browse this store on SomBazar" id="metaDesc">
+  <meta name="description" id="metaDesc" content="Browse this store on SomBazar">
   <meta id="ogTitle" property="og:title" content="SomBazar Store">
   <meta id="ogDesc" property="og:description" content="Browse listings on SomBazar">
   <link rel="preload" href="assets/style.min.css" as="style">
   <link rel="stylesheet" href="assets/style.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
   <style>
-    *{box-sizing:border-box;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'DM Sans',sans-serif;background:#fafafa;color:#0f172a;}
+    [data-theme="dark"] body{background:#0f172a;color:#f1f5f9;}
 
-    /* ── HERO ── */
-    .sp-hero{
-      position:relative;
-      width:100%;
-      height:320px;
-      overflow:hidden;
-      background:linear-gradient(160deg,#1a0e00 0%,#3d1f00 40%,#5c3210 70%,#2a1500 100%);
+    /* ─── HERO ──────────────────────────────────── */
+    .s-hero{
+      position:relative;width:100%;height:340px;overflow:hidden;
+      background:linear-gradient(160deg,#180900 0%,#3b1c00 40%,#6b3800 75%,#1a0800 100%);
     }
-    @media(max-width:640px){.sp-hero{height:240px;}}
-    .sp-hero-img{
+    @media(max-width:640px){.s-hero{height:250px;}}
+
+    .s-hero-img{
+      position:absolute;inset:0;width:100%;height:100%;
+      object-fit:cover;opacity:.5;mix-blend-mode:screen;
+    }
+    .s-hero-shade{
       position:absolute;inset:0;
-      width:100%;height:100%;
-      object-fit:cover;
-      mix-blend-mode:overlay;
-      opacity:.6;
-    }
-    .sp-hero-overlay{
-      position:absolute;inset:0;
-      background:linear-gradient(to right,rgba(0,0,0,.55) 0%,rgba(0,0,0,.1) 60%,transparent 100%);
+      background:linear-gradient(to bottom,rgba(0,0,0,.05) 0%,rgba(0,0,0,.55) 100%);
     }
 
-    /* Avatar + Info block inside hero */
-    .sp-hero-content{
-      position:absolute;
-      bottom:28px;left:28px;right:200px;
-      display:flex;align-items:flex-end;gap:20px;
+    /* Avatar + text row at bottom of hero */
+    .s-hero-row{
+      position:absolute;bottom:0;left:0;right:0;
+      padding:0 32px 28px;
+      display:flex;align-items:flex-end;justify-content:space-between;
+      gap:16px;
     }
-    @media(max-width:640px){
-      .sp-hero-content{bottom:16px;left:16px;right:130px;gap:12px;}
-    }
+    @media(max-width:640px){.s-hero-row{padding:0 16px 18px;}}
 
-    .sp-avatar{
-      width:100px;height:100px;
-      border-radius:12px;
-      border:3px solid rgba(255,255,255,.3);
-      object-fit:cover;
-      background:#2a1500;
-      flex-shrink:0;
-      box-shadow:0 4px 20px rgba(0,0,0,.4);
-      display:block;
+    .s-hero-left{display:flex;align-items:flex-end;gap:20px;flex:1;min-width:0;}
+    @media(max-width:640px){.s-hero-left{gap:12px;}}
+
+    /* Avatar */
+    .s-avatar{
+      width:110px;height:110px;border-radius:10px;
+      border:3px solid rgba(255,255,255,.2);
+      object-fit:cover;background:#3b1c00;
+      flex-shrink:0;display:block;
+      box-shadow:0 6px 24px rgba(0,0,0,.45);
     }
-    .sp-avatar-fb{
-      width:100px;height:100px;
-      border-radius:12px;
-      border:3px solid rgba(255,255,255,.3);
+    .s-avatar-fb{
+      width:110px;height:110px;border-radius:10px;
+      border:3px solid rgba(255,255,255,.2);
       background:linear-gradient(135deg,#ec5b13,#f97316);
       display:flex;align-items:center;justify-content:center;
-      font-size:38px;font-weight:900;color:white;
+      font-size:40px;font-weight:900;color:white;
       flex-shrink:0;
-      box-shadow:0 4px 20px rgba(0,0,0,.4);
+      box-shadow:0 6px 24px rgba(0,0,0,.45);
     }
     @media(max-width:640px){
-      .sp-avatar,.sp-avatar-fb{width:72px;height:72px;border-radius:10px;}
+      .s-avatar,.s-avatar-fb{width:76px;height:76px;border-radius:8px;}
+      .s-avatar-fb{font-size:28px;}
     }
 
-    .sp-hero-text{flex:1;min-width:0;}
-    .sp-hero-name{
-      font-size:32px;font-weight:900;color:#fff;
+    /* Hero text */
+    .s-hero-info{flex:1;min-width:0;padding-bottom:4px;}
+    .s-hero-name{
+      font-family:'Syne',sans-serif;
+      font-size:36px;font-weight:900;color:#fff;
       letter-spacing:-.5px;line-height:1.1;
-      margin:0 0 6px;
-      text-shadow:0 2px 8px rgba(0,0,0,.3);
+      margin-bottom:8px;
     }
-    @media(max-width:640px){.sp-hero-name{font-size:20px;}}
-    .sp-hero-desc{
-      font-size:13px;color:rgba(255,255,255,.75);
-      line-height:1.5;margin:0;
+    @media(max-width:640px){.s-hero-name{font-size:22px;margin-bottom:6px;}}
+
+    .s-verified{
+      display:inline-flex;align-items:center;gap:3px;
+      background:rgba(21,128,61,.3);border:1px solid rgba(74,222,128,.4);
+      color:#4ade80;font-size:10px;font-weight:700;
+      padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;
+    }
+    .s-hero-meta{
+      display:flex;flex-wrap:wrap;gap:12px;
+      font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px;
+    }
+    .s-hero-meta span{display:flex;align-items:center;gap:4px;}
+    .s-hero-desc{
+      font-size:13px;color:rgba(255,255,255,.65);line-height:1.55;
       display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
     }
-    .sp-verified{
-      display:inline-flex;align-items:center;gap:3px;
-      background:rgba(22,163,74,.25);
-      border:1px solid rgba(22,163,74,.4);
-      color:#4ade80;
-      font-size:10px;font-weight:700;
-      padding:2px 7px;border-radius:20px;
-      margin-left:8px;vertical-align:middle;
-    }
+    @media(max-width:640px){.s-hero-desc{font-size:12px;}}
 
-    /* Action buttons in hero - right side */
-    .sp-hero-actions{
-      position:absolute;
-      bottom:28px;right:24px;
-      display:flex;gap:10px;align-items:center;
+    /* Hero right - buttons */
+    .s-hero-btns{
+      display:flex;align-items:center;gap:10px;flex-shrink:0;
+      padding-bottom:6px;
     }
-    @media(max-width:640px){.sp-hero-actions{bottom:16px;right:12px;gap:6px;}}
+    @media(max-width:640px){.s-hero-btns{gap:6px;}}
 
-    .sp-btn-follow{
-      padding:10px 22px;border-radius:8px;
-      font-size:13px;font-weight:800;
+    .s-btn-follow{
+      padding:11px 26px;border-radius:7px;
+      font-family:'DM Sans',sans-serif;
+      font-size:14px;font-weight:700;
       cursor:pointer;border:none;
       background:#ec5b13;color:white;
-      font-family:inherit;
       display:none;align-items:center;gap:6px;
-      letter-spacing:.3px;
-      transition:opacity .15s;
-    }
-    .sp-btn-follow:hover{opacity:.88;}
-    .sp-btn-follow.following{
-      background:transparent;
-      border:1.5px solid rgba(255,255,255,.5);
-      color:white;
-    }
-    @media(max-width:640px){.sp-btn-follow{padding:8px 14px;font-size:12px;}}
-
-    .sp-btn-share{
-      width:40px;height:40px;border-radius:8px;
-      border:1.5px solid rgba(255,255,255,.4);
-      background:rgba(0,0,0,.25);color:white;
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;backdrop-filter:blur(8px);
+      letter-spacing:.2px;
       transition:background .15s;
     }
-    .sp-btn-share:hover{background:rgba(255,255,255,.15);}
+    .s-btn-follow:hover{background:#d44e0e;}
+    .s-btn-follow.following{background:transparent;border:1.5px solid rgba(255,255,255,.45);color:white;}
+    @media(max-width:640px){.s-btn-follow{padding:9px 16px;font-size:13px;}}
 
-    .sp-btn-msg{
-      padding:10px 18px;border-radius:8px;
-      font-size:13px;font-weight:800;
+    .s-btn-msg{
+      padding:11px 20px;border-radius:7px;
+      font-family:'DM Sans',sans-serif;
+      font-size:14px;font-weight:700;
       cursor:pointer;
-      border:1.5px solid rgba(255,255,255,.4);
-      background:rgba(0,0,0,.25);color:white;
-      font-family:inherit;
+      border:1.5px solid rgba(255,255,255,.35);
+      background:rgba(0,0,0,.3);color:white;
       display:none;align-items:center;gap:6px;
       backdrop-filter:blur(8px);
       transition:background .15s;
     }
-    .sp-btn-msg:hover{background:rgba(255,255,255,.15);}
+    .s-btn-msg:hover{background:rgba(255,255,255,.15);}
 
-    /* ── BODY ── */
-    .sp-wrap{max-width:960px;margin:0 auto;padding:0 24px 80px;}
-    @media(max-width:640px){.sp-wrap{padding:0 14px 60px;}}
-
-    /* ── STATS ── */
-    .sp-stats{
-      display:flex;gap:40px;
-      padding:24px 0;
-      border-bottom:1px solid var(--border-color);
-      margin-bottom:0;
+    .s-btn-share{
+      width:42px;height:42px;border-radius:7px;
+      border:1.5px solid rgba(255,255,255,.35);
+      background:rgba(0,0,0,.3);color:white;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;backdrop-filter:blur(8px);
+      transition:background .15s;flex-shrink:0;
     }
-    @media(max-width:640px){.sp-stats{gap:24px;padding:16px 0;}}
-    .sp-stat-num{
-      font-size:28px;font-weight:900;
-      color:var(--text-primary);
+    .s-btn-share:hover{background:rgba(255,255,255,.2);}
+
+    /* ─── BODY ──────────────────────────────────── */
+    .s-body{max-width:960px;margin:0 auto;padding:0 28px 80px;}
+    @media(max-width:640px){.s-body{padding:0 16px 60px;}}
+
+    /* ─── STATS ─────────────────────────────────── */
+    .s-stats{
+      display:flex;gap:40px;
+      padding:24px 0 20px;
+      border-bottom:1px solid #e8e8e8;
+    }
+    [data-theme="dark"] .s-stats{border-bottom-color:#1e293b;}
+    @media(max-width:640px){.s-stats{gap:28px;padding:18px 0 16px;}}
+
+    .s-stat-num{
+      font-family:'Syne',sans-serif;
+      font-size:28px;font-weight:800;color:#0f172a;
       display:block;line-height:1;
     }
-    @media(max-width:640px){.sp-stat-num{font-size:22px;}}
-    .sp-stat-lbl{
-      font-size:10px;font-weight:700;
-      color:#94a3b8;
-      text-transform:uppercase;letter-spacing:.8px;
-      display:block;margin-top:4px;
+    [data-theme="dark"] .s-stat-num{color:#f1f5f9;}
+    @media(max-width:640px){.s-stat-num{font-size:22px;}}
+
+    .s-stat-lbl{
+      font-size:10px;font-weight:600;color:#94a3b8;
+      text-transform:uppercase;letter-spacing:1px;
+      display:block;margin-top:5px;
     }
 
-    /* ── TABS ── */
-    .sp-tabs{
+    /* ─── TABS ──────────────────────────────────── */
+    .s-tabs{
       display:flex;justify-content:flex-end;
-      gap:0;padding:12px 0;
-      border-bottom:1px solid var(--border-color);
-      margin-bottom:28px;
+      border-bottom:1px solid #e8e8e8;
+      margin-bottom:32px;
     }
-    .sp-tab{
-      padding:8px 20px;
-      font-size:12px;font-weight:800;
-      text-transform:uppercase;letter-spacing:.8px;
-      border:none;background:transparent;
-      color:#94a3b8;cursor:pointer;
-      border-bottom:2px solid transparent;
-      margin-bottom:-1px;font-family:inherit;
+    [data-theme="dark"] .s-tabs{border-bottom-color:#1e293b;}
+
+    .s-tab{
+      padding:14px 20px;font-size:12px;font-weight:700;
+      text-transform:uppercase;letter-spacing:1px;
+      border:none;background:transparent;color:#94a3b8;
+      cursor:pointer;font-family:'DM Sans',sans-serif;
+      border-bottom:2px solid transparent;margin-bottom:-1px;
       transition:color .15s,border-color .15s;
     }
-    .sp-tab.active{color:#ec5b13;border-bottom-color:#ec5b13;}
-    .sp-tab:hover:not(.active){color:var(--text-primary);}
+    .s-tab.active{color:#ec5b13;border-bottom-color:#ec5b13;}
+    .s-tab:hover:not(.active){color:#0f172a;}
+    [data-theme="dark"] .s-tab:hover:not(.active){color:#f1f5f9;}
 
-    /* ── SECTION HEADER ── */
-    .sp-section-head{
-      display:flex;align-items:center;justify-content:space-between;
-      margin-bottom:20px;
+    /* ─── SECTION HEADER ────────────────────────── */
+    .s-sec-head{
+      display:flex;align-items:flex-end;justify-content:space-between;
+      margin-bottom:24px;
     }
-    .sp-avail-label{
-      font-size:11px;font-weight:800;
-      color:#ec5b13;text-transform:uppercase;letter-spacing:1px;
-      margin-bottom:4px;
+    .s-avail{
+      font-size:11px;font-weight:700;color:#ec5b13;
+      text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;
     }
-    .sp-section-title{
-      font-size:26px;font-weight:900;
-      color:var(--text-primary);margin:0;
+    .s-sec-title{
+      font-family:'Syne',sans-serif;
+      font-size:28px;font-weight:800;color:#0f172a;
     }
-    @media(max-width:640px){.sp-section-title{font-size:20px;}}
+    [data-theme="dark"] .s-sec-title{color:#f1f5f9;}
+    @media(max-width:640px){.s-sec-title{font-size:22px;}}
 
-    .sp-view-toggle{display:flex;gap:4px;}
-    .sp-view-btn{
-      width:34px;height:34px;border-radius:8px;
-      border:1.5px solid var(--border-color);
-      background:var(--bg-card);
+    .s-view-wrap{display:flex;gap:4px;}
+    .s-view-btn{
+      width:34px;height:34px;border-radius:6px;
+      border:1.5px solid #e2e8f0;background:#fff;
       display:flex;align-items:center;justify-content:center;
       cursor:pointer;color:#94a3b8;transition:.15s;
     }
-    .sp-view-btn.active{background:#ec5b13;color:white;border-color:#ec5b13;}
-    .sp-view-btn:hover:not(.active){color:var(--text-primary);border-color:var(--text-primary);}
+    [data-theme="dark"] .s-view-btn{background:#1e293b;border-color:#334155;}
+    .s-view-btn.active,.s-view-btn:hover{background:#ec5b13;color:#fff;border-color:#ec5b13;}
 
-    /* ── LISTING GRID ── */
-    .sp-grid{
+    /* ─── GRID ──────────────────────────────────── */
+    .s-grid{
       display:grid;
       grid-template-columns:repeat(3,1fr);
-      gap:20px;
+      gap:28px;
     }
-    @media(max-width:700px){.sp-grid{grid-template-columns:repeat(2,1fr);gap:12px;}}
+    @media(max-width:700px){.s-grid{grid-template-columns:repeat(2,1fr);gap:16px;}}
 
-    .sp-card{
-      border-radius:0;overflow:hidden;
-      background:transparent;
+    /* Card */
+    .s-card{
       text-decoration:none;display:block;
+      background:transparent;
       transition:transform .2s;
     }
-    .sp-card:hover{transform:translateY(-2px);}
+    .s-card:hover{transform:translateY(-2px);}
 
-    .sp-card-img-wrap{
+    .s-card-img-wrap{
       position:relative;overflow:hidden;
-      border-radius:0;margin-bottom:12px;
+      margin-bottom:14px;
     }
-    .sp-card-img{
-      width:100%;aspect-ratio:4/3;
-      object-fit:cover;display:block;
+    .s-card-img{
+      width:100%;aspect-ratio:4/3;object-fit:cover;
+      display:block;
       transition:transform .4s;
-      border-radius:0;
     }
-    .sp-card:hover .sp-card-img{transform:scale(1.03);}
-    .sp-card-placeholder{
+    .s-card:hover .s-card-img{transform:scale(1.04);}
+    .s-card-ph{
       width:100%;aspect-ratio:4/3;
-      background:var(--bg-secondary);
+      background:#f1f5f9;
       display:flex;align-items:center;justify-content:center;
       font-size:44px;
     }
+    [data-theme="dark"] .s-card-ph{background:#1e293b;}
 
-    .sp-price-badge{
-      position:absolute;bottom:10px;right:10px;
-      background:#ec5b13;color:white;
-      font-size:14px;font-weight:800;
-      padding:5px 12px;border-radius:6px;
-    }
-    .sp-featured-badge{
-      position:absolute;top:10px;left:10px;
-      background:#ec5b13;color:white;
-      font-size:9px;font-weight:800;
-      padding:3px 8px;border-radius:4px;
-      text-transform:uppercase;letter-spacing:.5px;
-    }
-    .sp-premium-badge{
-      position:absolute;top:10px;right:10px;
-      background:rgba(0,0,0,.6);color:white;
-      font-size:9px;font-weight:800;
-      padding:3px 8px;border-radius:4px;
-      text-transform:uppercase;letter-spacing:.5px;
-    }
-
-    .sp-card-title{
+    /* Price badge — referansta sag alt, kirmizi */
+    .s-price{
+      position:absolute;bottom:12px;right:12px;
+      background:#ec5b13;color:#fff;
+      font-family:'DM Sans',sans-serif;
       font-size:15px;font-weight:700;
-      color:var(--text-primary);margin:0 0 4px;
-      display:flex;align-items:flex-start;justify-content:space-between;gap:8px;
+      padding:5px 12px;border-radius:5px;
     }
-    .sp-card-title span:first-child{
-      display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;
+    .s-badge-feat{
+      position:absolute;top:10px;left:10px;
+      background:#ec5b13;color:#fff;
+      font-size:9px;font-weight:800;
+      padding:3px 8px;border-radius:4px;
+      text-transform:uppercase;letter-spacing:.5px;
     }
-    .sp-heart{
+    .s-badge-prem{
+      position:absolute;top:10px;right:10px;
+      background:rgba(0,0,0,.65);color:#fff;
+      font-size:9px;font-weight:800;
+      padding:3px 8px;border-radius:4px;
+      text-transform:uppercase;letter-spacing:.5px;
+    }
+
+    /* Card body */
+    .s-card-body{}
+    .s-card-row1{
+      display:flex;align-items:flex-start;justify-content:space-between;
+      gap:8px;margin-bottom:5px;
+    }
+    .s-card-title{
+      font-family:'DM Sans',sans-serif;
+      font-size:15px;font-weight:600;color:#0f172a;
+      line-height:1.3;
+    }
+    [data-theme="dark"] .s-card-title{color:#f1f5f9;}
+
+    .s-heart{
       background:none;border:none;cursor:pointer;
       color:#94a3b8;font-size:18px;flex-shrink:0;
       padding:0;line-height:1;
       transition:color .15s,transform .15s;
     }
-    .sp-heart:hover{color:#ec5b13;transform:scale(1.2);}
-    .sp-heart.faved{color:#ec5b13;}
+    .s-heart:hover{color:#ec5b13;transform:scale(1.2);}
+    .s-heart.faved{color:#ec5b13;}
 
-    .sp-card-location{
+    .s-card-loc{
       font-size:12px;color:#94a3b8;
       display:flex;align-items:center;gap:3px;
-      margin-bottom:8px;
+      margin-bottom:10px;
     }
-    .sp-card-specs{
-      display:flex;gap:12px;flex-wrap:wrap;
-    }
-    .sp-spec{
+    .s-card-specs{display:flex;gap:8px;flex-wrap:wrap;}
+    .s-spec{
+      display:flex;align-items:center;gap:5px;
       font-size:11px;color:#64748b;
-      display:flex;align-items:center;gap:4px;
-      background:var(--bg-secondary);
-      padding:3px 8px;border-radius:4px;
+      background:#f8fafc;
+      padding:3px 9px;border-radius:4px;
     }
+    [data-theme="dark"] .s-spec{background:#1e293b;color:#94a3b8;}
 
-    /* ── LOAD MORE ── */
-    .sp-load-more{
-      display:block;
-      width:fit-content;
-      margin:40px auto;
-      padding:12px 36px;
-      border:1.5px solid var(--border-color);
-      border-radius:6px;
-      background:var(--bg-card);
-      color:#94a3b8;
+    /* ─── LOAD MORE ─────────────────────────────── */
+    .s-loadmore{
+      display:block;width:fit-content;
+      margin:44px auto;
+      padding:13px 40px;
+      border:1.5px solid #d1d5db;border-radius:6px;
+      background:#fff;color:#94a3b8;
+      font-family:'DM Sans',sans-serif;
       font-size:11px;font-weight:800;
-      cursor:pointer;font-family:inherit;
-      text-transform:uppercase;letter-spacing:1px;
-      transition:border-color .15s,color .15s;
+      text-transform:uppercase;letter-spacing:1.2px;
+      cursor:pointer;transition:border-color .15s,color .15s;
     }
-    .sp-load-more:hover{border-color:#ec5b13;color:#ec5b13;}
+    [data-theme="dark"] .s-loadmore{background:#1e293b;border-color:#334155;}
+    .s-loadmore:hover{border-color:#ec5b13;color:#ec5b13;}
 
-    /* ── SPINNER ── */
-    .sp-spinner{display:flex;justify-content:center;padding:50px;}
-    .sp-spin{
+    /* ─── SPINNER ───────────────────────────────── */
+    .s-spinner{display:flex;justify-content:center;align-items:center;padding:60px;}
+    .s-spin{
       width:24px;height:24px;
-      border:2.5px solid #ec5b13;
-      border-top-color:transparent;
-      border-radius:50%;
-      animation:spin .7s linear infinite;
+      border:2.5px solid #ec5b13;border-top-color:transparent;
+      border-radius:50%;animation:spin .7s linear infinite;
     }
     @keyframes spin{to{transform:rotate(360deg);}}
 
-    /* ── EMPTY ── */
-    .sp-empty{text-align:center;padding:60px 20px;}
-    .sp-empty-icon{font-size:48px;margin-bottom:12px;}
-    .sp-empty h3{font-size:16px;font-weight:800;color:var(--text-primary);margin-bottom:6px;}
-    .sp-empty p{font-size:13px;color:#64748b;}
+    /* ─── EMPTY ─────────────────────────────────── */
+    .s-empty{text-align:center;padding:70px 20px;}
+    .s-empty-ic{font-size:52px;margin-bottom:14px;}
+    .s-empty h3{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;}
+    .s-empty p{font-size:13px;color:#94a3b8;}
 
-    /* ── ABOUT ── */
-    .sp-about-card{
-      background:var(--bg-card);border:1px solid var(--border-color);
-      border-radius:12px;padding:20px;margin-bottom:14px;
+    /* ─── ABOUT ─────────────────────────────────── */
+    .s-about-card{
+      background:#fff;border:1px solid #e8e8e8;
+      border-radius:12px;padding:22px;margin-bottom:14px;
     }
-    .sp-about-card h3{
-      font-size:11px;font-weight:800;color:#94a3b8;
-      text-transform:uppercase;letter-spacing:.8px;margin:0 0 14px;
+    [data-theme="dark"] .s-about-card{background:#1e293b;border-color:#334155;}
+    .s-about-card h3{
+      font-size:11px;font-weight:700;color:#94a3b8;
+      text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;
     }
-    .sp-hour-row{
-      display:flex;justify-content:space-between;
+    .s-hour{
+      display:flex;justify-content:space-between;align-items:center;
       padding:7px 0;font-size:13px;
-      border-bottom:1px solid var(--border-color);
+      border-bottom:1px solid #f1f5f9;
     }
-    .sp-hour-row:last-child{border-bottom:none;}
-    .sp-hour-row.today{font-weight:800;}
+    [data-theme="dark"] .s-hour{border-bottom-color:#0f172a;}
+    .s-hour:last-child{border-bottom:none;}
+    .s-hour.today{font-weight:700;}
 
-    /* ── FOOTER ── */
-    .sp-footer{
-      background:var(--bg-card);
-      border-top:1px solid var(--border-color);
-      padding:48px 24px 24px;
-      margin-top:60px;
+    /* ─── FOOTER ────────────────────────────────── */
+    .s-footer{
+      background:#fff;border-top:1px solid #e8e8e8;
+      padding:52px 28px 28px;margin-top:40px;
     }
-    .sp-footer-grid{
-      max-width:960px;margin:0 auto;
-      display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;
-      gap:32px;margin-bottom:32px;
+    [data-theme="dark"] .s-footer{background:#0f172a;border-top-color:#1e293b;}
+    .s-footer-inner{max-width:960px;margin:0 auto;}
+    .s-footer-grid{
+      display:grid;grid-template-columns:1.6fr 1fr 1fr 0.8fr;
+      gap:40px;margin-bottom:36px;
     }
-    @media(max-width:700px){.sp-footer-grid{grid-template-columns:1fr 1fr;gap:24px;}}
-    @media(max-width:400px){.sp-footer-grid{grid-template-columns:1fr;}}
-    .sp-footer-brand{
-      font-size:22px;font-weight:900;color:#ec5b13;
-      display:block;margin-bottom:12px;
+    @media(max-width:700px){.s-footer-grid{grid-template-columns:1fr 1fr;gap:24px;}}
+    @media(max-width:400px){.s-footer-grid{grid-template-columns:1fr;}}
+
+    .s-footer-brand{
+      font-family:'Syne',sans-serif;
+      font-size:24px;font-weight:800;color:#ec5b13;
+      display:block;margin-bottom:14px;
     }
-    .sp-footer-desc{font-size:12px;color:#94a3b8;line-height:1.6;margin:0;}
-    .sp-footer-col h4{
-      font-size:11px;font-weight:800;color:var(--text-primary);
-      text-transform:uppercase;letter-spacing:.8px;margin:0 0 14px;
+    .s-footer-desc{font-size:12px;color:#94a3b8;line-height:1.7;}
+    .s-footer-col h4{
+      font-size:10px;font-weight:800;color:#0f172a;
+      text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;
     }
-    .sp-footer-col a{
+    [data-theme="dark"] .s-footer-col h4{color:#f1f5f9;}
+    .s-footer-col a{
       display:block;font-size:12px;color:#64748b;
-      text-decoration:none;margin-bottom:8px;
+      text-decoration:none;margin-bottom:10px;
       transition:color .15s;
     }
-    .sp-footer-col a:hover{color:#ec5b13;}
-    .sp-footer-connect{display:flex;gap:10px;margin-top:4px;}
-    .sp-footer-icon{
+    .s-footer-col a:hover{color:#ec5b13;}
+    .s-connect{display:flex;gap:8px;margin-top:4px;}
+    .s-connect-btn{
       width:32px;height:32px;border-radius:6px;
-      border:1px solid var(--border-color);
+      border:1px solid #e2e8f0;background:#fff;
       display:flex;align-items:center;justify-content:center;
-      color:#64748b;font-size:14px;text-decoration:none;
+      font-size:13px;text-decoration:none;color:#64748b;
       transition:.15s;
     }
-    .sp-footer-icon:hover{border-color:#ec5b13;color:#ec5b13;}
-    .sp-footer-bottom{
-      max-width:960px;margin:0 auto;
+    [data-theme="dark"] .s-connect-btn{background:#1e293b;border-color:#334155;}
+    .s-connect-btn:hover{border-color:#ec5b13;color:#ec5b13;}
+
+    .s-footer-bottom{
+      padding-top:20px;border-top:1px solid #e8e8e8;
       display:flex;justify-content:space-between;align-items:center;
-      padding-top:20px;border-top:1px solid var(--border-color);
-      font-size:11px;color:#94a3b8;flex-wrap:wrap;gap:8px;
+      flex-wrap:wrap;gap:8px;
     }
-    .sp-footer-links{display:flex;gap:16px;}
-    .sp-footer-links a{font-size:11px;color:#94a3b8;text-decoration:none;}
-    .sp-footer-links a:hover{color:#ec5b13;}
+    [data-theme="dark"] .s-footer-bottom{border-top-color:#1e293b;}
+    .s-footer-bottom span,.s-footer-bottom a{font-size:11px;color:#94a3b8;}
+    .s-footer-bottom a{text-decoration:none;margin-left:16px;}
+    .s-footer-bottom a:hover{color:#ec5b13;}
+
+    /* scroll-top */
+    #stTop{
+      position:fixed;bottom:24px;right:24px;
+      width:40px;height:40px;border-radius:50%;
+      background:#ec5b13;color:#fff;border:none;
+      cursor:pointer;display:none;align-items:center;justify-content:center;
+      font-size:18px;font-weight:700;
+      box-shadow:0 4px 16px rgba(236,91,19,.4);z-index:99;
+    }
   </style>
 </head>
 <body>
 
-<!-- Header -->
 <header class="header">
   <nav class="nav-container">
     <a href="index.html" class="logo">SomBazar</a>
@@ -414,145 +429,150 @@
   </nav>
 </header>
 
-<!-- Hero -->
-<div class="sp-hero" id="storeHero">
-  <img id="storeCoverImg" class="sp-hero-img" src="" alt="" style="display:none;" onerror="this.style.display='none'">
-  <div class="sp-hero-overlay"></div>
-
-  <div class="sp-hero-content">
-    <img id="storeLogoImg" class="sp-avatar" src="" alt="logo" style="display:none;" onerror="this.style.display='none';document.getElementById('storeLogoFb').style.display='flex'">
-    <div id="storeLogoFb" class="sp-avatar-fb" style="display:none;"></div>
-    <div class="sp-hero-text">
-      <h1 class="sp-hero-name">
-        <span id="storeNameText"></span>
-        <span id="storeVerifiedBadge" class="sp-verified" style="display:none;">✅ Verified</span>
-      </h1>
-      <div id="storeMeta" style="display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:rgba(255,255,255,.7);margin-bottom:6px;"></div>
-      <div id="storeOpenStatus" style="margin-bottom:6px;"></div>
-      <p class="sp-hero-desc" id="storeDesc"></p>
+<!-- HERO -->
+<div class="s-hero" id="storeHero">
+  <img id="storeCoverImg" class="s-hero-img" src="" alt="" style="display:none;" onerror="this.style.display='none'">
+  <div class="s-hero-shade"></div>
+  <div class="s-hero-row">
+    <div class="s-hero-left">
+      <img id="storeLogoImg" class="s-avatar" src="" alt="" style="display:none;"
+        onerror="this.style.display='none';document.getElementById('storeLogoFb').style.display='flex'">
+      <div id="storeLogoFb" class="s-avatar-fb" style="display:none;"></div>
+      <div class="s-hero-info">
+        <h1 class="s-hero-name">
+          <span id="storeNameText"></span>
+          <span id="storeVerifiedBadge" class="s-verified" style="display:none;">✅ Verified</span>
+        </h1>
+        <div class="s-hero-meta" id="storeMeta"></div>
+        <div id="storeOpenStatus"></div>
+        <p class="s-hero-desc" id="storeDesc"></p>
+      </div>
     </div>
-  </div>
-
-  <div class="sp-hero-actions">
-    <button id="msgStoreBtn" class="sp-btn-msg" onclick="startStoreChat()">
-      <span class="material-symbols-outlined" style="font-size:15px;">chat</span>
-      Message
-    </button>
-    <button id="followBtn" class="sp-btn-follow" onclick="toggleFollow()">
-      <span id="followText">FOLLOW</span>
-    </button>
-    <button class="sp-btn-share" onclick="shareStore()" title="Share">
-      <span class="material-symbols-outlined" style="font-size:18px;">share</span>
-    </button>
+    <div class="s-hero-btns">
+      <button id="msgStoreBtn" class="s-btn-msg" onclick="startStoreChat()">
+        <span class="material-symbols-outlined" style="font-size:16px;">chat</span>
+        Message
+      </button>
+      <button id="followBtn" class="s-btn-follow" onclick="toggleFollow()">
+        <span id="followText">FOLLOW</span>
+      </button>
+      <button class="s-btn-share" onclick="shareStore()">
+        <span class="material-symbols-outlined" style="font-size:18px;">share</span>
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- Body -->
-<div class="sp-wrap">
+<!-- BODY -->
+<div class="s-body">
 
-  <!-- Stats -->
-  <div class="sp-stats">
+  <!-- STATS -->
+  <div class="s-stats">
     <div>
-      <span class="sp-stat-num" id="statListings">—</span>
-      <span class="sp-stat-lbl">Listings</span>
+      <span class="s-stat-num" id="statListings">—</span>
+      <span class="s-stat-lbl">Listings</span>
     </div>
     <div>
-      <span class="sp-stat-num" id="statFollowers">—</span>
-      <span class="sp-stat-lbl">Followers</span>
+      <span class="s-stat-num" id="statFollowers">—</span>
+      <span class="s-stat-lbl">Followers</span>
     </div>
     <div>
-      <span class="sp-stat-num" id="statRating">—</span>
-      <span class="sp-stat-lbl">Rating</span>
+      <span class="s-stat-num" id="statRating">—</span>
+      <span class="s-stat-lbl">Rating</span>
     </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="sp-tabs">
-    <button class="sp-tab active" onclick="switchTab('listings',this)">Listings</button>
-    <button class="sp-tab" onclick="switchTab('about',this)">About</button>
+  <!-- TABS -->
+  <div class="s-tabs">
+    <button class="s-tab active" onclick="switchTab('listings',this)">Listings</button>
+    <button class="s-tab" onclick="switchTab('about',this)">About</button>
   </div>
 
-  <!-- Listings -->
+  <!-- LISTINGS TAB -->
   <div id="tabListings">
-    <div class="sp-section-head">
+    <div class="s-sec-head">
       <div>
-        <div class="sp-avail-label">Available Now</div>
-        <h2 class="sp-section-title">Active Listings</h2>
+        <div class="s-avail">Available Now</div>
+        <h2 class="s-sec-title">Active Listings</h2>
       </div>
-      <div class="sp-view-toggle">
-        <button class="sp-view-btn active" title="Grid" onclick="setView('grid',this)">
+      <div class="s-view-wrap">
+        <button class="s-view-btn active" onclick="setView('grid',this)">
           <span class="material-symbols-outlined" style="font-size:16px;">grid_view</span>
         </button>
-        <button class="sp-view-btn" title="List" onclick="setView('list',this)">
+        <button class="s-view-btn" onclick="setView('list',this)">
           <span class="material-symbols-outlined" style="font-size:16px;">view_list</span>
         </button>
       </div>
     </div>
 
-    <div class="sp-grid" id="listingsGrid"></div>
-    <div class="sp-spinner" id="listingsLoading"><div class="sp-spin"></div></div>
-    <div class="sp-empty" id="listingsEmpty" style="display:none;">
-      <div class="sp-empty-icon">📦</div>
+    <div class="s-grid" id="listingsGrid"></div>
+    <div class="s-spinner" id="listingsLoading"><div class="s-spin"></div></div>
+    <div class="s-empty" id="listingsEmpty" style="display:none;">
+      <div class="s-empty-ic">📦</div>
       <h3>No active listings</h3>
       <p>This store hasn't posted any listings yet.</p>
     </div>
-    <button class="sp-load-more" id="loadMoreBtn" onclick="loadMoreListings()" style="display:none;">
+    <button class="s-loadmore" id="loadMoreBtn" onclick="loadMoreListings()" style="display:none;">
       Load More Listings
     </button>
   </div>
 
-  <!-- About -->
+  <!-- ABOUT TAB -->
   <div id="tabAbout" style="display:none;">
-    <div class="sp-about-card">
+    <div class="s-about-card">
       <h3>Working Hours</h3>
       <div id="workingHoursTable"></div>
     </div>
-    <div class="sp-about-card" id="locationCard" style="display:none;">
+    <div class="s-about-card" id="locationCard" style="display:none;">
       <h3>Location</h3>
-      <p id="storeAddressText" style="font-size:13px;color:#64748b;margin:0;"></p>
+      <p id="storeAddressText" style="font-size:13px;color:#64748b;"></p>
     </div>
   </div>
 
 </div>
 
-<!-- Footer -->
-<footer class="sp-footer">
-  <div class="sp-footer-grid">
-    <div>
-      <span class="sp-footer-brand">SomBazar</span>
-      <p class="sp-footer-desc">SomBazar is the premier destination for high-value heritage and luxury assets in the Horn of Africa. Curating trust through modern commerce.</p>
+<!-- FOOTER -->
+<footer class="s-footer">
+  <div class="s-footer-inner">
+    <div class="s-footer-grid">
+      <div>
+        <span class="s-footer-brand">SomBazar</span>
+        <p class="s-footer-desc">SomBazar is the premier destination for high-value heritage and luxury assets in the Horn of Africa. Curating trust through modern commerce.</p>
+      </div>
+      <div class="s-footer-col">
+        <h4>Platform</h4>
+        <a href="index.html">Marketplace</a>
+        <a href="#">Auction House</a>
+        <a href="#">Concierge Services</a>
+        <a href="stores-directory.html">Verified Sellers</a>
+      </div>
+      <div class="s-footer-col">
+        <h4>Resources</h4>
+        <a href="#">Heritage Guide</a>
+        <a href="#">Editorial Journal</a>
+        <a href="#">Shipping &amp; Logistics</a>
+        <a href="safety.html">Escrow Protection</a>
+      </div>
+      <div class="s-footer-col">
+        <h4>Connect</h4>
+        <div class="s-connect">
+          <a class="s-connect-btn" href="#">🌐</a>
+          <a class="s-connect-btn" href="#">📷</a>
+          <a class="s-connect-btn" href="contact.html">✉️</a>
+        </div>
+      </div>
     </div>
-    <div class="sp-footer-col">
-      <h4>Platform</h4>
-      <a href="index.html">Marketplace</a>
-      <a href="#">Auction House</a>
-      <a href="#">Concierge Services</a>
-      <a href="stores-directory.html">Verified Sellers</a>
-    </div>
-    <div class="sp-footer-col">
-      <h4>Resources</h4>
-      <a href="#">Heritage Guide</a>
-      <a href="#">Editorial Journal</a>
-      <a href="#">Shipping &amp; Logistics</a>
-      <a href="safety.html">Escrow Protection</a>
-    </div>
-    <div class="sp-footer-col">
-      <h4>Connect</h4>
-      <div class="sp-footer-connect">
-        <a class="sp-footer-icon" href="#" title="Website">🌐</a>
-        <a class="sp-footer-icon" href="#" title="Social">📷</a>
-        <a class="sp-footer-icon" href="contact.html" title="Email">✉️</a>
+    <div class="s-footer-bottom">
+      <span>© 2024 SomBazar. All rights reserved.</span>
+      <div>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
       </div>
     </div>
   </div>
-  <div class="sp-footer-bottom">
-    <span>© 2024 SomBazar. All rights reserved.</span>
-    <div class="sp-footer-links">
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="terms.html">Terms of Service</a>
-    </div>
-  </div>
 </footer>
+
+<button id="stTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
 <script src="assets/app.min.js"></script>
 <script>
@@ -681,7 +701,6 @@ function updateFollowBtn(following) {
 }
 
 async function loadListings(page = 1) {
-  if (!storeId) return;
   if (page === 1) {
     document.getElementById('listingsLoading').style.display = 'block';
     document.getElementById('listingsGrid').innerHTML = '';
@@ -693,9 +712,8 @@ async function loadListings(page = 1) {
     document.getElementById('listingsLoading').style.display = 'none';
     if (!_lj.success) return;
 
-    const d = _lj.data;
-    const listings = Array.isArray(d) ? d : (d.listings || []);
-    const tp = (d && d.total_pages) ? d.total_pages : 1;
+    const listings = _lj.data.listings || _lj.data || [];
+    const tp = _lj.data.total_pages || 1;
     totalPages = tp;
     currentPage = page;
 
@@ -721,32 +739,32 @@ async function loadListings(page = 1) {
 
       const card = document.createElement('a');
       card.href = 'listing.html?id=' + l.id;
-      card.className = 'sp-card';
+      card.className = 's-card';
       card.innerHTML = `
-        <div class="sp-card-img-wrap">
+        <div class="s-card-img-wrap">
           ${img
-            ? `<img class="sp-card-img" src="${img}" alt="${l.title || ''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'sp-card-placeholder\'>${catEmoji(l.category)}</div>'">`
-            : `<div class="sp-card-placeholder">${catEmoji(l.category)}</div>`
+            ? `<img class="s-card-img" src="${img}" alt="${l.title || ''}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'s-card-ph\'>${catEmoji(l.category)}</div>'">`
+            : `<div class="s-card-ph">${catEmoji(l.category)}</div>`
           }
-          ${isFeatured ? '<div class="sp-featured-badge">Featured</div>' : ''}
-          ${isPremium ? '<div class="sp-premium-badge">Premium</div>' : ''}
-          ${price ? `<div class="sp-price-badge">${price}</div>` : ''}
+          ${isFeatured ? '<div class="s-badge-feat">Featured</div>' : ''}
+          ${isPremium ? '<div class="s-badge-prem">Premium</div>' : ''}
+          ${price ? `<div class="s-price">${price}</div>` : ''}
         </div>
         <div>
-          <div class="sp-card-title">
-            <span>${l.title || ''}</span>
-            <button class="sp-heart" onclick="event.preventDefault();toggleFav(${l.id},this)" title="Save">♡</button>
+          <div class="s-card-row1">
+            <div class="s-card-title">${l.title || ''}</div>
+            <button class="s-heart" onclick="event.preventDefault();toggleFav(${l.id},this)" title="Save">♡</button>
           </div>
-          <div class="sp-card-location">
+          <div class="s-card-loc">
             ${l.city ? `<span>📍 ${l.city}${l.country ? ', ' + l.country : ''}</span>` : ''}
           </div>
           ${(km || fuel || transmission || rooms || area) ? `
-          <div class="sp-card-specs">
-            ${km ? `<span class="sp-spec">🔴 ${km} km</span>` : ''}
-            ${fuel ? `<span class="sp-spec">⚙️ ${fuel}</span>` : ''}
-            ${transmission ? `<span class="sp-spec">⚙️ ${transmission}</span>` : ''}
-            ${rooms ? `<span class="sp-spec">🛏 ${rooms} rooms</span>` : ''}
-            ${area ? `<span class="sp-spec">📐 ${area} m²</span>` : ''}
+          <div class="s-card-specs">
+            ${km ? `<span class="s-spec">🔴 ${km} km</span>` : ''}
+            ${fuel ? `<span class="s-spec">⚙️ ${fuel}</span>` : ''}
+            ${transmission ? `<span class="s-spec">⚙️ ${transmission}</span>` : ''}
+            ${rooms ? `<span class="s-spec">🛏 ${rooms} rooms</span>` : ''}
+            ${area ? `<span class="s-spec">📐 ${area} m²</span>` : ''}
           </div>` : ''}
         </div>`;
       grid.appendChild(card);
@@ -880,6 +898,19 @@ function setView(v, btn) {
 }
 
 window.addEventListener('scroll', () => {});
+
+// view toggle
+function setView(v,btn){
+  document.querySelectorAll('.s-view-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('listingsGrid').style.gridTemplateColumns=v==='list'?'1fr':'';
+}
+
+// scroll top
+window.addEventListener('scroll',()=>{
+  const b=document.getElementById('stTop');
+  if(b)b.style.display=window.scrollY>400?'flex':'none';
+});
 </script>
 </body>
 </html>
