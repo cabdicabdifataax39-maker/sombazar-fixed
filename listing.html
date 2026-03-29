@@ -1595,11 +1595,13 @@ async function submitReservation() {
   btn.textContent = 'Sending...';
 
   try {
-    const res = await apiFetch('/api/reservations.php?action=create', {
+    const _rr = await fetch('/api/reservations.php?action=create', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (localStorage.getItem('sb_token') || '') },
       body: JSON.stringify({ listing_id: parseInt(listingId), duration_type: dur })
     });
-    if (res.success) {
+    const _rj = await _rr.json();
+    if (_rj.success) {
       closeReserveModal();
       showToast('Reservation request sent! Waiting for seller confirmation.', 'success');
       document.getElementById('reserveBtn').style.display = 'none';

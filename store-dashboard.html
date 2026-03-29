@@ -80,6 +80,27 @@
     <div id="verifContent" style="font-size:13px;color:#64748b;">Loading...</div>
   </div>
 
+
+  <!-- Quick Replies -->
+  <div class="card" style="padding:22px;margin-top:20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="font-size:15px;font-weight:800;color:var(--text-primary);margin:0;">⚡ Quick Replies</h3>
+      <button onclick="showAddReply()" style="padding:7px 14px;background:#ec5b13;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">+ Add Reply</button>
+    </div>
+    <div id="quickRepliesList" style="display:flex;flex-direction:column;gap:8px;">
+      <div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">Loading...</div>
+    </div>
+    <!-- Add form -->
+    <div id="addReplyForm" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border-color);">
+      <textarea id="newReplyText" rows="2" placeholder="Type your quick reply..." maxlength="300"
+        style="width:100%;border:1.5px solid var(--border-color);border-radius:8px;padding:10px;font-size:13px;font-family:inherit;resize:none;background:var(--input-bg);color:var(--text-primary);outline:none;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button onclick="saveReply()" style="flex:1;padding:9px;background:#ec5b13;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Save</button>
+        <button onclick="hideAddReply()" style="padding:9px 16px;background:#f1f5f9;color:#374151;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script src="assets/app.min.js"></script>
@@ -258,6 +279,69 @@ async function requestVerification() {
 }
 
 loadDashboard();
+
+// ── Quick Replies ────────────────────────────────────────────
+async function loadQuickReplies() {
+  const token = localStorage.getItem('sb_token') || '';
+  try {
+    const r = await fetch('/api/quick_replies.php?action=list', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const d = await r.json();
+    const list = document.getElementById('quickRepliesList');
+    if (!list) return;
+    const replies = d.success ? (d.data.replies || []) : [];
+    if (!replies.length) {
+      list.innerHTML = '<div style="text-align:center;padding:16px;color:#94a3b8;font-size:13px;">No quick replies yet. Add one!</div>';
+      return;
+    }
+    list.innerHTML = replies.map(r => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-secondary);border-radius:8px;">
+        <span style="flex:1;font-size:13px;color:var(--text-primary);">${r.body}</span>
+        <button onclick="deleteReply(${r.id})" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:0;line-height:1;" title="Delete">🗑</button>
+      </div>
+    `).join('');
+  } catch(e) {}
+}
+
+function showAddReply() {
+  document.getElementById('addReplyForm').style.display = 'block';
+  document.getElementById('newReplyText').focus();
+}
+function hideAddReply() {
+  document.getElementById('addReplyForm').style.display = 'none';
+  document.getElementById('newReplyText').value = '';
+}
+
+async function saveReply() {
+  const text = document.getElementById('newReplyText').value.trim();
+  if (!text) return;
+  const token = localStorage.getItem('sb_token') || '';
+  try {
+    const r = await fetch('/api/quick_replies.php?action=save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ body: text })
+    });
+    const d = await r.json();
+    if (d.success) { hideAddReply(); loadQuickReplies(); showToast('Quick reply saved!', 'success'); }
+    else showToast(d.error || 'Failed', 'error');
+  } catch(e) { showToast('Error', 'error'); }
+}
+
+async function deleteReply(id) {
+  if (!confirm('Delete this quick reply?')) return;
+  const token = localStorage.getItem('sb_token') || '';
+  try {
+    const r = await fetch('/api/quick_replies.php?action=delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ id })
+    });
+    const d = await r.json();
+    if (d.success) { loadQuickReplies(); showToast('Deleted', 'success'); }
+  } catch(e) {}
+}
 </script>
 </body>
 </html>

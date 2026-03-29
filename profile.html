@@ -1857,6 +1857,16 @@ window.toggleNotifDropdown = function() {
     document.addEventListener('click', closeDD);
   }, 150);
 };
+
+async function saveNotifSettings() {
+  const settings = {
+    email_messages: document.getElementById('notif_email_messages')?.checked ?? true,
+    email_offers:   document.getElementById('notif_email_offers')?.checked ?? true,
+    email_updates:  document.getElementById('notif_email_updates')?.checked ?? false,
+  };
+  localStorage.setItem('notif_settings', JSON.stringify(settings));
+  showToast('Notification settings saved!', 'success');
+}
 </script>
 </body>
 </html>
