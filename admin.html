@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-  <meta name="description" content="SomBazar administration panel.">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>SomBazar Admin</title>
 <link rel="icon" href="assets/favicon.png">
@@ -716,15 +715,6 @@ textarea.fi{resize:vertical}
 .st-flagged::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);margin-right:5px;vertical-align:middle}
 .st-closed::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--text3);margin-right:5px;vertical-align:middle}
 </style>
-  <meta property="og:title" content="Admin — SomBazar">
-  <meta property="og:description" content="SomBazar administration panel.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sombazar-fixed-production.up.railway.app/admin.html">
-  <meta property="og:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Admin — SomBazar">
-  <meta name="twitter:description" content="SomBazar administration panel.">
-  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/admin.html">
 </head>
 <body>
 <!-- ═══ SIDEBAR ════════════════════════════════════════════ -->
@@ -1384,7 +1374,27 @@ textarea.fi{resize:vertical}
   </div>
 </div>
 <!-- ═══ OFFERS ═════════════════════════════════════════════ -->
-<div id="tab-offers" class="tab-pane"><input type="hidden" id="offerStatusFilter" value="all">
+<div 
+  <!-- Coupon List -->
+  <div class="card" style="margin-top:0;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--border);">
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Code</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Type</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Value</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Uses</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Expires</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Status</th>
+          <th style="padding:10px 12px;text-align:left;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="couponTableBody">
+        <tr><td colspan="7" style="padding:30px;text-align:center;color:#94a3b8;">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+id="tab-offers" class="tab-pane"><input type="hidden" id="offerStatusFilter" value="all">
   <div class="ph">
     <div class="ph-left">
       <div class="ph-title">Offer Activity</div>
@@ -2318,6 +2328,150 @@ textarea.fi{resize:vertical}
 <script src="assets/admin_logic.js"></script>
 
 
-<script src="assets/admin_ui.js"></script>
+<script src="assets/admin_ui.js">
+// ── Coupon Yonetimi ──────────────────────────────────────────
+async function loadCoupons() {
+  const token = localStorage.getItem('sb_token') || '';
+  try {
+    const r = await fetch('/api/admin.php?action=get_coupons', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const d = await r.json();
+    const tbody = document.getElementById('couponTableBody');
+    if (!tbody) return;
+    const coupons = d.success ? (d.data.coupons || d.data || []) : [];
+
+    // Stats
+    const active = coupons.filter(c => c.is_active).length;
+    const totalUses = coupons.reduce((s,c) => s + (parseInt(c.used_count)||0), 0);
+    if (document.getElementById('cpnActive')) document.getElementById('cpnActive').textContent = active;
+    if (document.getElementById('cpnRedemptions')) document.getElementById('cpnRedemptions').textContent = totalUses;
+
+    if (!coupons.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="padding:30px;text-align:center;color:#94a3b8;">No coupons yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = coupons.map(c => {
+      const exp = c.expires_at ? new Date(c.expires_at).toLocaleDateString() : 'Never';
+      const uses = c.max_uses ? `${c.used_count||0}/${c.max_uses}` : `${c.used_count||0}/∞`;
+      const val  = c.type === 'percent' ? `${c.value}%` : `$${c.value}`;
+      return `<tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 12px;"><code style="background:var(--bg-secondary);padding:3px 8px;border-radius:5px;font-size:12px;font-weight:700;">${c.code}</code></td>
+        <td style="padding:10px 12px;font-size:12px;color:#64748b;">${c.type === 'percent' ? 'Percentage' : 'Fixed'}</td>
+        <td style="padding:10px 12px;font-size:13px;font-weight:700;color:#ec5b13;">${val}</td>
+        <td style="padding:10px 12px;font-size:12px;color:#64748b;">${uses}</td>
+        <td style="padding:10px 12px;font-size:12px;color:#64748b;">${exp}</td>
+        <td style="padding:10px 12px;">
+          <span style="padding:3px 8px;border-radius:20px;font-size:11px;font-weight:700;background:${c.is_active?'#dcfce7':'#fee2e2'};color:${c.is_active?'#15803d':'#dc2626'};">
+            ${c.is_active ? 'Active' : 'Inactive'}
+          </span>
+        </td>
+        <td style="padding:10px 12px;display:flex;gap:6px;">
+          <button onclick="toggleCoupon(${c.id},${c.is_active?1:0})" style="padding:5px 10px;border-radius:6px;border:1.5px solid var(--border);background:var(--bg-card);font-size:11px;font-weight:700;cursor:pointer;color:var(--text-primary);">
+            ${c.is_active ? 'Disable' : 'Enable'}
+          </button>
+          <button onclick="deleteCoupon(${c.id})" style="padding:5px 10px;border-radius:6px;border:1.5px solid #fca5a5;background:#fee2e2;font-size:11px;font-weight:700;cursor:pointer;color:#dc2626;">
+            Delete
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) { console.error('loadCoupons error:', e); }
+}
+
+function openCouponModal() {
+  document.getElementById('couponModal').style.display = 'flex';
+  document.getElementById('cpnCode').focus();
+}
+
+function closeCouponModal() {
+  document.getElementById('couponModal').style.display = 'none';
+  ['cpnCode','cpnValue','cpnMaxUses','cpnExpires'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const err = document.getElementById('cpnError');
+  if (err) err.style.display = 'none';
+}
+
+function genCouponCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('cpnCode').value = code;
+}
+
+async function createCoupon() {
+  const code     = (document.getElementById('cpnCode').value || '').trim().toUpperCase();
+  const type     = document.getElementById('cpnType').value;
+  const value    = parseFloat(document.getElementById('cpnValue').value);
+  const maxUses  = document.getElementById('cpnMaxUses').value || null;
+  const expires  = document.getElementById('cpnExpires').value || null;
+  const plan     = document.getElementById('cpnPlan').value || null;
+  const errEl    = document.getElementById('cpnError');
+  const btn      = document.getElementById('cpnSaveBtn');
+
+  if (!code) { errEl.textContent = 'Code is required'; errEl.style.display = 'block'; return; }
+  if (!value || value <= 0) { errEl.textContent = 'Valid value required'; errEl.style.display = 'block'; return; }
+  if (type === 'percent' && value > 100) { errEl.textContent = 'Percentage cannot exceed 100'; errEl.style.display = 'block'; return; }
+
+  errEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+
+  const token = localStorage.getItem('sb_token') || '';
+  try {
+    const r = await fetch('/api/admin.php?action=create_coupon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ code, type, value, max_uses: maxUses, expires_at: expires, plan })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    closeCouponModal();
+    loadCoupons();
+    showToast('Coupon created! 🎟️', 'success');
+  } catch(e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Create Coupon';
+  }
+}
+
+async function toggleCoupon(id, isActive) {
+  const token = localStorage.getItem('sb_token') || '';
+  try {
+    const r = await fetch('/api/admin.php?action=toggle_coupon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ id })
+    });
+    const d = await r.json();
+    if (d.success) { loadCoupons(); showToast(isActive ? 'Coupon disabled' : 'Coupon enabled', 'success'); }
+    else showToast(d.error || 'Failed', 'error');
+  } catch(e) { showToast('Error', 'error'); }
+}
+
+async function deleteCoupon(id) {
+  if (!confirm('Delete this coupon? This cannot be undone.')) return;
+  const token = localStorage.getItem('sb_token') || '';
+  try {
+    const r = await fetch('/api/admin.php?action=delete_coupon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ id })
+    });
+    const d = await r.json();
+    if (d.success) { loadCoupons(); showToast('Coupon deleted', 'success'); }
+    else showToast(d.error || 'Failed', 'error');
+  } catch(e) { showToast('Error', 'error'); }
+}
+
+// Tab yuklenince couponlari getir
+const _origShowTab = typeof showTab === 'function' ? showTab : null;
+</script>
 </body>
 </html>
