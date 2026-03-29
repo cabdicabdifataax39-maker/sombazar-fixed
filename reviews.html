@@ -23,15 +23,48 @@
     .star-btn { background:none;border:none;font-size:28px;cursor:pointer;padding:4px;transition:transform .1s;line-height:1; }
     .star-btn:hover { transform:scale(1.2); }
   </style>
-  <meta property="og:title" content="Reviews — SomBazar">
-  <meta property="og:description" content="Seller reviews on SomBazar.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sombazar-fixed-production.up.railway.app/reviews.html">
-  <meta property="og:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Reviews — SomBazar">
-  <meta name="twitter:description" content="Seller reviews on SomBazar.">
-  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/reviews.html">
+
+<style>
+.mobile-bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(12px);
+  border-top:1px solid #e2e8f0;
+  display:flex!important;
+  height:60px;
+  z-index:999;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+@media(min-width:768px){.mobile-bottom-nav{display:none!important;}}
+[data-theme="dark"] .mobile-bottom-nav{background:rgba(15,23,42,.97);border-top-color:#1e293b;}
+.mob-nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;text-decoration:none;color:#94a3b8;font-size:9px;font-weight:700;
+  transition:color .15s;padding-bottom:2px;
+}
+.mob-nav-item.active,.mob-nav-item:hover{color:#ec5b13;}
+.mob-nav-post{color:#ec5b13;}
+.mob-nav-post .material-symbols-outlined{font-size:32px!important;}
+/* Body padding for bottom nav on mobile */
+@media(max-width:767px){
+  body{padding-bottom:68px!important;}
+}
+</style>
+<script>
+// Mobile nav active state
+(function(){
+  const page = location.pathname.split('/').pop() || 'index.html';
+  const map = {'index.html':'mnHome','listings.html':'mnSearch','post.html':'mnPost','messages.html':'mnMessages','profile.html':'mnProfile'};
+  const activeId = map[page];
+  if(activeId){
+    document.addEventListener('DOMContentLoaded',()=>{
+      const el=document.getElementById(activeId);
+      if(el) el.classList.add('active');
+    });
+  }
+})();
+</script>
+
 </head>
 <body>
 
@@ -294,5 +327,30 @@ async function submitReview() {
 
 loadReviews();
 </script>
+
+<!-- Mobile Bottom Nav -->
+<nav style="display:none;" id="mobileBottomNav" class="mobile-bottom-nav">
+  <a href="index.html" class="mob-nav-item" id="mnHome">
+    <span class="material-symbols-outlined" style="font-size:24px;">home</span>
+    <span>Home</span>
+  </a>
+  <a href="listings.html" class="mob-nav-item" id="mnSearch">
+    <span class="material-symbols-outlined" style="font-size:24px;">search</span>
+    <span>Browse</span>
+  </a>
+  <a href="post.html" class="mob-nav-item mob-nav-post" id="mnPost">
+    <span class="material-symbols-outlined" style="font-size:26px;">add_circle</span>
+    <span>Post</span>
+  </a>
+  <a href="messages.html" class="mob-nav-item" id="mnMessages">
+    <span class="material-symbols-outlined" style="font-size:24px;">chat</span>
+    <span>Messages</span>
+  </a>
+  <a href="profile.html" class="mob-nav-item" id="mnProfile">
+    <span class="material-symbols-outlined" style="font-size:24px;">person</span>
+    <span>Profile</span>
+  </a>
+</nav>
+
 </body>
 </html>

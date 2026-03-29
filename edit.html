@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Edit your listing on SomBazar.">
   <meta name="csrf-token" content="" id="csrfMeta">
   <link rel="icon" href="assets/favicon.png" type="image/png">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -236,7 +235,48 @@
   <meta name="twitter:title" content="Edit Listing — SomBazar">
   <meta name="twitter:description" content="SomBazar — Buy, sell and rent in Somaliland.">
   <meta name="twitter:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
-  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/edit.html">
+
+<style>
+.mobile-bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(12px);
+  border-top:1px solid #e2e8f0;
+  display:flex!important;
+  height:60px;
+  z-index:999;
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+@media(min-width:768px){.mobile-bottom-nav{display:none!important;}}
+[data-theme="dark"] .mobile-bottom-nav{background:rgba(15,23,42,.97);border-top-color:#1e293b;}
+.mob-nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;text-decoration:none;color:#94a3b8;font-size:9px;font-weight:700;
+  transition:color .15s;padding-bottom:2px;
+}
+.mob-nav-item.active,.mob-nav-item:hover{color:#ec5b13;}
+.mob-nav-post{color:#ec5b13;}
+.mob-nav-post .material-symbols-outlined{font-size:32px!important;}
+/* Body padding for bottom nav on mobile */
+@media(max-width:767px){
+  body{padding-bottom:68px!important;}
+}
+</style>
+<script>
+// Mobile nav active state
+(function(){
+  const page = location.pathname.split('/').pop() || 'index.html';
+  const map = {'index.html':'mnHome','listings.html':'mnSearch','post.html':'mnPost','messages.html':'mnMessages','profile.html':'mnProfile'};
+  const activeId = map[page];
+  if(activeId){
+    document.addEventListener('DOMContentLoaded',()=>{
+      const el=document.getElementById(activeId);
+      if(el) el.classList.add('active');
+    });
+  }
+})();
+</script>
+
 </head>
 <body>
 <a href="#mc" class="skip-link">Skip to main content</a>
@@ -629,5 +669,30 @@ function toast(msg,type){const t=document.createElement("div");const bg=type==="
 window.showToast=window.showToast||toast;
 </script>
 <script src="assets/notif.js"></script>
+
+<!-- Mobile Bottom Nav -->
+<nav style="display:none;" id="mobileBottomNav" class="mobile-bottom-nav">
+  <a href="index.html" class="mob-nav-item" id="mnHome">
+    <span class="material-symbols-outlined" style="font-size:24px;">home</span>
+    <span>Home</span>
+  </a>
+  <a href="listings.html" class="mob-nav-item" id="mnSearch">
+    <span class="material-symbols-outlined" style="font-size:24px;">search</span>
+    <span>Browse</span>
+  </a>
+  <a href="post.html" class="mob-nav-item mob-nav-post" id="mnPost">
+    <span class="material-symbols-outlined" style="font-size:26px;">add_circle</span>
+    <span>Post</span>
+  </a>
+  <a href="messages.html" class="mob-nav-item" id="mnMessages">
+    <span class="material-symbols-outlined" style="font-size:24px;">chat</span>
+    <span>Messages</span>
+  </a>
+  <a href="profile.html" class="mob-nav-item" id="mnProfile">
+    <span class="material-symbols-outlined" style="font-size:24px;">person</span>
+    <span>Profile</span>
+  </a>
+</nav>
+
 </body>
 </html>
