@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Manage your SomBazar profile, listings and settings.">
   <script>
     // Dark mode init — prevents flash of wrong theme
     (function(){
@@ -162,7 +161,6 @@
   <meta name="twitter:title" content="Profile — SomBazar">
   <meta name="twitter:description" content="SomBazar — Buy, sell and rent in Somaliland.">
   <meta name="twitter:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
-  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/profile.html">
 </head>
 <body>
 
@@ -331,6 +329,36 @@
         <a href="post.html" style="background:#ec5b13;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:800;text-decoration:none;display:flex;align-items:center;gap:6px;">
           <span class="material-symbols-outlined" style="font-size:16px;">add</span> Create New Listing
         </a>
+      </div>
+
+      <!-- Bulk Toolbar -->
+      <div id="bulkToolbar" style="display:none;align-items:center;gap:10px;padding:12px 16px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:12px;margin-bottom:14px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:#92400e;cursor:pointer;">
+          <input type="checkbox" id="selectAllCheck" onchange="toggleSelectAll(this.checked)" style="width:16px;height:16px;accent-color:#ec5b13;">
+          Select All
+        </label>
+        <span id="bulkSelectedCount" style="font-size:12px;color:#92400e;font-weight:600;">0 selected</span>
+        <div style="flex:1;"></div>
+        <button onclick="bulkAction('active')" style="padding:7px 14px;background:#dcfce7;color:#15803d;border:1.5px solid #86efac;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+          ✅ Activate
+        </button>
+        <button onclick="bulkAction('sold')" style="padding:7px 14px;background:#dbeafe;color:#1d4ed8;border:1.5px solid #93c5fd;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+          💰 Mark Sold
+        </button>
+        <button onclick="bulkAction('delete')" style="padding:7px 14px;background:#fee2e2;color:#dc2626;border:1.5px solid #fca5a5;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+          🗑 Delete
+        </button>
+        <button onclick="cancelBulk()" style="padding:7px 14px;background:#f1f5f9;color:#64748b;border:1.5px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+          ✕ Cancel
+        </button>
+      </div>
+
+      <!-- Bulk toggle button -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div id="listingsCount" style="font-size:12px;color:#94a3b8;"></div>
+        <button onclick="toggleBulkMode()" id="bulkModeBtn" style="padding:7px 14px;background:var(--bg-secondary);border:1.5px solid var(--border-color);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:var(--text-primary);font-family:inherit;">
+          ☑ Select Multiple
+        </button>
       </div>
 
       <!-- Stat cards -->
@@ -1000,6 +1028,7 @@ function renderMyListings(listings){
   }
   document.getElementById('myListingsEmpty').style.display='none';
   document.getElementById('listingsCount').textContent=`Showing 1 to ${listings.length} of ${listings.length} listings`;
+  const bulkMode = document.getElementById('bulkToolbar')?.style.display === 'flex';
   document.getElementById('myListingsList').innerHTML=listings.map(l=>{
     const isSold=l.status==='sold'||l.status==='rented';
     const isPending=l.status==='pending';
@@ -1039,7 +1068,8 @@ function renderMyListings(listings){
         <span class="material-symbols-outlined" style="font-size:14px;">delete</span> Delete
       </button>`;
     }
-    return`<div class="listing-row">
+    return`<div class="listing-row" data-id="${l.id}" style="position:relative;">
+      ${bulkMode?`<label style="position:absolute;top:10px;left:10px;z-index:10;background:rgba(255,255,255,.9);border-radius:6px;padding:2px;"><input type="checkbox" class="bulk-check" value="${l.id}" onchange="updateBulkCount()" onclick="event.stopPropagation()" style="width:17px;height:17px;accent-color:#ec5b13;cursor:pointer;display:block;"></label>`:''}
       <div style="position:relative;">
         ${img}
         <div style="position:absolute;top:10px;left:10px;display:flex;gap:5px;flex-wrap:wrap;">${statusBadge}${featuredBadge}</div>
