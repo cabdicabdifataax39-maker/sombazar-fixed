@@ -1,28 +1,25 @@
 {
   "name": "SomBazar",
   "short_name": "SomBazar",
-  "description": "Buy and sell in Somaliland",
-  "start_url": "/",
+  "description": "Buy and sell in Somaliland — cars, houses, electronics and more",
+  "start_url": "/index.html",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#f97316",
+  "background_color": "#fef6ee",
+  "theme_color": "#ec5b13",
   "orientation": "portrait-primary",
+  "categories": ["shopping", "lifestyle"],
+  "lang": "en",
   "icons": [
-    {
-      "src": "assets/icon-72.png",
-      "sizes": "72x72",
-      "type": "image/png"
-    },
-    {
-      "src": "assets/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+    { "src": "assets/icon-72.png",  "sizes": "72x72",   "type": "image/png" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Post a Listing", "short_name": "Post Ad", "url": "/post.html", "icons": [{"src": "assets/icon-72.png", "sizes": "72x72"}] },
+    { "name": "My Messages",    "short_name": "Messages", "url": "/messages.html", "icons": [{"src": "assets/icon-72.png", "sizes": "72x72"}] }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }

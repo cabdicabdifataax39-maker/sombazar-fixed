@@ -1,17 +1,20 @@
-const CACHE_NAME = 'sombazar-v3';
+const CACHE_NAME = 'sombazar-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/assets/style.css',
-  '/assets/app.js',
+  '/assets/style.min.css',
+  '/assets/app.min.js',
   '/assets/icon-192.png',
-  '/manifest.json'
+  '/assets/icon-512.png',
+  '/manifest.json',
+  '/offline.html'
 ];
 
-// Install - statik dosyaları cache'le
+// Install
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS).catch(() => {}))
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(STATIC_ASSETS).catch(() => {}))
   );
   self.skipWaiting();
 });
@@ -26,28 +29,48 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// Fetch - network first, cache fallback
+// Fetch
 self.addEventListener('fetch', e => {
-  // API isteklerini cache'leme
-  if (e.request.url.includes('/api/')) return;
-  if (e.request.method !== 'GET') return;
-  // Store sayfalarini cache'leme - her zaman network'ten al
-  if (e.request.url.includes('store')) return;
+  const url = e.request.url;
 
+  // API isteklerini hic cache'leme
+  if (url.includes('/api/')) return;
+  if (e.request.method !== 'GET') return;
+
+  // HTML sayfalarini her zaman network'ten al (stale olmamasi icin)
+  if (e.request.headers.get('accept')?.includes('text/html') || url.endsWith('.html')) {
+    e.respondWith(
+      fetch(e.request)
+        .then(resp => {
+          if (resp && resp.status === 200) {
+            const clone = resp.clone();
+            caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+          }
+          return resp;
+        })
+        .catch(() => caches.match(e.request)
+          .then(cached => cached || caches.match('/offline.html'))
+        )
+    );
+    return;
+  }
+
+  // Statik dosyalar: cache first, network fallback
   e.respondWith(
-    fetch(e.request)
-      .then(resp => {
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(resp => {
         if (resp && resp.status === 200) {
           const clone = resp.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
         }
         return resp;
-      })
-      .catch(() => caches.match(e.request))
+      }).catch(() => caches.match('/offline.html'));
+    })
   );
 });
 
-// Push bildirimi al
+// Push bildirimi
 self.addEventListener('push', e => {
   let data = { title: 'SomBazar', body: 'You have a new notification', icon: '/assets/icon-192.png', badge: '/assets/icon-72.png', url: '/' };
   try { Object.assign(data, e.data.json()); } catch(err) {}
@@ -62,7 +85,7 @@ self.addEventListener('push', e => {
   );
 });
 
-// Bildirime tıklanınca
+// Bildirime tiklaninca
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   const url = e.notification.data?.url || '/';
