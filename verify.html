@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Verify your SomBazar account.">
   <script>
     // Dark mode init — prevents flash of wrong theme
     (function(){
@@ -65,15 +64,6 @@
   </script>
   <!-- Google Search Console Verification -->
   <meta name="google-site-verification" content="y-q4wfmJgYhKGVPdYsvQcmUHlpwBKfqcRxQ4j5ao3Yw">
-  <meta property="og:title" content="Verify Account — SomBazar">
-  <meta property="og:description" content="Verify your SomBazar account.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sombazar-fixed-production.up.railway.app/verify.html">
-  <meta property="og:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Verify Account — SomBazar">
-  <meta name="twitter:description" content="Verify your SomBazar account.">
-  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/verify.html">
 </head>
 <body>
 <header class="header">
@@ -136,20 +126,20 @@
         <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--dark)">Required for Individual:</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div class="doc-upload-slot" id="slot-national_id_front" onclick="triggerUpload('national_id_front')">
-            <img class="doc-preview" id="prev-national_id_front" alt="">
+            <img class="doc-preview" id="prev-national_id_front" alt="" loading="lazy">
             <div style="font-size:28px;margin-bottom:8px">🪪</div>
             <div style="font-size:13px;font-weight:700">National ID — Front</div>
             <div style="font-size:11px;color:var(--gray);margin-top:4px">Tap to upload</div>
           </div>
           <div class="doc-upload-slot" id="slot-national_id_back" onclick="triggerUpload('national_id_back')">
-            <img class="doc-preview" id="prev-national_id_back" alt="">
+            <img class="doc-preview" id="prev-national_id_back" alt="" loading="lazy">
             <div style="font-size:28px;margin-bottom:8px">🪪</div>
             <div style="font-size:13px;font-weight:700">National ID — Back</div>
             <div style="font-size:11px;color:var(--gray);margin-top:4px">Tap to upload</div>
           </div>
         </div>
         <div class="doc-upload-slot" id="slot-selfie" onclick="triggerUpload('selfie')">
-          <img class="doc-preview" id="prev-selfie" alt="">
+          <img class="doc-preview" id="prev-selfie" alt="" loading="lazy">
           <div style="font-size:28px;margin-bottom:8px">🤳</div>
           <div style="font-size:13px;font-weight:700">Selfie holding your ID</div>
           <div style="font-size:11px;color:var(--gray);margin-top:4px">Your face + ID card must both be clearly visible</div>
@@ -160,20 +150,20 @@
         <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--dark)">Required for Agency/Company:</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
           <div class="doc-upload-slot" id="slot-trade_license" onclick="triggerUpload('trade_license')">
-            <img class="doc-preview" id="prev-trade_license" alt="">
+            <img class="doc-preview" id="prev-trade_license" alt="" loading="lazy">
             <div style="font-size:28px;margin-bottom:8px">📄</div>
             <div style="font-size:13px;font-weight:700">Trade License</div>
             <div style="font-size:11px;color:var(--gray);margin-top:4px">Government issued business license</div>
           </div>
           <div class="doc-upload-slot" id="slot-authority_id" onclick="triggerUpload('authority_id')">
-            <img class="doc-preview" id="prev-authority_id" alt="">
+            <img class="doc-preview" id="prev-authority_id" alt="" loading="lazy">
             <div style="font-size:28px;margin-bottom:8px">👤</div>
             <div style="font-size:13px;font-weight:700">Authorized Person ID</div>
             <div style="font-size:11px;color:var(--gray);margin-top:4px">ID of the company representative</div>
           </div>
         </div>
         <div class="doc-upload-slot" id="slot-office_photo" onclick="triggerUpload('office_photo')">
-          <img class="doc-preview" id="prev-office_photo" alt="">
+          <img class="doc-preview" id="prev-office_photo" alt="" loading="lazy">
           <div style="font-size:28px;margin-bottom:8px">🏢</div>
           <div style="font-size:13px;font-weight:700">Office/Shop Photo</div>
           <div style="font-size:11px;color:var(--gray);margin-top:4px">Photo of your physical location</div>
@@ -294,7 +284,7 @@ async function handleDocUpload(input, docType) {
     uploadedDocs[docType] = url;
 
     slot.innerHTML = `
-      <img src="${url}" style="width:100%;height:110px;object-fit:cover;border-radius:10px;margin-bottom:6px">
+      <img src="${url}" style="width:100%;height:110px;object-fit:cover;border-radius:10px;margin-bottom:6px" loading="lazy">
       <div style="font-size:11px;color:#10b981;font-weight:700">Uploaded</div>`;
     slot.classList.add('uploaded');
   } catch(e) {

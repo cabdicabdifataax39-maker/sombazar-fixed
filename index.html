@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Buy, sell and rent in Somaliland — cars, houses, electronics and more.">
   <meta name="csrf-token" content="" id="csrfMeta">
   <link rel="icon" href="assets/favicon.png" type="image/png">
     <!-- Apple PWA Meta -->
@@ -167,7 +166,6 @@
   <meta name="twitter:title" content="SomBazar — Somaliland's Largest Marketplace">
   <meta name="twitter:description" content="Buy, sell and rent in Somaliland — cars, houses, electronics and more. Free listings, secure payments.">
   <meta name="twitter:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
-  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/index.html">
 </head>
 <body class="text-slate-900 min-h-screen" style="background:#fef6ee">
 
@@ -611,7 +609,7 @@ async function loadFeaturedStores() {
     document.getElementById('featuredStoresGrid').innerHTML = stores.map(s => `
       <a href="store.html?slug=${s.slug}" style="text-decoration:none;">
         <div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;overflow:hidden;transition:.15s;" onmouseover="this.style.borderColor='#ec5b13'" onmouseout="this.style.borderColor='var(--border-color)'">
-          ${s.cover_url ? `<img src="${s.cover_url}" style="width:100%;height:70px;object-fit:cover;">` : `<div style="width:100%;height:70px;background:linear-gradient(135deg,#ec5b13,#f97316);"></div>`}
+          ${s.cover_url ? `<img src="${s.cover_url}" style="width:100%;height:70px;object-fit:cover;" loading="lazy">` : `<div style="width:100%;height:70px;background:linear-gradient(135deg,#ec5b13,#f97316);"></div>`}
           <div style="padding:10px;display:flex;align-items:center;gap:8px;">
             ${s.logo_url ? `<img src="${s.logo_url}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;border:2px solid white;margin-top:-20px;flex-shrink:0;">` : `<div style="width:36px;height:36px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin-top:-20px;flex-shrink:0;font-size:18px;">🏪</div>`}
             <div style="min-width:0;">

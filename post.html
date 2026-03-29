@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Post your listing on SomBazar Somaliland marketplace.">
   <script>
     // Dark mode init — prevents flash of wrong theme
     (function(){
@@ -110,15 +109,6 @@
     [data-theme="dark"] .preview-card { background:#1e293b!important; border-color:#334155!important; }
     [data-theme="dark"] label { color:#94a3b8!important; }
   </style>
-  <meta property="og:title" content="Post a Listing — SomBazar">
-  <meta property="og:description" content="Post your listing on SomBazar Somaliland marketplace.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sombazar-fixed-production.up.railway.app/post.html">
-  <meta property="og:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Post a Listing — SomBazar">
-  <meta name="twitter:description" content="Post your listing on SomBazar Somaliland marketplace.">
-  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/post.html">
 </head>
 <body>
 
@@ -651,7 +641,7 @@ function dragStart(i){dragIdx=i;}
 function dragDrop(e,t){e.preventDefault();if(dragIdx===null||dragIdx===t)return;previews.splice(t,0,previews.splice(dragIdx,1)[0]);files.splice(t,0,files.splice(dragIdx,1)[0]);dragIdx=null;renderImageGrid();}
 
 function renderImageGrid(){
-  let html=previews.map((src,i)=>`<div class="img-slot filled" draggable="true" ondragstart="dragStart(${i})" ondragover="event.preventDefault()" ondrop="dragDrop(event,${i})"><img src="${src}" alt=""><button type="button" onclick="removeImage(${i})" style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.65);color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;">✕</button>${i===0?'<span style="position:absolute;bottom:5px;left:5px;background:#ec5b13;color:white;font-size:9px;font-weight:800;padding:2px 7px;border-radius:12px;">★ COVER</span>':`<button type="button" onclick="setCover(${i})" style="position:absolute;bottom:5px;left:5px;background:rgba(0,0,0,.5);color:white;border:none;border-radius:7px;font-size:9px;font-weight:700;padding:2px 6px;cursor:pointer;">Set Cover</button>`}</div>`).join('');
+  let html=previews.map((src,i)=>`<div class="img-slot filled" draggable="true" ondragstart="dragStart(${i})" ondragover="event.preventDefault()" ondrop="dragDrop(event,${i})"><img src="${src}" alt="" loading="lazy"><button type="button" onclick="removeImage(${i})" style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,.65);color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;">✕</button>${i===0?'<span style="position:absolute;bottom:5px;left:5px;background:#ec5b13;color:white;font-size:9px;font-weight:800;padding:2px 7px;border-radius:12px;">★ COVER</span>':`<button type="button" onclick="setCover(${i})" style="position:absolute;bottom:5px;left:5px;background:rgba(0,0,0,.5);color:white;border:none;border-radius:7px;font-size:9px;font-weight:700;padding:2px 6px;cursor:pointer;">Set Cover</button>`}</div>`).join('');
   if(previews.length<10)html+=`<div class="img-slot" onclick="document.getElementById('fileInput').click()" style="min-height:90px;"><span class="material-symbols-outlined" style="color:#94a3b8;font-size:26px;margin-bottom:4px;">add_photo_alternate</span><span style="font-size:11px;color:#94a3b8;font-weight:700;text-align:center;">Add more<br><span style="opacity:.7;">${previews.length}/10</span></span></div>`;
   document.getElementById('imageGrid').innerHTML=html;
 }
@@ -750,7 +740,7 @@ function canProceed(){
 function renderReview(){
   // Photos
   const ph=document.getElementById('reviewPhotos');
-  if(ph)ph.innerHTML=previews.length?previews.map((s,i)=>`<div style="position:relative;"><img src="${s}" style="width:76px;height:76px;border-radius:9px;object-fit:cover;border:${i===0?'2px solid #ec5b13':'2px solid #e2e8f0'};">${i===0?'<span style="position:absolute;bottom:3px;left:50%;transform:translateX(-50%);background:#ec5b13;color:white;font-size:7px;font-weight:800;padding:1px 4px;border-radius:5px;white-space:nowrap;">COVER</span>':''}</div>`).join(''):'<p style="font-size:13px;color:#94a3b8;">No photos added</p>';
+  if(ph)ph.innerHTML=previews.length?previews.map((s,i)=>`<div style="position:relative;"><img src="${s}" style="width:76px;height:76px;border-radius:9px;object-fit:cover;border:${i===0?'2px solid #ec5b13':'2px solid #e2e8f0'};" loading="lazy">${i===0?'<span style="position:absolute;bottom:3px;left:50%;transform:translateX(-50%);background:#ec5b13;color:white;font-size:7px;font-weight:800;padding:1px 4px;border-radius:5px;white-space:nowrap;">COVER</span>':''}</div>`).join(''):'<p style="font-size:13px;color:#94a3b8;">No photos added</p>';
   // Details
   const title=document.getElementById('titleInput')?.value||'';
   const price=document.getElementById('priceInput')?.value||'';

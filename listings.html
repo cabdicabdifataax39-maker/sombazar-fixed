@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="description" content="Find cars, houses, electronics and more on SomBazar Somaliland.">
   <script>
     // Dark mode init — prevents flash of wrong theme
     (function(){
@@ -231,7 +230,6 @@
   <meta name="twitter:title" content="Browse Listings — SomBazar">
   <meta name="twitter:description" content="Find cars, houses, electronics, jobs and more on SomBazar Somaliland.">
   <meta name="twitter:image" content="https://sombazar-fixed-production.up.railway.app/assets/icon-512.png">
-  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/listings.html">
 </head>
 <body class="text-slate-900 min-h-screen" style="background:#fef6ee">
 
@@ -902,7 +900,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       const avatar = userArea.querySelector('.header-avatar');
       if(avatar){
         if(user.photoURL){
-          avatar.innerHTML = `<img src="${user.photoURL}" alt="U" style="width:32px;height:32px;border-radius:50%;object-fit:cover;display:block">`;
+          avatar.innerHTML = `<img src="${user.photoURL}" alt="U" style="width:32px;height:32px;border-radius:50%;object-fit:cover;display:block" loading="lazy">`;
         } else {
           avatar.textContent = (user.displayName||'U')[0].toUpperCase();
         }
