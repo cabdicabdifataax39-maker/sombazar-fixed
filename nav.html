@@ -1,0 +1,143 @@
+<!-- HEADER SNIPPET - paste inside pages -->
+<header class="header">
+  <nav class="nav-container">
+    <a href="index.html" class="logo">SomBazar</a>
+
+    <form class="header-search" id="headerSearchForm">
+      <input class="header-search-input" type="search" id="headerSearchInput" placeholder="Search cars, houses, electronics…">
+      <button type="submit" class="header-search-btn" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </form>
+
+    <div class="header-actions">
+      <a href="auth.html" class="btn btn-ghost btn-sm" id="header-signin">Sign In</a>
+      <div id="header-user" style="display:none;align-items:center;gap:4px">
+
+        <!-- Messages -->
+        <a href="messages.html" class="icon-btn" aria-label="Messages" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span id="msgBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#f97316;color:white;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:8px;padding:0 3px;align-items:center;justify-content:center;line-height:16px;text-align:center"></span>
+        </a>
+
+        <!-- Notifications Bell -->
+        <div style="position:relative" id="notifBtnWrap">
+          <button onclick="toggleNotifDropdown()" class="icon-btn" aria-label="Notifications" style="position:relative;background:none;border:none;cursor:pointer;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:background .15s" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='none'">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:white;font-size:10px;font-weight:800;min-width:16px;height:16px;border-radius:8px;padding:0 3px;align-items:center;justify-content:center;line-height:16px;text-align:center"></span>
+          </button>
+
+          <!-- Dropdown -->
+          <div id="notifDropdownWrap" style="display:none;position:absolute;top:calc(100% + 12px);right:0;width:min(340px,92vw);background:white;border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.15);border:1px solid #f1f5f9;z-index:9999;overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+              <div style="display:flex;align-items:center;gap:8px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span style="font-weight:800;font-size:14px;color:#1e293b">Notifications</span>
+              </div>
+              <button onclick="Notif.markAllRead()" style="background:none;border:none;color:#f97316;font-size:12px;font-weight:700;cursor:pointer;padding:4px 8px;border-radius:6px" onmouseenter="this.style.background='#fff7ed'" onmouseleave="this.style.background='none'">Mark all read</button>
+            </div>
+            <div id="notifDropdown" style="max-height:380px;overflow-y:auto"></div>
+          </div>
+        </div>
+
+        <!-- Avatar -->
+        <a href="profile.html" class="icon-btn header-avatar" aria-label="Profile" style="font-weight:800;font-size:14px;width:32px;height:32px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f97316;color:white;flex-shrink:0;padding:0"></a>
+      </div>
+
+      <a href="post.html" class="btn-post-ad">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Post Ad
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-bottom-nav">
+  <ul>
+    <li>
+      <a href="index.html" class="mob-nav-btn">
+        <span class="mob-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <span>Home</span>
+      </a>
+    </li>
+    <li>
+      <a href="listings.html" class="mob-nav-btn">
+        <span class="mob-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </span>
+        <span>Listings</span>
+      </a>
+    </li>
+    <li>
+      <a href="post.html" class="mob-nav-btn">
+        <span class="mob-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v8M8 12h8"/>
+          </svg>
+        </span>
+        <span>Post</span>
+      </a>
+    </li>
+    <li>
+      <a href="messages.html" class="mob-nav-btn">
+        <span class="mob-icon" style="position:relative;display:inline-flex">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span id="msgBadgeMob" style="display:none;position:absolute;top:-4px;right:-6px;background:#f97316;color:white;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;padding:0 2px;align-items:center;justify-content:center;line-height:15px;text-align:center"></span>
+        </span>
+        <span>Messages</span>
+      </a>
+    </li>
+    <li>
+      <a href="profile.html?tab=notifications" class="mob-nav-btn">
+        <span class="mob-icon" style="position:relative;display:inline-flex">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span id="notifBadgeMob" style="display:none;position:absolute;top:-4px;right:-6px;background:#ef4444;color:white;font-size:9px;font-weight:800;min-width:15px;height:15px;border-radius:8px;padding:0 2px;align-items:center;justify-content:center;line-height:15px;text-align:center"></span>
+        </span>
+        <span>Alerts</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<script>
+function toggleNotifDropdown() {
+  const wrap = document.getElementById('notifDropdownWrap');
+  if (!wrap) return;
+  const isOpen = wrap.style.display !== 'none';
+  wrap.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen && typeof Notif !== 'undefined') Notif.loadDropdown();
+}
+document.addEventListener('click', function(e) {
+  const btn = document.getElementById('notifBtnWrap');
+  if (btn && !btn.contains(e.target)) {
+    const wrap = document.getElementById('notifDropdownWrap');
+    if (wrap) wrap.style.display = 'none';
+  }
+});
+</script>

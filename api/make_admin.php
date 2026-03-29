@@ -1,7 +1,7 @@
 <?php
 /**
  * SomaBazar — Make Admin
- * URL: /api/make_admin.php?email=EMAIL&secret=SECRET
+ * URL: /api/make_admin.php?email=cabdicabdifataax39@gmail.com&secret=sombazar_mig_2026
  */
 require_once __DIR__ . '/config.php';
 
