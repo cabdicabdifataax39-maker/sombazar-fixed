@@ -21,5 +21,5 @@ Disallow: /.env
 Disallow: /assets/
 
 # Sitemap
-Sitemap: https://YOURDOMAIN.COM/sitemap.xml
-Sitemap: https://YOURDOMAIN.COM/sitemap.php
+Sitemap: https://sombazar-fixed-production.up.railway.app/sitemap.xml
+Sitemap: https://sombazar-fixed-production.up.railway.app/sitemap.php

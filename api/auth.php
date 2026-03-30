@@ -333,7 +333,7 @@ function handleLogin(): void {
         }
     } catch(\Throwable $e) {}
 
-    $st = $db->prepare('SELECT * FROM users WHERE email = ?');
+    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, verified, deleted_at FROM users WHERE email = ?');
     $st->execute([$email]);
     $user = $st->fetch();
 
@@ -569,7 +569,7 @@ function handleDeleteAccount(): void {
     try { $db->exec("ALTER TABLE users ADD COLUMN deleted_at DATETIME NULL"); } catch(\Throwable $e) {}
     try { $db->exec("ALTER TABLE users ADD COLUMN deletion_scheduled_at DATETIME NULL"); } catch(\Throwable $e) {}
 
-    $st = $db->prepare('SELECT password_hash, deleted_at FROM users WHERE id = ?');
+    $st = $db->prepare('SELECT password, deleted_at FROM users WHERE id = ?');
     $st->execute([$uid]);
     $user = $st->fetch();
 
@@ -690,7 +690,7 @@ function handleCheckDeletion(): void {
 
 function getUserData(int $uid): array {
     $db = getDB();
-    $st = $db->prepare('SELECT * FROM users WHERE id = ?');
+    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, bio, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, verified, created_at FROM users WHERE id = ?');
     $st->execute([$uid]);
     $u = $st->fetch();
     if (!$u) jsonError('User not found', 404);
@@ -738,7 +738,7 @@ function handleLogout(): void {
 function handleGoogleAuth(): void {
     $data     = json_decode(file_get_contents('php://input'), true);
     $token    = $data['credential'] ?? $data['token'] ?? '';
-    $clientId = getenv('GOOGLE_CLIENT_ID') ?: '918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com';
+    $clientId = '918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com';
 
     if (!$token) jsonError('No credential provided');
 
@@ -758,7 +758,7 @@ function handleGoogleAuth(): void {
     $db = getDB();
 
     // Kullanıcı var mı?
-    $st = $db->prepare('SELECT * FROM users WHERE email = ?');
+    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, verified, deleted_at FROM users WHERE email = ?');
     $st->execute([$email]);
     $user = $st->fetch();
 

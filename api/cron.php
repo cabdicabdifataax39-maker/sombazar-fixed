@@ -17,7 +17,12 @@ $isCLI = php_sapi_name() === 'cli';
 // Web'den çalıştırılıyorsa güvenlik kontrolü
 if (!$isCLI) {
     $secret = $_GET['token'] ?? $_GET['secret'] ?? '';
-    $expectedSecret = getenv('CRON_SECRET') ?: 'changeme_cron_secret';
+    $expectedSecret = getenv('CRON_SECRET');
+if (!$expectedSecret) {
+    // CRON_SECRET set edilmemiş — güvenlik riski! Railway Variables'a ekle
+    error_log('[SOMBAZAR CRON] WARNING: CRON_SECRET env var not set! Using insecure default.');
+    $expectedSecret = 'changeme_cron_secret';
+}
     if (!hash_equals($expectedSecret, $secret)) {
         http_response_code(403);
         exit('Forbidden');
@@ -66,7 +71,7 @@ $task = ($isCLI && isset($argv))
     : ($_GET['task'] ?? 'all');
 
 $tasks = ($task === 'all')
-    ? ['expire_offers', 'expire_plans', 'expire_listings', 'expire_reservations', 'cleanup_temp', 'cleanup_rate_limit', 'sitemap_ping', 'send_reminders']
+    ? ['expire_offers', 'expire_plans', 'expire_listings', 'cleanup_temp', 'cleanup_rate_limit', 'sitemap_ping', 'send_reminders']
     : [$task];
 
 log_cron('cron', 'Starting tasks: ' . implode(', ', $tasks));

@@ -556,7 +556,12 @@ function handleVerifyRespond(): void {
     $st = $db->prepare("SELECT role FROM users WHERE id = ?");
     $st->execute([$uid]);
     $user = $st->fetch();
-    if (!$user || $user['role'] !== 'admin') jsonError('Admin only', 403);
+    // Admin kontrolü: is_admin flag kullan (role kolonu tutarsız olabilir)
+    $db2   = getDB();
+    $uSt   = $db2->prepare('SELECT is_admin FROM users WHERE id=?');
+    $uSt->execute([$user]);
+    $uRow  = $uSt->fetch();
+    if (!$uRow || !$uRow['is_admin']) jsonError('Admin only', 403);
 
     $reqId  = (int)($data['request_id'] ?? 0);
     $action = $data['action'] ?? '';

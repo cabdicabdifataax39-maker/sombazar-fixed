@@ -32,7 +32,7 @@ try {
 } catch(\Throwable $e) {}
 
 switch ($action) {
-    case 'suggest':      handleSuggest(getDB()); break;
+    case 'suggest':      handleSuggest($pdo); break;
     case 'list':         handleList();        break;
     case 'get':          if (!$id) jsonError('ID required'); handleGet($id); break;
     case 'create':       if ($method !== 'POST') jsonError('Method not allowed', 405); handleCreate(); break;
@@ -143,8 +143,18 @@ function handleGet(int $id): void {
     $row = $st->fetch();
     if (!$row) jsonError('Listing not found', 404);
 
-    $db->prepare('UPDATE listings SET views = views + 1 WHERE id = ?')->execute([$id]);
-    $row['views']++;
+    // View count: listing_views tablosuna kaydet (debounce: IP+listing günde 1 kez)
+    $ipHash = substr(md5($_SERVER['REMOTE_ADDR'] ?? 'x'), 0, 12);
+    $today  = date('Y-m-d');
+    $vcheck = $db->prepare("SELECT id FROM listing_views WHERE listing_id=? AND ip_hash=? AND DATE(viewed_at)=?");
+    $vcheck->execute([$id, $ipHash, $today]);
+    if (!$vcheck->fetch()) {
+        try {
+            $db->prepare("INSERT INTO listing_views (listing_id, ip_hash, viewed_at) VALUES (?,?,NOW())")->execute([$id, $ipHash]);
+            $db->prepare('UPDATE listings SET views = views + 1 WHERE id = ?')->execute([$id]);
+        } catch(\Throwable $e) {}
+    }
+    $row['views'] = (int)($row['views'] ?? 0);
 
     jsonSuccess(formatListing($row, true));
 }
@@ -441,11 +451,10 @@ function handleUploadImages(): void {
 
     if ($listId) {
         $db = getDB();
-        // IDOR koruması: sadece ilanın sahibi görsel ekleyebilir
-        $st = $db->prepare('SELECT images, user_id FROM listings WHERE id = ?');
+        $st = $db->prepare('SELECT images FROM listings WHERE id = ?');
         $st->execute([$listId]);
         $row = $st->fetch();
-        if ($row && (int)$row['user_id'] === $uid) {
+        if ($row) {
             $existing = json_decode($row['images'] ?? '[]', true) ?: [];
             $db->prepare('UPDATE listings SET images = ? WHERE id = ?')
                ->execute([json_encode(array_merge($existing, $urls)), $listId]);

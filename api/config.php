@@ -139,7 +139,9 @@ header('X-Powered-By: SomBazar');
 // Her endpoint ayrı limit uygulayabilir — bu global fallback
 function checkRateLimit(string $key, int $maxRequests = 60, int $windowSeconds = 60): void {
     $ip  = $_SERVER['HTTP_CF_CONNECTING_IP']     // Cloudflare
-        ?? $_SERVER['HTTP_X_FORWARDED_FOR']
+        ?? (isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+           ? trim(end(array_map('trim', explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']))))
+           : null) // Son IP al - Railway proxy'si ekler
         ?? $_SERVER['REMOTE_ADDR']
         ?? 'unknown';
     $ip  = explode(',', $ip)[0]; // İlk IP'yi al

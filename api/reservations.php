@@ -42,7 +42,9 @@ function handleCreate(): void {
     $db = getDB();
 
     // Ilani getir
-    $st = $db->prepare("SELECT id, user_id, title, status FROM listings WHERE id = ?");
+    // Transaction + SELECT FOR UPDATE: race condition önle
+    $db->beginTransaction();
+    $st = $db->prepare("SELECT id, user_id, title, status FROM listings WHERE id = ? FOR UPDATE");
     $st->execute([$listingId]);
     $listing = $st->fetch();
     if (!$listing) jsonError('Listing not found', 404);
@@ -79,7 +81,7 @@ function handleCreate(): void {
         $buyerSt->execute([$uid]);
         $buyerName = $buyerSt->fetchColumn() ?: 'Someone';
 
-        $db->prepare("INSERT INTO notifications (user_id, type, title, body, link) VALUES (?, 'reservation', ?, ?, ?)")
+        $db->prepare("INSERT INTO notifications (user_id, type, title, body, url) VALUES (?, 'reservation', ?, ?, ?)")
            ->execute([
                $sellerId,
                "Urun rezervasyon talebi: \"{$listing['title']}\"",
@@ -143,7 +145,7 @@ function handleRespond(): void {
             $lstSt->execute([$res['listing_id']]);
             $title = $lstSt->fetchColumn() ?: 'Listing';
 
-            $db->prepare("INSERT INTO notifications (user_id, type, title, body, link) VALUES (?, 'reservation_confirmed', ?, ?, ?)")
+            $db->prepare("INSERT INTO notifications (user_id, type, title, body, url) VALUES (?, 'reservation_confirmed', ?, ?, ?)")
                ->execute([
                    $res['buyer_id'],
                    "Rezervasyonunuz onaylandi! \"{$title}\"",
@@ -159,7 +161,7 @@ function handleRespond(): void {
 
         // Aliciya bildirim
         try {
-            $db->prepare("INSERT INTO notifications (user_id, type, title, body, link) VALUES (?, 'reservation_rejected', ?, ?, ?)")
+            $db->prepare("INSERT INTO notifications (user_id, type, title, body, url) VALUES (?, 'reservation_rejected', ?, ?, ?)")
                ->execute([
                    $res['buyer_id'],
                    'Rezervasyon reddedildi',
@@ -203,7 +205,7 @@ function handleCancel(): void {
     // Diger tarafa bildirim
     $otherId = (int)$res['buyer_id'] === $uid ? (int)$res['seller_id'] : (int)$res['buyer_id'];
     try {
-        $db->prepare("INSERT INTO notifications (user_id, type, title, body, link) VALUES (?, 'reservation_cancelled', ?, ?, ?)")
+        $db->prepare("INSERT INTO notifications (user_id, type, title, body, url) VALUES (?, 'reservation_cancelled', ?, ?, ?)")
            ->execute([
                $otherId,
                'Rezervasyon iptal edildi',
