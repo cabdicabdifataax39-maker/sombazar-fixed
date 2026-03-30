@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="description" content="Open your store on SomBazar.">
   <script>
     (function(){
       var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
@@ -27,6 +28,22 @@
     .form-input:focus{border-color:#ec5b13;}
     .form-label{display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
   </style>
+  <meta property="og:title" content="Open a Store — SomBazar">
+  <meta property="og:description" content="Open your store on SomBazar.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Open a Store — SomBazar">
+  <link rel="canonical" href="https://sombazar-fixed-production.up.railway.app/store-setup.html">
+<style>
+.mobile-bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-top:1px solid #e2e8f0;display:flex;height:60px;z-index:999;padding-bottom:env(safe-area-inset-bottom,0);}
+@media(min-width:768px){.mobile-bottom-nav{display:none!important;}}
+[data-theme="dark"] .mobile-bottom-nav{background:rgba(15,23,42,.97);border-top-color:#1e293b;}
+.mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#94a3b8;font-size:9px;font-weight:700;padding-bottom:2px;}
+.mob-nav-item.active,.mob-nav-item:hover{color:#ec5b13;}
+.mob-nav-post{color:#ec5b13;}
+@media(max-width:767px){body{padding-bottom:68px!important;}}
+</style>
+<script>(function(){var p=location.pathname.split('/').pop()||'index.html';var m={'index.html':'mnHome','listings.html':'mnSearch','post.html':'mnPost','messages.html':'mnMessages','profile.html':'mnProfile'};var id=m[p];if(id)document.addEventListener('DOMContentLoaded',function(){var el=document.getElementById(id);if(el)el.classList.add('active');});})();</script>
 </head>
 <body>
 
@@ -294,5 +311,13 @@ async function createStore() {
   }
 }
 </script>
+
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <a href="index.html" class="mob-nav-item" id="mnHome"><span class="material-symbols-outlined" style="font-size:24px;">home</span><span>Home</span></a>
+  <a href="listings.html" class="mob-nav-item" id="mnSearch"><span class="material-symbols-outlined" style="font-size:24px;">search</span><span>Browse</span></a>
+  <a href="post.html" class="mob-nav-item mob-nav-post" id="mnPost"><span class="material-symbols-outlined" style="font-size:28px;">add_circle</span><span>Post</span></a>
+  <a href="messages.html" class="mob-nav-item" id="mnMessages"><span class="material-symbols-outlined" style="font-size:24px;">chat</span><span>Messages</span></a>
+  <a href="profile.html" class="mob-nav-item" id="mnProfile"><span class="material-symbols-outlined" style="font-size:24px;">person</span><span>Profile</span></a>
+</nav>
 </body>
 </html>

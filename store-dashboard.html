@@ -4,327 +4,283 @@
   <meta charset="UTF-8">
   <script>(function(){var t=localStorage.getItem('sb_theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);})();</script>
   <link rel="icon" href="assets/favicon.png" type="image/png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Manage your SomBazar store">
+  <meta property="og:title" content="Store Dashboard — SomBazar">
   <title>Store Dashboard — SomBazar</title>
+  <link rel="preload" href="assets/style.min.css" as="style">
   <link rel="stylesheet" href="assets/style.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
-  <script>tailwind.config={theme:{extend:{colors:{primary:"#ec5b13"},fontFamily:{sans:["Public Sans","sans-serif"]}}}}</script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
-    .stat-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:20px;text-align:center;}
-    .stat-num{font-size:28px;font-weight:900;color:var(--text-primary);}
-    .stat-lbl{font-size:12px;color:#64748b;font-weight:600;margin-top:4px;}
-    .section-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:20px;margin-bottom:16px;}
-    .hours-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-color);}
-    .hours-row:last-child{border-bottom:none;}
-    .day-label{width:100px;font-size:13px;font-weight:700;color:var(--text-primary);}
-    .time-input{border:1.5px solid var(--border-color);border-radius:8px;padding:5px 8px;font-size:13px;background:var(--input-bg);color:var(--text-primary);font-family:inherit;}
-    .badge-verif{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;}
+    body{font-family:'DM Sans',sans-serif;}
+    .dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+    @media(max-width:700px){.dash-grid{grid-template-columns:repeat(2,1fr);}}
+    .stat-card{background:var(--bg-card);border:1px solid var(--border-color);border-radius:14px;padding:18px 20px;}
+    .stat-card .num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text-primary);margin-bottom:4px;}
+    .stat-card .lbl{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.7px;}
+    .stat-card .ico{font-size:22px;margin-bottom:10px;}
+    .dash-section{background:var(--bg-card);border:1px solid var(--border-color);border-radius:14px;padding:20px;margin-bottom:16px;}
+    .dash-section h3{font-size:12px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.7px;margin:0 0 16px;}
+    .top-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border-color);}
+    .top-row:last-child{border-bottom:none;}
+    .top-img{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--bg-secondary);flex-shrink:0;}
+    .top-title{font-size:13px;font-weight:600;color:var(--text-primary);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;}
+    .top-views{font-size:12px;font-weight:700;color:#ec5b13;flex-shrink:0;}
+    .qr-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-secondary);border-radius:8px;margin-bottom:8px;}
+    .qr-text{flex:1;font-size:13px;color:var(--text-primary);}
+    .action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+    @media(max-width:500px){.action-grid{grid-template-columns:repeat(2,1fr);}}
+    .action-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;text-decoration:none;color:var(--text-primary);font-size:12px;font-weight:700;transition:.15s;}
+    .action-btn:hover{border-color:#ec5b13;color:#ec5b13;}
+    .action-btn .ico{font-size:22px;}
+    .verify-banner{background:linear-gradient(135deg,#fff7ed,#fef3c7);border:1px solid #fed7aa;border-radius:12px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+    [data-theme="dark"] .verify-banner{background:linear-gradient(135deg,#1c1400,#1a1000);border-color:#92400e;}
+    .verify-banner h4{font-size:14px;font-weight:800;color:#92400e;margin:0 0 3px;}
+    [data-theme="dark"] .verify-banner h4{color:#fbbf24;}
+    .verify-banner p{font-size:12px;color:#b45309;margin:0;}
+    [data-theme="dark"] .verify-banner p{color:#d97706;}
+    .verify-banner a{margin-left:auto;padding:8px 16px;background:#ec5b13;color:white;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;flex-shrink:0;}
+    .chart-wrap{position:relative;height:200px;}
+    .hours-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+    .hour-day{text-align:center;padding:8px 4px;border-radius:8px;background:var(--bg-secondary);}
+    .hour-day.today{background:#fff7ed;border:1.5px solid #ec5b13;}
+    .hour-day-lbl{font-size:10px;font-weight:700;color:#94a3b8;margin-bottom:4px;}
+    .hour-day.today .hour-day-lbl{color:#ec5b13;}
+    .hour-day-val{font-size:10px;color:#15803d;font-weight:600;}
+    .hour-day-val.closed{color:#dc2626;}
   </style>
-
-<style>
-.mobile-bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(255,255,255,.97);
-  backdrop-filter:blur(12px);
-  border-top:1px solid #e2e8f0;
-  display:flex!important;
-  height:60px;
-  z-index:999;
-  padding-bottom:env(safe-area-inset-bottom,0);
-}
-@media(min-width:768px){.mobile-bottom-nav{display:none!important;}}
-[data-theme="dark"] .mobile-bottom-nav{background:rgba(15,23,42,.97);border-top-color:#1e293b;}
-.mob-nav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;text-decoration:none;color:#94a3b8;font-size:9px;font-weight:700;
-  transition:color .15s;padding-bottom:2px;
-}
-.mob-nav-item.active,.mob-nav-item:hover{color:#ec5b13;}
-.mob-nav-post{color:#ec5b13;}
-.mob-nav-post .material-symbols-outlined{font-size:32px!important;}
-/* Body padding for bottom nav on mobile */
-@media(max-width:767px){
-  body{padding-bottom:68px!important;}
-}
-</style>
-<script>
-// Mobile nav active state
-(function(){
-  const page = location.pathname.split('/').pop() || 'index.html';
-  const map = {'index.html':'mnHome','listings.html':'mnSearch','post.html':'mnPost','messages.html':'mnMessages','profile.html':'mnProfile'};
-  const activeId = map[page];
-  if(activeId){
-    document.addEventListener('DOMContentLoaded',()=>{
-      const el=document.getElementById(activeId);
-      if(el) el.classList.add('active');
-    });
-  }
-})();
-</script>
-
 </head>
 <body>
-
 <header class="header">
   <nav class="nav-container">
     <a href="index.html" class="logo">SomBazar</a>
-    <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
-      <a href="" id="viewStoreLink" target="_blank" style="padding:7px 14px;border-radius:9px;border:1.5px solid var(--border-color);font-size:13px;font-weight:700;text-decoration:none;color:var(--text-primary);">View Store ↗</a>
-      <a href="store-edit.html" style="padding:7px 14px;border-radius:9px;background:#ec5b13;color:white;font-size:13px;font-weight:800;text-decoration:none;">Edit Store</a>
-    </div>
+    <div class="header-actions" id="headerActions"></div>
   </nav>
 </header>
 
-<main style="max-width:960px;margin:24px auto;padding:0 16px 60px;">
+<main style="max-width:960px;margin:24px auto;padding:0 16px 80px;">
 
-  <!-- Store Header -->
-  <div class="section-card" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-    <img id="dashLogo" src="" alt="Logo" style="width:64px;height:64px;border-radius:12px;object-fit:cover;background:#f1f5f9;" onerror="this.style.display='none'">
-    <div style="flex:1;">
-      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <h1 id="dashStoreName" style="font-size:20px;font-weight:900;color:var(--text-primary);margin:0;"></h1>
-        <span id="dashVerifBadge" class="badge-verif" style="display:none;"></span>
-      </div>
-      <div id="dashMeta" style="font-size:13px;color:#64748b;margin-top:4px;"></div>
+  <!-- Page header -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+    <div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text-primary);margin:0 0 2px;">Store Dashboard</h1>
+      <p id="storeNameLabel" style="font-size:13px;color:#64748b;margin:0;"></p>
     </div>
-    <div id="dashOpenStatus" style="font-size:13px;font-weight:700;padding:6px 12px;border-radius:20px;"></div>
+    <div style="display:flex;gap:8px;">
+      <a href="store.html" id="viewStoreBtn" style="display:none;padding:9px 16px;border:1.5px solid var(--border-color);border-radius:9px;font-size:12px;font-weight:700;color:var(--text-primary);text-decoration:none;background:var(--bg-card);">
+        <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">visibility</span> View Store
+      </a>
+      <a href="store-edit.html" style="padding:9px 16px;background:#ec5b13;color:white;border-radius:9px;font-size:12px;font-weight:700;text-decoration:none;">
+        <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;">edit</span> Edit Store
+      </a>
+    </div>
   </div>
 
-  <!-- Stats Grid -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:16px;">
-    <div class="stat-card"><div class="stat-num" id="sActive">—</div><div class="stat-lbl">Active Listings</div></div>
-    <div class="stat-card"><div class="stat-num" id="sWeekViews">—</div><div class="stat-lbl">Views (7 days)</div></div>
-    <div class="stat-card"><div class="stat-num" id="sMonthOffers">—</div><div class="stat-lbl">Offers (30 days)</div></div>
-    <div class="stat-card"><div class="stat-num" id="sFollowers">—</div><div class="stat-lbl">Followers</div></div>
-    <div class="stat-card"><div class="stat-num" id="sRating">—</div><div class="stat-lbl">Rating</div></div>
+  <!-- Verify banner -->
+  <div id="verifyBanner" style="display:none;" class="verify-banner">
+    <div style="font-size:28px;flex-shrink:0;">🏪</div>
+    <div><h4>Get Verified!</h4><p>Verified stores get more trust, visibility and a verification badge.</p></div>
+    <a href="store-edit.html#verification">Get Verified →</a>
   </div>
 
-  <!-- Top Listings -->
-  <div class="section-card">
-    <h3 style="font-size:15px;font-weight:800;margin-bottom:14px;color:var(--text-primary);">Top Listings (by views)</h3>
-    <div id="topListings" style="font-size:13px;color:#94a3b8;">Loading...</div>
+  <!-- Quick actions -->
+  <div class="action-grid">
+    <a href="post.html" class="action-btn"><span class="ico">➕</span>Post Listing</a>
+    <a href="store-edit.html" class="action-btn"><span class="ico">✏️</span>Edit Store</a>
+    <a href="messages.html" class="action-btn"><span class="ico">💬</span>Messages</a>
+    <a href="listings.html?my=1" class="action-btn"><span class="ico">📦</span>My Listings</a>
+    <a href="profile.html" class="action-btn"><span class="ico">💰</span>Offers</a>
+    <a href="notifications.html" class="action-btn"><span class="ico">🔔</span>Notifications</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="dash-grid">
+    <div class="stat-card"><div class="ico">📦</div><div class="num" id="sActive">—</div><div class="lbl">Active Listings</div></div>
+    <div class="stat-card"><div class="ico">👁️</div><div class="num" id="sWeekViews">—</div><div class="lbl">Views This Week</div></div>
+    <div class="stat-card"><div class="ico">💰</div><div class="num" id="sMonthOffers">—</div><div class="lbl">Offers This Month</div></div>
+    <div class="stat-card"><div class="ico">❤️</div><div class="num" id="sFollowers">—</div><div class="lbl">Followers</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+    <!-- Chart -->
+    <div class="dash-section">
+      <h3>📈 Views — This Week vs This Month</h3>
+      <div class="chart-wrap"><canvas id="viewsChart"></canvas></div>
+    </div>
+    <!-- Top listings -->
+    <div class="dash-section">
+      <h3>🔥 Top Listings</h3>
+      <div id="topListings"><div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- Quick Replies -->
+  <div class="dash-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="margin:0;">⚡ Quick Replies</h3>
+      <button onclick="showAddReply()" style="padding:7px 14px;background:#ec5b13;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">+ Add</button>
+    </div>
+    <div id="quickRepliesList"><div style="text-align:center;padding:16px;color:#94a3b8;font-size:13px;">Loading...</div></div>
+    <div id="addReplyForm" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color);">
+      <textarea id="newReplyText" rows="2" placeholder="Type your quick reply..." maxlength="300" style="width:100%;border:1.5px solid var(--border-color);border-radius:8px;padding:10px;font-size:13px;font-family:inherit;resize:none;background:var(--input-bg);color:var(--text-primary);outline:none;box-sizing:border-box;"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button onclick="saveReply()" style="flex:1;padding:9px;background:#ec5b13;color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;">Save</button>
+        <button onclick="hideAddReply()" style="padding:9px 16px;background:#f1f5f9;color:#374151;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <!-- Working Hours -->
-  <div class="section-card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <h3 style="font-size:15px;font-weight:800;color:var(--text-primary);margin:0;">Working Hours</h3>
-      <button onclick="saveHours()" id="saveHoursBtn" style="background:#ec5b13;color:white;border:none;padding:7px 16px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;">Save Hours</button>
+  <div class="dash-section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h3 style="margin:0;">🕐 Working Hours</h3>
+      <a href="store-edit.html" style="font-size:12px;color:#ec5b13;font-weight:700;text-decoration:none;">Edit →</a>
     </div>
-    <div id="hoursGrid"></div>
-  </div>
-
-  <!-- Verification Status -->
-  <div class="section-card" id="verifCard">
-    <h3 style="font-size:15px;font-weight:800;margin-bottom:10px;color:var(--text-primary);">Store Verification</h3>
-    <div id="verifContent" style="font-size:13px;color:#64748b;">Loading...</div>
+    <div id="workingHoursDisplay" style="font-size:13px;color:#64748b;">Loading...</div>
   </div>
 
 </main>
+
+<style>
+.mobile-bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);border-top:1px solid #e2e8f0;display:flex;height:60px;z-index:999;padding-bottom:env(safe-area-inset-bottom,0);}
+@media(min-width:768px){.mobile-bottom-nav{display:none!important;}}
+[data-theme="dark"] .mobile-bottom-nav{background:rgba(15,23,42,.97);border-top-color:#1e293b;}
+.mob-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-decoration:none;color:#94a3b8;font-size:9px;font-weight:700;padding-bottom:2px;}
+.mob-nav-item.active,.mob-nav-item:hover{color:#ec5b13;}
+.mob-nav-post{color:#ec5b13;}
+@media(max-width:767px){body{padding-bottom:68px!important;}}
+</style>
+<script>(function(){var p=location.pathname.split('/').pop()||'index.html';var m={'index.html':'mnHome','listings.html':'mnSearch','post.html':'mnPost','messages.html':'mnMessages','profile.html':'mnProfile'};var id=m[p];if(id)document.addEventListener('DOMContentLoaded',function(){var el=document.getElementById(id);if(el)el.classList.add('active');});})();</script>
+<nav class="mobile-bottom-nav" id="mobileBottomNav">
+  <a href="index.html" class="mob-nav-item" id="mnHome"><span class="material-symbols-outlined" style="font-size:24px;">home</span><span>Home</span></a>
+  <a href="listings.html" class="mob-nav-item" id="mnSearch"><span class="material-symbols-outlined" style="font-size:24px;">search</span><span>Browse</span></a>
+  <a href="post.html" class="mob-nav-item mob-nav-post" id="mnPost"><span class="material-symbols-outlined" style="font-size:28px;">add_circle</span><span>Post</span></a>
+  <a href="messages.html" class="mob-nav-item" id="mnMessages"><span class="material-symbols-outlined" style="font-size:24px;">chat</span><span>Messages</span></a>
+  <a href="profile.html" class="mob-nav-item" id="mnProfile"><span class="material-symbols-outlined" style="font-size:24px;">person</span><span>Profile</span></a>
+</nav>
 
 <script src="assets/app.min.js"></script>
 <script>
 const user = JSON.parse(localStorage.getItem('sb_user') || 'null');
 if (!user) window.location.href = 'auth.html?redirect=store-dashboard.html';
 
-const DAYS = [
-  ['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],
-  ['thu','Thursday'],['fri','Friday'],['sat','Saturday'],['sun','Sunday']
-];
-
-let storeData = null;
+const DAYS = [['mon','Mon'],['tue','Tue'],['wed','Wed'],['thu','Thu'],['fri','Fri'],['sat','Sat'],['sun','Sun']];
 
 async function loadDashboard() {
   try {
     const store = await apiFetch('/api/stores.php?action=my_store');
     if (!store || !store.id) {
-      document.querySelector('main').innerHTML = '<div style="text-align:center;padding:60px;"><h2>No store found</h2><a href="store-setup.html" style="color:#ec5b13;font-weight:700;">Create a Store →</a></div>';
+      document.querySelector('main').innerHTML = '<div style="text-align:center;padding:60px;"><h2>No store yet</h2><a href="store-setup.html" style="color:#ec5b13;font-weight:700;">Open a Store →</a></div>';
       return;
     }
-    storeData = store;
-
-    // Header
-    if (storeData.logo_url) document.getElementById('dashLogo').src = storeData.logo_url;
-    document.getElementById('dashStoreName').textContent = storeData.store_name;
-    document.getElementById('viewStoreLink').href = 'store.html?slug=' + storeData.slug;
-
-    // Verification badge
-    const verifBadge = document.getElementById('dashVerifBadge');
-    const verifMap = {
-      unverified: {bg:'#f1f5f9',color:'#64748b',label:'Not Verified'},
-      pending:    {bg:'#fef9c3',color:'#854d0e',label:'⏳ Pending'},
-      verified:   {bg:'#dcfce7',color:'#15803d',label:'✅ Verified'},
-      rejected:   {bg:'#fee2e2',color:'#dc2626',label:'❌ Rejected'},
-    };
-    const v = verifMap[storeData.verification_status] || verifMap.unverified;
-    verifBadge.style.cssText = `display:inline-flex;background:${v.bg};color:${v.color};`;
-    verifBadge.textContent = v.label;
-
-    // Meta
-    const metas = [];
-    if (storeData.city) metas.push('📍 ' + storeData.city);
-    if (storeData.store_type) metas.push(storeData.store_type.replace('_',' '));
-    if (storeData.plan) metas.push('Plan: ' + storeData.plan.toUpperCase());
-    document.getElementById('dashMeta').textContent = metas.join('  ·  ');
-
-    // Open status
-    if (storeData.open_status) {
-      const el = document.getElementById('dashOpenStatus');
-      el.textContent = (storeData.open_status.is_open ? '🟢 ' : '🔴 ') + storeData.open_status.label;
-      el.style.background = storeData.open_status.is_open ? '#dcfce7' : '#fee2e2';
-      el.style.color = storeData.open_status.is_open ? '#15803d' : '#dc2626';
-    }
-
-    // Working hours
-    renderHoursEditor(storeData.working_hours);
-
-    // Analytics
-    loadAnalytics();
-
-    // Verification card
-    renderVerifCard();
-
-  } catch(e) {
-    console.error(e);
-  }
+    document.getElementById('storeNameLabel').textContent = store.store_name;
+    const vb = document.getElementById('viewStoreBtn');
+    vb.href = 'store.html?slug=' + (store.slug || store.id);
+    vb.style.display = 'flex';
+    if (store.verification_status !== 'verified') document.getElementById('verifyBanner').style.display = 'flex';
+    renderWorkingHours(store.working_hours);
+  } catch(e) { console.error(e); }
 }
 
 async function loadAnalytics() {
   try {
     const d = await apiFetch('/api/stores.php?action=analytics');
     if (!d) return;
-    document.getElementById('sActive').textContent = d.active_listings || 0;
-    document.getElementById('sWeekViews').textContent = d.weekly_views || 0;
-    document.getElementById('sMonthOffers').textContent = d.monthly_offers || 0;
-    document.getElementById('sFollowers').textContent = d.follower_count || 0;
-    document.getElementById('sRating').textContent = storeData?.avg_rating > 0 ? parseFloat(storeData.avg_rating).toFixed(1) + ' ⭐' : '—';
+    document.getElementById('sActive').textContent     = d.active_listings || 0;
+    document.getElementById('sWeekViews').textContent  = d.weekly_views    || 0;
+    document.getElementById('sMonthOffers').textContent= d.monthly_offers  || 0;
+    document.getElementById('sFollowers').textContent  = d.follower_count  || 0;
 
     // Top listings
-    const top = d.top_listings || [];
-    const el = document.getElementById('topListings');
-    if (!top.length) { el.textContent = 'No listings yet'; return; }
-    el.innerHTML = top.map((l,i) => `
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border-color);">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:18px;font-weight:900;color:#94a3b8;width:20px;">${i+1}</span>
-          <a href="listing.html?id=${l.id}" style="font-weight:700;font-size:13px;color:var(--text-primary);text-decoration:none;">${l.title}</a>
-        </div>
-        <span style="font-size:12px;color:#64748b;font-weight:600;">👁 ${l.view_count || 0}</span>
-      </div>`).join('');
+    const topEl = document.getElementById('topListings');
+    const tops  = d.top_listings || [];
+    if (!tops.length) { topEl.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No data yet</div>'; }
+    else {
+      topEl.innerHTML = tops.slice(0,5).map((l,i) => {
+        const img = (Array.isArray(l.images) ? l.images : [])[0] || '';
+        return `<div class="top-row">
+          <span style="font-size:13px;font-weight:800;color:#94a3b8;width:18px;">${i+1}</span>
+          ${img ? `<img class="top-img" src="${img}" onerror="this.style.display='none'">` : '<div class="top-img"></div>'}
+          <a href="listing.html?id=${l.id}" class="top-title">${l.title||''}</a>
+          <span class="top-views">👁 ${l.view_count||0}</span>
+        </div>`;
+      }).join('');
+    }
+
+    // Chart
+    if (window.Chart) {
+      const ctx = document.getElementById('viewsChart');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['This Week', 'This Month'],
+          datasets: [{ label: 'Views', data: [d.weekly_views||0, d.monthly_views||0],
+            backgroundColor: ['#ec5b13','#fed7aa'], borderRadius: 8, borderSkipped: false }]
+        },
+        options: { responsive:true, maintainAspectRatio:false,
+          plugins:{legend:{display:false}},
+          scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:11}}},
+                  x:{grid:{display:false},ticks:{font:{size:11}}}} }
+      });
+    }
+  } catch(e) { console.error(e); }
+}
+
+function renderWorkingHours(hours) {
+  const el = document.getElementById('workingHoursDisplay');
+  if (!hours) { el.textContent = 'Not set'; return; }
+  const today = ['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
+  el.innerHTML = '<div class="hours-grid">' + DAYS.map(([k,label]) => {
+    const h = hours[k]; const closed = !h || h.closed; const isToday = k === today;
+    return `<div class="hour-day ${isToday?'today':''}">
+      <div class="hour-day-lbl">${label}</div>
+      <div class="hour-day-val ${closed?'closed':''}">${closed?'—':(h.open||'?')}</div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+async function loadQuickReplies() {
+  const token = localStorage.getItem('sb_token') || '';
+  try {
+    const r = await fetch('/api/quick_replies.php?action=list', { headers:{'Authorization':'Bearer '+token} });
+    const d = await r.json();
+    const list = document.getElementById('quickRepliesList');
+    const replies = d.success ? (d.data.replies || d.data || []) : [];
+    if (!replies.length) { list.innerHTML = '<div style="text-align:center;padding:16px;color:#94a3b8;font-size:13px;">No quick replies yet.</div>'; return; }
+    list.innerHTML = replies.map(r => `<div class="qr-item"><span class="qr-text">${r.body}</span><button onclick="deleteReply(${r.id})" style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;padding:0;" title="Delete">🗑</button></div>`).join('');
   } catch(e) {}
 }
 
-function renderHoursEditor(hours) {
-  const grid = document.getElementById('hoursGrid');
-  grid.innerHTML = DAYS.map(([key, label]) => {
-    const h = hours?.[key];
-    const closed = !h || h.closed;
-    return `<div class="hours-row">
-      <div class="day-label">${label}</div>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;">
-        <input type="checkbox" id="closed_${key}" ${closed ? 'checked' : ''} onchange="toggleDayClosed('${key}')" style="accent-color:#ec5b13;">
-        <span style="color:#64748b;font-size:12px;">Closed</span>
-      </label>
-      <div id="times_${key}" style="${closed ? 'display:none;' : ''}display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-        <input type="time" class="time-input" id="open_${key}" value="${h?.open || '09:00'}">
-        <span style="font-size:12px;color:#94a3b8;">to</span>
-        <input type="time" class="time-input" id="close_${key}" value="${h?.close || '18:00'}">
-      </div>
-    </div>`;
-  }).join('');
-}
+function showAddReply() { document.getElementById('addReplyForm').style.display='block'; document.getElementById('newReplyText').focus(); }
+function hideAddReply() { document.getElementById('addReplyForm').style.display='none'; document.getElementById('newReplyText').value=''; }
 
-function toggleDayClosed(key) {
-  const isClosed = document.getElementById('closed_' + key).checked;
-  const timesEl  = document.getElementById('times_' + key);
-  timesEl.style.display = isClosed ? 'none' : 'flex';
-}
-
-async function saveHours() {
-  const btn = document.getElementById('saveHoursBtn');
-  btn.disabled = true; btn.textContent = 'Saving...';
-
-  const hours = {};
-  DAYS.forEach(([key]) => {
-    const closed = document.getElementById('closed_' + key).checked;
-    if (closed) {
-      hours[key] = { closed: true };
-    } else {
-      hours[key] = {
-        closed: false,
-        open:  document.getElementById('open_' + key).value || '09:00',
-        close: document.getElementById('close_' + key).value || '18:00',
-      };
-    }
-  });
-
+async function saveReply() {
+  const text = document.getElementById('newReplyText').value.trim();
+  if (!text) return;
+  const token = localStorage.getItem('sb_token') || '';
   try {
-    const res = await apiFetch('/api/stores.php?action=working_hours', {
-      method: 'POST',
-      body: JSON.stringify({ hours })
-    });
-    showToast('Working hours saved! ✅', 'success');
-  } catch(e) { showToast('Network error', 'error'); }
-
-  btn.disabled = false; btn.textContent = 'Save Hours';
+    const r = await fetch('/api/quick_replies.php?action=save', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify({body:text}) });
+    const d = await r.json();
+    if (d.success) { hideAddReply(); loadQuickReplies(); showToast('Quick reply saved! ✅','success'); }
+    else showToast(d.error||'Failed','error');
+  } catch(e) { showToast('Error','error'); }
 }
 
-function renderVerifCard() {
-  const el = document.getElementById('verifContent');
-  const v = storeData?.verification_status || 'unverified';
-
-  if (v === 'verified') {
-    el.innerHTML = '<p style="color:#15803d;font-weight:700;">✅ Your store is verified! Buyers trust verified stores.</p>';
-  } else if (v === 'pending') {
-    el.innerHTML = '<p style="color:#854d0e;font-weight:700;">⏳ Your verification request is under review (up to 72 hours).</p>';
-  } else if (v === 'rejected') {
-    el.innerHTML = `<p style="color:#dc2626;font-weight:700;margin-bottom:10px;">❌ Verification rejected.</p>
-      <button onclick="requestVerification()" style="background:#ec5b13;color:white;border:none;padding:8px 16px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;">Apply Again</button>`;
-  } else {
-    el.innerHTML = `<p style="margin-bottom:10px;">Get verified to build trust with buyers and appear higher in search results.</p>
-      <button onclick="requestVerification()" style="background:#ec5b13;color:white;border:none;padding:8px 16px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;">Request Verification</button>`;
-  }
-}
-
-async function requestVerification() {
+async function deleteReply(id) {
+  if (!confirm('Delete this quick reply?')) return;
+  const token = localStorage.getItem('sb_token') || '';
   try {
-    const res = await apiFetch('/api/stores.php?action=verify_request', {
-      method: 'POST',
-      body: JSON.stringify({ level: 'business' })
-    });
-    showToast('Verification request submitted! ✅', 'success');
-    storeData.verification_status = 'pending'; renderVerifCard();
-  } catch(e) { showToast('Network error', 'error'); }
+    const r = await fetch('/api/quick_replies.php?action=delete', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify({id}) });
+    const d = await r.json();
+    if (d.success) { loadQuickReplies(); showToast('Deleted','success'); }
+  } catch(e) {}
 }
 
 loadDashboard();
+loadAnalytics();
+loadQuickReplies();
 </script>
-
-<!-- Mobile Bottom Nav -->
-<nav style="display:none;" id="mobileBottomNav" class="mobile-bottom-nav">
-  <a href="index.html" class="mob-nav-item" id="mnHome">
-    <span class="material-symbols-outlined" style="font-size:24px;">home</span>
-    <span>Home</span>
-  </a>
-  <a href="listings.html" class="mob-nav-item" id="mnSearch">
-    <span class="material-symbols-outlined" style="font-size:24px;">search</span>
-    <span>Browse</span>
-  </a>
-  <a href="post.html" class="mob-nav-item mob-nav-post" id="mnPost">
-    <span class="material-symbols-outlined" style="font-size:26px;">add_circle</span>
-    <span>Post</span>
-  </a>
-  <a href="messages.html" class="mob-nav-item" id="mnMessages">
-    <span class="material-symbols-outlined" style="font-size:24px;">chat</span>
-    <span>Messages</span>
-  </a>
-  <a href="profile.html" class="mob-nav-item" id="mnProfile">
-    <span class="material-symbols-outlined" style="font-size:24px;">person</span>
-    <span>Profile</span>
-  </a>
-</nav>
-
 </body>
 </html>

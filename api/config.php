@@ -220,7 +220,7 @@ function jsonError(string $message, int $code = 400, array $extra = []): void {
 // JWT
 function createToken(int $userId): string {
     $header  = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
-    $payload = base64_encode(json_encode(['uid' => $userId, 'iat' => time(), 'exp' => time() + 86400 * 30]));
+    $payload = base64_encode(json_encode(['uid' => $userId, 'iat' => time(), 'exp' => time() + 86400 * 7]));
     $sig     = base64_encode(hash_hmac('sha256', "$header.$payload", JWT_SECRET, true));
     return "$header.$payload.$sig";
 }
