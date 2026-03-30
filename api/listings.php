@@ -144,15 +144,20 @@ function handleGet(int $id): void {
     if (!$row) jsonError('Listing not found', 404);
 
     // View count: listing_views tablosuna kaydet (debounce: IP+listing günde 1 kez)
-    $ipHash = substr(md5($_SERVER['REMOTE_ADDR'] ?? 'x'), 0, 12);
-    $today  = date('Y-m-d');
-    $vcheck = $db->prepare("SELECT id FROM listing_views WHERE listing_id=? AND ip_hash=? AND DATE(viewed_at)=?");
-    $vcheck->execute([$id, $ipHash, $today]);
-    if (!$vcheck->fetch()) {
-        try {
-            $db->prepare("INSERT INTO listing_views (listing_id, ip_hash, viewed_at) VALUES (?,?,NOW())")->execute([$id, $ipHash]);
+    // Şema: listing_id, user_id, ip_address, viewed_at
+    $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+    $today     = date('Y-m-d');
+    try {
+        $vcheck = $db->prepare("SELECT id FROM listing_views WHERE listing_id=? AND ip_address=? AND DATE(viewed_at)=?");
+        $vcheck->execute([$id, $ipAddress, $today]);
+        if (!$vcheck->fetch()) {
+            $uid = getAuthUser(); // NULL olabilir, sorun değil
+            $db->prepare("INSERT INTO listing_views (listing_id, user_id, ip_address, viewed_at) VALUES (?,?,?,NOW())")->execute([$id, $uid ?: null, $ipAddress]);
             $db->prepare('UPDATE listings SET views = views + 1 WHERE id = ?')->execute([$id]);
-        } catch(\Throwable $e) {}
+        }
+    } catch(\Throwable $e) {
+        // listing_views tablosu yoksa bile views sayacı çalışsın
+        try { $db->prepare('UPDATE listings SET views = views + 1 WHERE id = ?')->execute([$id]); } catch(\Throwable $e2) {}
     }
     $row['views'] = (int)($row['views'] ?? 0);
 
