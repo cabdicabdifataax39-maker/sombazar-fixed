@@ -203,7 +203,7 @@ function handleInitiate(): void {
     $validCouponId  = null;
     if ($couponCode) {
         try {
-            $cSt = $db->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1");
+            $cSt = $db->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1 FOR UPDATE");
             $cSt->execute([$couponCode]);
             $coupon = $cSt->fetch();
             if ($coupon
@@ -359,7 +359,7 @@ function handleApplyCoupon(): void {
 
     $db = getDB();
     try {
-        $st = $db->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1");
+        $st = $db->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1 FOR UPDATE");
         $st->execute([$code]);
         $coupon = $st->fetch();
 

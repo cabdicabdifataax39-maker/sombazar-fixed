@@ -102,11 +102,8 @@ ServerSignature Off
   Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.openstreetmap.org https://tile.openstreetmap.org; connect-src 'self' https://nominatim.openstreetmap.org; frame-src https://www.openstreetmap.org; frame-ancestors 'none';"
 
   # CORS for API
-  <FilesMatch "\.php$">
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-    Header set Access-Control-Allow-Headers "Authorization, Content-Type, X-Requested-With"
-  </FilesMatch>
+  # CORS - Only specific origins allowed (handled in config.php)
+  # Removed wildcard CORS: Access-Control-Allow-Origin: * was a security risk
 </IfModule>
 
 # ── Keep-Alive ────────────────────────────────────────────────

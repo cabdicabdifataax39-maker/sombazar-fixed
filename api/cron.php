@@ -66,7 +66,7 @@ $task = ($isCLI && isset($argv))
     : ($_GET['task'] ?? 'all');
 
 $tasks = ($task === 'all')
-    ? ['expire_offers', 'expire_plans', 'expire_listings', 'cleanup_temp', 'cleanup_rate_limit', 'sitemap_ping', 'send_reminders']
+    ? ['expire_offers', 'expire_plans', 'expire_listings', 'expire_reservations', 'cleanup_temp', 'cleanup_rate_limit', 'sitemap_ping', 'send_reminders']
     : [$task];
 
 log_cron('cron', 'Starting tasks: ' . implode(', ', $tasks));

@@ -32,7 +32,7 @@ try {
 } catch(\Throwable $e) {}
 
 switch ($action) {
-    case 'suggest':      handleSuggest($pdo); break;
+    case 'suggest':      handleSuggest(getDB()); break;
     case 'list':         handleList();        break;
     case 'get':          if (!$id) jsonError('ID required'); handleGet($id); break;
     case 'create':       if ($method !== 'POST') jsonError('Method not allowed', 405); handleCreate(); break;
@@ -441,10 +441,11 @@ function handleUploadImages(): void {
 
     if ($listId) {
         $db = getDB();
-        $st = $db->prepare('SELECT images FROM listings WHERE id = ?');
+        // IDOR koruması: sadece ilanın sahibi görsel ekleyebilir
+        $st = $db->prepare('SELECT images, user_id FROM listings WHERE id = ?');
         $st->execute([$listId]);
         $row = $st->fetch();
-        if ($row) {
+        if ($row && (int)$row['user_id'] === $uid) {
             $existing = json_decode($row['images'] ?? '[]', true) ?: [];
             $db->prepare('UPDATE listings SET images = ? WHERE id = ?')
                ->execute([json_encode(array_merge($existing, $urls)), $listId]);

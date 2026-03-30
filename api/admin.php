@@ -183,11 +183,12 @@ function handleUsers(): void {
     $total = $db->prepare("SELECT COUNT(*) FROM users u WHERE $whereSQL");
     $total->execute(array_slice($params, 0, -2));
 
+    $totalCount = (int)$total->fetchColumn();
     jsonSuccess([
         'users' => array_map('formatAdminUser', $st->fetchAll()),
-        'total' => (int)$total->fetchColumn(),
+        'total' => $totalCount,
         'page'  => $page,
-        'pages' => (int)ceil($total->fetchColumn() / $limit),
+        'pages' => (int)ceil($totalCount / $limit),
     ]);
 }
 

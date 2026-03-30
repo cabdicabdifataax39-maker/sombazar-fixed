@@ -14,7 +14,10 @@ RUN apk add --no-cache \
 
 # PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mysqli mbstring gd zip
+    && docker-php-ext-install pdo pdo_mysql mysqli mbstring gd zip opcache
+
+# OPcache konfigürasyonu
+RUN echo "opcache.enable=1\nopcache.enable_cli=0\nopcache.memory_consumption=128\nopcache.max_accelerated_files=4000\nopcache.revalidate_freq=60\nopcache.validate_timestamps=0" > /usr/local/etc/php/conf.d/opcache.ini
 
 # Nginx config
 RUN mkdir -p /run/nginx

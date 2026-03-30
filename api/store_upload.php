@@ -72,7 +72,13 @@ if ($cloudName && $apiKey && $apiSecret) {
 } else {
     $uploadDir = UPLOAD_DIR . 'stores/';
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-    $ext      = pathinfo($file['name'], PATHINFO_EXTENSION) ?: 'jpg';
+    // Uzantıyı kullanıcı dosya adından değil MIME type'tan al
+    $ext = match($mimeType) {
+        'image/jpeg', 'image/jpg' => 'jpg',
+        'image/png'               => 'png',
+        'image/webp'              => 'webp',
+        default                   => 'jpg',
+    };
     $filename = 'store_' . $storeId . '_' . $type . '_' . time() . '.' . $ext;
     if (!move_uploaded_file($tmpPath, $uploadDir . $filename)) jsonError('Failed to save file');
     $imageUrl = UPLOAD_URL . 'stores/' . $filename;
