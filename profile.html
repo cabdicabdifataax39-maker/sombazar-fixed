@@ -1098,10 +1098,12 @@ function renderMyListings(listings){
         <span class="material-symbols-outlined" style="font-size:14px;">delete</span> Delete
       </button>`;
     }
-    return`<div class="listing-row">
+    const bulkCb = _bulkMode ? `<label style="position:absolute;top:8px;left:8px;z-index:10;cursor:pointer;background:rgba(255,255,255,.9);border-radius:6px;padding:2px 4px;display:flex;align-items:center;"><input type="checkbox" class="bulk-cb" ${_bulkSelected.has(l.id)?'checked':''} onchange="toggleBulkItem(${l.id},this.checked)" style="width:16px;height:16px;accent-color:#ec5b13;cursor:pointer;"></label>` : '';
+  return`<div class="listing-row" style="${_bulkMode?'cursor:default;':''}" onclick="${_bulkMode?`event.stopPropagation();document.querySelector('.bulk-cb[onchange*=\"${l.id}\"]')?.click()`:''}" >
       <div style="position:relative;">
         ${img}
-        <div style="position:absolute;top:10px;left:10px;display:flex;gap:5px;flex-wrap:wrap;">${statusBadge}${featuredBadge}</div>
+        ${bulkCb}
+        <div style="position:absolute;top:10px;${_bulkMode?'left:36px':'left:10px'};display:flex;gap:5px;flex-wrap:wrap;">${statusBadge}${featuredBadge}</div>
         <div style="position:absolute;top:10px;right:10px;font-size:14px;font-weight:900;color:#fff;background:rgba(0,0,0,.55);padding:3px 10px;border-radius:20px;">${l.currency||'USD'} ${Number(l.price).toLocaleString()}</div>
       </div>
       <div style="padding:12px 14px;flex:1;display:flex;flex-direction:column;gap:6px;">
@@ -1174,6 +1176,112 @@ async function relistListing(id){
     showToast('Listing relisted!','success');loadMyListings();
   }catch(e){showToast(e.message,'error');}
 }
+
+// ── Bulk Listing Mode ────────────────────────────────────
+let _bulkMode = false;
+let _bulkSelected = new Set();
+
+function toggleBulkMode() {
+  _bulkMode = !_bulkMode;
+  _bulkSelected.clear();
+  const toolbar = document.getElementById('bulkToolbar');
+  const btn     = document.getElementById('bulkModeBtn');
+  if (_bulkMode) {
+    toolbar.style.display = 'flex';
+    btn.textContent = '✕ Exit Select';
+    btn.style.background = '#fee2e2';
+    btn.style.color = '#dc2626';
+    btn.style.borderColor = '#fca5a5';
+  } else {
+    toolbar.style.display = 'none';
+    btn.textContent = '☑ Select Multiple';
+    btn.style.background = '';
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    document.getElementById('selectAllCheck').checked = false;
+  }
+  renderMyListings(_myListings);
+  updateBulkCount();
+}
+
+function cancelBulk() {
+  _bulkMode = false;
+  _bulkSelected.clear();
+  document.getElementById('bulkToolbar').style.display = 'none';
+  const btn = document.getElementById('bulkModeBtn');
+  btn.textContent = '☑ Select Multiple';
+  btn.style.background = '';
+  btn.style.color = '';
+  btn.style.borderColor = '';
+  document.getElementById('selectAllCheck').checked = false;
+  renderMyListings(_myListings);
+}
+
+function toggleSelectAll(checked) {
+  _bulkSelected.clear();
+  if (checked) {
+    _myListings.forEach(l => _bulkSelected.add(l.id));
+  }
+  updateBulkCount();
+  // Update all checkboxes
+  document.querySelectorAll('.bulk-cb').forEach(cb => { cb.checked = checked; });
+}
+
+function toggleBulkItem(id, checked) {
+  if (checked) _bulkSelected.add(id);
+  else _bulkSelected.delete(id);
+  updateBulkCount();
+  // Update selectAll state
+  const selectAllCb = document.getElementById('selectAllCheck');
+  if (selectAllCb) selectAllCb.checked = (_bulkSelected.size === _myListings.length && _myListings.length > 0);
+}
+
+function updateBulkCount() {
+  const el = document.getElementById('bulkSelectedCount');
+  if (el) el.textContent = _bulkSelected.size + ' selected';
+}
+
+async function bulkAction(action) {
+  const ids = [..._bulkSelected];
+  if (!ids.length) { showToast('No listings selected', 'error'); return; }
+
+  const labels = { active: 'activate', sold: 'mark as sold', delete: 'permanently delete' };
+  if (!confirm(`Are you sure you want to ${labels[action] || action} ${ids.length} listing(s)?`)) return;
+
+  const token = Auth.getToken();
+  let successCount = 0;
+  let failCount = 0;
+
+  for (const id of ids) {
+    try {
+      let url, body;
+      if (action === 'active') {
+        url = 'api/listings.php?action=mark_active&id=' + id;
+        body = JSON.stringify({ listing_id: id });
+      } else if (action === 'sold') {
+        url = 'api/listings.php?action=mark_sold&id=' + id;
+        body = JSON.stringify({ listing_id: id });
+      } else if (action === 'delete') {
+        url = 'api/listings.php?action=delete&id=' + id;
+        body = JSON.stringify({ listing_id: id });
+      }
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }
+      });
+      const d = await r.json();
+      if (d.success) successCount++;
+      else failCount++;
+    } catch(e) { failCount++; }
+  }
+
+  cancelBulk();
+  await loadMyListings();
+
+  if (failCount === 0) showToast(`${successCount} listing(s) updated successfully`, 'success');
+  else showToast(`${successCount} succeeded, ${failCount} failed`, failCount > 0 ? 'error' : 'success');
+}
+
 
 // ── Tab switching ─────────────────────────────
 const TABS=['listings','favorites','offers','reviews','billing','settings'];

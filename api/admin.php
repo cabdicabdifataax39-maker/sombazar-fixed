@@ -884,6 +884,7 @@ function handleCreateCoupon(): void {
     $maxUses  = (int)($data['max_uses'] ?? 0);
     $expires  = !empty($data['expires_at']) ? $data['expires_at'] : null;
     $minPlan  = !empty($data['min_plan'])   ? $data['min_plan']   : null;
+    $isPublic = isset($data['is_public']) ? (int)$data['is_public'] : 1;
 
     if (!$code || !$value) jsonError('Code and value required');
     if (!in_array($type, ['percent','fixed'])) jsonError('Invalid type');
@@ -891,8 +892,10 @@ function handleCreateCoupon(): void {
 
     try {
         $db = getDB();
-        $db->prepare("INSERT INTO discount_codes (code,type,value,max_uses,expires_at,min_plan) VALUES (?,?,?,?,?,?)")
-           ->execute([$code, $type, $value, $maxUses, $expires, $minPlan]);
+        // Add is_public column if missing (safe migration)
+        try { $db->exec("ALTER TABLE discount_codes ADD COLUMN is_public TINYINT(1) DEFAULT 1"); } catch(\Throwable $_e) {}
+        $db->prepare("INSERT INTO discount_codes (code,type,value,max_uses,expires_at,min_plan,is_public) VALUES (?,?,?,?,?,?,?)")
+           ->execute([$code, $type, $value, $maxUses, $expires, $minPlan, $isPublic]);
         jsonSuccess(['message' => "Coupon {$code} created", 'id' => $db->lastInsertId()]);
     } catch(\Throwable $e) {
         if (str_contains($e->getMessage(),'Duplicate')) jsonError('Coupon code already exists');

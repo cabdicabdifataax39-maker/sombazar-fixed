@@ -704,16 +704,17 @@ async function loadCoupons() {
 }
 
 async function createCoupon() {
-  const code  = (document.getElementById('couponCode')?.value || '').trim().toUpperCase();
-  const value = parseFloat(document.getElementById('couponDiscount')?.value || 0);
-  const uses  = parseInt(document.getElementById('couponMax')?.value || 0) || 0;
-  const exp   = document.getElementById('couponExpiry')?.value || '';
-  const type  = 'percent';
+  const code      = (document.getElementById('couponCode')?.value || '').trim().toUpperCase();
+  const value     = parseFloat(document.getElementById('couponDiscount')?.value || 0);
+  const uses      = parseInt(document.getElementById('couponMax')?.value || 0) || 0;
+  const exp       = document.getElementById('couponExpiry')?.value || '';
+  const type      = 'percent';
+  const isPublic  = parseInt(document.getElementById('couponPublic')?.value ?? 1);
   if (!code || !value) return showAdminToast('Code and discount % required', 'error');
   try {
     const r = await fetch('api/admin.php?action=create_coupon', {
       method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, type, value, max_uses: uses, expires_at: exp || null })
+      body: JSON.stringify({ code, type, value, max_uses: uses, expires_at: exp || null, is_public: isPublic })
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error);

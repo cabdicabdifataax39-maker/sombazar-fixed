@@ -1606,7 +1606,7 @@ async function submitReservation() {
       showToast('Reservation request sent! Waiting for seller confirmation.', 'success');
       document.getElementById('reserveBtn').style.display = 'none';
     } else {
-      showReserveError(res.error || 'Failed to reserve');
+      showReserveError(_rj.error || 'Failed to reserve');
     }
   } catch(e) {
     showReserveError('Network error. Please try again.');
