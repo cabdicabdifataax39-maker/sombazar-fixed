@@ -79,6 +79,7 @@ switch ($action) {
     case 'create_coupon':     handleCreateCoupon();    break;
     case 'toggle_coupon':     handleToggleCoupon();    break;
     case 'delete_coupon':     handleDeleteCoupon();    break;
+    case 'update_coupon':     handleUpdateCoupon();    break;
     case 'get_affiliates':      handleListAffiliates();    break;
     case 'approve_affiliate':   handleAffiliateApprove();  break;
     case 'toggle_affiliate':    handleToggleAffiliate();   break;
@@ -901,6 +902,45 @@ function handleCreateCoupon(): void {
         if (str_contains($e->getMessage(),'Duplicate')) jsonError('Coupon code already exists');
         jsonError('Database error');
     }
+}
+
+function handleUpdateCoupon(): void {
+    requireAdmin();
+    $id   = (int)($_GET['id'] ?? 0);
+    if (!$id) jsonError('Missing id');
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $db   = getDB();
+
+    // Validate coupon exists
+    $st = $db->prepare("SELECT id FROM discount_codes WHERE id = ?");
+    $st->execute([$id]);
+    if (!$st->fetch()) jsonError('Coupon not found', 404);
+
+    $sets = [];
+    $vals = [];
+
+    if (isset($data['value'])) {
+        $v = (float)$data['value'];
+        if ($v <= 0 || $v > 100) jsonError('Value must be between 1 and 100');
+        $sets[] = 'value = ?'; $vals[] = $v;
+    }
+    if (isset($data['max_uses'])) {
+        $sets[] = 'max_uses = ?'; $vals[] = max(0, (int)$data['max_uses']);
+    }
+    if (array_key_exists('expires_at', $data)) {
+        $sets[] = 'expires_at = ?'; $vals[] = !empty($data['expires_at']) ? $data['expires_at'] : null;
+    }
+    if (isset($data['is_public'])) {
+        $sets[] = 'is_public = ?'; $vals[] = (int)$data['is_public'];
+    }
+
+    if (empty($sets)) jsonError('Nothing to update');
+
+    $vals[] = $id;
+    $db->prepare("UPDATE discount_codes SET " . implode(', ', $sets) . " WHERE id = ?")
+       ->execute($vals);
+
+    jsonSuccess(['message' => 'Coupon updated']);
 }
 
 function handleToggleCoupon(): void {

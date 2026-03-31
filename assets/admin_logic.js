@@ -666,9 +666,33 @@ function loadAdminOffers() { loadOffers(); }
 // ── Coupons ───────────────────────────────────────────────
 function toggleCouponForm() { openCouponModal(); }
 
-function openCouponModal() {
-  document.getElementById('couponModal').classList.add('open');
-  ['couponCode','couponDiscount','couponMax','couponExpiry'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+function openCouponModal(editData = null) {
+  const modal = document.getElementById('couponModal');
+  const title = document.getElementById('couponModalTitle');
+  modal.classList.add('open');
+  if (editData) {
+    // Edit mode
+    if (title) title.textContent = 'Edit Coupon';
+    const btn = document.getElementById('couponSubmitBtn');
+    if (btn) btn.innerHTML = '<span class="ms">save</span> Save Changes';
+    modal.dataset.editId = editData.id;
+    const code = document.getElementById('couponCode');
+    if (code) { code.value = editData.code || ''; code.readOnly = true; code.style.opacity = '0.6'; }
+    if (document.getElementById('couponDiscount')) document.getElementById('couponDiscount').value = editData.value || '';
+    if (document.getElementById('couponMax'))      document.getElementById('couponMax').value      = editData.max_uses || '';
+    if (document.getElementById('couponExpiry'))   document.getElementById('couponExpiry').value   = editData.expires_at ? editData.expires_at.split('T')[0].split(' ')[0] : '';
+    if (document.getElementById('couponPublic'))   document.getElementById('couponPublic').value   = editData.is_public != null ? String(editData.is_public) : '1';
+  } else {
+    // Create mode
+    if (title) title.textContent = 'Create New Coupon';
+    const btn = document.getElementById('couponSubmitBtn');
+    if (btn) btn.innerHTML = '<span class="ms">add</span> Create Coupon';
+    delete modal.dataset.editId;
+    ['couponDiscount','couponMax','couponExpiry'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    const code = document.getElementById('couponCode');
+    if (code) { code.value = ''; code.readOnly = false; code.style.opacity = ''; }
+    if (document.getElementById('couponPublic')) document.getElementById('couponPublic').value = '1';
+  }
 }
 
 function closeCouponModal() {
@@ -695,7 +719,8 @@ async function loadCoupons() {
         <td style="color:var(--text3);font-size:12px">${cp.expires_at ? new Date(cp.expires_at).toLocaleDateString() : '∞'}</td>
         <td><span class="badge ${cp.is_active ? 'badge-green' : 'badge-gray'}">${cp.is_active ? 'Active' : 'Inactive'}</span></td>
         <td><div class="action-group">
-          <button onclick="toggleCoupon(${cp.id})" class="act-btn act-view">${cp.is_active ? 'Disable' : 'Enable'}</button>
+          <button onclick="editCoupon(${cp.id})" class="act-btn act-view">Edit</button>
+          <button onclick="toggleCoupon(${cp.id})" class="act-btn" style="background:${cp.is_active?'#fef9c3':'#dcfce7'};color:${cp.is_active?'#854d0e':'#15803d'};">${cp.is_active ? 'Disable' : 'Enable'}</button>
           <button onclick="deleteCoupon(${cp.id})" class="act-btn act-delete">Delete</button>
         </div></td>
       </tr>`).join('') +
@@ -704,21 +729,35 @@ async function loadCoupons() {
 }
 
 async function createCoupon() {
-  const code      = (document.getElementById('couponCode')?.value || '').trim().toUpperCase();
-  const value     = parseFloat(document.getElementById('couponDiscount')?.value || 0);
-  const uses      = parseInt(document.getElementById('couponMax')?.value || 0) || 0;
-  const exp       = document.getElementById('couponExpiry')?.value || '';
-  const type      = 'percent';
-  const isPublic  = parseInt(document.getElementById('couponPublic')?.value ?? 1);
+  const modal    = document.getElementById('couponModal');
+  const editId   = modal?.dataset?.editId ? parseInt(modal.dataset.editId) : null;
+  const code     = (document.getElementById('couponCode')?.value || '').trim().toUpperCase();
+  const value    = parseFloat(document.getElementById('couponDiscount')?.value || 0);
+  const uses     = parseInt(document.getElementById('couponMax')?.value || 0) || 0;
+  const exp      = document.getElementById('couponExpiry')?.value || '';
+  const type     = 'percent';
+  const isPublic = parseInt(document.getElementById('couponPublic')?.value ?? 1);
   if (!code || !value) return showAdminToast('Code and discount % required', 'error');
   try {
-    const r = await fetch('api/admin.php?action=create_coupon', {
-      method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, type, value, max_uses: uses, expires_at: exp || null, is_public: isPublic })
-    });
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error);
-    showAdminToast('✓ Coupon ' + code + ' created!', 'success');
+    if (editId) {
+      // Update existing coupon
+      const r = await fetch('api/admin.php?action=update_coupon&id=' + editId, {
+        method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value, max_uses: uses, expires_at: exp || null, is_public: isPublic })
+      });
+      const d = await r.json();
+      if (!d.success) throw new Error(d.error);
+      showAdminToast('✓ Coupon ' + code + ' updated!', 'success');
+    } else {
+      // Create new coupon
+      const r = await fetch('api/admin.php?action=create_coupon', {
+        method: 'POST', headers: { ...adminHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, type, value, max_uses: uses, expires_at: exp || null, is_public: isPublic })
+      });
+      const d = await r.json();
+      if (!d.success) throw new Error(d.error);
+      showAdminToast('✓ Coupon ' + code + ' created!', 'success');
+    }
     closeCouponModal();
     loadCoupons();
   } catch(e) { showAdminToast(e.message, 'error'); }
@@ -737,6 +776,18 @@ async function deleteCoupon(id) {
   const r = await fetch('api/admin.php?action=delete_coupon&id=' + id, { headers: adminHeaders() });
   const d = await r.json();
   if (d.success) { showAdminToast('Deleted', 'success'); loadCoupons(); }
+}
+
+function editCoupon(id) {
+  // Find coupon data from the rendered list and open modal in edit mode
+  fetch('api/admin.php?action=get_coupons', { headers: adminHeaders() })
+    .then(r => r.json())
+    .then(d => {
+      const cp = (d.data?.coupons || []).find(c => c.id === id);
+      if (!cp) { showAdminToast('Coupon not found', 'error'); return; }
+      openCouponModal(cp);
+    })
+    .catch(() => showAdminToast('Failed to load coupon', 'error'));
 }
 
 // ── Affiliates ────────────────────────────────────────────
@@ -1109,25 +1160,57 @@ async function sendPushNotification() {
 // ── Categories ───────────────────────────────────────────────────────────
 async function loadCategories() {
   const grid = document.getElementById('categoriesGrid');
+  const catTotal = document.getElementById('catTotal');
+  const catListings = document.getElementById('catListings');
+  const catActive = document.getElementById('catActive');
   if (!grid) return;
-  grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)">Loading…</div>';
+  grid.innerHTML = '<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--text3)">Loading…</td></tr>';
   try {
     const d = await adminFetch('list_categories');
     const cats = d.categories || d.data?.categories || [];
-    if (!cats.length) { grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text3)">No data</div>'; return; }
-    const max = Math.max(...cats.map(c => c.count||0), 1);
-    grid.innerHTML = cats.map(cat => `
-      <div class="cat-card">
-        <div class="cat-name">${esc(cat.category||cat.name||'Unknown')}</div>
-        <div class="cat-bar-track">
-          <div class="cat-bar-fill" style="width:${Math.round((cat.count||0)/max*100)}%"></div>
-        </div>
-        <div class="cat-meta">
-          <span class="cat-total">${cat.count||0} listings</span>
-          <span>${cat.active_count||0} active</span>
-        </div>
-      </div>`).join('');
-  } catch(e) { grid.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">${e.message}</div>`; }
+    if (catTotal) catTotal.textContent = cats.length;
+    const totalListings = cats.reduce((s,c)=>s+(c.count||0),0);
+    const totalActive   = cats.reduce((s,c)=>s+(c.active_count||0),0);
+    if (catListings) catListings.textContent = totalListings.toLocaleString();
+    if (catActive)   catActive.textContent   = totalActive.toLocaleString();
+    if (!cats.length) {
+      grid.innerHTML = '<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--text3)">No data</td></tr>';
+      return;
+    }
+    const max = Math.max(...cats.map(c=>c.count||0), 1);
+    const emojis = {car:'🚗',house:'🏠',land:'🌿',electronics:'📱',furniture:'🪑',jobs:'💼',services:'🔧',hotel:'🏨',animals:'🐾',fashion:'👗'};
+    grid.innerHTML = cats.map((cat, i) => {
+      const name = cat.category || cat.name || 'Unknown';
+      const pct  = Math.round((cat.count||0)/max*100);
+      const activeRate = cat.count ? Math.round((cat.active_count||0)/(cat.count)*100) : 0;
+      const trendColor = activeRate >= 70 ? '#16a34a' : activeRate >= 40 ? '#d97706' : '#dc2626';
+      const trendBg    = activeRate >= 70 ? '#dcfce7' : activeRate >= 40 ? '#fef9c3' : '#fee2e2';
+      return \`<tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:10px 8px;font-weight:700;">
+          <span style="margin-right:6px;">\${emojis[name]||'📦'}</span>\${esc(name)}
+        </td>
+        <td style="padding:10px 8px;text-align:center;font-weight:700;">\${cat.count||0}</td>
+        <td style="padding:10px 8px;text-align:center;">\${cat.active_count||0}</td>
+        <td style="padding:10px 8px;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="flex:1;background:#f1f5f9;border-radius:20px;height:8px;overflow:hidden;">
+              <div style="width:\${pct}%;height:100%;background:#ec5b13;border-radius:20px;transition:width .4s;"></div>
+            </div>
+            <span style="font-size:11px;color:#64748b;min-width:32px;">\${pct}%</span>
+          </div>
+        </td>
+        <td style="padding:10px 8px;">
+          <span style="background:\${trendBg};color:\${trendColor};font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">\${activeRate}% active</span>
+        </td>
+        <td style="padding:10px 8px;">
+          <a href="listings.html?category=\${encodeURIComponent(name)}" target="_blank"
+            style="font-size:12px;font-weight:700;color:#ec5b13;text-decoration:none;padding:4px 10px;border:1.5px solid #ec5b13;border-radius:6px;white-space:nowrap;">
+            View Listings →
+          </a>
+        </td>
+      </tr>\`;
+    }).join('');
+  } catch(e) { grid.innerHTML = \`<tr><td colspan="6" style="padding:40px;text-align:center;color:#ef4444">\${e.message}</td></tr>\`; }
 }
 
 // ── Save Announcement (modal submit) ──────────────────────────────────────

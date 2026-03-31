@@ -2299,7 +2299,7 @@ textarea.fi{resize:vertical}
   </div>
   <div class="fg"><label class="fl">Expires At</label><input class="fi" id="couponExpiry" type="date"></div>
   <div class="fg"><label class="fl">Public (shown on payment page)</label><select class="fi" id="couponPublic"><option value="1">Yes – Show publicly</option><option value="0">No – Admin only</option></select></div>
-  <div class="modal-ft"><button class="btn btn-pr" onclick="saveCoupon()"><span class="ms">add</span> Create Coupon</button><button class="btn btn-ghost" onclick="closeModal('couponModal')">Cancel</button></div>
+  <div class="modal-ft"><button class="btn btn-pr" id="couponSubmitBtn" onclick="saveCoupon()"><span class="ms">add</span> Create Coupon</button><button class="btn btn-ghost" onclick="closeCouponModal()">Cancel</button></div>
   </div>
 </div>
 <div class="modal-overlay" id="announcementModal">
