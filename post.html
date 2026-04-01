@@ -414,7 +414,7 @@
 window.Auth=window.Auth||{getToken:()=>localStorage.getItem('sb_token')||'',getUser:()=>{try{return JSON.parse(localStorage.getItem('sb_user'));}catch(e){return null;}},isLoggedIn:()=>!!localStorage.getItem('sb_token')};
 window.API=window.API||{};
 </script>
-<script src="assets/app.min.js"></script>
+<script src="assets/app.min.js?v=2"></script>
 <script>
 if(typeof loadDraft==='undefined'){window.saveDraft=d=>{try{localStorage.setItem('sb_draft',JSON.stringify(d));}catch(e){}};window.loadDraft=()=>{try{return JSON.parse(localStorage.getItem('sb_draft'));}catch(e){return null;}};window.clearDraft=()=>{try{localStorage.removeItem('sb_draft');}catch(e){}};}
 
