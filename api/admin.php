@@ -1336,9 +1336,11 @@ function handleRevenue(): void {
     foreach ($byMethod->fetchAll() as $r) { $byMethodArr[$r['method']] = ['count'=>(int)$r['cnt'],'total'=>(float)$r['total']]; }
     // YTD revenue
     $ytdSince = date('Y-01-01');
-    $ytd = $db->query("SELECT COALESCE(SUM(amount),0) FROM payments WHERE created_at >= '$ytdSince' AND status='approved'")->fetchColumn();
+    $ytdSt = $db->prepare("SELECT COALESCE(SUM(amount),0) FROM payments WHERE created_at >= ? AND status='approved'");
+    $ytdSt->execute([$ytdSince]); $ytd = $ytdSt->fetchColumn();
     // MRR = avg monthly revenue
-    $mrr = $db->query("SELECT COALESCE(SUM(amount),0)/GREATEST(DATEDIFF(NOW(),'$ytdSince')/30,1) FROM payments WHERE created_at >= '$ytdSince' AND status='approved'")->fetchColumn();
+    $mrrSt = $db->prepare("SELECT COALESCE(SUM(amount),0)/GREATEST(DATEDIFF(NOW(),?)/30,1) FROM payments WHERE created_at >= ? AND status='approved'");
+    $mrrSt->execute([$ytdSince, $ytdSince]); $mrr = $mrrSt->fetchColumn();
 
     jsonSuccess(['revenue' => [
         'total_revenue' => round($total->fetchColumn(), 2),
