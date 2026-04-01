@@ -200,7 +200,7 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-    /* TOAST (fallback if app.min.js not loaded) */
+    /* TOAST (fallback if app.min.js?v=2 not loaded) */
     @keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
   
     /* ── Dark mode overrides ── */
@@ -508,7 +508,7 @@
 window.Auth=window.Auth||{getToken:()=>localStorage.getItem("sb_token")||"",getUser:()=>{try{return JSON.parse(localStorage.getItem("sb_user"))}catch(e){return null}},isLoggedIn:()=>!!localStorage.getItem("sb_token"),clearSession:()=>{localStorage.removeItem("sb_token");localStorage.removeItem("sb_user")}};
 window.API=window.API||{};
 </script>
-<script src="assets/app.min.js"></script>
+<script src="assets/app.min.js?v=2"></script>
 <script>
 // ── Kategori bazlı spec alanları ─────────────────────────
 const EDIT_SPEC_FIELDS = {

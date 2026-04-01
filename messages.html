@@ -588,7 +588,7 @@
 window.Auth=window.Auth||{getToken:()=>localStorage.getItem('sb_token')||'',getUser:()=>{try{return JSON.parse(localStorage.getItem('sb_user'));}catch(e){return null;}},isLoggedIn:()=>!!localStorage.getItem('sb_token'),setSession:(t,u)=>{localStorage.setItem('sb_token',t);localStorage.setItem('sb_user',JSON.stringify(u));},clearSession:()=>{localStorage.removeItem('sb_token');localStorage.removeItem('sb_user');}};
 window.API=window.API||{};
 </script>
-<script src="assets/app.min.js"></script>
+<script src="assets/app.min.js?v=2"></script>
 <script>
 /* ══════════════════════════════════════════════
    MESSAGES PAGE — Full JS
