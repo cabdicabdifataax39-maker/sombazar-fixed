@@ -156,7 +156,7 @@ async function loadReviews() {
 
     const avatarEl = document.getElementById('sellerAvatarWrap');
     if (seller?.avatar_url || seller?.photo_url) {
-      avatarEl.innerHTML = `<img src="${seller.avatar_url || seller.photo_url}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" loading="lazy">`;
+      avatarEl.innerHTML = `<img src="${escHTML(seller.avatar_url || seller.photo_url)}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;" loading="lazy">`;
     } else {
       const initial = (seller?.display_name || 'S')[0].toUpperCase();
       avatarEl.innerHTML = `<div style="width:56px;height:56px;border-radius:50%;background:#ec5b13;display:flex;align-items:center;justify-content:center;color:white;font-size:20px;font-weight:900;">${initial}</div>`;

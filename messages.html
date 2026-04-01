@@ -647,7 +647,7 @@ function initHeader() {
   document.getElementById('headerUserRole').textContent = u.verified ? 'Verified Seller' : 'Member';
   const av = document.getElementById('headerUserAvatar');
   if (u.photoURL) {
-    av.innerHTML = `<img src="${u.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">`;
+    av.innerHTML = `<img src="${escHTML(u.photoURL)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">`;
   } else {
     av.textContent = (u.displayName || 'U')[0].toUpperCase();
   }

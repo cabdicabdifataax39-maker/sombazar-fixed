@@ -154,9 +154,11 @@ function handleMessages(): void {
     $db->prepare('UPDATE messages SET read_at = NOW() WHERE conversation_id = ? AND sender_id != ? AND read_at IS NULL')
        ->execute([$convId, $uid]);
 
-    // Reset unread count for this user
-    $col = $conv['user1_id'] == $uid ? 'unread_count_1' : 'unread_count_2';
-    $db->prepare("UPDATE conversations SET $col = 0 WHERE id = ?")->execute([$convId]);
+    // Reset unread count for this user (CASE kullanarak dinamik kolon injection riskini ortadan kaldır)
+    $db->prepare("UPDATE conversations SET
+        unread_count_1 = CASE WHEN user1_id = ? THEN 0 ELSE unread_count_1 END,
+        unread_count_2 = CASE WHEN user2_id = ? THEN 0 ELSE unread_count_2 END
+        WHERE id = ?")->execute([$uid, $uid, $convId]);
 
     // Get messages
     $st = $db->prepare(
@@ -204,14 +206,18 @@ function handleSend(): void {
        ->execute([$convId, $uid, encryptMessage($text), $imageUrl]);
     $msgId = (int)$db->lastInsertId();
 
-    $otherCol = $conv['user1_id'] == $uid ? 'unread_count_2' : 'unread_count_1';
     $preview  = $imageUrl ? '[Photo]' : mb_substr($text, 0, 200);
-    $db->prepare("UPDATE conversations SET last_message=?, last_message_at=NOW(), $otherCol=$otherCol+1 WHERE id=?")
-       ->execute([$preview, $convId]);
+    $db->prepare("UPDATE conversations SET
+        last_message = ?, last_message_at = NOW(),
+        unread_count_1 = CASE WHEN user2_id = ? THEN unread_count_1 + 1 ELSE unread_count_1 END,
+        unread_count_2 = CASE WHEN user1_id = ? THEN unread_count_2 + 1 ELSE unread_count_2 END
+        WHERE id = ?")->execute([$preview, $uid, $uid, $convId]);
 
     // Clear own typing flag
-    $typingCol = $conv['user1_id'] == $uid ? 'user1_typing_at' : 'user2_typing_at';
-    $db->prepare("UPDATE conversations SET $typingCol = NULL WHERE id = ?")->execute([$convId]);
+    $db->prepare("UPDATE conversations SET
+        user1_typing_at = CASE WHEN user1_id = ? THEN NULL ELSE user1_typing_at END,
+        user2_typing_at = CASE WHEN user2_id = ? THEN NULL ELSE user2_typing_at END
+        WHERE id = ?")->execute([$uid, $uid, $convId]);
 
     // Karşı tarafa bildirim oluştur
     try {
@@ -253,9 +259,11 @@ function handleTyping(): void {
     $conv = $st->fetch();
     if (!$conv) jsonError('Forbidden', 403);
 
-    $col = $conv['user1_id'] == $uid ? 'user1_typing_at' : 'user2_typing_at';
     $val = ($data['typing'] ?? false) ? date('Y-m-d H:i:s') : null;
-    $db->prepare("UPDATE conversations SET $col = ? WHERE id = ?")->execute([$val, $convId]);
+    $db->prepare("UPDATE conversations SET
+        user1_typing_at = CASE WHEN user1_id = ? THEN ? ELSE user1_typing_at END,
+        user2_typing_at = CASE WHEN user2_id = ? THEN ? ELSE user2_typing_at END
+        WHERE id = ?")->execute([$uid, $val, $uid, $val, $convId]);
 
     jsonSuccess(['ok' => true]);
 }

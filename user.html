@@ -351,7 +351,7 @@ function renderHero(s, listingCount) {
   // Avatar
   const avatarEl = document.getElementById('heroAvatar');
   if (s.avatar) {
-    avatarEl.innerHTML = `<img loading="lazy" src="${s.avatar}" alt="${s.name}">`;
+    avatarEl.innerHTML = `<img loading="lazy" src="${escHTML(s.avatar)}" alt="${escHTML(s.name)}">`;
   } else {
     avatarEl.textContent = (s.name || 'S')[0].toUpperCase();
   }

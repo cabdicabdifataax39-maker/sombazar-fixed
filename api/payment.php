@@ -222,14 +222,14 @@ function handleInitiate(): void {
         } catch(\Throwable $e) { $couponCode = ''; }
     }
 
-    // Affiliate ID bul
+    // Affiliate ID bul — kendi kodunu kullanamaz (self-referral engeli)
     $affiliateId = null;
     if ($affiliateRef) {
         try {
-            $affSt = $db->prepare("SELECT id FROM affiliates WHERE ref_code = ? AND is_active = 1");
+            $affSt = $db->prepare("SELECT id, user_id FROM affiliates WHERE ref_code = ? AND is_active = 1");
             $affSt->execute([$affiliateRef]);
             $aff = $affSt->fetch();
-            if ($aff) $affiliateId = (int)$aff['id'];
+            if ($aff && (int)$aff['user_id'] !== $uid) $affiliateId = (int)$aff['id'];
         } catch(\Throwable $e) {}
     }
 
@@ -255,11 +255,11 @@ function handleInitiate(): void {
         $st->execute([$uid, $plan, $finalAmount, $method, $ref, $screenshot ?: null, $idem, $affiliateId, $couponCode ?: null, $discountAmount, $billingCycle]);
         $paymentId = $db->lastInsertId();
 
-        // Kupon kullanım sayısını artır
+        // Kupon kullanım sayısını atomik olarak artır (race condition koruması)
         if ($validCouponId) {
             try {
-                $db->prepare("UPDATE discount_codes SET uses_count = uses_count + 1 WHERE id = ?")
-                   ->execute([$validCouponId]);
+                $upd = $db->prepare("UPDATE discount_codes SET uses_count = uses_count + 1 WHERE id = ? AND (max_uses IS NULL OR max_uses = 0 OR uses_count < max_uses)");
+                $upd->execute([$validCouponId]);
             } catch(\Throwable $e) {}
         }
 
@@ -524,6 +524,13 @@ function handleReceiptHTML(): void {
     $originalPrice = $discount > 0 ? ((float)$p['amount'] + $discount) : (float)$p['amount'];
     $total         = (float)$p['amount']; // amount zaten finalAmount
 
+    // XSS koruması — heredoc içinde kullanmak için escape et
+    $h_name   = htmlspecialchars($p['display_name']   ?? '', ENT_QUOTES, 'UTF-8');
+    $h_email  = htmlspecialchars($p['email']          ?? '', ENT_QUOTES, 'UTF-8');
+    $h_plan   = htmlspecialchars($planData['label']   ?? '', ENT_QUOTES, 'UTF-8');
+    $h_method = htmlspecialchars($p['method']         ?? '', ENT_QUOTES, 'UTF-8');
+    $h_ref    = htmlspecialchars($p['reference_code'] ?? '', ENT_QUOTES, 'UTF-8');
+
     header('Content-Type: text/html; charset=UTF-8');
     echo <<<HTML
 <!DOCTYPE html>
@@ -566,11 +573,11 @@ function handleReceiptHTML(): void {
     <div class="receipt-no">Receipt No: {$receiptNo} &nbsp;·&nbsp; {$date}</div>
   </div>
   <div class="body">
-    <div class="row"><span class="label">Customer</span><span class="value">{$p['display_name']}</span></div>
-    <div class="row"><span class="label">Email</span><span class="value">{$p['email']}</span></div>
-    <div class="row"><span class="label">Plan</span><span class="value">{$planData['label']}</span></div>
-    <div class="row"><span class="label">Payment Method</span><span class="value">{$p['method']}</span></div>
-    <div class="row"><span class="label">Reference Code</span><span class="value" style="font-family:monospace">{$p['reference_code']}</span></div>
+    <div class="row"><span class="label">Customer</span><span class="value">{$h_name}</span></div>
+    <div class="row"><span class="label">Email</span><span class="value">{$h_email}</span></div>
+    <div class="row"><span class="label">Plan</span><span class="value">{$h_plan}</span></div>
+    <div class="row"><span class="label">Payment Method</span><span class="value">{$h_method}</span></div>
+    <div class="row"><span class="label">Reference Code</span><span class="value" style="font-family:monospace">{$h_ref}</span></div>
 HTML;
     if ($discount > 0) {
         echo '<div class="row"><span class="label">Original Price</span><span class="value">$' . number_format($originalPrice, 2) . '</span></div>';

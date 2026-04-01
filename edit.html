@@ -665,7 +665,7 @@ async function loadListing(){
   }catch(e){
     document.getElementById("loadingState").style.display="none";
     document.getElementById("formContent").style.display="";
-    document.getElementById("formContent").innerHTML=`<div class="empty-card"><div class="e-ico">😕</div><div class="e-title">Listing not found</div><div class="e-text">${e.message}</div><a href="profile.html" class="btn btn-p">Back to Profile</a></div>`;
+    document.getElementById("formContent").innerHTML=`<div class="empty-card"><div class="e-ico">😕</div><div class="e-title">Listing not found</div><div class="e-text">${escHTML(e.message)}</div><a href="profile.html" class="btn btn-p">Back to Profile</a></div>`;
   }
 }
 

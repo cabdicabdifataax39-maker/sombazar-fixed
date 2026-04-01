@@ -545,7 +545,7 @@ let step=0,category='',condition='like_new',listingType='sale',rentalPeriod='mon
     const d=await r.json();
     if(d.success&&!d.data.canPost){
       document.getElementById('limitReached').style.display='';
-      document.getElementById('limitMsg').innerHTML=`You are on the <b>${d.data.plan}</b> plan with a limit of <b>${d.data.listingLimit===999?'unlimited':d.data.listingLimit}</b> active listings. You currently have <b>${d.data.activeListings}</b> active.`;
+      document.getElementById('limitMsg').innerHTML=`You are on the <b>${escHTML(d.data.plan)}</b> plan with a limit of <b>${d.data.listingLimit===999?'unlimited':Number(d.data.listingLimit)}</b> active listings. You currently have <b>${Number(d.data.activeListings)}</b> active.`;
       return;
     }
   }catch(e){}

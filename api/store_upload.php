@@ -79,13 +79,16 @@ if ($cloudName && $apiKey && $apiSecret) {
         'image/webp'              => 'webp',
         default                   => 'jpg',
     };
-    $filename = 'store_' . $storeId . '_' . $type . '_' . time() . '.' . $ext;
+    $filename = bin2hex(random_bytes(16)) . '.' . $ext;
     if (!move_uploaded_file($tmpPath, $uploadDir . $filename)) jsonError('Failed to save file');
     $imageUrl = UPLOAD_URL . 'stores/' . $filename;
 }
 
-$col = $type === 'logo' ? 'logo_url' : 'cover_url';
-$db->prepare("UPDATE stores SET $col = ?, updated_at = NOW() WHERE id = ?")
-   ->execute([$imageUrl, $storeId]);
+// Dinamik kolon adı injection riskini önlemek için CASE kullan
+$db->prepare("UPDATE stores SET
+    logo_url  = CASE WHEN ? = 'logo'  THEN ? ELSE logo_url  END,
+    cover_url = CASE WHEN ? = 'cover' THEN ? ELSE cover_url END,
+    updated_at = NOW()
+    WHERE id = ?")->execute([$type, $imageUrl, $type, $imageUrl, $storeId]);
 
 jsonSuccess(['url' => $imageUrl, 'type' => $type, 'message' => ucfirst($type) . ' updated successfully']);
