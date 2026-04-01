@@ -1166,8 +1166,9 @@ function handleGetReports(): void {
 
 // ── handleResolveReport ───────────────────────────────────────
 function handleResolveReport(): void {
+    global $uid;
     requireAdmin();
-    $adminId = requireAdmin();
+    $adminId = $uid;
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
     $reportId = (int)($data['report_id'] ?? 0);
     $action   = $data['action'] ?? 'resolve'; // resolve | delete_listing

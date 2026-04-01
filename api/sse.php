@@ -25,24 +25,22 @@ while ((time() - $start) < $maxTime) {
 
     $db = getDB(); // get fresh connection each loop iteration
 
-    // Correct column names from schema:
-    // conversations: id, listing_id, buyer_id, seller_id
-    // messages: id, conversation_id, sender_id, body, is_read, created_at
-    // users: id, display_name, avatar_url
+    // Schema: conversations (user1_id, user2_id), messages (text, read_at)
     $stmt = $db->prepare("
         SELECT m.id,
                m.conversation_id,
                m.sender_id,
-               m.body,
+               m.text AS body,
                m.created_at,
                u.display_name AS sender_name,
-               u.avatar_url   AS sender_avatar
+               COALESCE(u.avatar_url, u.photo_url) AS sender_avatar
         FROM messages m
-        JOIN users u        ON u.id = m.sender_id
+        JOIN users u         ON u.id = m.sender_id
         JOIN conversations c ON c.id = m.conversation_id
-        WHERE (c.buyer_id = ? OR c.seller_id = ?)
+        WHERE (c.user1_id = ? OR c.user2_id = ?)
           AND m.sender_id != ?
           AND m.id > ?
+          AND m.deleted_at IS NULL
         ORDER BY m.id ASC
         LIMIT 20
     ");

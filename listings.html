@@ -902,7 +902,7 @@ document.addEventListener("DOMContentLoaded",()=>{
       const avatar = userArea.querySelector('.header-avatar');
       if(avatar){
         if(user.photoURL){
-          avatar.innerHTML = `<img src="${user.photoURL}" alt="U" style="width:32px;height:32px;border-radius:50%;object-fit:cover;display:block" loading="lazy">`;
+          avatar.innerHTML = `<img src="${escHTML(user.photoURL)}" alt="U" style="width:32px;height:32px;border-radius:50%;object-fit:cover;display:block" loading="lazy">`;
         } else {
           avatar.textContent = (user.displayName||'U')[0].toUpperCase();
         }

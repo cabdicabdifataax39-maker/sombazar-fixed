@@ -52,6 +52,13 @@ async function apiFetch(endpoint, options = {}) {
   return json.data;
 }
 
+// XSS koruması — innerHTML'e kullanıcı verisi eklemeden önce mutlaka kullan
+function escHTML(str) {
+  const d = document.createElement('div');
+  d.appendChild(document.createTextNode(str == null ? '' : String(str)));
+  return d.innerHTML;
+}
+
 // API helpers
 
 // ═══════════════════════════════════════════════════════════════
@@ -1558,6 +1565,7 @@ const Notif = {
 
   async init() {
     if (!Auth.isLoggedIn()) return;
+    this.stop(); // Mevcut interval'ı temizle (çift init koruması)
     await this.refresh();
     this._polling = setInterval(() => this.refresh(), 30000);
     this._initPush();

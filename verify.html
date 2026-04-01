@@ -295,7 +295,7 @@ async function handleDocUpload(input, docType) {
       <div style="font-size:11px;color:#10b981;font-weight:700">Uploaded</div>`;
     slot.classList.add('uploaded');
   } catch(e) {
-    slot.innerHTML = `<div style="font-size:12px;color:#ef4444">${e.message}</div>`;
+    slot.innerHTML = `<div style="font-size:12px;color:#ef4444">${escHTML(e.message)}</div>`;
     showToast('Upload failed: ' + e.message, 'error');
   }
 }

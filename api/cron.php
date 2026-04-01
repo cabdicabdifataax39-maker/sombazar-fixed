@@ -19,9 +19,10 @@ if (!$isCLI) {
     $secret = $_GET['token'] ?? $_GET['secret'] ?? '';
     $expectedSecret = getenv('CRON_SECRET');
 if (!$expectedSecret) {
-    // CRON_SECRET set edilmemiş — güvenlik riski! Railway Variables'a ekle
-    error_log('[SOMBAZAR CRON] WARNING: CRON_SECRET env var not set! Using insecure default.');
-    $expectedSecret = 'changeme_cron_secret';
+    // CRON_SECRET set edilmemiş — Railway Variables'a ekle
+    error_log('[SOMBAZAR CRON] ERROR: CRON_SECRET env var not set. Aborting for security.');
+    http_response_code(500);
+    exit('CRON_SECRET not configured');
 }
     if (!hash_equals($expectedSecret, $secret)) {
         http_response_code(403);
