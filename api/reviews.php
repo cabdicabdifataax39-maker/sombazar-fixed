@@ -129,12 +129,6 @@ function handleGetSeller(): void {
         $avg->execute([$sellerId]);
         $stats = $avg->fetch();
 
-        // Listing'den seller_id çek
-        $lstSt = $db->prepare('SELECT user_id FROM listings WHERE id=?');
-        $lstSt->execute([$listingId]);
-        $lstRow = $lstSt->fetch();
-        $sellerId = $lstRow ? (int)$lstRow['user_id'] : 0;
-
         // Seller bilgisi
         $sellerSt = $db->prepare('SELECT id, display_name, avatar_url, city FROM users WHERE id=?');
         $sellerSt->execute([$sellerId]);
