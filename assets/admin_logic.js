@@ -313,7 +313,7 @@ async function loadVerifications() {
         </div>
       </div>`;
     }).join('');
-  } catch(e) { list.innerHTML = `<div class="empty-state"><p style="color:var(--red)">${e.message}</p></div>`; }
+  } catch(e) { list.innerHTML = `<div class="empty-state"><p style="color:var(--red)">${escHTML(e.message)}</p></div>`; }
 }
 
 async function verifyUser(id, status) {
@@ -377,7 +377,7 @@ async function loadUsers() {
         </td>
       </tr>`;
     }).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:16px">${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:16px">${escHTML(e.message)}</td></tr>`; }
 }
 
 function openBanModal(id) {
@@ -451,7 +451,7 @@ async function loadListingsAdmin() {
         </td>
       </tr>`;
     }).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="8" style="color:var(--red);padding:16px">${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="8" style="color:var(--red);padding:16px">${escHTML(e.message)}</td></tr>`; }
 }
 
 // alias
@@ -562,7 +562,7 @@ async function loadPayments() {
         </td>
       </tr>`;
     }).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="8" style="color:var(--red);padding:16px">${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="8" style="color:var(--red);padding:16px">${escHTML(e.message)}</td></tr>`; }
 }
 
 async function approvePayment(id) {
@@ -592,7 +592,7 @@ async function loadBlacklist() {
       <td style="font-size:11px;color:var(--text3)">${b.created_at ? new Date(b.created_at).toLocaleDateString() : '—'}</td>
       <td><button onclick="removeBlacklist(${b.id})" class="act-btn act-delete">Remove</button></td>
     </tr>`).join('');
-  } catch(e) { list.innerHTML = `<tr><td colspan="6" style="color:var(--red);padding:16px">${e.message}</td></tr>`; }
+  } catch(e) { list.innerHTML = `<tr><td colspan="6" style="color:var(--red);padding:16px">${escHTML(e.message)}</td></tr>`; }
 }
 
 async function removeBlacklist(id) {
@@ -634,7 +634,7 @@ async function loadLog() {
         <span class="log-time">${time}</span>
       </div>`;
     }).join('');
-  } catch(e) { list.innerHTML = `<div class="empty-state"><p style="color:var(--red)">${e.message}</p></div>`; }
+  } catch(e) { list.innerHTML = `<div class="empty-state"><p style="color:var(--red)">${escHTML(e.message)}</p></div>`; }
 }
 
 // ── Offers ────────────────────────────────────────────────
@@ -658,7 +658,7 @@ async function loadOffers() {
       <td><span class="badge ${statusClass[o.status]||'badge-gray'}" style="text-transform:capitalize">${o.status}</span></td>
       <td style="font-size:12px;color:var(--text3)">${o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-GB') : '—'}</td>
     </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:16px">${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:16px">${escHTML(e.message)}</td></tr>`; }
 }
 
 function loadAdminOffers() { loadOffers(); }
@@ -725,7 +725,7 @@ async function loadCoupons() {
         </div></td>
       </tr>`).join('') +
       '</tbody></table></div>';
-  } catch(e) { list.innerHTML = `<div class="empty-state"><p style="color:var(--red)">${e.message}</p></div>`; }
+  } catch(e) { list.innerHTML = `<div class="empty-state"><p style="color:var(--red)">${escHTML(e.message)}</p></div>`; }
 }
 
 async function createCoupon() {
@@ -826,7 +826,7 @@ async function loadAffiliates() {
         <td style="display:flex;gap:4px;flex-wrap:wrap">${approveBtn}${toggleBtn}${payBtn}</td>
       </tr>`;
     }).join('');
-  } catch(e) { list.innerHTML = `<tr><td colspan="8" style="color:var(--red);padding:12px">${e.message}</td></tr>`; }
+  } catch(e) { list.innerHTML = `<tr><td colspan="8" style="color:var(--red);padding:12px">${escHTML(e.message)}</td></tr>`; }
 }
 
 async function approveAffiliate(userId) {
@@ -943,7 +943,7 @@ async function loadReports() {
         <button class="btn btn-xs" style="background:var(--red-s);color:var(--red-t);border:none" onclick="resolveReport(${r.id},'dismissed')">Dismiss</button>
       </td>
     </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-row">${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-row">${escHTML(e.message)}</td></tr>`; }
 }
 async function resolveReport(id, status) {
   const action = status === 'dismissed' ? 'dismiss' : 'resolve';
@@ -972,7 +972,7 @@ async function loadReviews() {
       <td>${fmtDate(r.created_at)}</td>
       <td style="text-align:right"><button class="btn btn-xs" style="background:var(--red-s);color:var(--red-t);border:none" onclick="deleteReview(${r.id})">Delete</button></td>
     </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-row">${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" class="empty-row">${escHTML(e.message)}</td></tr>`; }
 }
 async function deleteReview(id) {
   if (!confirm('Delete this review?')) return;
@@ -1001,7 +1001,7 @@ async function loadAdminMessages() {
       <td>${r.message_count||0}</td>
       <td>${fmtDate(r.last_activity||r.created_at)}</td>
     </tr>`).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="4" class="empty-row">${e.message}</td></tr>`; }
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="4" class="empty-row">${escHTML(e.message)}</td></tr>`; }
 }
 
 // ── Analytics ────────────────────────────────────────────────────────────
@@ -1094,7 +1094,7 @@ async function loadAnnouncements() {
           <button class="btn btn-xs" style="background:var(--red-s);color:var(--red-t);border:none" onclick="deleteAnnouncement(${a.id})">Delete</button>
         </div>
       </div>`).join('');
-  } catch(e) { list.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">${e.message}</div>`; }
+  } catch(e) { list.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">${escHTML(e.message)}</div>`; }
 }
 function showAnnouncementModal() {
   const title = prompt('Announcement title:');
@@ -1210,7 +1210,7 @@ async function loadCategories() {
         </td>
       </tr>\`;
     }).join('');
-  } catch(e) { grid.innerHTML = \`<tr><td colspan="6" style="padding:40px;text-align:center;color:#ef4444">\${e.message}</td></tr>\`; }
+  } catch(e) { grid.innerHTML = \`<tr><td colspan="6" style="padding:40px;text-align:center;color:#ef4444">\${escHTML(e.message)}</td></tr>\`; }
 }
 
 // ── Save Announcement (modal submit) ──────────────────────────────────────
@@ -1436,7 +1436,7 @@ async function loadStores() {
     loadVerifQueue();
 
   } catch(e) {
-    tableEl.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + e.message + '</div>';
+    tableEl.innerHTML = '<div style="color:#dc2626;padding:20px;">Error: ' + escHTML(e.message) + '</div>';
   }
 }
 

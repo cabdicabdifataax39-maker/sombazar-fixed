@@ -1407,7 +1407,7 @@ async function loadAffiliateSection() {
         </div>`;
     }
   } catch(e) {
-    el.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px;">Error: ${e.message}</div>`;
+    el.innerHTML = `<div style="color:#ef4444;font-size:13px;padding:16px;">Error: ${escHTML(e.message)}</div>`;
   }
 }
 
@@ -1724,7 +1724,7 @@ async function loadOffers(type){
         </div>
       </div>`;
     }).join('');
-  }catch(e){wrap.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:16px;"><b>Error:</b> ${e.message}</div>`;}
+  }catch(e){wrap.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:16px;"><b>Error:</b> ${escHTML(e.message)}</div>`;}
 }
 
 async function cancelOffer(id){
@@ -1811,7 +1811,7 @@ async function loadMyReviews(){
         </div>`:''}
       </div>`;
     }).join('');
-  }catch(e){list.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:16px;">${e.message}</div>`;}
+  }catch(e){list.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:16px;">${escHTML(e.message)}</div>`;}
 }
 function sortReviews(by){}
 
