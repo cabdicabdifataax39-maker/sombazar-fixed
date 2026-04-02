@@ -56,7 +56,7 @@ while ((time() - $start) < $maxTime) {
                 'senderId'       => (int)$msg['sender_id'],
                 'senderName'     => $msg['sender_name'],
                 'senderAvatar'   => $msg['sender_avatar'],
-                'content'        => $msg['body'],
+                'content'        => decryptMessage($msg['body']),
                 'createdAt'      => $msg['created_at'],
             ]);
             echo "id: {$msg['id']}\n";

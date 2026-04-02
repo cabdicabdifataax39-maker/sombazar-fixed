@@ -1146,7 +1146,7 @@ async function archiveChat() {
   try {
     await fetch('api/messages.php?action=archive', {
       method:'POST', headers:{'Content-Type':'application/json',Authorization:'Bearer '+Auth.getToken()},
-      body:JSON.stringify({conversationId:activeConvId})
+      body:JSON.stringify({conversation_id:activeConvId})
     });
     showToast('Chat archived','success');
     closeChat();

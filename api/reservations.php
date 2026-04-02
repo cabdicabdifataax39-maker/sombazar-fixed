@@ -223,9 +223,10 @@ function handleList(): void {
     $role = trim($_GET['role'] ?? 'buyer'); // buyer veya seller
     $db   = getDB();
 
-    // Suresi dolanlari guncelle
+    // Suresi dolanlari guncelle + listing'i active'e geri al
     try {
         $db->exec("UPDATE reservations SET status = 'expired' WHERE status IN ('pending','confirmed') AND expires_at < NOW()");
+        $db->exec("UPDATE listings SET status = 'active' WHERE status = 'reserved' AND id NOT IN (SELECT listing_id FROM reservations WHERE status IN ('pending','confirmed'))");
     } catch (\Throwable $e) {}
 
     $col = $role === 'seller' ? 'seller_id' : 'buyer_id';

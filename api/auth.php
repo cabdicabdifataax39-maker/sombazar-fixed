@@ -570,7 +570,7 @@ function handleDeleteAccount(): void {
     try { $db->exec("ALTER TABLE users ADD COLUMN deleted_at DATETIME NULL"); } catch(\Throwable $e) {}
     try { $db->exec("ALTER TABLE users ADD COLUMN deletion_scheduled_at DATETIME NULL"); } catch(\Throwable $e) {}
 
-    $st = $db->prepare('SELECT password, deleted_at FROM users WHERE id = ?');
+    $st = $db->prepare('SELECT password_hash, deleted_at FROM users WHERE id = ?');
     $st->execute([$uid]);
     $user = $st->fetch();
 
