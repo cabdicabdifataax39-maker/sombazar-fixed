@@ -1105,15 +1105,15 @@ async function loadSimilar(cat, curId) {
     document.getElementById('similarSection').style.display = '';
     document.getElementById('similarGrid').innerHTML = filtered.map(l => {
       const img = l.images?.[0]
-        ? `<img src="${l.images[0]}" class="sim-card-img" loading="lazy" alt="${l.title}">`
+        ? `<img src="${escHTML(l.images[0])}" class="sim-card-img" loading="lazy" alt="${escHTML(l.title)}">`
         : `<div class="sim-card-img" style="display:flex;align-items:center;justify-content:center;background:#f1f5f9;font-size:32px;">${catEmoji(l.category)}</div>`;
       return `<div class="sim-card" onclick="window.location='listing.html?id=${l.id}'">
         ${img}
         <button class="sim-fav" onclick="event.stopPropagation();toggleFavCard&&toggleFavCard(this,${l.id})">♡</button>
         <div class="sim-card-body">
-          <div style="font-size:12px;font-weight:800;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px;">${l.title}</div>
-          <div style="font-size:13px;font-weight:900;color:#ec5b13;">${l.currency || 'USD'} ${Number(l.price).toLocaleString()}</div>
-          <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${l.city || 'Hargeisa'}</div>
+          <div style="font-size:12px;font-weight:800;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:3px;">${escHTML(l.title)}</div>
+          <div style="font-size:13px;font-weight:900;color:#ec5b13;">${escHTML(l.currency || 'USD')} ${Number(l.price).toLocaleString()}</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:2px;">${escHTML(l.city || 'Hargeisa')}</div>
         </div>
       </div>`;
     }).join('');
@@ -1328,8 +1328,8 @@ async function loadSellerOffers() {
 function openRespondModal(oid, amt, cur, buyer, round) {
   _activeOfferId = oid;
   document.getElementById('respondOfferDetails').innerHTML = `
-    <div style="font-size:11px;color:#64748b;margin-bottom:4px;">From <b>${buyer}</b> · Round ${round}/5</div>
-    <div style="font-size:22px;font-weight:900;color:#ec5b13;">${cur} ${Number(amt).toLocaleString()}</div>`;
+    <div style="font-size:11px;color:#64748b;margin-bottom:4px;">From <b>${escHTML(buyer)}</b> · Round ${round}/5</div>
+    <div style="font-size:22px;font-weight:900;color:#ec5b13;">${escHTML(cur)} ${Number(amt).toLocaleString()}</div>`;
   document.getElementById('respondCounterFields').style.display = 'none';
   document.getElementById('counterSubmitWrap').style.display    = 'none';
   document.getElementById('respondError').style.display         = 'none';
@@ -1409,20 +1409,20 @@ function renderReviews(reviews, avg, total) {
   }
   c.innerHTML = summary + reviews.map(rv => {
     const av = rv.reviewerAvatar
-      ? `<img src="${rv.reviewerAvatar}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="">`
-      : `<div style="width:36px;height:36px;border-radius:50%;background:#ec5b13;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;">${(rv.reviewerName||'?')[0].toUpperCase()}</div>`;
+      ? `<img src="${escHTML(rv.reviewerAvatar)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;" alt="">`
+      : `<div style="width:36px;height:36px;border-radius:50%;background:#ec5b13;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;">${escHTML((rv.reviewerName||'?')[0].toUpperCase())}</div>`;
     const dt = new Date(rv.createdAt).toLocaleDateString('en', { year:'numeric', month:'short', day:'numeric' });
     return `<div class="review-row">
       ${av}
       <div style="flex:1;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;">
           <div>
-            <div style="font-size:13px;font-weight:700;color:#0f172a;">${rv.reviewerName}</div>
+            <div style="font-size:13px;font-weight:700;color:#0f172a;">${escHTML(rv.reviewerName)}</div>
             <div>${starsHTML(rv.rating, 13)}</div>
           </div>
           <div style="font-size:11px;color:#94a3b8;">${dt}</div>
         </div>
-        ${rv.comment ? `<p style="font-size:13px;color:#475569;margin:6px 0 0;line-height:1.6;">${rv.comment}</p>` : ''}
+        ${rv.comment ? `<p style="font-size:13px;color:#475569;margin:6px 0 0;line-height:1.6;">${escHTML(rv.comment)}</p>` : ''}
       </div>
     </div>`;
   }).join('');

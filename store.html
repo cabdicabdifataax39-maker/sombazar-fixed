@@ -795,7 +795,7 @@ async function loadListings(page = 1) {
       card.innerHTML = `
         <div class="s-card-img-wrap">
           ${img
-            ? `<img class="s-card-img" src="${img}" alt="${(l.title||'').replace(/"/g,'&quot;')}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\'s-card-ph\'>${catEmoji(l.category)}</div>'">`
+            ? `<img class="s-card-img" src="${escHTML(img)}" alt="${escHTML(l.title||'')}" loading="lazy" onerror="this.style.display='none'">`
             : `<div class="s-card-ph">${catEmoji(l.category)}</div>`
           }
           ${isFeatured ? '<div class="s-badge-feat">FEATURED</div>' : ''}
@@ -804,7 +804,7 @@ async function loadListings(page = 1) {
         </div>
         <div class="s-card-body">
           <div class="s-card-row1">
-            <div class="s-card-title">${l.title || ''}</div>
+            <div class="s-card-title">${escHTML(l.title || '')}</div>
             <button class="s-heart" onclick="event.preventDefault();toggleFav(${l.id},this)">♡</button>
           </div>
           ${loc ? `<div class="s-card-loc">📍 ${loc}</div>` : (l.city ? `<div class="s-card-loc">📍 ${l.city}</div>` : '')}
@@ -901,7 +901,7 @@ function renderWorkingHours(hours) {
     const h = hours[key];
     const isToday = key === today;
     const closed = !h || h.closed;
-    const text = closed ? '<span style="color:#dc2626;">Closed</span>' : `<span style="color:#15803d;">${h.open} – ${h.close}</span>`;
+    const text = closed ? '<span style="color:#dc2626;">Closed</span>' : `<span style="color:#15803d;">${escHTML(h.open)} – ${escHTML(h.close)}</span>`;
     return `<div class="hours-row ${isToday ? 'today' : ''}">
       <span style="color:var(--text-primary);">${label}${isToday ? ' <span style="font-size:10px;background:#ec5b13;color:white;padding:1px 5px;border-radius:4px;">Today</span>' : ''}</span>
       ${text}
@@ -917,7 +917,7 @@ function switchTab(tab, btn) {
 }
 
 function showError(msg) {
-  document.querySelector('.store-hero').innerHTML = `<div style="text-align:center;padding:60px;color:white;"><div style="font-size:48px;margin-bottom:12px;">🏪</div><h2>${msg}</h2><a href="index.html" style="color:#ec5b13;font-weight:700;">← Go Home</a></div>`;
+  document.querySelector('.store-hero').innerHTML = `<div style="text-align:center;padding:60px;color:white;"><div style="font-size:48px;margin-bottom:12px;">🏪</div><h2>${escHTML(msg)}</h2><a href="index.html" style="color:#ec5b13;font-weight:700;">← Go Home</a></div>`;
 }
 
 loadStore();
