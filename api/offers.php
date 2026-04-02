@@ -79,6 +79,13 @@ function handleMake(): void {
     if ((int)$listing['user_id'] === $uid) jsonError('Cannot offer on your own listing');
 
     $sellerId = (int)$listing['user_id'];
+
+    // Blocked users check
+    try {
+        $blSt = $db->prepare('SELECT 1 FROM blocked_users WHERE (blocker_id=? AND blocked_id=?) OR (blocker_id=? AND blocked_id=?) LIMIT 1');
+        $blSt->execute([$uid, $sellerId, $sellerId, $uid]);
+        if ($blSt->fetch()) jsonError('Cannot make offer — messaging not available', 403);
+    } catch (\Throwable $e) {}
     $expires  = date('Y-m-d H:i:s', strtotime('+48 hours'));
     $now      = date('Y-m-d H:i:s');
 
@@ -88,7 +95,7 @@ function handleMake(): void {
 
     if (!$existing) {
         $ins = $db->prepare("INSERT INTO offers (listing_id,buyer_id,seller_id,round,amount,currency,note,status,expires_at) VALUES (?,?,?,1,?,?,?,'pending',?)");
-        $ins->execute([$listingId, $uid, $sellerId, $amount, $currency, $note ?: null, $expires]);
+        $ins->execute([$listingId, $uid, $sellerId, $amount, $currency, $note ? encryptMessage($note) : null, $expires]);
         $offerId = (int)$db->lastInsertId();
 
         // Email: seller'a teklif bildirimi
@@ -135,7 +142,7 @@ function handleMake(): void {
         $newRound = (int)$existing['round'] + 1;
         if ($newRound > 5) jsonError('Maximum 5 rounds reached.');
         $upd = $db->prepare("UPDATE offers SET round=?,amount=?,currency=?,note=?,status='pending',counter_amount=NULL,counter_note=NULL,expires_at=?,responded_at=NULL WHERE id=?");
-        $upd->execute([$newRound, $amount, $currency, $note ?: null, $expires, (int)$existing['id']]);
+        $upd->execute([$newRound, $amount, $currency, $note ? encryptMessage($note) : null, $expires, (int)$existing['id']]);
         jsonSuccess(['offer_id'=>(int)$existing['id'],'round'=>$newRound,'expires_at'=>$expires,'message'=>"New offer sent (Round $newRound/5). Seller has 48 hours to respond."]);
     }
 
@@ -239,7 +246,7 @@ function handleRespond(): void {
         }
         $expires = date('Y-m-d H:i:s', strtotime('+48 hours'));
         $db->prepare("UPDATE offers SET status='countered',counter_amount=?,counter_note=?,responded_at=?,expires_at=? WHERE id=?")
-           ->execute([$camt, $cnote ?: null, $now, $expires, $oid]);
+           ->execute([$camt, $cnote ? encryptMessage($cnote) : null, $now, $expires, $oid]);
         $cnoteText = $cnote ? " Note: $cnote" : '';
         sendOfferMessage((int)$offer['seller_id'], (int)$offer['buyer_id'], (int)$offer['listing_id'],
             "Counter Offer for \"$ltitle\": {$offer['currency']} " . number_format($camt,2) . ".$cnoteText Tap to accept or make a new offer.");

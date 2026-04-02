@@ -750,6 +750,16 @@ function handleApprovePayment(): void {
     $plan_data = $PLANS_ADMIN[$plan] ?? null;
     if (!$plan_data) jsonError('Unknown plan');
 
+    // Amount validation — önlem: admin manipüle edilmiş tutarı onaylayamasın
+    $expectedMin = $plan_data['price'];
+    $billingCycle = $pay['billing_cycle'] ?? 'monthly';
+    if ($billingCycle === 'annual') $expectedMin = round($expectedMin * 10, 2); // 2 ay ücretsiz
+    $paidAmount = (float)$pay['amount'];
+    // Discount sonrası sıfır olabilir (tam kupon), yoksa min beklenen tutarın %50'sinden az olamaz
+    if ($paidAmount > 0 && $paidAmount < ($expectedMin * 0.5)) {
+        jsonError("Payment amount \${$paidAmount} is too low for plan '{$plan}' (expected ~\${$expectedMin}). Reject if fraudulent.", 400);
+    }
+
     // Mark payment approved
     $db->prepare('UPDATE payments SET status="approved", reviewed_by=?, reviewed_at=NOW() WHERE id=?')
        ->execute([$uid, $pid]);

@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Static sitemap — dynamic version at sitemap.php includes active listings -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <!-- Ana sayfalar -->
+  <!-- Replace YOURDOMAIN.COM with your actual domain, or use sitemap.php for dynamic generation -->
   <url>
-    <loc>https://YOURDOMAIN.COM/</loc>
+    <loc>https://sombazar-fixed-production.up.railway.app/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://YOURDOMAIN.COM/listings.html</loc>
+    <loc>https://sombazar-fixed-production.up.railway.app/listings.html</loc>
     <changefreq>hourly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://YOURDOMAIN.COM/listings.html?category=car</loc>
+    <loc>https://sombazar-fixed-production.up.railway.app/listings.html?category=car</loc>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://YOURDOMAIN.COM/listings.html?category=house</loc>
+    <loc>https://sombazar-fixed-production.up.railway.app/listings.html?category=house</loc>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://YOURDOMAIN.COM/listings.html?category=electronics</loc>
+    <loc>https://sombazar-fixed-production.up.railway.app/listings.html?category=electronics</loc>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://YOURDOMAIN.COM/listings.html?category=jobs</loc>
+    <loc>https://sombazar-fixed-production.up.railway.app/listings.html?category=jobs</loc>
     <changefreq>hourly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://YOURDOMAIN.COM/auth.html</loc>
+    <loc>https://sombazar-fixed-production.up.railway.app/auth.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
   </url>

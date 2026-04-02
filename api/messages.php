@@ -201,6 +201,14 @@ function handleSend(): void {
     $conv = $st->fetch();
     if (!$conv) jsonError('Forbidden', 403);
 
+    // Blocked users check — her iki yönde
+    $otherId = (int)$conv['user1_id'] === $uid ? (int)$conv['user2_id'] : (int)$conv['user1_id'];
+    try {
+        $blSt = $db->prepare('SELECT 1 FROM blocked_users WHERE (blocker_id=? AND blocked_id=?) OR (blocker_id=? AND blocked_id=?) LIMIT 1');
+        $blSt->execute([$uid, $otherId, $otherId, $uid]);
+        if ($blSt->fetch()) jsonError('Messaging not available', 403);
+    } catch (\Throwable $e) {} // blocked_users tablosu yoksa devam et
+
     $imageUrl = $data['imageUrl'] ?? null;
     $db->prepare('INSERT INTO messages (conversation_id, sender_id, text, image_url) VALUES (?,?,?,?)')
        ->execute([$convId, $uid, encryptMessage($text), $imageUrl]);
