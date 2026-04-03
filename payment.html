@@ -756,14 +756,16 @@ async function loadPublicCoupons() {
     const d = await r.json();
     if (!d.success || !d.data.coupons?.length) return;
     document.getElementById('availableCoupons').style.display = 'block';
-    document.getElementById('couponChipList').innerHTML = d.data.coupons.map(c => {
-      const label = c.type === 'percent' ? `${c.value}% off` : `$${c.value} off`;
-      return `<button onclick="useCoupon('${c.code}')" class="inline-flex items-center gap-1.5 bg-orange-50 border border-dashed border-primary rounded-lg px-3 py-1.5 text-xs font-bold text-primary hover:bg-orange-100 transition-colors">
-        <span class="material-symbols-outlined text-xs" style="font-size:13px">local_offer</span>
-        <span class="font-mono">${c.code}</span>
-        <span class="bg-primary text-white rounded px-1.5 py-0.5 text-[10px]">${label}</span>
-      </button>`;
-    }).join('');
+    const chipList = document.getElementById('couponChipList');
+    chipList.innerHTML = '';
+    d.data.coupons.forEach(c => {
+      const label = c.type === 'percent' ? `${Number(c.value)}% off` : `$${Number(c.value)} off`;
+      const btn = document.createElement('button');
+      btn.className = 'inline-flex items-center gap-1.5 bg-orange-50 border border-dashed border-primary rounded-lg px-3 py-1.5 text-xs font-bold text-primary hover:bg-orange-100 transition-colors';
+      btn.innerHTML = `<span class="material-symbols-outlined text-xs" style="font-size:13px">local_offer</span><span class="font-mono">${escHTML(c.code)}</span><span class="bg-primary text-white rounded px-1.5 py-0.5 text-[10px]">${escHTML(label)}</span>`;
+      btn.addEventListener('click', () => useCoupon(c.code));
+      chipList.appendChild(btn);
+    });
   } catch(e) {}
 }
 

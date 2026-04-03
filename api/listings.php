@@ -267,7 +267,7 @@ function handleUpdate(int $id): void {
         'images'        => 'images',
         'specs'         => 'specs',
         'year'          => 'year',
-        'featured'      => 'featured',
+        // 'featured' intentionally excluded — only admins can set featured via admin panel
         'status'        => 'status',
         'listing_type'  => 'listing_type',
         'rental_period' => 'rental_period',
@@ -456,10 +456,11 @@ function handleUploadImages(): void {
 
     if ($listId) {
         $db = getDB();
-        $st = $db->prepare('SELECT images FROM listings WHERE id = ?');
+        $st = $db->prepare('SELECT user_id, images FROM listings WHERE id = ?');
         $st->execute([$listId]);
         $row = $st->fetch();
         if ($row) {
+            if ((int)$row['user_id'] !== $uid) jsonError('Forbidden', 403);
             $existing = json_decode($row['images'] ?? '[]', true) ?: [];
             $db->prepare('UPDATE listings SET images = ? WHERE id = ?')
                ->execute([json_encode(array_merge($existing, $urls)), $listId]);
@@ -584,22 +585,24 @@ function handleBoost(): void {
     if (!$listing) jsonError('Listing not found', 404);
     if ((int)$listing['user_id'] !== $uid) jsonError('Not your listing', 403);
 
-    // Boost kredisi var mı?
-    $pkg = $db->prepare('SELECT boost_credits FROM packages WHERE user_id=?');
-    $pkg->execute([$uid]);
-    $pkgRow = $pkg->fetch();
-    $credits = (int)($pkgRow['boost_credits'] ?? 0);
-    if ($credits <= 0) jsonError('No boost credits remaining. Upgrade your plan.');
-
-    // Boost uygula - 7 gün
-    $until = date('Y-m-d H:i:s', strtotime('+7 days'));
+    // Boost kredisi var mı? — Transaction ile race condition önle
     try {
         $db->exec("ALTER TABLE listings ADD COLUMN boosted_until DATETIME NULL");
     } catch(\Throwable $e) {}
-    $db->prepare('UPDATE listings SET boosted_until=? WHERE id=?')->execute([$until, $lid]);
 
-    // Kredi düş
-    $db->prepare('UPDATE packages SET boost_credits = boost_credits - 1 WHERE user_id=?')->execute([$uid]);
+    $db->beginTransaction();
+    // Önce krediyi atomik olarak düş
+    $deduct = $db->prepare('UPDATE packages SET boost_credits = boost_credits - 1 WHERE user_id = ? AND boost_credits > 0');
+    $deduct->execute([$uid]);
+    if ($deduct->rowCount() === 0) {
+        $db->rollBack();
+        jsonError('No boost credits remaining. Upgrade your plan.');
+    }
+
+    // Boost uygula - 7 gün
+    $until = date('Y-m-d H:i:s', strtotime('+7 days'));
+    $db->prepare('UPDATE listings SET boosted_until=? WHERE id=?')->execute([$until, $lid]);
+    $db->commit();
 
     jsonSuccess(['message' => 'Listing boosted for 7 days!', 'boosted_until' => $until]);
 }

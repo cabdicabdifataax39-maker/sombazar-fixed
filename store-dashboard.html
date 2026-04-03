@@ -289,7 +289,7 @@ async function loadAnalytics() {
         return `<div class="top-row">
           <span style="font-size:13px;font-weight:800;color:#94a3b8;width:18px;">${i+1}</span>
           ${img ? `<img class="top-img" src="${img}" onerror="this.style.display='none'">` : '<div class="top-img"></div>'}
-          <a href="listing.html?id=${l.id}" class="top-title">${l.title||''}</a>
+          <a href="listing.html?id=${l.id}" class="top-title">${escHTML(l.title||'')}</a>
           <span class="top-views">👁 ${l.view_count||0}</span>
         </div>`;
       }).join('');

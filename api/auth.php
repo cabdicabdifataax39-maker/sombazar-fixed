@@ -570,7 +570,7 @@ function handleDeleteAccount(): void {
     try { $db->exec("ALTER TABLE users ADD COLUMN deleted_at DATETIME NULL"); } catch(\Throwable $e) {}
     try { $db->exec("ALTER TABLE users ADD COLUMN deletion_scheduled_at DATETIME NULL"); } catch(\Throwable $e) {}
 
-    $st = $db->prepare('SELECT password, deleted_at FROM users WHERE id = ?');
+    $st = $db->prepare('SELECT password_hash, deleted_at FROM users WHERE id = ?');
     $st->execute([$uid]);
     $user = $st->fetch();
 
@@ -739,7 +739,8 @@ function handleLogout(): void {
 function handleGoogleAuth(): void {
     $data     = json_decode(file_get_contents('php://input'), true);
     $token    = $data['credential'] ?? $data['token'] ?? '';
-    $clientId = getenv('GOOGLE_CLIENT_ID') ?: '918952161998-m9equ5ehlmq1cdsjicq26icvid3b4shp.apps.googleusercontent.com';
+    $clientId = getenv('GOOGLE_CLIENT_ID');
+    if (!$clientId) jsonError('Google login is not configured on this server', 503);
 
     if (!$token) jsonError('No credential provided');
 
