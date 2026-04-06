@@ -439,7 +439,7 @@ async function loadListingsAdmin() {
         </td>
         <td style="color:var(--text2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHTML(l.seller||'—')}</td>
         <td style="font-weight:700;white-space:nowrap">$${Number(l.price||0).toLocaleString()}</td>
-        <td><span class="badge ${sc}" style="text-transform:capitalize">${l.status}</span></td>
+        <td><span class="badge ${sc}" style="text-transform:capitalize">${escHTML(l.status||'')}</span></td>
         <td style="color:var(--text3);text-align:center;font-family:var(--mono)">${l.views||0}</td>
         <td style="color:var(--text3);font-size:12px">${dt}</td>
         <td>
@@ -557,7 +557,7 @@ async function loadPayments() {
                 <button onclick="approvePayment(${p.id})" class="act-btn act-approve">✓ Approve</button>
                 <button onclick="rejectPayment(${p.id})" class="act-btn act-delete">✕ Reject</button>
               </div>`
-            : `<span class="badge ${sc}" style="text-transform:capitalize">${p.status}</span>`
+            : `<span class="badge ${sc}" style="text-transform:capitalize">${escHTML(p.status||'')}</span>`
           }
         </td>
       </tr>`;
@@ -655,7 +655,7 @@ async function loadOffers() {
       <td style="color:var(--text2)">${escHTML(o.sellerName||'—')}</td>
       <td style="font-weight:700;font-family:var(--mono)">$${Number(o.amount||0).toLocaleString()}</td>
       <td style="text-align:center"><span style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">${o.round||1}</span></td>
-      <td><span class="badge ${statusClass[o.status]||'badge-gray'}" style="text-transform:capitalize">${o.status}</span></td>
+      <td><span class="badge ${statusClass[o.status]||'badge-gray'}" style="text-transform:capitalize">${escHTML(o.status||'')}</span></td>
       <td style="font-size:12px;color:var(--text3)">${o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-GB') : '—'}</td>
     </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:16px">${escHTML(e.message)}</td></tr>`; }
@@ -713,7 +713,7 @@ async function loadCoupons() {
     list.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Uses</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
       d.data.coupons.map(cp => `<tr>
         <td><span class="coupon-code">${escHTML(cp.code)}</span></td>
-        <td style="text-transform:capitalize;color:var(--text2)">${cp.type}</td>
+        <td style="text-transform:capitalize;color:var(--text2)">${escHTML(cp.type||'')}</td>
         <td style="font-weight:700">${cp.type === 'percent' ? cp.value + '%' : '$' + cp.value}</td>
         <td style="color:var(--text3)">${cp.uses_count}${cp.max_uses > 0 ? '/' + cp.max_uses : ' / ∞'}</td>
         <td style="color:var(--text3);font-size:12px">${cp.expires_at ? new Date(cp.expires_at).toLocaleDateString() : '∞'}</td>

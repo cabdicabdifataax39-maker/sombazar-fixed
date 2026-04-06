@@ -265,7 +265,7 @@ function handleVerifyUser(): void {
 
     $waMsg = $action === 'approve'
         ? urlencode("Hello $waName, your SomBazar account has been verified! You can now post listings with a verified badge.")
-        : urlencode("Hello $waName, your SomBazar verification was not approved. Reason: $note. Please resubmit at: http://localhost:8080/sombazar-fixed/verify.html");
+        : urlencode("Hello $waName, your SomBazar verification was not approved. Reason: $note. Please resubmit at: " . SITE_URL . "/verify.html");
 
     $waLink = $waPhone ? "https://wa.me/$waPhone?text=$waMsg" : null;
 
@@ -760,25 +760,29 @@ function handleApprovePayment(): void {
         jsonError("Payment amount \${$paidAmount} is too low for plan '{$plan}' (expected ~\${$expectedMin}). Reject if fraudulent.", 400);
     }
 
-    // Mark payment approved
-    $db->prepare('UPDATE payments SET status="approved", reviewed_by=?, reviewed_at=NOW() WHERE id=?')
-       ->execute([$uid, $pid]);
-
-    // Activate plan on user — respect billing_cycle
+    // Mark payment approved + activate plan + upsert package — all atomic
     $billingDays = (isset($pay['billing_cycle']) && $pay['billing_cycle'] === 'annual') ? 365 : $plan_data['days'];
     $expires = date('Y-m-d H:i:s', strtotime('+' . $billingDays . ' days'));
-    $db->prepare('UPDATE users SET plan=?, plan_expires_at=? WHERE id=?')
-       ->execute([$plan, $expires, $pay['user_id']]);
 
-    // Create/update package record - upsert by user_id
-    $existPkg = $db->prepare('SELECT id FROM packages WHERE user_id = ?');
-    $existPkg->execute([$pay['user_id']]);
-    if ($existPkg->fetch()) {
-        $db->prepare('UPDATE packages SET plan=?, listing_limit=?, photo_limit=?, boost_credits=?, started_at=NOW(), expires_at=?, payment_id=? WHERE user_id=?')
-           ->execute([$plan, $plan_data['listing_limit'], $plan_data['photo_limit'], $plan_data['boost_credits'], $expires, $pid, $pay['user_id']]);
-    } else {
-        $db->prepare('INSERT INTO packages (user_id, plan, listing_limit, photo_limit, boost_credits, started_at, expires_at, payment_id) VALUES (?,?,?,?,?,NOW(),?,?)')
-           ->execute([$pay['user_id'], $plan, $plan_data['listing_limit'], $plan_data['photo_limit'], $plan_data['boost_credits'], $expires, $pid]);
+    $db->beginTransaction();
+    try {
+        $db->prepare('UPDATE payments SET status="approved", reviewed_by=?, reviewed_at=NOW() WHERE id=?')
+           ->execute([$uid, $pid]);
+        $db->prepare('UPDATE users SET plan=?, plan_expires_at=? WHERE id=?')
+           ->execute([$plan, $expires, $pay['user_id']]);
+        $existPkg = $db->prepare('SELECT id FROM packages WHERE user_id = ?');
+        $existPkg->execute([$pay['user_id']]);
+        if ($existPkg->fetch()) {
+            $db->prepare('UPDATE packages SET plan=?, listing_limit=?, photo_limit=?, boost_credits=?, started_at=NOW(), expires_at=?, payment_id=? WHERE user_id=?')
+               ->execute([$plan, $plan_data['listing_limit'], $plan_data['photo_limit'], $plan_data['boost_credits'], $expires, $pid, $pay['user_id']]);
+        } else {
+            $db->prepare('INSERT INTO packages (user_id, plan, listing_limit, photo_limit, boost_credits, started_at, expires_at, payment_id) VALUES (?,?,?,?,?,NOW(),?,?)')
+               ->execute([$pay['user_id'], $plan, $plan_data['listing_limit'], $plan_data['photo_limit'], $plan_data['boost_credits'], $expires, $pid]);
+        }
+        $db->commit();
+    } catch(\Throwable $txErr) {
+        $db->rollBack();
+        throw $txErr;
     }
 
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
@@ -1018,15 +1022,25 @@ function handleAffiliatePayout(): void {
     requireAdmin();
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
     $affiliateId = (int)($data['affiliate_id'] ?? 0);
-    $amount      = (float)($data['amount']      ?? 0);
+    $amount      = round((float)($data['amount'] ?? 0), 2);
     if (!$affiliateId || $amount <= 0) jsonError('affiliate_id and amount required');
 
     $db = getDB();
     try {
-        $db->prepare("UPDATE affiliates SET pending_payout = GREATEST(0, pending_payout - ?), total_earned = total_earned WHERE id = ?")
+        // Verify affiliate exists and has enough pending balance before deducting
+        $st = $db->prepare("SELECT id, pending_payout FROM affiliates WHERE id = ?");
+        $st->execute([$affiliateId]);
+        $aff = $st->fetch();
+        if (!$aff) jsonError('Affiliate not found', 404);
+        if (round((float)$aff['pending_payout'], 2) < $amount) jsonError('Payout amount exceeds pending balance');
+
+        $db->prepare("UPDATE affiliates SET pending_payout = GREATEST(0, pending_payout - ?) WHERE id = ?")
            ->execute([$amount, $affiliateId]);
         jsonSuccess(['message' => "Payout of \${$amount} recorded"]);
-    } catch(\Throwable $e) { jsonError('Database error'); }
+    } catch(\Throwable $e) {
+        if (str_contains($e->getMessage(), 'Payout amount') || str_contains($e->getMessage(), 'not found')) throw $e;
+        jsonError('Database error');
+    }
 }
 
 // ── requireAdmin helper ──────────────────────────────────────
@@ -1237,20 +1251,27 @@ function handleListReviews(): void {
     $db = getDB();
     try {
         $filterStatus = $_GET['status'] ?? '';
-        $sql = "SELECT rv.*, u1.display_name as reviewer_name, u2.display_name as seller_name
-                FROM reviews rv
-                LEFT JOIN users u1 ON u1.id = rv.reviewer_id
-                LEFT JOIN users u2 ON u2.id = rv.seller_id";
-        if ($filterStatus) { $sql .= " WHERE rv.status = " . $db->quote($filterStatus); }
-        $sql .= " ORDER BY rv.created_at DESC LIMIT 200";
-        $st = $db->query($sql);
+        // Whitelist status values — never concatenate user input into SQL
+        $allowed = ['approved', 'flagged', 'rejected', 'pending'];
+        if ($filterStatus && !in_array($filterStatus, $allowed, true)) $filterStatus = '';
+        $base = "SELECT rv.*, u1.display_name as reviewer_name, u2.display_name as seller_name
+                 FROM reviews rv
+                 LEFT JOIN users u1 ON u1.id = rv.reviewer_id
+                 LEFT JOIN users u2 ON u2.id = rv.seller_id";
+        if ($filterStatus) {
+            $st = $db->prepare($base . " WHERE rv.status = ? ORDER BY rv.created_at DESC LIMIT 200");
+            $st->execute([$filterStatus]);
+        } else {
+            $st = $db->query($base . " ORDER BY rv.created_at DESC LIMIT 200");
+        }
         jsonSuccess(['reviews' => $st->fetchAll()]);
     } catch(\Exception $e) { jsonSuccess(['reviews' => []]); }
 }
 
 function handleModerateReview(): void {
+    global $uid;
     requireAdmin();
-    $adminId = requireAdmin();
+    $adminId = $uid; // requireAdmin() returns void — was incorrectly assigned before
     $data = json_decode(file_get_contents('php://input'), true);
     $id     = (int)($data['id'] ?? 0);
     $status = in_array($data['status'] ?? '', ['approved','flagged','rejected']) ? $data['status'] : 'approved';
@@ -1383,10 +1404,15 @@ function handleListAnnouncements(): void {
 }
 function handleCreateAnnouncement(): void {
     requireAdmin();
-    $data = json_decode(file_get_contents('php://input'), true);
+    $data    = json_decode(file_get_contents('php://input'), true) ?? [];
+    $title   = trim($data['title']   ?? '');
+    $message = trim($data['message'] ?? '');
+    if (!$title || !$message) jsonError('Title and message are required');
+    if (mb_strlen($title)   > 255)  jsonError('Title too long (max 255 chars)');
+    if (mb_strlen($message) > 2000) jsonError('Message too long (max 2000 chars)');
     $db = getDB();
     $db->prepare("INSERT INTO announcements (title, message, is_active) VALUES (?,?,?)")
-       ->execute([$data['title']??'', $data['message']??'', $data['is_active']??1]);
+       ->execute([$title, $message, isset($data['is_active']) ? (int)$data['is_active'] : 1]);
     jsonSuccess(['id' => $db->lastInsertId()]);
 }
 function handleUpdateAnnouncement(): void {
@@ -1422,9 +1448,14 @@ function handlePushStats(): void {
 }
 function handleSendPush(): void {
     requireAdmin();
-    $data  = json_decode(file_get_contents('php://input'), true);
-    $title = $data['title'] ?? ''; $body = $data['body'] ?? ''; $target = $data['target'] ?? 'all';
+    $data   = json_decode(file_get_contents('php://input'), true) ?? [];
+    $title  = trim($data['title']  ?? '');
+    $body   = trim($data['body']   ?? '');
+    $target = trim($data['target'] ?? 'all');
     if (!$title || !$body) jsonError('Title and body required');
+    if (mb_strlen($title) > 100)  jsonError('Title too long (max 100 chars)');
+    if (mb_strlen($body)  > 300)  jsonError('Body too long (max 300 chars)');
+    if (!in_array($target, ['all','buyers','sellers'], true)) $target = 'all';
     $db = getDB();
     try {
         $db->exec("CREATE TABLE IF NOT EXISTS push_logs (
