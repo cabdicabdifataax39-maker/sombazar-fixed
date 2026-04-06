@@ -641,12 +641,14 @@ function handleClean(): void {
     $count = 0;
     try {
         if ($type === 'offers') {
-            $st = $db->exec("UPDATE offers SET status='expired' WHERE status='pending' AND expires_at < NOW()");
-            $count = $st;
+            $count = $db->exec("UPDATE offers SET status='expired' WHERE status='pending' AND expires_at < NOW()");
+        } elseif ($type === 'sessions') {
+            // Invalidate tokens for users who haven't been seen in 30+ days
+            $count = $db->exec("UPDATE users SET token_invalidated_at=NOW() WHERE token_invalidated_at IS NULL AND last_seen < DATE_SUB(NOW(), INTERVAL 30 DAY)");
         }
     } catch(\Throwable $e) { error_log("admin.php error: " . $e->getMessage()); }
 
-    jsonSuccess(['message' => "Cleaned $count expired records ✅"]);
+    jsonSuccess(['message' => "Cleaned $count expired records ✅", 'type' => $type, 'count' => $count]);
 }
 
 function handleAllOffers(): void {

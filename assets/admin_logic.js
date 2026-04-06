@@ -114,6 +114,15 @@ if (_u) {
 const API_ADMIN = 'api/admin.php';
 let _csrfToken = null;
 
+// apiFetch — authenticated fetch for full URLs (used by stores/admin_stores.php calls)
+async function apiFetch(url) {
+  const token = localStorage.getItem('sb_token') || '';
+  const r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+  const d = await r.json();
+  if (d && d.success === false) throw new Error(d.error || 'Request failed');
+  return d.data || d;
+}
+
 async function getCsrfToken() {
   if (_csrfToken) return _csrfToken;
   try {
@@ -893,14 +902,15 @@ function exportCSV(type) {
   window.open('api/admin.php?action=export_csv&type=' + encodeURIComponent(type) + '&token=' + token, '_blank');
 }
 
-async function cleanExpired() {
-  if (!confirm('Clean expired data?')) return;
+async function cleanExpired(type) {
+  const label = type === 'sessions' ? 'old inactive sessions' : 'expired offers';
+  if (!confirm('Clean ' + label + '? This cannot be undone.')) return;
   try {
-    await adminFetch('clean');
-    showAdminToast('✓ Cleanup complete', 'success');
+    await adminFetch('clean&type=' + (type || 'offers'));
+    showAdminToast('✓ ' + (type === 'sessions' ? 'Sessions' : 'Expired offers') + ' cleaned', 'success');
     const msg = document.getElementById('maintenanceMsg');
-    if (msg) msg.textContent = 'Cleanup completed at ' + new Date().toLocaleTimeString();
-    loadOffers();
+    if (msg) msg.textContent = (type === 'sessions' ? 'Sessions' : 'Offers') + ' cleaned at ' + new Date().toLocaleTimeString();
+    if (type !== 'sessions') loadOffers();
   } catch(e) { showAdminToast(e.message, 'error'); }
 }
 
@@ -1095,16 +1105,6 @@ async function loadAnnouncements() {
         </div>
       </div>`).join('');
   } catch(e) { list.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">${escHTML(e.message)}</div>`; }
-}
-function showAnnouncementModal() {
-  const title = prompt('Announcement title:');
-  if (!title) return;
-  const message = prompt('Announcement message:');
-  if (!message) return;
-  adminFetch('create_announcement', { title, message, is_active: 1 }).then(d => {
-    if (d.success !== false) { showAdminToast('Announcement created', 'success'); loadAnnouncements(); }
-    else showAdminToast(d.error || 'Failed', 'error');
-  });
 }
 async function toggleAnnouncement(id, is_active) {
   const d = await adminFetch('update_announcement', { id, is_active });
