@@ -258,7 +258,7 @@ function handleAffiliateApply(): void {
 
 function handleRegister(): void {
     $data  = json_decode(file_get_contents('php://input'), true);
-    $name  = trim($data['displayName'] ?? '');
+    $name  = trim($data['displayName'] ?? $data['name'] ?? ''); // mobile sends 'name'
     $email = strtolower(trim($data['email'] ?? ''));
     $pass  = $data['password'] ?? '';
 
@@ -309,7 +309,7 @@ function handleRegister(): void {
 
 function handleLogin(): void {
     $data  = json_decode(file_get_contents('php://input'), true);
-    $email = strtolower(trim($data['email'] ?? ''));
+    $email = strtolower(trim($data['email'] ?? $data['identifier'] ?? '')); // mobile sends 'identifier'
     $pass  = $data['password'] ?? '';
 
     if (!$email || !$pass) jsonError('Email and password are required');
@@ -334,7 +334,7 @@ function handleLogin(): void {
         }
     } catch(\Throwable $e) {}
 
-    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, verified, deleted_at FROM users WHERE email = ?');
+    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, is_verified AS verified, deleted_at FROM users WHERE email = ?');
     $st->execute([$email]);
     $user = $st->fetch();
 
@@ -691,7 +691,7 @@ function handleCheckDeletion(): void {
 
 function getUserData(int $uid): array {
     $db = getDB();
-    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, bio, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, verified, created_at FROM users WHERE id = ?');
+    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, bio, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, is_verified AS verified, created_at FROM users WHERE id = ?');
     $st->execute([$uid]);
     $u = $st->fetch();
     if (!$u) jsonError('User not found', 404);
@@ -760,7 +760,7 @@ function handleGoogleAuth(): void {
     $db = getDB();
 
     // Kullanıcı var mı?
-    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, verified, deleted_at FROM users WHERE email = ?');
+    $st = $db->prepare('SELECT id, email, password_hash, display_name, avatar_url, city, phone, plan, plan_expires_at, is_admin, banned, token_invalidated_at, verification_status, is_verified AS verified, deleted_at FROM users WHERE email = ?');
     $st->execute([$email]);
     $user = $st->fetch();
 

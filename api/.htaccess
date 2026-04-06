@@ -1,0 +1,164 @@
+# ══════════════════════════════════════════════════════════════
+#  SomBazar API — REST URL → PHP query-param bridge
+#  Placed in /api/.htaccess so rules are relative to this dir.
+#
+#  How it works:
+#    Each REST route is mapped via a RewriteRule (+ optional
+#    RewriteCond for method matching) to the existing PHP files
+#    that read $_GET['action'] and $_GET['id'] / $_GET['slug'] /
+#    $_GET['conversation_id'].
+#
+#    Auth field translation (identifier→email, name→displayName)
+#    is handled by auth_shim.php which patches php://input before
+#    including auth.php.
+# ══════════════════════════════════════════════════════════════
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Pass Authorization header through (needed for JWT token auth)
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+  # ── CORS preflight: answer OPTIONS immediately ────────────
+  RewriteCond %{REQUEST_METHOD} ^OPTIONS$
+  RewriteRule ^ - [R=204,L]
+
+  # ══════════════════════════════════════════════════════════
+  #  AUTH  (/api/auth/*)
+  #  Routed through auth_shim.php for field translation.
+  # ══════════════════════════════════════════════════════════
+  RewriteRule ^auth/login$    auth_shim.php?action=login    [L,QSA]
+  RewriteRule ^auth/register$ auth_shim.php?action=register [L,QSA]
+  RewriteRule ^auth/me$       auth_shim.php?action=me       [L,QSA]
+
+  # ══════════════════════════════════════════════════════════
+  #  LISTINGS
+  # ══════════════════════════════════════════════════════════
+  # Sub-action routes (no method check needed — verb is in URL)
+  # These must come BEFORE the generic /{id} rules.
+  RewriteRule ^listings/([0-9]+)/mark-sold$   listings.php?action=mark_sold&id=$1   [L,QSA]
+  RewriteRule ^listings/([0-9]+)/mark-active$ listings.php?action=mark_active&id=$1 [L,QSA]
+  RewriteRule ^listings/([0-9]+)/relist$      listings.php?action=relist&id=$1      [L,QSA]
+
+  # GET    /api/listings/{id}
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^listings/([0-9]+)$ listings.php?action=get&id=$1 [L,QSA]
+
+  # PUT    /api/listings/{id}
+  RewriteCond %{REQUEST_METHOD} ^PUT$
+  RewriteRule ^listings/([0-9]+)$ listings.php?action=update&id=$1 [L,QSA]
+
+  # POST   /api/listings/{id}  (some clients send POST instead of PUT)
+  RewriteCond %{REQUEST_METHOD} ^POST$
+  RewriteRule ^listings/([0-9]+)$ listings.php?action=update&id=$1 [L,QSA]
+
+  # DELETE /api/listings/{id}
+  RewriteCond %{REQUEST_METHOD} ^DELETE$
+  RewriteRule ^listings/([0-9]+)$ listings.php?action=delete&id=$1 [L,QSA]
+
+  # GET    /api/listings  (collection)
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^listings$          listings.php?action=list   [L,QSA]
+
+  # POST   /api/listings  (create)
+  RewriteCond %{REQUEST_METHOD} ^POST$
+  RewriteRule ^listings$          listings.php?action=create [L,QSA]
+
+  # ══════════════════════════════════════════════════════════
+  #  CONVERSATIONS / MESSAGES
+  # ══════════════════════════════════════════════════════════
+  # GET  /api/conversations/{id}/messages
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^conversations/([0-9]+)/messages$ messages.php?action=messages&conversation_id=$1 [L,QSA]
+
+  # POST /api/conversations/{id}/messages
+  RewriteCond %{REQUEST_METHOD} ^POST$
+  RewriteRule ^conversations/([0-9]+)/messages$ messages.php?action=send&conversation_id=$1 [L,QSA]
+
+  # GET  /api/conversations
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^conversations$     messages.php?action=conversations [L,QSA]
+
+  # POST /api/conversations  (start a new conversation)
+  RewriteCond %{REQUEST_METHOD} ^POST$
+  RewriteRule ^conversations$     messages.php?action=start         [L,QSA]
+
+  # ══════════════════════════════════════════════════════════
+  #  OFFERS
+  # ══════════════════════════════════════════════════════════
+  # Sub-action routes (POST /offers/{id}/respond|cancel)
+  RewriteRule ^offers/([0-9]+)/respond$ offers.php?action=respond&id=$1 [L,QSA]
+  RewriteRule ^offers/([0-9]+)/cancel$  offers.php?action=cancel&id=$1  [L,QSA]
+
+  # GET  /api/offers/{id}
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^offers/([0-9]+)$ offers.php?action=get&id=$1  [L,QSA]
+
+  # GET  /api/offers  (list = my_offers in backend)
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^offers$          offers.php?action=my_offers  [L,QSA]
+
+  # POST /api/offers  (make an offer)
+  RewriteCond %{REQUEST_METHOD} ^POST$
+  RewriteRule ^offers$          offers.php?action=make       [L,QSA]
+
+  # ══════════════════════════════════════════════════════════
+  #  RESERVATIONS
+  # ══════════════════════════════════════════════════════════
+  # Sub-action routes
+  RewriteRule ^reservations/([0-9]+)/confirm$ reservations.php?action=confirm&id=$1 [L,QSA]
+  RewriteRule ^reservations/([0-9]+)/cancel$  reservations.php?action=cancel&id=$1  [L,QSA]
+
+  # GET  /api/reservations/{id}
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^reservations/([0-9]+)$ reservations.php?action=get&id=$1 [L,QSA]
+
+  # GET  /api/reservations
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^reservations$          reservations.php?action=list      [L,QSA]
+
+  # POST /api/reservations
+  RewriteCond %{REQUEST_METHOD} ^POST$
+  RewriteRule ^reservations$          reservations.php?action=create    [L,QSA]
+
+  # ══════════════════════════════════════════════════════════
+  #  STORES
+  # ══════════════════════════════════════════════════════════
+  # Sub-action routes (must come before generic /{slug} rule)
+  RewriteRule ^stores/([^/]+)/follow$   stores.php?action=follow&slug=$1   [L,QSA]
+  RewriteRule ^stores/([^/]+)/unfollow$ stores.php?action=unfollow&slug=$1 [L,QSA]
+
+  # GET  /api/stores/{slug}
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^stores/([^/]+)$          stores.php?action=get&slug=$1      [L,QSA]
+
+  # ══════════════════════════════════════════════════════════
+  #  FAVORITES
+  # ══════════════════════════════════════════════════════════
+  # POST   /api/favorites/{id}
+  RewriteCond %{REQUEST_METHOD} ^POST$
+  RewriteRule ^favorites/([0-9]+)$ listings.php?action=favorite&id=$1    [L,QSA]
+
+  # DELETE /api/favorites/{id}
+  RewriteCond %{REQUEST_METHOD} ^DELETE$
+  RewriteRule ^favorites/([0-9]+)$ listings.php?action=unfavorite&id=$1  [L,QSA]
+
+  # GET    /api/favorites
+  RewriteCond %{REQUEST_METHOD} ^GET$
+  RewriteRule ^favorites$          favorites.php?action=list              [L,QSA]
+
+  # ══════════════════════════════════════════════════════════
+  #  PLANS / PAYMENT
+  # ══════════════════════════════════════════════════════════
+  RewriteRule ^plans$             payment.php?action=plans     [L,QSA]
+  RewriteRule ^payment/subscribe$ payment.php?action=subscribe [L,QSA]
+
+</IfModule>
+
+# ── CORS headers for all API responses ──────────────────────
+<IfModule mod_headers.c>
+  Header always set Access-Control-Allow-Origin "*"
+  Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+  Header always set Access-Control-Allow-Headers "Authorization, Content-Type, Accept, X-Requested-With"
+  Header always set Access-Control-Max-Age "86400"
+</IfModule>

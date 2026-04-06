@@ -7,18 +7,22 @@ ini_set('log_errors', '1');
 
 header('Content-Type: application/json; charset=UTF-8');
 // CORS — sadece kendi domain'imize izin ver
-$allowedOrigins = array_filter([
-    getenv('SITE_URL'),
-    getenv('CORS_ORIGIN'),
-    'https://sombazar-fixed-production.up.railway.app', // geçici, domain bağlandıktan sonra kaldır
-]);
-
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if ($origin && in_array(rtrim($origin, '/'), array_map(fn($o) => rtrim($o, '/'), $allowedOrigins))) {
-    header('Access-Control-Allow-Origin: ' . $origin);
+// Local dev: allow all origins (mobile app has no Origin header anyway)
+$corsOrigin = getenv('CORS_ORIGIN') ?: (getenv('SITE_URL') ?: '*');
+if ($corsOrigin === '*') {
+    header('Access-Control-Allow-Origin: *');
 } else {
-    // Same-origin isteklere her zaman izin ver (API ve HTML aynı domainde)
-    header('Access-Control-Allow-Origin: ' . (getenv('SITE_URL') ?: 'https://sombazar-fixed-production.up.railway.app'));
+    $allowedOrigins = array_filter([
+        getenv('SITE_URL'),
+        $corsOrigin,
+        'https://sombazar-fixed-production.up.railway.app',
+    ]);
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+    if ($origin && in_array(rtrim($origin, '/'), array_map(fn($o) => rtrim($o, '/'), $allowedOrigins))) {
+        header('Access-Control-Allow-Origin: ' . $origin);
+    } else {
+        header('Access-Control-Allow-Origin: ' . (getenv('SITE_URL') ?: '*'));
+    }
 }
 header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
