@@ -1412,32 +1412,32 @@ async function loadCategories() {
       const activeRate = cat.count ? Math.round((cat.active_count||0)/(cat.count)*100) : 0;
       const trendColor = activeRate >= 70 ? '#16a34a' : activeRate >= 40 ? '#d97706' : '#dc2626';
       const trendBg    = activeRate >= 70 ? '#dcfce7' : activeRate >= 40 ? '#fef9c3' : '#fee2e2';
-      return \`<tr style="border-bottom:1px solid var(--border);">
+      return `<tr style="border-bottom:1px solid var(--border);">
         <td style="padding:10px 8px;font-weight:700;">
-          <span style="margin-right:6px;">\${emojis[name]||'📦'}</span>\${esc(name)}
+          <span style="margin-right:6px;">${emojis[name]||'📦'}</span>${esc(name)}
         </td>
-        <td style="padding:10px 8px;text-align:center;font-weight:700;">\${cat.count||0}</td>
-        <td style="padding:10px 8px;text-align:center;">\${cat.active_count||0}</td>
+        <td style="padding:10px 8px;text-align:center;font-weight:700;">${cat.count||0}</td>
+        <td style="padding:10px 8px;text-align:center;">${cat.active_count||0}</td>
         <td style="padding:10px 8px;">
           <div style="display:flex;align-items:center;gap:8px;">
             <div style="flex:1;background:#f1f5f9;border-radius:20px;height:8px;overflow:hidden;">
-              <div style="width:\${pct}%;height:100%;background:#ec5b13;border-radius:20px;transition:width .4s;"></div>
+              <div style="width:${pct}%;height:100%;background:#ec5b13;border-radius:20px;transition:width .4s;"></div>
             </div>
-            <span style="font-size:11px;color:#64748b;min-width:32px;">\${pct}%</span>
+            <span style="font-size:11px;color:#64748b;min-width:32px;">${pct}%</span>
           </div>
         </td>
         <td style="padding:10px 8px;">
-          <span style="background:\${trendBg};color:\${trendColor};font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">\${activeRate}% active</span>
+          <span style="background:${trendBg};color:${trendColor};font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;">${activeRate}% active</span>
         </td>
         <td style="padding:10px 8px;">
-          <a href="listings.html?category=\${encodeURIComponent(name)}" target="_blank"
+          <a href="listings.html?category=${encodeURIComponent(name)}" target="_blank"
             style="font-size:12px;font-weight:700;color:#ec5b13;text-decoration:none;padding:4px 10px;border:1.5px solid #ec5b13;border-radius:6px;white-space:nowrap;">
             View Listings →
           </a>
         </td>
-      </tr>\`;
+      </tr>`;
     }).join('');
-  } catch(e) { grid.innerHTML = \`<tr><td colspan="6" style="padding:40px;text-align:center;color:#ef4444">\${escHTML(e.message)}</td></tr>\`; }
+  } catch(e) { grid.innerHTML = `<tr><td colspan="6" style="padding:40px;text-align:center;color:#ef4444">${escHTML(e.message)}</td></tr>`; }
 }
 
 // ── Save Announcement (modal submit) ──────────────────────────────────────
