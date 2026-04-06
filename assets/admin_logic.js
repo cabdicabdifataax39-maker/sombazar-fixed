@@ -114,6 +114,15 @@ if (_u) {
 const API_ADMIN = 'api/admin.php';
 let _csrfToken = null;
 
+// apiFetch — authenticated fetch for full URLs (used by stores/admin_stores.php calls)
+async function apiFetch(url) {
+  const token = localStorage.getItem('sb_token') || '';
+  const r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+  const d = await r.json();
+  if (d && d.success === false) throw new Error(d.error || 'Request failed');
+  return d.data || d;
+}
+
 async function getCsrfToken() {
   if (_csrfToken) return _csrfToken;
   try {
@@ -170,6 +179,127 @@ function debounce(fn, delay) {
   return function(...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), delay); };
 }
 
+// ── Sidebar toggle ────────────────────────────────────────
+function toggleSidebar() {
+  if (window.innerWidth <= 768) {
+    document.body.classList.toggle('sb-open');
+  } else {
+    document.body.classList.toggle('sb-collapsed');
+  }
+}
+function closeSidebar() {
+  document.body.classList.remove('sb-open');
+}
+// Close mobile sidebar when a nav item is clicked
+document.querySelectorAll('.nav-item').forEach(function(el) {
+  el.addEventListener('click', function() {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+});
+// Keyboard: Escape closes mobile sidebar
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeSidebar();
+    closeNotifDropdown();
+  }
+});
+// Keyboard nav: arrow keys navigate between nav items
+document.addEventListener('keydown', function(e) {
+  if (e.target && e.target.closest && e.target.closest('.nav-item')) {
+    const items = Array.from(document.querySelectorAll('.nav-item'));
+    const idx = items.indexOf(e.target.closest('.nav-item'));
+    if (e.key === 'ArrowDown' && idx < items.length - 1) { e.preventDefault(); items[idx + 1].focus(); }
+    if (e.key === 'ArrowUp' && idx > 0) { e.preventDefault(); items[idx - 1].focus(); }
+    if (e.key === 'Enter') e.target.closest('.nav-item').click();
+  }
+});
+// Make nav items focusable
+document.querySelectorAll('.nav-item').forEach(function(el) {
+  if (!el.getAttribute('tabindex')) el.setAttribute('tabindex', '0');
+});
+
+// ── Notification dropdown ─────────────────────────────────
+function toggleNotifDropdown(e) {
+  if (e) e.stopPropagation();
+  const drop = document.getElementById('notifDrop');
+  if (drop) drop.classList.toggle('open');
+}
+function closeNotifDropdown() {
+  const drop = document.getElementById('notifDrop');
+  if (drop) drop.classList.remove('open');
+}
+function dismissNotifs(e) {
+  if (e) e.stopPropagation();
+  closeNotifDropdown();
+  const dot = document.getElementById('notifDot');
+  if (dot) dot.style.display = 'none';
+  const list = document.getElementById('notifList');
+  if (list) list.innerHTML = '<div class="notif-empty">No pending actions 🎉</div>';
+}
+// Close notif dropdown on outside click
+document.addEventListener('click', function(e) {
+  const bell = document.getElementById('notifBell');
+  if (bell && !bell.contains(e.target)) closeNotifDropdown();
+});
+
+// ── Update notification bell ──────────────────────────────
+function _updateNotifBell(pendPay, pendVerif, pendReports) {
+  const dot = document.getElementById('notifDot');
+  const list = document.getElementById('notifList');
+  const items = [];
+  if (pendPay > 0) items.push({ color: 'red',   title: pendPay    + ' payment'      + (pendPay > 1 ? 's' : '') + ' pending',     sub: 'Needs manual approval',  tab: 'payments'      });
+  if (pendVerif > 0) items.push({ color: 'amber', title: pendVerif  + ' ID verification' + (pendVerif > 1 ? 's' : '') + ' waiting', sub: 'User identity checks',   tab: 'verifications' });
+  if (pendReports > 0) items.push({ color: 'blue',  title: pendReports + ' abuse report'  + (pendReports > 1 ? 's' : '') + ' open',   sub: 'Trust & safety review',  tab: 'reports'       });
+  if (dot) dot.style.display = items.length > 0 ? '' : 'none';
+  if (list) {
+    if (!items.length) { list.innerHTML = '<div class="notif-empty">No pending actions 🎉</div>'; return; }
+    list.innerHTML = items.map(function(it) {
+      return '<div class="notif-row" onclick="showTab(\'' + it.tab + '\');closeNotifDropdown()">' +
+        '<div class="notif-dot2 ' + it.color + '"></div>' +
+        '<div><div class="notif-row-title">' + escHTML(it.title) + '</div>' +
+        '<div class="notif-row-sub">' + escHTML(it.sub) + '</div></div></div>';
+    }).join('');
+  }
+}
+
+// ── Topbar search → routes to current tab's search input ──
+(function() {
+  var inp = document.getElementById('topbarSearch');
+  if (!inp) return;
+  // Map of tab name → the tab's own search input ID
+  var tabSearchMap = { users: 'userSearch', listings: 'listingSearch' };
+  inp.addEventListener('input', debounce(function() {
+    var val = inp.value.trim();
+    var targetId = tabSearchMap[currentTab];
+    if (targetId) {
+      var target = document.getElementById(targetId);
+      if (target) {
+        target.value = val;
+        // Trigger the tab's own oninput handler
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }
+  }, 350));
+  // Clear topbar search when switching tabs
+  var origShowTab = window.showTab;
+  if (origShowTab) {
+    window.showTab = function(tab) {
+      origShowTab(tab);
+      // Sync topbar search from tab search (or clear)
+      var sid = tabSearchMap[tab];
+      if (sid) {
+        var s = document.getElementById(sid);
+        if (s) inp.value = s.value;
+      } else {
+        inp.value = '';
+      }
+      inp.placeholder = tab === 'users' ? 'Search users…' :
+                        tab === 'listings' ? 'Search listings…' :
+                        'Search data, users, listings…';
+    };
+  }
+})();
+
 function showAdminToast(msg, type = 'success') {
   const container = document.getElementById('adminToastContainer');
   if (!container) { if (window.showToast) showToast(msg, type); return; }
@@ -218,10 +348,14 @@ async function loadDashboard() {
     const pendPay = s.pending_payments ?? 0;
     const pendVerif = s.pending_verif ?? 0;
     const pendList = s.pending_listings ?? 0;
+    const pendReports = s.pending_reports ?? s.reported_listings ?? 0;
     const nb = (id, val) => { const el = document.getElementById(id); if (el) { el.textContent = val; el.style.display = val > 0 ? '' : 'none'; } };
     nb('navBadgePay', pendPay);
     nb('navBadgeVerif', pendVerif);
     nb('navBadgeListings', pendList);
+    nb('navBadgeReports', pendReports);
+    // Update notification bell dropdown
+    _updateNotifBell(pendPay, pendVerif, pendReports);
 
     // Subtitle
     const sub = document.getElementById('dashSubtitle');
@@ -439,7 +573,7 @@ async function loadListingsAdmin() {
         </td>
         <td style="color:var(--text2);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHTML(l.seller||'—')}</td>
         <td style="font-weight:700;white-space:nowrap">$${Number(l.price||0).toLocaleString()}</td>
-        <td><span class="badge ${sc}" style="text-transform:capitalize">${l.status}</span></td>
+        <td><span class="badge ${sc}" style="text-transform:capitalize">${escHTML(l.status||'')}</span></td>
         <td style="color:var(--text3);text-align:center;font-family:var(--mono)">${l.views||0}</td>
         <td style="color:var(--text3);font-size:12px">${dt}</td>
         <td>
@@ -557,7 +691,7 @@ async function loadPayments() {
                 <button onclick="approvePayment(${p.id})" class="act-btn act-approve">✓ Approve</button>
                 <button onclick="rejectPayment(${p.id})" class="act-btn act-delete">✕ Reject</button>
               </div>`
-            : `<span class="badge ${sc}" style="text-transform:capitalize">${p.status}</span>`
+            : `<span class="badge ${sc}" style="text-transform:capitalize">${escHTML(p.status||'')}</span>`
           }
         </td>
       </tr>`;
@@ -655,7 +789,7 @@ async function loadOffers() {
       <td style="color:var(--text2)">${escHTML(o.sellerName||'—')}</td>
       <td style="font-weight:700;font-family:var(--mono)">$${Number(o.amount||0).toLocaleString()}</td>
       <td style="text-align:center"><span style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700">${o.round||1}</span></td>
-      <td><span class="badge ${statusClass[o.status]||'badge-gray'}" style="text-transform:capitalize">${o.status}</span></td>
+      <td><span class="badge ${statusClass[o.status]||'badge-gray'}" style="text-transform:capitalize">${escHTML(o.status||'')}</span></td>
       <td style="font-size:12px;color:var(--text3)">${o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-GB') : '—'}</td>
     </tr>`).join('');
   } catch(e) { tbody.innerHTML = `<tr><td colspan="7" style="color:var(--red);padding:16px">${escHTML(e.message)}</td></tr>`; }
@@ -713,7 +847,7 @@ async function loadCoupons() {
     list.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Uses</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
       d.data.coupons.map(cp => `<tr>
         <td><span class="coupon-code">${escHTML(cp.code)}</span></td>
-        <td style="text-transform:capitalize;color:var(--text2)">${cp.type}</td>
+        <td style="text-transform:capitalize;color:var(--text2)">${escHTML(cp.type||'')}</td>
         <td style="font-weight:700">${cp.type === 'percent' ? cp.value + '%' : '$' + cp.value}</td>
         <td style="color:var(--text3)">${cp.uses_count}${cp.max_uses > 0 ? '/' + cp.max_uses : ' / ∞'}</td>
         <td style="color:var(--text3);font-size:12px">${cp.expires_at ? new Date(cp.expires_at).toLocaleDateString() : '∞'}</td>
@@ -893,14 +1027,15 @@ function exportCSV(type) {
   window.open('api/admin.php?action=export_csv&type=' + encodeURIComponent(type) + '&token=' + token, '_blank');
 }
 
-async function cleanExpired() {
-  if (!confirm('Clean expired data?')) return;
+async function cleanExpired(type) {
+  const label = type === 'sessions' ? 'old inactive sessions' : 'expired offers';
+  if (!confirm('Clean ' + label + '? This cannot be undone.')) return;
   try {
-    await adminFetch('clean');
-    showAdminToast('✓ Cleanup complete', 'success');
+    await adminFetch('clean&type=' + (type || 'offers'));
+    showAdminToast('✓ ' + (type === 'sessions' ? 'Sessions' : 'Expired offers') + ' cleaned', 'success');
     const msg = document.getElementById('maintenanceMsg');
-    if (msg) msg.textContent = 'Cleanup completed at ' + new Date().toLocaleTimeString();
-    loadOffers();
+    if (msg) msg.textContent = (type === 'sessions' ? 'Sessions' : 'Offers') + ' cleaned at ' + new Date().toLocaleTimeString();
+    if (type !== 'sessions') loadOffers();
   } catch(e) { showAdminToast(e.message, 'error'); }
 }
 
@@ -1095,16 +1230,6 @@ async function loadAnnouncements() {
         </div>
       </div>`).join('');
   } catch(e) { list.innerHTML = `<div style="padding:40px;text-align:center;color:#ef4444">${escHTML(e.message)}</div>`; }
-}
-function showAnnouncementModal() {
-  const title = prompt('Announcement title:');
-  if (!title) return;
-  const message = prompt('Announcement message:');
-  if (!message) return;
-  adminFetch('create_announcement', { title, message, is_active: 1 }).then(d => {
-    if (d.success !== false) { showAdminToast('Announcement created', 'success'); loadAnnouncements(); }
-    else showAdminToast(d.error || 'Failed', 'error');
-  });
 }
 async function toggleAnnouncement(id, is_active) {
   const d = await adminFetch('update_announcement', { id, is_active });
