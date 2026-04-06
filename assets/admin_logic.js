@@ -123,14 +123,48 @@ function loadTabContent(tab) {
   }
 }
 
-// Set admin name
-const _u = Auth.getUser();
-if (_u) {
-  const name = _u.displayName || 'Admin';
-  document.getElementById('adminName').textContent = name;
-  const initEl = document.getElementById('sidebarAvatarInitial');
-  if (initEl) initEl.textContent = name[0].toUpperCase();
-}
+// Set admin name — first from localStorage (instant), then refresh from API
+(function() {
+  function _setAdminName(name) {
+    if (!name) return;
+    const el = document.getElementById('adminName');
+    if (el) el.textContent = name;
+    const ini = document.getElementById('sidebarAvatarInitial');
+    if (ini) ini.textContent = name[0].toUpperCase();
+  }
+  // Instant: from localStorage
+  const _u = Auth.getUser ? Auth.getUser() : null;
+  if (_u) _setAdminName(_u.displayName || _u.display_name || 'Admin');
+  // Fresh: fetch /me to get current display name and refresh sb_user
+  const _tok = localStorage.getItem('sb_token');
+  if (_tok) {
+    fetch('api/auth.php?action=me', { headers: { 'Authorization': 'Bearer ' + _tok } })
+      .then(function(r) {
+        if (r.status === 401) {
+          // Token expired — clear and redirect
+          localStorage.removeItem('sb_token');
+          localStorage.removeItem('sb_user');
+          window.location.href = 'auth.html?redirect=admin.html&reason=session_expired';
+          return null;
+        }
+        return r.json();
+      })
+      .then(function(d) {
+        if (!d || !d.success || !d.data) return;
+        const u = d.data;
+        // Verify admin role from server
+        if (!u.isAdmin) {
+          window.location.href = 'auth.html?redirect=admin.html';
+          return;
+        }
+        // Refresh sb_user in localStorage with latest data
+        try { localStorage.setItem('sb_user', JSON.stringify(u)); } catch(e) {}
+        // Update display name
+        _setAdminName(u.displayName || u.display_name || 'Admin');
+      })
+      .catch(function() { /* fail silently — offline or server error */ });
+  }
+})();
 
 const API_ADMIN = 'api/admin.php';
 let _csrfToken = null;
@@ -162,6 +196,13 @@ async function adminFetch(action, body = null) {
   const opts = { headers };
   if (body) { opts.method = 'POST'; opts.body = JSON.stringify(body); }
   const r = await fetch(`${API_ADMIN}?action=${action}`, opts);
+  // 401 = token expired or invalid → force re-login
+  if (r.status === 401) {
+    localStorage.removeItem('sb_token');
+    localStorage.removeItem('sb_user');
+    window.location.href = 'auth.html?redirect=admin.html&reason=session_expired';
+    throw new Error('Session expired');
+  }
   const txt = await r.text();
   let d;
   try { d = JSON.parse(txt); } catch(e) { throw new Error('Server error'); }
