@@ -1119,8 +1119,8 @@ async function loadSettings() {
 
 // ── Helpers ───────────────────────────────────────────────
 function logout() {
-  if (window.Auth) Auth.clearSession();
-  else { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); }
+  localStorage.removeItem('sb_token');
+  localStorage.removeItem('sb_user');
   window.location.href = 'auth.html';
 }
 
