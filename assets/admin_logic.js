@@ -239,6 +239,46 @@ document.querySelectorAll('.nav-item').forEach(function(el) {
   if (!el.getAttribute('tabindex')) el.setAttribute('tabindex', '0');
 });
 
+// ── User dropdown menu ────────────────────────────────────
+function toggleUserDrop(which, e) {
+  if (e) e.stopPropagation();
+  const ids = { sidebar: 'userDropSidebar', topbar: 'userDropTopbar' };
+  const otherId = which === 'sidebar' ? 'userDropTopbar' : 'userDropSidebar';
+  const drop = document.getElementById(ids[which]);
+  const other = document.getElementById(otherId);
+  // Close the other first
+  if (other) other.classList.remove('open');
+  closeNotifDropdown();
+  if (!drop) return;
+  const isOpen = drop.classList.contains('open');
+  drop.classList.toggle('open', !isOpen);
+  // Populate name + email from Auth
+  if (!isOpen) {
+    const u = Auth.getUser ? Auth.getUser() : null;
+    const name = u ? (u.displayName || u.display_name || 'Admin') : (document.getElementById('adminName') || {}).textContent || 'Admin';
+    const email = u ? (u.email || '—') : '—';
+    ['udSbName','udTbName'].forEach(function(id) { var el = document.getElementById(id); if (el) el.textContent = name; });
+    ['udSbEmail','udTbEmail'].forEach(function(id) { var el = document.getElementById(id); if (el) el.textContent = email; });
+  }
+}
+function closeAllUserDrops() {
+  ['userDropSidebar','userDropTopbar'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.classList.remove('open');
+  });
+}
+function openAdminProfile(e) {
+  if (e) e.stopPropagation();
+  closeAllUserDrops();
+  window.open('profile.html', '_blank');
+}
+// Close user drops on outside click
+document.addEventListener('click', function(e) {
+  var sb = document.getElementById('sidebarUser');
+  var tb = document.getElementById('topbarUser');
+  if (sb && !sb.contains(e.target)) document.getElementById('userDropSidebar')?.classList.remove('open');
+  if (tb && !tb.contains(e.target)) document.getElementById('userDropTopbar')?.classList.remove('open');
+});
+
 // ── Notification dropdown ─────────────────────────────────
 function toggleNotifDropdown(e) {
   if (e) e.stopPropagation();
