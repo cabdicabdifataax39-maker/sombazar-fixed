@@ -189,6 +189,60 @@ img{display:block}
 .tb-urole{font-size:10px;color:var(--text3)}
 .tb-clock{font-family:var(--mono);font-size:11px;color:var(--text3)}
 
+/* ── SIDEBAR TOGGLE ──────────────────────────────────────── */
+.tb-hamburger{display:flex;flex-shrink:0}
+.sb{transition:width .22s ease,min-width .22s ease,transform .22s ease}
+/* Collapsed (desktop): icon-only mode */
+body.sb-collapsed .sb{width:60px;min-width:60px;overflow:hidden}
+body.sb-collapsed .sb-logo-name,body.sb-collapsed .sb-logo-role,
+body.sb-collapsed .sb-section,body.sb-collapsed .sb-uname,
+body.sb-collapsed .sb-urole,body.sb-collapsed .nav-badge,
+body.sb-collapsed .sb-logout>span:not(.ms){display:none}
+body.sb-collapsed .nav-item{justify-content:center;padding:9px 0;margin:1px 4px;gap:0;font-size:0}
+body.sb-collapsed .nav-item .ms{opacity:.8;font-size:20px}
+body.sb-collapsed .nav-item.active .ms{opacity:1;color:var(--sidebar-active-text)}
+body.sb-collapsed .sb-ava{margin:0 auto}
+body.sb-collapsed .sb-user{justify-content:center}
+body.sb-collapsed .sb-footer{padding:10px 4px}
+body.sb-collapsed .sb-logout{justify-content:center;padding:7px 0}
+body.sb-collapsed .sb-logo{padding:14px 0;justify-content:center}
+/* Mobile sidebar overlay */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:299}
+@media(max-width:768px){
+  .sb{position:fixed;left:0;top:0;z-index:300;transform:translateX(-100%);height:100vh;box-shadow:var(--shadow3)}
+  body.sb-open .sb{transform:translateX(0)}
+  body.sb-open .sb-overlay{display:block}
+}
+
+/* ── NOTIFICATION DROPDOWN ───────────────────────────────── */
+.notif-drop{
+  display:none;position:absolute;top:calc(100% + 8px);right:-8px;
+  width:292px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);box-shadow:var(--shadow3);z-index:500;overflow:hidden;
+}
+.notif-drop.open{display:block;animation:fadeIn .12s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.notif-drop-hd{
+  padding:12px 16px 10px;border-bottom:1px solid var(--border);
+  font-size:13px;font-weight:800;color:var(--text);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.notif-drop-hd .notif-dismiss{font-size:11px;font-weight:700;color:var(--pr);cursor:pointer}
+.notif-drop-hd .notif-dismiss:hover{text-decoration:underline}
+.notif-row{
+  display:flex;align-items:flex-start;gap:10px;padding:10px 16px;
+  border-bottom:1px solid var(--border2);cursor:pointer;transition:background .1s;
+}
+.notif-row:hover{background:var(--surface2)}
+.notif-row:last-child{border-bottom:none}
+.notif-dot2{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.notif-dot2.red{background:var(--red)}
+.notif-dot2.amber{background:var(--yellow)}
+.notif-dot2.blue{background:var(--blue)}
+.notif-row-title{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.3}
+.notif-row-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.notif-empty{padding:20px;text-align:center;font-size:12.5px;color:var(--text3)}
+
 /* ── CONTENT ───────────────────────────────────────────── */
 .content{flex:1;padding:24px 24px 40px;overflow-y:auto}
 
@@ -739,6 +793,7 @@ textarea.fi{resize:vertical}
   </div>
   <div class="nav-item" onclick="showTab('listings')" id="nav-listings">
     <span class="ms">list_alt</span>Listings
+    <span class="nav-badge" id="navBadgeListings" style="display:none">0</span>
   </div>
   <div class="nav-item" onclick="showTab('users')" id="nav-users">
     <span class="ms">group</span>Users
@@ -821,12 +876,15 @@ textarea.fi{resize:vertical}
     </button>
   </div>
 </aside>
+<!-- Mobile sidebar overlay backdrop -->
+<div class="sb-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <!-- ═══ MAIN ════════════════════════════════════════════════ -->
 <div class="main">
 
 <!-- TOPBAR -->
 <div class="topbar">
+  <button class="tb-hamburger tb-icon" id="sidebarToggle" onclick="toggleSidebar()" title="Toggle sidebar"><span class="ms">menu</span></button>
   <div class="tb-search">
     <span class="ms">search</span>
     <input type="text" id="topbarSearch" placeholder="Search data, users, listings…">
@@ -835,7 +893,14 @@ textarea.fi{resize:vertical}
     <div class="tb-clock" id="adminClock"></div>
     <button class="tb-icon" onclick="toggleTheme()" title="Toggle theme"><span class="ms">dark_mode</span></button>
     <button class="tb-icon" onclick="refreshCurrentTab()"><span class="ms">refresh</span></button>
-    <div class="tb-icon tb-notif"><span class="ms">notifications</span><div class="tb-dot"></div></div>
+    <div class="tb-icon tb-notif" id="notifBell" onclick="toggleNotifDropdown(event)" title="Notifications" style="cursor:pointer">
+      <span class="ms">notifications</span>
+      <div class="tb-dot" id="notifDot" style="display:none"></div>
+      <div class="notif-drop" id="notifDrop">
+        <div class="notif-drop-hd">Pending Actions <span class="notif-dismiss" onclick="dismissNotifs(event)">Dismiss all</span></div>
+        <div id="notifList"><div class="notif-empty">Loading…</div></div>
+      </div>
+    </div>
     <div class="tb-user">
       <div class="tb-user-ava" id="topbarAva">A</div>
       <div>

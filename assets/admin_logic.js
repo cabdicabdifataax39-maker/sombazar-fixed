@@ -179,6 +179,127 @@ function debounce(fn, delay) {
   return function(...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), delay); };
 }
 
+// ── Sidebar toggle ────────────────────────────────────────
+function toggleSidebar() {
+  if (window.innerWidth <= 768) {
+    document.body.classList.toggle('sb-open');
+  } else {
+    document.body.classList.toggle('sb-collapsed');
+  }
+}
+function closeSidebar() {
+  document.body.classList.remove('sb-open');
+}
+// Close mobile sidebar when a nav item is clicked
+document.querySelectorAll('.nav-item').forEach(function(el) {
+  el.addEventListener('click', function() {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+});
+// Keyboard: Escape closes mobile sidebar
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeSidebar();
+    closeNotifDropdown();
+  }
+});
+// Keyboard nav: arrow keys navigate between nav items
+document.addEventListener('keydown', function(e) {
+  if (e.target && e.target.closest && e.target.closest('.nav-item')) {
+    const items = Array.from(document.querySelectorAll('.nav-item'));
+    const idx = items.indexOf(e.target.closest('.nav-item'));
+    if (e.key === 'ArrowDown' && idx < items.length - 1) { e.preventDefault(); items[idx + 1].focus(); }
+    if (e.key === 'ArrowUp' && idx > 0) { e.preventDefault(); items[idx - 1].focus(); }
+    if (e.key === 'Enter') e.target.closest('.nav-item').click();
+  }
+});
+// Make nav items focusable
+document.querySelectorAll('.nav-item').forEach(function(el) {
+  if (!el.getAttribute('tabindex')) el.setAttribute('tabindex', '0');
+});
+
+// ── Notification dropdown ─────────────────────────────────
+function toggleNotifDropdown(e) {
+  if (e) e.stopPropagation();
+  const drop = document.getElementById('notifDrop');
+  if (drop) drop.classList.toggle('open');
+}
+function closeNotifDropdown() {
+  const drop = document.getElementById('notifDrop');
+  if (drop) drop.classList.remove('open');
+}
+function dismissNotifs(e) {
+  if (e) e.stopPropagation();
+  closeNotifDropdown();
+  const dot = document.getElementById('notifDot');
+  if (dot) dot.style.display = 'none';
+  const list = document.getElementById('notifList');
+  if (list) list.innerHTML = '<div class="notif-empty">No pending actions 🎉</div>';
+}
+// Close notif dropdown on outside click
+document.addEventListener('click', function(e) {
+  const bell = document.getElementById('notifBell');
+  if (bell && !bell.contains(e.target)) closeNotifDropdown();
+});
+
+// ── Update notification bell ──────────────────────────────
+function _updateNotifBell(pendPay, pendVerif, pendReports) {
+  const dot = document.getElementById('notifDot');
+  const list = document.getElementById('notifList');
+  const items = [];
+  if (pendPay > 0) items.push({ color: 'red',   title: pendPay    + ' payment'      + (pendPay > 1 ? 's' : '') + ' pending',     sub: 'Needs manual approval',  tab: 'payments'      });
+  if (pendVerif > 0) items.push({ color: 'amber', title: pendVerif  + ' ID verification' + (pendVerif > 1 ? 's' : '') + ' waiting', sub: 'User identity checks',   tab: 'verifications' });
+  if (pendReports > 0) items.push({ color: 'blue',  title: pendReports + ' abuse report'  + (pendReports > 1 ? 's' : '') + ' open',   sub: 'Trust & safety review',  tab: 'reports'       });
+  if (dot) dot.style.display = items.length > 0 ? '' : 'none';
+  if (list) {
+    if (!items.length) { list.innerHTML = '<div class="notif-empty">No pending actions 🎉</div>'; return; }
+    list.innerHTML = items.map(function(it) {
+      return '<div class="notif-row" onclick="showTab(\'' + it.tab + '\');closeNotifDropdown()">' +
+        '<div class="notif-dot2 ' + it.color + '"></div>' +
+        '<div><div class="notif-row-title">' + escHTML(it.title) + '</div>' +
+        '<div class="notif-row-sub">' + escHTML(it.sub) + '</div></div></div>';
+    }).join('');
+  }
+}
+
+// ── Topbar search → routes to current tab's search input ──
+(function() {
+  var inp = document.getElementById('topbarSearch');
+  if (!inp) return;
+  // Map of tab name → the tab's own search input ID
+  var tabSearchMap = { users: 'userSearch', listings: 'listingSearch' };
+  inp.addEventListener('input', debounce(function() {
+    var val = inp.value.trim();
+    var targetId = tabSearchMap[currentTab];
+    if (targetId) {
+      var target = document.getElementById(targetId);
+      if (target) {
+        target.value = val;
+        // Trigger the tab's own oninput handler
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }
+  }, 350));
+  // Clear topbar search when switching tabs
+  var origShowTab = window.showTab;
+  if (origShowTab) {
+    window.showTab = function(tab) {
+      origShowTab(tab);
+      // Sync topbar search from tab search (or clear)
+      var sid = tabSearchMap[tab];
+      if (sid) {
+        var s = document.getElementById(sid);
+        if (s) inp.value = s.value;
+      } else {
+        inp.value = '';
+      }
+      inp.placeholder = tab === 'users' ? 'Search users…' :
+                        tab === 'listings' ? 'Search listings…' :
+                        'Search data, users, listings…';
+    };
+  }
+})();
+
 function showAdminToast(msg, type = 'success') {
   const container = document.getElementById('adminToastContainer');
   if (!container) { if (window.showToast) showToast(msg, type); return; }
@@ -227,10 +348,14 @@ async function loadDashboard() {
     const pendPay = s.pending_payments ?? 0;
     const pendVerif = s.pending_verif ?? 0;
     const pendList = s.pending_listings ?? 0;
+    const pendReports = s.pending_reports ?? s.reported_listings ?? 0;
     const nb = (id, val) => { const el = document.getElementById(id); if (el) { el.textContent = val; el.style.display = val > 0 ? '' : 'none'; } };
     nb('navBadgePay', pendPay);
     nb('navBadgeVerif', pendVerif);
     nb('navBadgeListings', pendList);
+    nb('navBadgeReports', pendReports);
+    // Update notification bell dropdown
+    _updateNotifBell(pendPay, pendVerif, pendReports);
 
     // Subtitle
     const sub = document.getElementById('dashSubtitle');

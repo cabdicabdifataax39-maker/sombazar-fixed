@@ -146,6 +146,7 @@ function handleStats(): void {
         'total_offers'       => (function() use ($db) { try { return (int)$db->query("SELECT COUNT(*) FROM offers")->fetchColumn(); } catch(\Exception $e) { return 0; } })(),
         'pending_offers'     => (function() use ($db) { try { return (int)$db->query("SELECT COUNT(*) FROM offers WHERE status='pending'")->fetchColumn(); } catch(\Exception $e) { return 0; } })(),
         'accepted_offers'    => (function() use ($db) { try { return (int)$db->query("SELECT COUNT(*) FROM offers WHERE status='accepted'")->fetchColumn(); } catch(\Exception $e) { return 0; } })(),
+        'pending_reports'    => (function() use ($db) { try { return (int)$db->query("SELECT COUNT(*) FROM reports WHERE resolved=0")->fetchColumn(); } catch(\Exception $e) { return 0; } })(),
     ];
     // Category breakdown
     $cats = $db->query("SELECT category, COUNT(*) as cnt FROM listings WHERE status='active' GROUP BY category ORDER BY cnt DESC")->fetchAll();
