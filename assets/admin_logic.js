@@ -1,4 +1,25 @@
 
+// ── Block main-site nav drawer on admin page ──────────────
+// app.min.js injectHamburgerBtns() targets .topbar and appends a hamburger-btn
+// that opens the SomBazar mobile drawer. The admin hamburger button already has
+// class="hamburger-btn" so injection is skipped, but we also redirect the
+// global openHamburger / closeHamburger to admin sidebar controls as a safety net.
+window.openHamburger  = function() { if (typeof toggleSidebar  === 'function') toggleSidebar(); };
+window.closeHamburger = function() { if (typeof closeSidebar   === 'function') closeSidebar();  };
+// Remove any stale mobileNavDrawer/mobileNavOverlay if somehow injected
+(function removeMobileDrawer() {
+  function _rm() {
+    ['mobileNavDrawer','mobileNavOverlay'].forEach(function(id) {
+      var el = document.getElementById(id); if (el) el.remove();
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _rm);
+  } else {
+    // Run after a tick so app.min.js has a chance to inject first
+    setTimeout(_rm, 0);
+  }
+})();
 
 // ── Auth check ────────────────────────────────────────────
 // Auth guard — wrapped for safety
