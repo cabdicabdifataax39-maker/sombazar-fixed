@@ -109,6 +109,8 @@ img{display:block}
 }
 .nav-item .ms{font-size:18px;flex-shrink:0;opacity:.7}
 .nav-item.active .ms{opacity:1}
+.nav-svg{width:18px;height:18px;flex-shrink:0;opacity:.7;vertical-align:middle;display:inline-block}
+.nav-item.active .nav-svg{opacity:1;color:var(--sidebar-active-text)}
 .nav-badge{
   margin-left:auto;background:var(--pr);color:white;
   font-size:9px;font-weight:800;min-width:18px;height:18px;
@@ -201,6 +203,8 @@ body.sb-collapsed .sb-logout>span:not(.ms){display:none}
 body.sb-collapsed .nav-item{justify-content:center;padding:9px 0;margin:1px 4px;gap:0;font-size:0}
 body.sb-collapsed .nav-item .ms{opacity:.8;font-size:20px}
 body.sb-collapsed .nav-item.active .ms{opacity:1;color:var(--sidebar-active-text)}
+body.sb-collapsed .nav-svg{width:20px;height:20px;opacity:.8}
+body.sb-collapsed .nav-item.active .nav-svg{opacity:1;color:var(--sidebar-active-text)}
 body.sb-collapsed .sb-ava{margin:0 auto}
 body.sb-collapsed .sb-user{justify-content:center}
 body.sb-collapsed .sb-footer{padding:10px 4px}
@@ -823,14 +827,14 @@ textarea.fi{resize:vertical}
     <span class="ms">dashboard</span>Dashboard
   </div>
   <div class="nav-item" onclick="showTab('listings')" id="nav-listings">
-    <span class="ms">view_list</span>Listings
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3 14h4v-4H3v4zm0 5h4v-4H3v4zM3 9h4V5H3v4zm5 5h13v-4H8v4zm0 5h13v-4H8v4zM8 5v4h13V5H8z"/></svg>Listings
     <span class="nav-badge" id="navBadgeListings" style="display:none">0</span>
   </div>
   <div class="nav-item" onclick="showTab('users')" id="nav-users">
     <span class="ms">group</span>Users
   </div>
   <div class="nav-item" onclick="showTab('messages')" id="nav-messages">
-    <span class="ms">message</span>Messages
+    <svg class="nav-svg" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>Messages
   </div>
   <div class="nav-item" onclick="showTab('revenue')" id="nav-revenue">
     <span class="ms">attach_money</span>Revenue
