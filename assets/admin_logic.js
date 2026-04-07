@@ -1,4 +1,11 @@
 
+// ── Block app.min.js translation from destroying admin nav icons ─────────────
+// app.min.js applyLang() does: Object.entries(tr).forEach(([id,text])=>{
+//   el = getElementById(id); el.textContent = text; })
+// Translation keys 'nav-listings' and 'nav-messages' match admin nav IDs,
+// so textContent= wipes out the SVG icons. Admin is English-only — safe no-op.
+if (typeof window.applyLang === 'function') { window.applyLang = function(){}; }
+
 // ── Block main-site nav drawer on admin page ──────────────
 // app.min.js injectHamburgerBtns() targets .topbar and appends a hamburger-btn
 // that opens the SomBazar mobile drawer. The admin hamburger button already has
