@@ -514,7 +514,7 @@
       </div>
 
       <!-- Quick Replies Panel -->
-      <div id="quickRepliesPanel" style="display:none;padding:8px 12px;background:var(--bg-secondary);border-top:1px solid var(--border-color);max-height:140px;overflow-y:auto;">
+      <div id="quickRepliesPanel" style="display:none;padding:8px 12px;background:#fef6ee;border-top:1px solid #e2e8f0;max-height:140px;overflow-y:auto;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
           <span style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;">Quick Replies</span>
           <button onclick="toggleQuickReplies()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;line-height:1;">✕</button>
@@ -1341,8 +1341,16 @@ function toggleQuickReplies() {
   const panel = document.getElementById('quickRepliesPanel');
   if (!panel) return;
   const isVisible = panel.style.display !== 'none';
-  panel.style.display = isVisible ? 'none' : 'block';
-  if (!isVisible && !_qrLoaded && !_qrLoading) loadQuickReplies();
+  if (isVisible) {
+    panel.style.display = 'none';
+    return;
+  }
+  // Dark mode farkinda renkler
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  panel.style.background    = dark ? '#1e293b' : '#fef6ee';
+  panel.style.borderTopColor = dark ? '#334155' : '#e2e8f0';
+  panel.style.display = 'block';
+  if (!_qrLoaded && !_qrLoading) loadQuickReplies();
 }
 
 async function loadQuickReplies() {
@@ -1382,6 +1390,10 @@ async function loadQuickReplies() {
     }
 
     emptyEl.style.display = 'none';
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const btnBg  = dark ? '#0f172a' : '#fff';
+    const btnClr = dark ? '#f1f5f9' : '#374151';
+    const btnBdr = dark ? '#334155' : '#e2e8f0';
     listEl.innerHTML = replies.map(function(rp) {
       const safeBody = rp.body.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
       const preview  = rp.body.length > 35 ? rp.body.substring(0, 35) + '…' : rp.body;
@@ -1389,13 +1401,13 @@ async function loadQuickReplies() {
         + ' onclick="useQuickReply(' + Number(rp.id) + ', this.dataset.body)"'
         + ' data-body="' + safeBody + '"'
         + ' title="' + safeBody + '"'
-        + ' style="padding:5px 12px;border-radius:20px;border:1.5px solid #e2e8f0;'
-        + 'background:#fff;color:#374151;font-size:12px;font-weight:600;'
+        + ' style="padding:5px 12px;border-radius:20px;border:1.5px solid ' + btnBdr + ';'
+        + 'background:' + btnBg + ';color:' + btnClr + ';font-size:12px;font-weight:600;'
         + 'cursor:pointer;font-family:inherit;white-space:nowrap;'
         + 'overflow:hidden;text-overflow:ellipsis;max-width:200px;'
         + 'transition:border-color .15s,background .15s;"'
-        + ' onmouseover="this.style.borderColor='\''#ec5b13'\'';this.style.background='\''#fef6ee'\'';"'
-        + ' onmouseout="this.style.borderColor='\''#e2e8f0'\'';this.style.background='\''#fff'\'';">'
+        + ' onmouseover="this.style.borderColor=\'#ec5b13\';this.style.background=\'#fef6ee\';"'
+        + ' onmouseout="this.style.borderColor=\'' + btnBdr + '\';this.style.background=\'' + btnBg + '\';">'
         + preview
         + '</button>';
     }).join('');
