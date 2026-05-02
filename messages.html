@@ -1325,58 +1325,120 @@ function doLogout() {
   else { localStorage.removeItem('sb_token'); localStorage.removeItem('sb_user'); window.location.href = 'auth.html'; }
 }
 </script>
-<script src="assets/notif.js">
-// ── Quick Replies ────────────────────────────────────────────────────
-let quickRepliesLoaded = false;
+<script src="assets/notif.js"></script>
+<script>
+/* ── Quick Replies ─────────────────────────────────
+   Store sahipleri icin hazir mesaj paneli.
+   toggleQuickReplies() → paneli ac/kapat
+   loadQuickReplies()   → API'den cek, butonlari render et
+   useQuickReply()      → secilen metni input'a yaz, kullanim sayacini artir
+   ──────────────────────────────────── */
 
-async function toggleQuickReplies() {
+let _qrLoaded = false;
+let _qrLoading = false;
+
+function toggleQuickReplies() {
   const panel = document.getElementById('quickRepliesPanel');
+  if (!panel) return;
   const isVisible = panel.style.display !== 'none';
   panel.style.display = isVisible ? 'none' : 'block';
-  if (!isVisible && !quickRepliesLoaded) loadQuickReplies();
+  if (!isVisible && !_qrLoaded && !_qrLoading) loadQuickReplies();
 }
 
 async function loadQuickReplies() {
-  const token = localStorage.getItem('sb_token') || '';
+  if (_qrLoading) return;
+  _qrLoading = true;
+
+  const listEl  = document.getElementById('quickRepliesList');
+  const emptyEl = document.getElementById('quickRepliesEmpty');
+  if (!listEl || !emptyEl) { _qrLoading = false; return; }
+
+  listEl.innerHTML = '<span style="font-size:11px;color:#94a3b8;">Loading...</span>';
+  emptyEl.style.display = 'none';
+
   try {
-    const r = await fetch('/api/quick_replies.php?action=list', {
+    const token = Auth.getToken();
+    const r = await fetch('api/quick_replies.php?action=list', {
       headers: { 'Authorization': 'Bearer ' + token }
     });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
-    if (!d.success) return;
-    const replies = d.data.replies || [];
-    quickRepliesLoaded = true;
 
-    const listEl = document.getElementById('quickRepliesList');
-    const emptyEl = document.getElementById('quickRepliesEmpty');
+    if (!d.success) {
+      listEl.innerHTML = '';
+      emptyEl.style.display = 'block';
+      _qrLoading = false;
+      return;
+    }
+
+    const replies = d.data.replies || [];
+    _qrLoaded  = true;
+    _qrLoading = false;
 
     if (!replies.length) {
+      listEl.innerHTML = '';
       emptyEl.style.display = 'block';
       return;
     }
 
-    listEl.innerHTML = replies.map(r => `
-      <button onclick="useQuickReply(${r.id}, ${JSON.stringify(r.body).replace(/'/g, "\'")})"
-        style="padding:5px 12px;border-radius:20px;border:1.5px solid var(--border-color);background:var(--bg-card);color:var(--text-primary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;transition:.15s;"
-        onmouseover="this.style.borderColor='#ec5b13'" onmouseout="this.style.borderColor='var(--border-color)'"
-        title="${r.body}">${r.body.substring(0, 30)}${r.body.length > 30 ? '...' : ''}</button>
-    `).join('');
+    emptyEl.style.display = 'none';
+    listEl.innerHTML = replies.map(function(rp) {
+      const safeBody = rp.body.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      const preview  = rp.body.length > 35 ? rp.body.substring(0, 35) + '…' : rp.body;
+      return '<button'
+        + ' onclick="useQuickReply(' + Number(rp.id) + ', this.dataset.body)"'
+        + ' data-body="' + safeBody + '"'
+        + ' title="' + safeBody + '"'
+        + ' style="padding:5px 12px;border-radius:20px;border:1.5px solid #e2e8f0;'
+        + 'background:#fff;color:#374151;font-size:12px;font-weight:600;'
+        + 'cursor:pointer;font-family:inherit;white-space:nowrap;'
+        + 'overflow:hidden;text-overflow:ellipsis;max-width:200px;'
+        + 'transition:border-color .15s,background .15s;"'
+        + ' onmouseover="this.style.borderColor='\''#ec5b13'\'';this.style.background='\''#fef6ee'\'';"'
+        + ' onmouseout="this.style.borderColor='\''#e2e8f0'\'';this.style.background='\''#fff'\'';">'
+        + preview
+        + '</button>';
+    }).join('');
+
+  } catch(e) {
+    _qrLoading = false;
+    _qrLoaded  = false;
+    const el2 = document.getElementById('quickRepliesList');
+    if (el2) el2.innerHTML = '<span style="font-size:11px;color:#ef4444;">Could not load. Try again.</span>';
+  }
+}
+
+function useQuickReply(id, body) {
+  const input = document.getElementById('msgInput');
+  if (!input) return;
+  input.value = body;
+  input.focus();
+  // Cache'i sifirla ki silinip eklenen reply'ler bir sonraki acilista guncellenir
+  _qrLoaded = false;
+  const panel = document.getElementById('quickRepliesPanel');
+  if (panel) panel.style.display = 'none';
+  // Kullanim sayacini artir (fire-and-forget)
+  try {
+    fetch('api/quick_replies.php?action=use', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + Auth.getToken()
+      },
+      body: JSON.stringify({ id: Number(id) })
+    }).catch(function() {});
   } catch(e) {}
 }
 
-async function useQuickReply(id, body) {
-  document.getElementById('msgInput').value = body;
-  document.getElementById('msgInput').focus();
-  document.getElementById('quickRepliesPanel').style.display = 'none';
-  // Kullanim sayisini artir
-  const token = localStorage.getItem('sb_token') || '';
-  fetch('/api/quick_replies.php?action=use', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-    body: JSON.stringify({ id })
-  }).catch(() => {});
-}
-
+// Quick Replies paneli disina tiklaninca kapat
+document.addEventListener('click', function(e) {
+  const panel  = document.getElementById('quickRepliesPanel');
+  const toggle = document.getElementById('quickReplyToggleBtn');
+  if (!panel || panel.style.display === 'none') return;
+  if (!panel.contains(e.target) && e.target !== toggle && !(toggle && toggle.contains(e.target))) {
+    panel.style.display = 'none';
+  }
+});
 </script>
 
 <!-- Mobile Bottom Nav -->

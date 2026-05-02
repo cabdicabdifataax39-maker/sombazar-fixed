@@ -17,12 +17,28 @@ require_once __DIR__ . '/config.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_GET['action'] ?? '';
 
+ensureQuickRepliesTable();
+
 switch ($action) {
     case 'list':   handleList();                                                             break;
     case 'save':   if ($method !== 'POST') jsonError('Method not allowed', 405); handleSave();   break;
     case 'delete': if ($method !== 'POST') jsonError('Method not allowed', 405); handleDelete(); break;
     case 'use':    if ($method !== 'POST') jsonError('Method not allowed', 405); handleUse();    break;
     default: jsonError('Unknown action: ' . $action);
+}
+
+function ensureQuickRepliesTable(): void {
+    $db = getDB();
+    try {
+        $db->exec("CREATE TABLE IF NOT EXISTS seller_quick_replies (
+            id         INT AUTO_INCREMENT PRIMARY KEY,
+            seller_id  INT NOT NULL,
+            body       TEXT NOT NULL,
+            use_count  INT DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_seller (seller_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    } catch (\Throwable $e) {}
 }
 
 function handleList(): void {
