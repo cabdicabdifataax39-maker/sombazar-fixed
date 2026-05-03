@@ -210,8 +210,8 @@ async function loadReservations() {
       const timeAgo = (() => { const s = Math.floor((Date.now() - new Date(rv.created_at)) / 1000); if(s<60)return'just now'; if(s<3600)return Math.floor(s/60)+'m ago'; if(s<86400)return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; })();
       const actions = rv.status === 'pending'
         ? `<div style="display:flex;gap:6px;margin-top:8px;">
-            <button onclick="respondReservation(${rv.id},'confirmed')" style="flex:1;padding:7px;background:#dcfce7;color:#15803d;border:1.5px solid #86efac;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">✅ Accept</button>
-            <button onclick="respondReservation(${rv.id},'cancelled')" style="flex:1;padding:7px;background:#fee2e2;color:#dc2626;border:1.5px solid #fca5a5;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">✕ Decline</button>
+            <button onclick="respondReservation(${rv.id},'confirm')" style="flex:1;padding:7px;background:#dcfce7;color:#15803d;border:1.5px solid #86efac;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">✅ Accept</button>
+            <button onclick="respondReservation(${rv.id},'reject')" style="flex:1;padding:7px;background:#fee2e2;color:#dc2626;border:1.5px solid #fca5a5;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">✕ Decline</button>
            </div>`
         : '';
       return `<div style="border:1.5px solid var(--border-color);border-radius:10px;padding:12px;margin-bottom:8px;">
@@ -233,13 +233,14 @@ async function loadReservations() {
 
 async function respondReservation(id, status) {
   const token = localStorage.getItem('sb_token') || '';
-  const label = status === 'confirmed' ? 'accept' : 'decline';
+  const id_action = status; // 'confirm' or 'reject'
+  const label = id_action === 'confirm' ? 'accept' : 'decline';
   if (!confirm(`Are you sure you want to ${label} this reservation?`)) return;
   try {
     const r = await fetch('/api/reservations.php?action=respond', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-      body: JSON.stringify({ reservation_id: id, status })
+      body: JSON.stringify({ reservation_id: id, action: id_action })
     });
     const d = await r.json();
     if (d.success) {

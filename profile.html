@@ -336,6 +336,10 @@
         <span class="material-symbols-outlined" style="font-size:20px;">local_offer</span> Offers Received
         <span id="offersBadgeNav" style="display:none;margin-left:auto;background:#ec5b13;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;"></span>
       </button>
+      <button onclick="switchTab('reservations')" id="navReservations" class="snav-item">
+        <span class="material-symbols-outlined">calendar_month</span> Reservations
+        <span id="resNavBadge" style="display:none;background:#ec5b13;color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px;margin-left:4px;"></span>
+      </button>
       <button onclick="switchTab('reviews')" id="navReviews" class="snav-item">
         <span class="material-symbols-outlined" style="font-size:20px;">star</span> My Reviews
       </button>
@@ -357,6 +361,9 @@
       <button onclick="switchTab('listings')" class="tab-pill active" id="mTabListings">My Listings</button>
       <button onclick="switchTab('favorites')" class="tab-pill" id="mTabFavorites">Favorites</button>
       <button onclick="switchTab('offers')" class="tab-pill" id="mTabOffers">Offers</button>
+      <button onclick="switchTab('reservations')" class="tab-pill" id="mTabReservations">Reservations
+        <span id="resMobileBadge" style="display:none;background:#ec5b13;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:20px;margin-left:3px;"></span>
+      </button>
       <button onclick="switchTab('reviews')" class="tab-pill" id="mTabReviews">Reviews</button>
       <button onclick="switchTab('billing')" class="tab-pill" id="mTabBilling">Payments</button>
       <button onclick="switchTab('settings')" class="tab-pill" id="mTabSettings">Settings</button>
@@ -600,6 +607,25 @@
         <div class="skel" style="height:120px;border-radius:14px;"></div>
       </div>
     </div><!-- /reviews -->
+
+    <!-- ────────── RESERVATIONS TAB ────────── -->
+    <div id="tabReservations" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h2 style="font-size:22px;font-weight:900;color:#0f172a;margin-bottom:2px;">Reservations</h2>
+          <p style="font-size:13px;color:#64748b;">Track items you've reserved or hold requests you've received.</p>
+        </div>
+      </div>
+      <!-- Sub-tabs: Buying / Selling -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button onclick="switchResTab('buyer')" id="resBuyerBtn" class="tab-pill active">Buying</button>
+        <button onclick="switchResTab('seller')" id="resSellerBtn" class="tab-pill">Selling</button>
+      </div>
+      <div id="resListWrap" style="display:flex;flex-direction:column;gap:10px;">
+        <div class="skel" style="height:90px;border-radius:12px;"></div>
+        <div class="skel" style="height:90px;border-radius:12px;"></div>
+      </div>
+    </div><!-- /reservations -->
 
     <!-- ────────── BILLING TAB ────────── -->
     <div id="tabBilling" style="display:none;">
@@ -1284,7 +1310,7 @@ async function bulkAction(action) {
 
 
 // ── Tab switching ─────────────────────────────
-const TABS=['listings','favorites','offers','reviews','billing','settings'];
+const TABS=['listings','favorites','offers','reservations','reviews','billing','settings'];
 
 function switchTab(tab){
   TABS.forEach(t=>{
@@ -1301,6 +1327,7 @@ function switchTab(tab){
   if(tab==='favorites'&&!window._favsLoaded){loadFavorites();window._favsLoaded=true;}
   if(tab==='billing')loadPaymentHistory();
   if(tab==='offers')switchOffersTab(window._offersTab||'received');
+  if(tab==='reservations')loadMyReservations();
   if(tab==='reviews')loadMyReviews();
 }
 
@@ -1727,7 +1754,131 @@ async function loadOffers(type){
   }catch(e){wrap.innerHTML=`<div style="color:#ef4444;font-size:13px;padding:16px;"><b>Error:</b> ${escHTML(e.message)}</div>`;}
 }
 
+// ── Reservations ─────────────────────────────────────────────────────────
+window._resTab = 'buyer';
+
+function switchResTab(role) {
+  window._resTab = role;
+  const bb = document.getElementById('resBuyerBtn');
+  const sb = document.getElementById('resSellerBtn');
+  if (bb) { bb.classList.remove('active'); bb.style.background=''; bb.style.color=''; }
+  if (sb) { sb.classList.remove('active'); sb.style.background=''; sb.style.color=''; }
+  if (role === 'buyer'  && bb) bb.classList.add('active');
+  if (role === 'seller' && sb) sb.classList.add('active');
+  loadMyReservations();
+}
+
+async function loadMyReservations() {
+  const wrap = document.getElementById('resListWrap');
+  if (!wrap) return;
+  const role = window._resTab || 'buyer';
+  wrap.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Loading...</div>';
+  try {
+    const r = await fetch('api/reservations.php?action=list&role=' + role, {
+      headers: { Authorization: 'Bearer ' + Auth.getToken() }
+    });
+    if (!r.ok) throw new Error('Server error: ' + r.status);
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Unknown error');
+    const items = d.data.reservations || [];
+
+    const pending = items.filter(rv => rv.status === 'pending').length;
+    ['resNavBadge','resMobileBadge'].forEach(bid => {
+      const el = document.getElementById(bid);
+      if (el) { el.textContent = pending || ''; el.style.display = pending ? '' : 'none'; }
+    });
+
+    if (!items.length) {
+      wrap.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;font-size:13px;">'
+        + '<span class="material-symbols-outlined" style="font-size:48px;color:#e2e8f0;">calendar_month</span>'
+        + '<p style="font-weight:700;margin-top:8px;">'
+        + (role === 'buyer' ? "You haven't reserved any items yet." : "No reservation requests received yet.")
+        + '</p>'
+        + (role === 'buyer' ? '<a href="listings.html" style="color:#ec5b13;font-weight:700;font-size:13px;">Browse listings &#x2192;</a>' : '')
+        + '</div>';
+      return;
+    }
+
+    const DUR = { '2h':'2 Hours', '4h':'4 Hours', 'today':'Today', 'tomorrow':'Tomorrow' };
+    const ST = {
+      pending:   { bg:'#fef9c3', color:'#854d0e', label:'Pending' },
+      confirmed: { bg:'#dcfce7', color:'#166534', label:'Confirmed' },
+      cancelled: { bg:'#f1f5f9', color:'#64748b', label:'Cancelled' },
+      expired:   { bg:'#fee2e2', color:'#991b1b', label:'Expired' }
+    };
+
+    wrap.innerHTML = items.map(rv => {
+      const sc  = ST[rv.status] || ST.cancelled;
+      const dur = DUR[rv.duration_type] || rv.duration_type;
+      const img = rv.listing_image
+        ? '<img src="' + rv.listing_image + '" style="width:56px;height:56px;object-fit:cover;border-radius:10px;flex-shrink:0;" loading="lazy">'
+        : '<div style="width:56px;height:56px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">&#x1F4E6;</div>';
+      const other = role === 'buyer'
+        ? 'Seller: <b>' + escHTML(rv.seller_name || '&mdash;') + '</b>'
+        : 'Buyer: <b>'  + escHTML(rv.buyer_name  || '&mdash;') + '</b>';
+      const time = rv.time_remaining ? ' &middot; ' + escHTML(rv.time_remaining) : '';
+
+      let actions = '';
+      if (role === 'seller' && rv.status === 'pending') {
+        actions = '<div style="display:flex;gap:6px;margin-top:8px;">'
+          + '<button onclick="respondReservationProfile(' + rv.id + ',\'confirm\')" style="flex:1;padding:7px;background:#dcfce7;color:#15803d;border:1.5px solid #86efac;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">&#x2705; Accept</button>'
+          + '<button onclick="respondReservationProfile(' + rv.id + ',\'reject\')" style="flex:1;padding:7px;background:#fee2e2;color:#dc2626;border:1.5px solid #fca5a5;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">&#x2715; Decline</button>'
+          + '</div>';
+      } else if (['pending','confirmed'].includes(rv.status)) {
+        actions = '<div style="margin-top:8px;">'
+          + '<button onclick="cancelReservationProfile(' + rv.id + ')" style="padding:6px 14px;background:#f1f5f9;color:#64748b;border:1.5px solid #e2e8f0;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">Cancel</button>'
+          + '</div>';
+      }
+
+      return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">'
+        + '<a href="listing.html?id=' + rv.listing_id + '">' + img + '</a>'
+        + '<div style="flex:1;min-width:0;">'
+        + '<a href="listing.html?id=' + rv.listing_id + '" style="font-size:13px;font-weight:700;color:#0f172a;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;">' + escHTML(rv.listing_title || 'Listing #' + rv.listing_id) + '</a>'
+        + '<div style="font-size:12px;color:#64748b;margin-top:2px;">' + other + ' &middot; Hold: <b>' + dur + '</b>' + time + '</div>'
+        + actions
+        + '</div>'
+        + '<span style="background:' + sc.bg + ';color:' + sc.color + ';font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;">' + sc.label + '</span>'
+        + '</div>';
+    }).join('');
+
+  } catch(e) {
+    wrap.innerHTML = '<div style="color:#ef4444;font-size:13px;padding:16px;"><b>Error:</b> ' + escHTML(e.message) + '</div>';
+  }
+}
+
+async function respondReservationProfile(id, action) {
+  const label = action === 'confirm' ? 'accept' : 'decline';
+  if (!confirm('Are you sure you want to ' + label + ' this reservation?')) return;
+  try {
+    const r = await fetch('api/reservations.php?action=respond', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ reservation_id: id, action: action })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    showToast(action === 'confirm' ? 'Reservation accepted!' : 'Reservation declined.', action === 'confirm' ? 'success' : 'info');
+    loadMyReservations();
+  } catch(e) { showToast(e.message || 'Network error.', 'error'); }
+}
+
+async function cancelReservationProfile(id) {
+  if (!confirm('Cancel this reservation?')) return;
+  try {
+    const r = await fetch('api/reservations.php?action=cancel', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + Auth.getToken() },
+      body: JSON.stringify({ reservation_id: id })
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'Failed');
+    showToast('Reservation cancelled.', 'success');
+    loadMyReservations();
+  } catch(e) { showToast(e.message || 'Network error.', 'error'); }
+}
+
 async function cancelOffer(id){
+
   if(!confirm('Cancel this offer?'))return;
   try{
     const r=await fetch('api/offers.php?action=cancel',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+Auth.getToken()},body:JSON.stringify({offer_id:id})});
