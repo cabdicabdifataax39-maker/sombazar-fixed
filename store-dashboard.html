@@ -180,18 +180,23 @@ const DAYS = [['mon','Mon'],['tue','Tue'],['wed','Wed'],['thu','Thu'],['fri','Fr
 
 // ── Reservations ─────────────────────────────────────────
 async function loadReservations() {
-  const token = localStorage.getItem('sb_token') || '';
+  const token = (window.Auth && Auth.getToken()) || localStorage.getItem('sb_token') || '';
   try {
-    const r = await fetch('/api/reservations.php?action=list&role=seller', {
+    const r = await fetch('api/reservations.php?action=list&role=seller', {
       headers: { Authorization: 'Bearer ' + token }
     });
+    if (!r.ok) { console.warn('Reservations API error:', r.status); return; }
     const d = await r.json();
     const list = document.getElementById('reservationsList');
     const section = document.getElementById('reservationSection');
     const badge = document.getElementById('pendingReservCount');
 
-    if (!d.success || !d.data || !d.data.reservations || d.data.reservations.length === 0) {
-      section.style.display = 'none';
+    if (!d.success || !d.data) { console.warn('Reservations API failed:', d && d.error); return; }
+
+    section.style.display = 'block';
+
+    if (!d.data.reservations || !d.data.reservations.length) {
+      list.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No reservation requests yet.</div>';
       return;
     }
 
@@ -232,12 +237,12 @@ async function loadReservations() {
 }
 
 async function respondReservation(id, status) {
-  const token = localStorage.getItem('sb_token') || '';
+  const token = (window.Auth && Auth.getToken()) || localStorage.getItem('sb_token') || '';
   const id_action = status; // 'confirm' or 'reject'
   const label = id_action === 'confirm' ? 'accept' : 'decline';
   if (!confirm(`Are you sure you want to ${label} this reservation?`)) return;
   try {
-    const r = await fetch('/api/reservations.php?action=respond', {
+    const r = await fetch('api/reservations.php?action=respond', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
       body: JSON.stringify({ reservation_id: id, action: id_action })
