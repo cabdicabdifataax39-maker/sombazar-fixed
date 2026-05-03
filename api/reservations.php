@@ -41,6 +41,12 @@ function handleCreate(): void {
 
     $db = getDB();
 
+    // Suresi dolmus rezervasyonlari ve orphan listing'leri temizle
+    try {
+        $db->exec("UPDATE reservations SET status = 'expired' WHERE status IN ('pending','confirmed') AND expires_at < NOW()");
+        $db->exec("UPDATE listings SET status = 'active' WHERE status = 'reserved' AND id NOT IN (SELECT listing_id FROM reservations WHERE status IN ('pending','confirmed'))");
+    } catch (\Throwable $e) {}
+
     // Ilani getir
     // Transaction + SELECT FOR UPDATE: race condition önle
     $db->beginTransaction();
@@ -48,7 +54,15 @@ function handleCreate(): void {
     $st->execute([$listingId]);
     $listing = $st->fetch();
     if (!$listing) jsonError('Listing not found', 404);
-    if ($listing['status'] !== 'active') jsonError('Listing is not available');
+    // Ilan 'reserved' ama aktif rezervasyonu yoksa (expired/cancelled) yine de izin ver
+    if (!in_array($listing['status'], ['active', 'reserved'])) jsonError('Listing is not available');
+    if ($listing['status'] === 'reserved') {
+        $activeRes = $db->prepare("SELECT id FROM reservations WHERE listing_id = ? AND status IN ('pending','confirmed')");
+        $activeRes->execute([$listingId]);
+        if ($activeRes->fetch()) jsonError('This listing is already reserved by someone else');
+        // Aktif rezervasyon yoksa listing'i active'e cek
+        $db->prepare("UPDATE listings SET status = 'active' WHERE id = ?")->execute([$listingId]);
+    }
     if ((int)$listing['user_id'] === $uid) jsonError('Cannot reserve your own listing');
 
     $sellerId = (int)$listing['user_id'];
